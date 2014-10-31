@@ -66,7 +66,7 @@ typedef struct {
   /* Parameters */
   double     pixels_per_sec, window_adjust;
   int        x_size, y_size, Y_size, dB_range, gain, spectrum_points, perm;
-  sox_bool   monochrome, light_background, high_color, slack_overlap, no_axes;
+  sox_bool   monochrome, light_background, high_color, hh_mm_ss, slack_overlap, no_axes;
   sox_bool   normalize, raw, alt_palette, truncate;
   win_type_t win_type;
   char const * out_name, * title, * comment;
@@ -237,7 +237,7 @@ static int getopts_spectrogram(sox_effect_t * effp, int argc, char **argv)
   char const * next;
   int c;
   lsx_getopt_t optstate;
-  lsx_getopt_init(argc, argv, "+S:d:x:X:y:Y:z:Z:q:p:W:w:st:c:AarmnlhTo:LiR:", NULL, lsx_getopt_flag_none, 1, &optstate);
+  lsx_getopt_init(argc, argv, "+S:d:x:X:y:Y:z:Z:q:p:W:w:st:c:AarglmnhTo:LiR:", NULL, lsx_getopt_flag_none, 1, &optstate);
 
   p->dB_range = 120, p->spectrum_points = 249, p->perm = 1; /* Non-0 defaults */
   p->out_name = "spectrogram.png", p->comment = "Created by SoX";
@@ -269,6 +269,7 @@ static int getopts_spectrogram(sox_effect_t * effp, int argc, char **argv)
     case 'n': p->normalize        = sox_true;   break;
     case 'l': p->light_background = sox_true;   break;
     case 'h': p->high_color       = sox_true;   break;
+    case 'g': p->hh_mm_ss         = sox_true;   break;
     case 'T': p->truncate         = sox_true;   break;
     case 'L': p->log10_axis       = sox_true;   break;
     case 'i': p->interpolate      = sox_true;   break;
@@ -1155,13 +1156,14 @@ static int stop_spectrogram(sox_effect_t * effp) /* only called, by end(), on fl
       unsigned nlabels;
       float scale;
       char *prefix;
-      char text[16];
+      char text[32];
 
       labels = axis(0, secs(p->cols), p->cols, (font_X * 9 / 2),
                     &nlabels, &scale, &prefix);
       sprintf(text, "Time (%.1ss)", prefix);               /* Axis label */
       print_at(left + (p->cols - font_X * (int)strlen(text)) / 2, 24, Text, text);
       { unsigned i;
+        float gap = labels[1] - labels[0];
 
 	for (i = 0; i < nlabels; i++) {
           float f = labels[i];
@@ -1183,7 +1185,26 @@ static int stop_spectrogram(sox_effect_t * effp) /* only called, by end(), on fl
                 DELTA_EQ(labels[i+1]/scale - labels[i]/scale, 0.5))
               continue;
           }
-	  sprintf(text, "%g", f / scale);     /* Labels */
+          /* Tick labels */
+          if (p->hh_mm_ss && !strlen(prefix) && gap > 1 ) {
+            /* Time in seconds then hh:mm:ss format */
+            int hour = 0, min = 0, sec, tick;
+
+            tick = f / scale;
+            sec = tick;
+            if (tick >= 3600)
+                    hour = tick / 3600;
+            if (tick >= 60){
+                    min = tick / 60;
+                    sec = tick % 60;
+            }
+            if (hour != 0)
+                    sprintf(text, "%.2d:%.2d:%.2d", hour, min, sec);
+            else
+                    sprintf(text, "%.2d:%.2d", min, sec);
+          } else {
+                    sprintf(text, "%g", f / scale);     /* Labels */
+          }
 	  x = x - 3 * strlen(text);
 	  print_at(x, below - 6, Labels, text);
 	  print_at(x, below + c_rows + 14, Labels, text);
@@ -1451,6 +1472,7 @@ sox_effect_handler_t const * lsx_spectrogram_effect_fn(void)
 "-s      Slack overlap of windows",
 "-a      Suppress axis lines",
 "-r      Raw spectrogram: no axes or legends",
+"-g      Show many seconds in hh:mm:ss format",
 "-l      Light background",
 "-m      Monochrome",
 "-h      High color",
