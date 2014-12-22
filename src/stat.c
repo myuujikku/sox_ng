@@ -34,6 +34,7 @@ typedef struct {
   float *re_out;
   unsigned long fft_size;
   unsigned long fft_offset;
+  sox_bool fft_average;
 } priv_t;
 
 
@@ -69,6 +70,8 @@ static int sox_stat_getopts(sox_effect_t * effp, int argc, char **argv)
       stat->fft = 1;
     else if (!(strcmp(*argv, "-d")))
       stat->volume = 2;
+    else if (!(strcmp(*argv, "-a")))
+      stat->fft_average = sox_true;
     else {
       lsx_fail("Summary effect: unknown option");
       return SOX_EOF;
@@ -100,6 +103,7 @@ static int sox_stat_start(sox_effect_t * effp)
     stat->bin[i] = 0;
 
   stat->fft_size = 4096;
+  stat->fft_average = sox_false;
   stat->re_in = stat->re_out = NULL;
 
   if (stat->fft) {
@@ -134,6 +138,16 @@ static int sox_stat_flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_samp
   priv_t * stat = (priv_t *) effp->priv;
   int done, x, len = min(*isamp, *osamp);
   short count = 0;
+  float *re_average = NULL;
+  unsigned samples = 0;
+  float ffa = 0.0;
+  unsigned i;
+
+  if (stat->fft_average) {
+      samples = (stat->fft_size / 2);
+      ffa = effp->in_signal.rate / samples;
+      re_average = lsx_malloc(sizeof(float) * (int)samples);
+  }
 
   if (len) {
     if (stat->read == 0)          /* 1st sample */
@@ -146,9 +160,19 @@ static int sox_stat_flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_samp
 
         if (stat->fft_offset >= stat->fft_size) {
           stat->fft_offset = 0;
+          if (stat->fft_average) {
+              lsx_power_spectrum_f((int)samples, stat->re_in, stat->re_out);
+              for (i = 0; i < samples / 2; i++) /* FIXME: should be <= samples / 2 */
+                  re_average[i] += stat->re_out[i];
+          } else {
           print_power_spectrum((unsigned) stat->fft_size, effp->in_signal.rate, stat->re_in, stat->re_out);
+          }
         }
 
+      }
+      if (stat->fft_average) {
+          for (i = 0; i < samples / 2; i++) /* FIXME: should be <= samples / 2 */
+              fprintf(stderr, " %f  %f\n", ffa * i, re_average[i] / len);
       }
     }
 
@@ -192,6 +216,7 @@ static int sox_stat_flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_samp
     stat->read += len;
   }
 
+  free(re_average);
   *isamp = *osamp = len;
   /* Process all samples */
 
@@ -320,7 +345,7 @@ static int sox_stat_stop(sox_effect_t * effp)
 
 static sox_effect_handler_t sox_stat_effect = {
   "stat",
-  "[ -s N ] [ -rms ] [-freq] [ -v ] [ -d ]",
+  "[ -s N ] [ -rms ] [-freq] [ -v ] [ -d ] [ -a ]",
   SOX_EFF_MCHAN | SOX_EFF_MODIFY,
   sox_stat_getopts,
   sox_stat_start,
