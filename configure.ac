@@ -247,7 +247,7 @@ dnl Checks for header files.
 AC_CHECK_HEADERS(fcntl.h unistd.h byteswap.h sys/stat.h sys/time.h sys/timeb.h sys/types.h sys/utsname.h termios.h glob.h fenv.h stropts.h)
 
 dnl Checks for library functions.
-AC_CHECK_FUNCS(strcasecmp strdup popen vsnprintf gettimeofday mkstemp fmemopen)
+AC_CHECK_FUNCS(strcasecmp strdup popen vsnprintf gettimeofday mkstemp fmemopen aligned_alloc)
 AC_CHECK_FUNCS(posix_fadvise)
 
 dnl Check if math library is needed.
