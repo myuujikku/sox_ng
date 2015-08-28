@@ -415,11 +415,9 @@ static void UNUSED rewind_pipe(FILE * fp)
 #if defined _FSTDIO || defined _NEWLIB_VERSION || defined __APPLE__
   fp->_p -= PIPE_AUTO_DETECT_SIZE;
   fp->_r += PIPE_AUTO_DETECT_SIZE;
-#elif defined __GLIBC__ && ! defined __UCLIBC__
+#elif (defined __GLIBC__ || defined __HAIKU__) && ! defined __UCLIBC__
   fp->_IO_read_ptr = fp->_IO_read_base;
-#elif defined _MSC_VER && _MSC_VER >= 1900
-  #define NO_REWIND_PIPE
-#elif defined _MSC_VER || defined _WIN32 || defined _WIN64 || \
+#elif (defined _MSC_VER && _MSC_VER < 1900) || defined _WIN32 || defined _WIN64 || \
       defined _ISO_STDIO_ISO_H || defined __sgi
   fp->_ptr = fp->_base;
 #else
