@@ -89,6 +89,7 @@ typedef enum {
 
 #ifdef USING_ID3TAG
   #include <id3tag.h>
+  #include "id3.h"
 #if defined(HAVE_UNISTD_H)
   #include <unistd.h>
 #elif defined(HAVE_IO_H)
@@ -428,7 +429,7 @@ static int startread(sox_format_t * ft)
   ft->signal.length = SOX_UNSPEC;
   if (ft->seekable) {
 #ifdef USING_ID3TAG
-    read_comments(ft);
+    lsx_id3_read_tag(ft, sox_true);
     lsx_rewind(ft);
     if (!ft->signal.length)
 #endif
