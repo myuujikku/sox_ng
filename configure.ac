@@ -223,6 +223,7 @@ AC_CHECK_HEADERS(fcntl.h unistd.h byteswap.h sys/stat.h sys/time.h sys/timeb.h s
 
 dnl Checks for library functions.
 AC_CHECK_FUNCS(strcasecmp strdup popen vsnprintf gettimeofday mkstemp fmemopen)
+AC_CHECK_FUNCS(posix_fadvise)
 
 dnl Check if math library is needed.
 AC_SEARCH_LIBS([pow], [m])
