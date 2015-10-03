@@ -1789,6 +1789,18 @@ static int process(void)
     tcsetattr(fileno(stdin), TCSANOW, &modified_termios);
   }
 #endif
+#if defined(F_GETFL) && defined(F_SETFL) && defined(O_NONBLOCK)
+  if (interactive) {
+    int fd = fileno(stdin);
+    int flags = fcntl(fd, F_GETFL);
+    if (flags == -1) {
+      lsx_warn("error getting flags on stdin descriptor: %s", strerror(errno));
+    } else if (!(flags & O_NONBLOCK)) {
+      if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1)
+        lsx_warn("error setting non-blocking on stdin: %s", strerror(errno));
+    }
+  }
+#endif
 
   signal(SIGTERM, sigint); /* Stop gracefully, as soon as we possibly can. */
   signal(SIGINT , sigint); /* Either skip current input or behave as SIGTERM. */
