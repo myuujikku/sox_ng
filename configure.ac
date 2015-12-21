@@ -250,8 +250,11 @@ dnl Checks for header files.
 AC_CHECK_HEADERS(fcntl.h unistd.h byteswap.h sys/ioctl.h sys/select.h sys/stat.h sys/time.h sys/timeb.h sys/types.h sys/utsname.h sys/wait.h termios.h glob.h fenv.h stropts.h)
 
 dnl Checks for library functions.
-AC_CHECK_FUNCS(strcasecmp strdup popen vsnprintf gettimeofday mkstemp fmemopen aligned_alloc)
+AC_CHECK_FUNCS(strcasecmp strdup popen vsnprintf gettimeofday mkstemp fmemopen)
 AC_CHECK_FUNCS(posix_fadvise)
+
+dnl aligned alloc required for sdm_x86.h using AVX (32-byte) or SSE2 (16-byte)
+AC_CHECK_FUNCS(aligned_alloc memalign posix_memalign)
 
 dnl Check if math library is needed.
 AC_SEARCH_LIBS([pow], [m])
