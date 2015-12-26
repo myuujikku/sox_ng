@@ -3208,19 +3208,18 @@ is in effect).
 See also \fB\-x\fR and \fB\-d\fR.
 .IP \fB\-y\ \fInum\fR
 Sets the Y-axis size in pixels (per channel); this is the number of
-frequency `bins' used in the Fourier analysis that produces the
-spectrogram.  N.B. it can be slow to produce the spectrogram if this
-number is not one more than a power of two (e.g. 129).  By default the
-Y-axis size is chosen automatically (depending on the number of
+frequency `bins' used in the Fourier analysis that produces the spectrogram.
+By default the Y-axis size is chosen automatically (depending on the number of
 channels).  See
 .B \-Y
 for alternative way of setting spectrogram height.
 .IP \fB\-Y\ \fInum\fR
 Sets the target total height of the spectrogram(s).  The default value
-is 550 pixels.  Using this option (and by default), SoX will choose a
+is 550 pixels and the maximum is 16384 or 200000 depending on your system's
+capabilities.  Using this option (and by default), SoX will choose a
 height for individual spectrogram channels that is one more than a
 power of two, so the actual total height may fall short of the given
-number.  However, there is also a minimum height per channel so if
+number.  However, there is also a minimum height of 64 per channel so if
 there are many channels, the number may be exceeded.
 See
 .B \-y
