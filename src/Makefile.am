@@ -106,6 +106,9 @@ libsox_ng_la_LIBADD = @PNG_LIBS@
 if HAVE_MAGIC
 libsox_ng_la_LIBADD += @MAGIC_LIBS@
 endif
+if HAVE_FFTW
+libsox_ng_la_LIBADD += @FFTW_LIBS@
+endif
 
 libsox_ng_la_LIBADD += @GOMP_LIBS@
 

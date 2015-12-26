@@ -33,6 +33,7 @@ Opus              http://www.opus-codec.org/            BSD
 PNG               http://www.libpng.org/pub/png         zlib (BSD-like)
 Sndfile           http://www.mega-nerd.com/libsndfile   LGPL
 WavPack           http://www.wavpack.com                BSD
+FFTW              http://fftw.org                       GPL
 
 
 

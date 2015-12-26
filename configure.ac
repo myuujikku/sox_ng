@@ -348,6 +348,27 @@ AC_SUBST(PNG_LIBS)
 
 
 
+dnl Check for FFTW3 libraries
+AC_ARG_WITH(fftw,
+    AS_HELP_STRING([--without-fftw],
+        [Don't try to use FFTW]))
+using_fftw=no
+AS_IF([test "x$with_fftw" != xno], [
+    AC_CHECK_HEADERS([fftw3.h], [using_fftw=yes])
+    AS_IF([test "x$using_fftw" = xyes],
+        [ AC_CHECK_LIB([fftw3], [fftw_execute],
+			[FFTW_LIBS="$FFTW_LIBS -lfftw3"], [using_fftw=no]) ])
+
+    AS_IF([test "x$with_fftw" = xyes && test "x$using_fftw" = xno],
+        [ AC_MSG_FAILURE([cannot find FFTW3]) ])
+])
+AS_IF([test "x$using_fftw" = xyes],
+   [ AC_DEFINE(HAVE_FFTW, 1, [Define to 1 if you have FFTW3.]) ])
+AM_CONDITIONAL(HAVE_FFTW, test x"$using_fftw" = xyes)
+AC_SUBST(FFTW_LIBS)
+
+
+
 dnl Test for LADSPA
 AC_ARG_WITH(ladspa,
     AS_HELP_STRING([--without-ladspa], [Don't try to use LADSPA]))
@@ -805,6 +826,7 @@ echo "OTHER OPTIONS"
 echo "ladspa effects.............$using_ladspa"
 echo "magic support..............$using_magic"
 echo "png support................$using_png"
+echo "FFTW support...............$using_fftw"
 if test "x$OPENMP_CFLAGS" = "x"; then
 echo "OpenMP support.............no"
 else

@@ -30,6 +30,10 @@
 #endif
 #include <zlib.h>
 
+#ifdef HAVE_FFTW3_H
+#include <fftw3.h>
+#endif
+
 /* For SET_BINARY_MODE: */
 #include <fcntl.h>
 #ifdef HAVE_IO_H
@@ -74,6 +78,9 @@ typedef struct {
   double     buf[MAX_FFT_SIZE], dft_buf[MAX_FFT_SIZE], window[MAX_FFT_SIZE+1];
   double     block_norm, max, magnitudes[(MAX_FFT_SIZE>>1) + 1];
   float      * dBfs;
+#if HAVE_FFTW
+  fftw_plan  fftw_plan;		/* Used if FFT_type == FFT_fftw */
+#endif
 } priv_t;
 
 #define secs(cols) \
@@ -190,6 +197,8 @@ static double make_window(priv_t * p, int end)
   return sum;
 }
 
+#if !HAVE_FFTW
+
 static double * rdft_init(int n)
 {
   double * q = lsx_malloc(2 * (n / 2 + 1) * n * sizeof(*q)), * p = q;
@@ -210,6 +219,8 @@ static void rdft_p(double const * q, double const * in, double * out, int n)
     *out++ += re * re + im * im;
   }
 }
+
+#endif /* HAVE_FFTW */
 
 static int start(sox_effect_t * effp)
 {
@@ -259,18 +270,28 @@ static int start(sox_effect_t * effp)
 
   if (p->y_size) {
     p->dft_size = 2 * (p->y_size - 1);
+#if !HAVE_FFTW
     if (!is_p2(p->dft_size) && !effp->flow)
       p->shared = rdft_init(p->dft_size);
+#endif
   } else {
    int y = max(32, (p->Y_size? p->Y_size : 550) / effp->in_signal.channels - 2);
    for (p->dft_size = 128; p->dft_size <= y; p->dft_size <<= 1);
   }
+
+  /* Initialize the FFT routine */
+#if HAVE_FFTW
+  /* We have one FFT plan per flow because the input/output arrays differ. */
+  p->fftw_plan = fftw_plan_r2r_1d(p->dft_size, p->dft_buf, p->dft_buf,
+                      FFTW_R2HC, FFTW_MEASURE);
+#else
   if (is_p2(p->dft_size) && !effp->flow)
     lsx_safe_rdft(p->dft_size, 1, p->dft_buf);
+#endif
   lsx_debug("duration=%g x_size=%i pixels_per_sec=%g dft_size=%i", duration, p->x_size, pixels_per_sec, p->dft_size);
 
   p->end = p->dft_size;
-  p->rows = (p->dft_size >> 1) + 1;
+  p->rows = (p->dft_size / 2) + 1;
   actual = make_window(p, p->last_end = 0);
   lsx_debug("window_density=%g", actual / p->dft_size);
   p->step_size = (p->slack_overlap? sqrt(actual * p->dft_size) : actual) + .5;
@@ -345,6 +366,19 @@ static int flow(sox_effect_t * effp,
     if ((p->end = max(p->end, p->end_min)) != p->last_end)
       make_window(p, p->last_end = p->end);
     for (i = 0; i < p->dft_size; ++i) p->dft_buf[i] = p->buf[i] * p->window[i];
+#if HAVE_FFTW
+    fftw_execute(p->fftw_plan);
+    /* Convert from FFTW's "half complex" format to an array of magnitudes.
+     * In HC format, the values are stored:
+     * r0, r1, r2 ... r(n/2), i(n+1)/2-1 .. i2, i1
+     */
+    p->magnitudes[0] += sqr(p->dft_buf[0]);
+    for (i = 1; i < p->dft_size / 2; ++i) {
+      p->magnitudes[i] += sqr(p->dft_buf[i]) + sqr(p->dft_buf[p->dft_size - i
+]);
+    }
+    p->magnitudes[p->dft_size / 2] += sqr(p->dft_buf[p->dft_size / 2]);
+#else /* ! HAVE_FFTW */
     if (is_p2(p->dft_size)) {
       lsx_safe_rdft(p->dft_size, 1, p->dft_buf);
       p->magnitudes[0] += sqr(p->dft_buf[0]);
@@ -353,6 +387,8 @@ static int flow(sox_effect_t * effp,
       p->magnitudes[p->dft_size >> 1] += sqr(p->dft_buf[1]);
     }
     else rdft_p(*p->shared_ptr, p->dft_buf, p->magnitudes, p->dft_size);
+#endif /* ! HAVE_FFTW */
+
     if (++p->block_num == p->block_steps && do_column(effp) == SOX_EOF)
       return SOX_EOF;
   }
