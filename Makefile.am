@@ -55,11 +55,11 @@ txt: $(DOCTXT)
 
 # Rule for making PDF man pages
 .1.pdf:
-	pdfroff -t -man -Tps $(srcdir)/$< > $@
+	pdfroff -t -man --no-toc-relocation -Tps $(srcdir)/$< > $@
 .3.pdf:
-	pdfroff -t -man -Tps $(srcdir)/$< > $@
+	pdfroff -t -man --no-toc-relocation -Tps $(srcdir)/$< > $@
 .7.pdf:
-	pdfroff -t -man -Tps $(srcdir)/$< > $@
+	pdfroff -t -man --no-toc-relocation -Tps $(srcdir)/$< > $@
 
 DOCPDF = sox_ng.pdf soxi_ng.pdf soxformat_ng.pdf libsox_ng.pdf
 pdf: $(DOCPDF)
