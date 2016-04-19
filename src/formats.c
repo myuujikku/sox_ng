@@ -1380,8 +1380,11 @@ int sox_close(sox_format_t * ft)
 {
   int result = SOX_SUCCESS;
 
-  if (ft->mode == 'r')
+  if (ft->mode == 'r') {
     result = ft->handler.stopread? (*ft->handler.stopread)(ft) : SOX_SUCCESS;
+    if (ft->fp == stdin)
+      sox_globals.stdin_in_use_by = NULL;
+  }
   else {
     if (ft->handler.flags & SOX_FILE_REWIND) {
       /* Really write out a final zero byte if we're writing a sparse file.
@@ -1413,6 +1416,12 @@ int sox_close(sox_format_t * ft)
       }
     } else {
       result = ft->handler.stopwrite? (*ft->handler.stopwrite)(ft) : SOX_SUCCESS;
+
+      if (ft->fp == stdout) {
+        fflush(stdout);
+        sox_globals.stdout_in_use_by = NULL;
+      }
+
       /* Really write out a final zero byte if we're writing a sparse file.
        * See lsx_writebuf() */
       if (ft->last_byte_was_zero) {
