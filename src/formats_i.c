@@ -155,7 +155,7 @@ sox_uint64_t lsx_filelength(sox_format_t * ft)
   struct stat st;
   int ret = ft->fp ? fstat(fileno((FILE*)ft->fp), &st) : 0;
 
-  return (!ret && (st.st_mode & S_IFREG))? (uint64_t)st.st_size : 0;
+  return (!ret && (st.st_mode & S_IFREG))? (sox_uint64_t)st.st_size : 0;
 }
 
 int lsx_flush(sox_format_t * ft)
