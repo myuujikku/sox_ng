@@ -330,6 +330,8 @@ int lsx_aiffstartread(sox_format_t * ft)
 	return SOX_EOF;
       if (lsx_eof(ft))
         break;
+      /* account for padding after odd-sized chunks */
+      chunksize += chunksize & 1;
       /* Skip the chunk using lsx_readb() so we may read
          from a pipe */
       while (chunksize-- > 0) {
