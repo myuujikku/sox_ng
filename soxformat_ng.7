@@ -574,6 +574,17 @@ Material eXchange Format Operational Pattern OP1A "OP-Atom" format (SMPTE 390M).
 \&\fB.nist\fR (also with \fB\-t sndfile\fR)
 See \fB.sph\fR.
 .TP
+\&\fB.nsp\fR (also with \fB\-t ffmpeg\fR)
+SoX can read Computerized Speech Lab NSP files
+that may contain both audio and bioelectric data.
+Typically, the first channel is sound pressure (audio)
+and additional channels are data such as
+laryngeal kinematic or aerodynamic (air pressure or air flow).
+.SP
+The NSP file format was also used for the Phonetic Database (PDB)
+from Speech Technology Research who had a free NSP Player, SpeakNSP.
+CSL NSP file reading and writing is supported by the WaveSurfer package.
+.TP
 \&\fB.nut\fR (with ffmpeg)
 NUT is a low overhead generic container format that stores audio, video,
 subtitle and user-defined streams in a simple yet efficient way.

@@ -109,6 +109,7 @@ set(formats_srcs
   lu-fmt
   maud
   nulfile
+  nsp
   prc
   raw
   raw-fmt

@@ -3,6 +3,7 @@ The current release handles the following audio file formats:
 * Raw files in various binary formats
 * Raw textual data
 * Amiga 8svx files
+* AMR-WB & AMR-NB (with optional libamrwb & libamrnb libraries)
 * Apple/SGI AIFF files
 * SUN .au files
 ** PCM, u-law, A-law
@@ -14,32 +15,32 @@ The current release handles the following audio file formats:
 * CVS and VMS files (continuous variable slope)
 * Grandstream ring-tone files
 * GSM files
+* Macintosh HCOM files
 * HTK files
 * LPC-10 files
-* Macintosh HCOM files
 * Amiga MAUD files
-* AMR-WB & AMR-NB (with optional libamrwb & libamrnb libraries)
 * MP2/MP3 (with optional libmad, libtwolame and libmp3lame libraries)
 * Opus files (read only; with optional Opus libraries)
 * Ogg Vorbis files (with optional Ogg Vorbis libraries)
 * FLAC files (with optional libFLAC)
 * IRCAM SoundFile files
 * NIST SPHERE files
-* Turtle beach SampleVision files
-* Sounder & Soundtool (DOS) files
-* Yamaha TX-16W sampler files
+* CSL NSP audio/bioelectric files
 * SoundBlaster .VOC files
-* Dialogic/OKI ADPCM files (.VOX)
+* Sounder & Soundtool (DOS) files
+* Turtle beach SampleVision files
+* Dialogic/OKI ADPCM .VOX files
 * Microsoft .WAV files
 ** PCM, floating point
 ** u-law, A-law, MS ADPCM, IMA (DMI) ADPCM
 ** GSM
 ** RIFX (big endian)
 * WavPack files (with optional libwavpack library)
+* Yamaha TX-16W sampler files
 * Psion (palmtop) A-law WVE files and Record voice notes
 * Maxis XA Audio files
 ** EA ADPCM (read support only, for now)
-* Pseudo formats that allow direct playing/recording from most audio devices
+* Pseudo formats that allow direct playing/recording from audio devices
 * The "null" pseudo-file that reads and writes from/to nowhere
 
 and if the `ffmpeg' program is installed it automatically reads:
