@@ -1582,13 +1582,28 @@ static void open_output_file(void)
   report_file_info(ofile);
 }
 
+static void setsig(int sig, void (*handler)(int))
+{
+#ifdef HAVE_SIGACTION
+  struct sigaction sa;
+
+  sa.sa_handler = handler;
+  sigemptyset(&sa.sa_mask);
+  sa.sa_flags = 0;
+
+  sigaction(sig, &sa, NULL);
+#else
+  signal(sig, handler);
+#endif
+}
+
 static void sigint(int s)
 {
   static struct timeval then;
   if (input_count > 1 && show_progress && s == SIGINT &&
       is_serial(combine_method) && since(&then, 1.0, sox_true))
   {
-    signal(SIGINT, sigint);
+    setsig(SIGINT, sigint);
     user_skip = sox_true;
   }
   else user_abort = sox_true;
@@ -1810,8 +1825,8 @@ static int process(void)
   }
 #endif
 
-  signal(SIGTERM, sigint); /* Stop gracefully, as soon as we possibly can. */
-  signal(SIGINT , sigint); /* Either skip current input or behave as SIGTERM. */
+  setsig(SIGTERM, sigint); /* Stop gracefully, as soon as we possibly can. */
+  setsig(SIGINT , sigint); /* Either skip current input or behave as SIGTERM. */
   if (very_first_effchain) {
     struct timeval now;
     double d;
@@ -2957,7 +2972,7 @@ int main(int argc, char **argv)
   if (ofile->signal.length != SOX_UNSPEC)
     usage("--ignore-length can be given only for an input file");
 
-  signal(SIGINT, SIG_IGN); /* So child pipes aren't killed by track skip */
+  setsig(SIGINT, SIG_IGN); /* So child pipes aren't killed by track skip */
   for (i = 0; i < input_count; i++) {
     size_t j = input_count - 1 - i; /* Open in reverse order 'cos of rec (below) */
     file_t * f = files[j];
@@ -3004,9 +3019,9 @@ int main(int argc, char **argv)
   for (i = 0; i < input_count; i++)
     set_replay_gain(files[i]->ft->oob.comments, files[i]);
 
-  signal(SIGINT, SIG_DFL);
-#ifdef SIGPIPE
-  signal(SIGPIPE, SIG_IGN);
+  setsig(SIGINT, SIG_DFL);
+#ifndef _WIN32
+  setsig(SIGPIPE, SIG_IGN);
 #endif
 
   /* Loop through the rest of the arguments looking for effects */
