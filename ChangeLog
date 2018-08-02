@@ -10,13 +10,14 @@ $ox_ng-14.5.0	2024-11-18
 
 New features:
 
+  o Auto-detect MP3 files
   o Add "stat -a" to give the average power spectrum
   o Add "spectrogram -n" flag to normalize its brightness
   o Add "spectrogram -L" flag to give a logarithmic frequency axis
   o Add "spectrogram -R" flag to specify the frequency range
-  o Auto-detect MP3 files
   o Lower the minimum speed of the flanger effect from 1 to 0.01Hz
-  o Raise spectrogram's height limit from 2050 to 200000 pixels
+  o riaa: Add 192kHz sample rate
+  o Raise spectrogram's height limit from 8193 to 200000 pixels
   o Use posix_fadvise to increase readahead and double its speed
   o spectrogram uses FFTW to make non-2^n-size FFTs a hundred times faster
   o Resize Linux pipe buffers to make multi-threaded effects 10-80% faster
