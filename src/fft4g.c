@@ -282,6 +282,7 @@ Appendix :
 */
 
 
+#include "sox_i.h"	/* for lsx_fail() */
 #include <math.h>
 #include "fft4g.h"
 
@@ -322,6 +323,11 @@ static void rftfsub(int n, double *a, int nc, double const *c);
 
 void cdft(int n, int isgn, double *a, int *ip, double *w)
 {
+    if (n > FFT4G_MAX_SIZE) {
+        lsx_fail("FFT size is too large");
+	exit(2);
+    }
+
     if (n > (ip[0] << 2)) {
         makewt(n >> 2, ip, w);
     }
@@ -344,6 +350,11 @@ void rdft(int n, int isgn, double *a, int *ip, double *w)
     int nw, nc;
     double xi;
     
+    if (n > FFT4G_MAX_SIZE) {
+        lsx_fail("FFT size is too large");
+	exit(2);
+    }
+
     nw = ip[0];
     if (n > (nw << 2)) {
         nw = n >> 2;
@@ -384,6 +395,11 @@ void ddct(int n, int isgn, double *a, int *ip, double *w)
     int j, nw, nc;
     double xr;
     
+    if (n > FFT4G_MAX_SIZE) {
+        lsx_fail("FFT size is too large");
+	exit(2);
+    }
+
     nw = ip[0];
     if (n > (nw << 2)) {
         nw = n >> 2;
@@ -435,6 +451,11 @@ void ddst(int n, int isgn, double *a, int *ip, double *w)
     int j, nw, nc;
     double xr;
     
+    if (n > FFT4G_MAX_SIZE) {
+        lsx_fail("FFT size is too large");
+	exit(2);
+    }
+
     nw = ip[0];
     if (n > (nw << 2)) {
         nw = n >> 2;
@@ -486,6 +507,11 @@ void dfct(int n, double *a, double *t, int *ip, double *w)
     int j, k, l, m, mh, nw, nc;
     double xr, xi, yr, yi;
     
+    if (n > FFT4G_MAX_SIZE) {
+        lsx_fail("FFT size is too large");
+	exit(2);
+    }
+
     nw = ip[0];
     if (n > (nw << 3)) {
         nw = n >> 3;
@@ -576,6 +602,11 @@ void dfst(int n, double *a, double *t, int *ip, double *w)
     int j, k, l, m, mh, nw, nc;
     double xr, xi, yr, yi;
     
+    if (n > FFT4G_MAX_SIZE) {
+        lsx_fail("FFT size is too large");
+	exit(2);
+    }
+
     nw = ip[0];
     if (n > (nw << 3)) {
         nw = n >> 3;
