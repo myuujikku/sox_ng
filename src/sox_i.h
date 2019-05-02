@@ -50,6 +50,14 @@ lsx_enum_item const * lsx_get_wave_enum(void);
 #define ftello ftell
 #endif
 
+#ifdef __EMSCRIPTEN__
+/* emscripten operates in a memory heap */
+#define rewind(fp) do { \
+    fclose(fp); /* close the memory buffer file */ \
+    ft->fp = fmemopen(buffer, buffer_size, "rb"); /* open it again */ \
+} while(0)
+#endif
+
 #ifdef _FILE_OFFSET_BITS
 assert_static(sizeof(off_t) == _FILE_OFFSET_BITS >> 3, OFF_T_BUILD_PROBLEM);
 #endif
