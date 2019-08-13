@@ -284,16 +284,18 @@ track is always a multiple of 588.
 .TP
 \fBcoreaudio\fR (optional)
 The MacOS X CoreAudio device driver supports both playing and recording.
-If a filename is not specific or if the name is "default",
-the default audio device is selected.  Any other name will be used
-to select a specific device.  The valid names can be seen in the
-System Preferences->Sound menu and then under the Output and Input tabs.
+If a filename is not specified or is "default",
+the default audio device is selected.
+Any other name will be used to select a specific device.
 .SP
 Examples:
 .XE
-	sox_ng infile \-t coreaudio
-	sox_ng infile \-t coreaudio default
-	sox_ng infile \-t coreaudio "Internal Speakers"
+    sox_ng infile \-t coreaudio
+    sox_ng infile \-t coreaudio "Internal Speakers"
+.XX
+You can also select a device by its number; to see the device numbers:
+.XE
+    sox_ng \-V \-n \-t coreaudio nonexistent
 .XX
 .TP
 \fB.cvsd\fR, \fB.cvs\fR

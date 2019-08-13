@@ -212,6 +212,7 @@ static int setup(sox_format_t *ft, int is_input)
 	 */
         sox_uint32_t datasize = 0;
 	AudioDeviceID *devices;
+        int device_count;
 	int i;
 
         address.mSelector = kAudioHardwarePropertyDevices;
@@ -236,7 +237,16 @@ nodevices:  lsx_fail_errno(ft, SOX_EPERM,
 
 	address.mSelector = kAudioDevicePropertyDeviceName;
 
-	for (i = 0; i < (int)(datasize / sizeof(AudioDeviceID)); i++)
+        /* Allow selection of audio device by number */
+        device_count = (int)(datasize / sizeof(AudioDeviceID));
+	i = atoi(ft->filename);
+        if (i > 0 && i <= device_count) {
+	    if (!DeviceHasBuffersInScope(devices[i], is_input)) {
+		lsx_warn("audio device %d has no buffers in scope", i);
+	    }
+            ac->adid = devices[i-1];
+        }
+	else for (i = 0; i < device_count; i++)
 	{
 	    char *name;
 
@@ -258,9 +268,11 @@ nodevices:  lsx_fail_errno(ft, SOX_EPERM,
 	    }
 	    name[datasize] = '\0';
 
-	    lsx_report("found audio device '%s'",name);
+	    lsx_report("found audio device %d '%s'", i+1, name);
 
-	    if (strcmp(name,ft->filename) == 0)
+            /* String returned from OS can be truncated
+             * so only compare as much as returned. */
+	    if (strncmp(name,ft->filename,datasize) == 0)
 	    {
 		/* Found it! */
 		ac->adid = devices[i];
