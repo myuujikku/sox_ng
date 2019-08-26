@@ -42,6 +42,7 @@
   FORMAT(mul)
   FORMAT(nsp)
   FORMAT(nul)
+  FORMAT(pcm)
   FORMAT(prc)
   FORMAT(raw)
   FORMAT(s1)
