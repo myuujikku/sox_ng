@@ -20,7 +20,7 @@ The current release handles the following audio file formats:
 * Macintosh HCOM files
 * Amiga MAUD files
 * AMR-WB & AMR-NB (with optional libamrwb & libamrnb libraries)
-* MP2/MP3 (with optional libmad, libtwolame and libmp3lame libraries)
+* MP2/MP3 (with optional libmad, libmpg123, libtwolame and libmp3lame libraries)
 * Opus files (read only; with optional Opus libraries)
 (:cell:)
 * Ogg Vorbis files (with optional Ogg Vorbis libraries)

@@ -18,7 +18,7 @@
 #include <sys/stat.h>
 
 #ifdef USING_ID3TAG
-#ifdef HAVE_MAD_H
+#if defined(HAVE_MAD_H) || defined(HAVE_MPG123_H)
 
 static char const * id3tagmap[][2] =
 {
@@ -83,7 +83,7 @@ static void write_comments(sox_format_t * ft)
 
 #ifdef USING_ID3TAG
 
-#ifdef HAVE_MAD_H
+#if defined(HAVE_MAD_H) || defined(HAVE_MPG123_H)
 static id3_utf8_t * utf8_id3tag_findframe(
     struct id3_tag * tag, const char * const frameid, unsigned index)
 {
@@ -352,3 +352,37 @@ static size_t mp3_duration_ms(sox_format_t * ft)
 }
 
 #endif /* HAVE_MAD_H */
+
+#ifdef HAVE_MPG123_H
+
+static size_t mp3_duration(sox_format_t * ft)
+{
+  priv_t * p = (priv_t *) ft->priv;
+  FILE * fp = ft->fp;
+  if (!fp || !ft->seekable) {
+    lsx_fail_errno(ft, SOX_EOF, "File pointer is undefined or not seekable in mp3_duration_ms");
+    return SOX_UNSPEC;
+  }
+  int error;
+  mpg123_handle * handle = p->mpg123_new(NULL, &error);
+  if (!handle) {
+    lsx_fail_errno(ft, SOX_EOF, "Could not get mpg123 handle: %s", mpg123_plain_strerror(error));
+    return SOX_UNSPEC;
+  }
+
+  p->mpg123_open_fd(handle, fileno(fp));
+  p->mpg123_scan(handle);
+  off_t samples = p->mpg123_length(handle);
+  int channels = 0;
+  int encoding = 0;
+  long sample_rate = 0;
+  mpg123_getformat(handle, &sample_rate, &channels, &encoding);
+  p->mpg123_close(handle);
+  p->mpg123_delete(handle);
+
+  lsx_rewind(ft);
+
+  return (size_t) (samples * channels);
+}
+
+#endif /* HAVE_MPG123_H */

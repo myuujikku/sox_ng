@@ -26,6 +26,7 @@ Lame MP3 encoder  http://lame.sourceforge.net           LGPL
 Twolame MP2 enc.  http://www.twolame.org                LGPL
 libltdl           http://www.gnu.org/software/libtool   LGPL
 MAD MP3 decoder   http://www.underbit.com/products/mad  GPL
+mpg123 decoder    http://mpg123.org                     LGPL
 MP3 ID3 tags      http://www.underbit.com/products/mad  GPL
 Magic             http://www.darwinsys.com/file         BSD
 Ogg Vorbis        http://www.vorbis.com                 BSD

@@ -89,7 +89,7 @@ To enable all of SoX's optional modules you can install
 `libao`,
 `libflac`,
 `libid3tag`,
-`libmad`,
+`libmad` or `libmpg123`,
 `libogg`,
 `libopusfile`,
 `libpng`,
