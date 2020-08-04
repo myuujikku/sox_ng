@@ -144,6 +144,9 @@ static size_t read_samples_pulse(sox_format_t *ft, sox_sample_t *buf, size_t nsa
   size_t len;
   int rc, error;
 
+  if (!nsamp)
+    return 0;
+
   /* Pulse Audio buffer lengths are true buffer lengths and not
    * count of samples. */
   len = nsamp * sizeof(sox_sample_t);
