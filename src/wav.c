@@ -630,9 +630,9 @@ static int startread(sox_format_t * ft)
       lsx_readw(ft, &subFormatTag);
       for (i = 0; i < 14; ++i) lsx_readb(ft, &dummyByte);
       len -= 22;
-      if (numberOfValidBits != wBitsPerSample)
+      if (numberOfValidBits > wBitsPerSample)
       {
-        lsx_fail_errno(ft,SOX_EHDR,"WAVE file fmt with padded samples is not supported yet");
+        lsx_fail_errno(ft,SOX_EHDR,"WAVE file's number of valid bits exceeds the number of bits per sample");
         return SOX_EOF;
       }
       wav->formatTag = subFormatTag;
