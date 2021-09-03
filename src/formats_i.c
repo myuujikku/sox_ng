@@ -107,6 +107,7 @@ int lsx_check_read_params(sox_format_t * ft, unsigned channels,
  */
 size_t lsx_readbuf(sox_format_t * ft, void *buf, size_t len)
 {
+  clearerr((FILE*)ft->fp);  /* So that we can read again from a file being written */
   size_t ret = fread(buf, (size_t) 1, len, (FILE*)ft->fp);
   if (ret != len && ferror((FILE*)ft->fp))
     lsx_fail_errno(ft, errno, "lsx_readbuf");
