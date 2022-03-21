@@ -33,6 +33,10 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#ifdef __ANDROID__
+  #include <bits/struct_file.h>
+#endif
+
 #ifdef HAVE_IO_H
   #include <io.h>
 #endif
