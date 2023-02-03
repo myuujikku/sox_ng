@@ -23,6 +23,7 @@
 #include "sox_i.h"
 #include <assert.h>
 #include <string.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <errno.h>
 
@@ -441,12 +442,19 @@ static int stopwrite(sox_format_t * ft)
 {
   priv_t *p = (priv_t *) ft->priv;
   unsigned char *compressed_data = p->data;
-  size_t compressed_len = p->pos;
+  int32_t compressed_len;
   int rc = SOX_SUCCESS;
+
+  if (p->pos > INT32_MAX) {
+    free(p->data);
+    lsx_fail_errno(ft, ERANGE, "file too large for HCOM header");
+    return SOX_EOF;
+  }
+  compressed_len = p->pos;
 
   /* Compress it all at once */
   if (compressed_len)
-    compress(ft, &compressed_data, (int32_t *)&compressed_len);
+    compress(ft, &compressed_data, &compressed_len);
   free(p->data);
 
   /* Write the header */
