@@ -468,6 +468,36 @@ static sox_bool is_url(char const * text)
       strncasecmp(text, "ftp:"  , (size_t)4));
 }
 
+#if defined _WIN32 || defined _WIN64
+
+#include <wchar.h>
+#include <windows.h>
+
+static wchar_t* utf8_to_wstr(const char* str)
+{
+  int len = strlen(str);
+  int wlength = MultiByteToWideChar(CP_UTF8, 0, str, len, 0, 0);
+  LPWSTR wstr = (LPWSTR)calloc((size_t)(wlength+1), sizeof(wchar_t));
+  MultiByteToWideChar(CP_UTF8, 0, str, len, wstr, wlength);
+  return wstr;
+}
+
+static FILE* fopen_utf8(char const * path, char const * mode)
+{
+  wchar_t *wpath = utf8_to_wstr(path);
+  wchar_t *wmode = utf8_to_wstr(mode);
+  FILE *file = _wfopen(wpath, wmode);
+  free(wpath);
+  free(wmode);
+  return file;
+}
+
+#else
+
+#define fopen_utf8(p,m) fopen(p,m)
+
+#endif
+
 static int xfclose(FILE * file, lsx_io_type io_type)
 {
   return
@@ -560,7 +590,7 @@ static FILE * xfopen(char const * identifier, char const * mode, lsx_io_type * i
 #endif
     return f;
   }
-  return fopen(identifier, mode);
+  return fopen_utf8(identifier, mode);
 }
 
 static sox_format_t * open_read(
@@ -990,7 +1020,7 @@ static sox_format_t * open_write(
         buffer? fmemopen(buffer, buffer_size, "w+b") :
         buffer_ptr? open_memstream(buffer_ptr, buffer_size_ptr) :
 #endif
-        fopen(path, "w+b");
+        fopen_utf8(path, "w+b");
       if (ft->fp == NULL) {
         lsx_fail("can't open output file `%s': %s", path, strerror(errno));
         goto error;

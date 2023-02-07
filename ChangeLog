@@ -37,6 +37,7 @@ New features:
   o Enable building with libmpg123 instead of libmad (no seek support yet)
   o Enable building to fetch URLs with curl instead of wget
   o Be able to read files that are still being written by another process
+  o Support unicode filenames on Windows
   o Make "make check" run the regression test suite
   o Drop sox_version_info_t's "time" element to get reproducible builds
   o Remove the undocumented and useless "divide" effect
