@@ -56,11 +56,9 @@ static const char* const sndfile_library_names[] =
 #endif
 #endif /* DL_SNDFILE */
 
-#define SNDFILE_FUNC_OPEN(f,x) \
-  SNDFILE_FUNC(f,x, SNDFILE*, sf_open_virtual, (SF_VIRTUAL_IO *sfvirtual, int mode, SF_INFO *sfinfo, void *user_data))
-
 #define SNDFILE_FUNC_ENTRIES(f,x) \
-  SNDFILE_FUNC_OPEN(f,x) \
+  SNDFILE_FUNC(f,x, SNDFILE*, sf_open, (const char *path, int mode, SF_INFO *sfinfo)) \
+  SNDFILE_FUNC(f,x, SNDFILE*, sf_open_virtual, (SF_VIRTUAL_IO *sfvirtual, int mode, SF_INFO *sfinfo, void *user_data)) \
   SNDFILE_FUNC_STOP(f,x, int, sf_stop, (SNDFILE *sndfile)) \
   SNDFILE_FUNC(f,x, int, sf_close, (SNDFILE *sndfile)) \
   SNDFILE_FUNC(f,x, int, sf_format_check, (const SF_INFO *info)) \
@@ -356,8 +354,18 @@ static int startread(sox_format_t * ft)
   if (start(ft) == SOX_EOF)
       return SOX_EOF;
 
-  sf->sf_file = sf->sf_open_virtual(&vio, SFM_READ, sf->sf_info, ft);
-  drain_log_buffer(ft);
+  /*
+   * The SD2 format relies on a resource fork,
+   * which cannot be supported with virtual IO.
+   */
+  if (strcmp(lsx_find_file_extension(ft->filename), "sd2") == 0) {
+    memset(sf->sf_info, 0, sizeof (*sf->sf_info));
+    sf->sf_file = sf->sf_open(ft->filename, SFM_READ, sf->sf_info);
+    drain_log_buffer(ft);
+  } else {
+    sf->sf_file = sf->sf_open_virtual(&vio, SFM_READ, sf->sf_info, ft);
+    drain_log_buffer(ft);
+  }
 
   if (sf->sf_file == NULL) {
     memset(ft->sox_errstr, 0, sizeof(ft->sox_errstr));
@@ -447,7 +455,15 @@ static int startwrite(sox_format_t * ft)
       lsx_warn("cannot use desired output encoding, choosing default");
   }
 
-  sf->sf_file = sf->sf_open_virtual(&vio, SFM_WRITE, sf->sf_info, ft);
+  /*
+   * The SD2 format relies on a resource fork,
+   * which cannot be supported with virtual IO.
+   */
+  if ((sf->sf_info->format & SF_FORMAT_TYPEMASK) == SF_FORMAT_SD2) {
+    sf->sf_file = sf->sf_open(ft->filename, SFM_WRITE, sf->sf_info);
+  } else {
+    sf->sf_file = sf->sf_open_virtual(&vio, SFM_WRITE, sf->sf_info, ft);
+  }
   drain_log_buffer(ft);
 
   if (sf->sf_file == NULL) {
