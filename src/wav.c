@@ -458,7 +458,7 @@ static int findChunk(sox_format_t * ft, const char *Label, uint64_t *len)
             }
             else
             {
-                lsx_fail_errno(ft, SOX_EHDR, "Cannot yet read block sizes of arbitary RF64 chunks, cannot find chunk '%s'", Label);
+                lsx_fail_errno(ft, SOX_EHDR, "Cannot yet read block sizes of arbitrary RF64 chunks, cannot find chunk '%s'", Label);
                 return SOX_EOF;
             }
         }
