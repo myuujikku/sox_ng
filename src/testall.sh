@@ -67,3 +67,4 @@ t voc
 t vox -r 8130
 t wav
 t wve
+t wav -e gsm-full-rate

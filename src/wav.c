@@ -521,7 +521,7 @@ static int startread(sox_format_t * ft)
     unsigned short wChannels;       /* number of channels */
     uint32_t      dwSamplesPerSecond; /* samples per second per channel */
     uint32_t      dwAvgBytesPerSec;/* estimate of bytes per second needed */
-    uint16_t wBitsPerSample;  /* bits per sample */
+    uint16_t wBitsPerSample = 0;  /* bits per sample */
     uint32_t wFmtSize;
     uint16_t wExtSize = 0;    /* extended field for non-PCM */
 
@@ -969,6 +969,11 @@ static int startread(sox_format_t * ft)
         break;
 
     default:
+        if (ft->encoding.bits_per_sample == 0)
+        {
+            lsx_fail_errno(ft, SOX_EHDR, "WAV file bits per sample is zero");
+            return SOX_EOF;
+        }
         wav->numSamples = div_bits(qwDataLength, ft->encoding.bits_per_sample) / ft->signal.channels;
         ft->signal.length = wav->numSamples * ft->signal.channels;
     }
