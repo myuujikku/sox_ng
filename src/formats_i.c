@@ -358,10 +358,18 @@ static uint8_t const cswap[256] = {
   size_t lsx_read_ ## type ## _buf( \
       sox_format_t * ft, ctype *buf, size_t len) \
   { \
-    size_t n, nread; \
-    nread = lsx_readbuf(ft, buf, len * size) / size; \
+    size_t n, bytesread, nread, spill; \
+    sox_uint8_t *rawbuf = (sox_uint8_t*)buf; \
+    for (n = 0; n < ft->spill_size; n++) \
+      rawbuf[n] = ft->spill[n]; \
+    bytesread = lsx_readbuf(ft, buf + ft->spill_size, len * size - ft->spill_size) + ft->spill_size; \
+    nread = bytesread / size; \
     for (n = 0; n < nread; n++) \
       twiddle(buf[n], type); \
+    spill = bytesread - nread * size; \
+    for (n = 0; n < spill; n++) \
+      ft->spill[n] = rawbuf[nread * size + n]; \
+    ft->spill_size = spill; \
     return nread; \
   }
 
@@ -376,13 +384,20 @@ static uint8_t const cswap[256] = {
   size_t lsx_read_ ## type ## _buf( \
       sox_format_t * ft, ctype *buf, size_t len) \
   { \
-    size_t n, nread; \
+    size_t n, bytesread, nread, spill; \
     uint8_t *data = lsx_malloc(size * len); \
-    nread = lsx_readbuf(ft, data, len * size) / size; \
+    for (n = 0; n < ft->spill_size; n++) \
+      data[n] = ft->spill[n]; \
+    bytesread = lsx_readbuf(ft, data + ft->spill_size, len * size) + ft->spill_size; \
+    nread = bytesread / size; \
     for (n = 0; n < nread; n++) \
       buf[n] = sox_unpack ## size(data + n * size); \
+    spill = bytesread - nread * size; \
+    for (n = 0; n < spill; n++) \
+      ft->spill[n] = data[nread * size + n]; \
+    ft->spill_size = spill; \
     free(data); \
-    return n; \
+    return nread; \
   }
 
 READ_FUNC(b, 1, uint8_t, TWIDDLE_BYTE)

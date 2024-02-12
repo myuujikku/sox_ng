@@ -1561,6 +1561,8 @@ struct sox_format_t {
   sox_uint64_t     data_start;      /**< Offset at which headers end and sound data begins (set by lsx_check_read_params) */
   sox_format_handler_t handler;     /**< Format handler for this file */
   void             * priv;          /**< Format handler's private data area */
+  sox_uint8_t      spill[8];
+  int              spill_size;
 };
 
 /**
