@@ -362,7 +362,7 @@ static uint8_t const cswap[256] = {
     sox_uint8_t *rawbuf = (sox_uint8_t*)buf; \
     for (n = 0; n < ft->spill_size; n++) \
       rawbuf[n] = ft->spill[n]; \
-    bytesread = lsx_readbuf(ft, buf + ft->spill_size, len * size - ft->spill_size) + ft->spill_size; \
+    bytesread = lsx_readbuf(ft, rawbuf + ft->spill_size, len * size - ft->spill_size) + ft->spill_size; \
     nread = bytesread / size; \
     for (n = 0; n < nread; n++) \
       twiddle(buf[n], type); \
