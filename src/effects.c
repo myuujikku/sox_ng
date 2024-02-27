@@ -165,6 +165,7 @@ int sox_add_effect(sox_effects_chain_t * chain, sox_effect_t * effp, sox_signali
   }
   if (ret != SOX_SUCCESS) {
     free(eff0.priv);
+    effp->priv = NULL; /* Avoid bad calls to free in sox_delete_effect */
     return SOX_EOF;
   }
   if (in->mult)
