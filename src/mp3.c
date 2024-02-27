@@ -288,16 +288,10 @@ static const char* const lame_library_names[] =
   LAME_FUNC(f,x, int, lame_close, (lame_global_flags *)) \
   LAME_FUNC(f,x, size_t, lame_get_lametag_frame, (const lame_global_flags *, unsigned char*, size_t)) \
   LAME_FUNC_ID3(f,x, void, id3tag_init, (lame_global_flags *)) \
-  LAME_FUNC_ID3(f,x, void, id3tag_set_title, (lame_global_flags *, const char* title)) \
-  LAME_FUNC_ID3(f,x, void, id3tag_set_artist, (lame_global_flags *, const char* artist)) \
-  LAME_FUNC_ID3(f,x, void, id3tag_set_album, (lame_global_flags *, const char* album)) \
-  LAME_FUNC_ID3(f,x, void, id3tag_set_year, (lame_global_flags *, const char* year)) \
-  LAME_FUNC_ID3(f,x, void, id3tag_set_comment, (lame_global_flags *, const char* comment)) \
-  LAME_FUNC_ID3(f,x, int, id3tag_set_track, (lame_global_flags *, const char* track)) \
-  LAME_FUNC_ID3(f,x, int, id3tag_set_genre, (lame_global_flags *, const char* genre)) \
   LAME_FUNC_ID3(f,x, size_t, id3tag_set_pad, (lame_global_flags *, size_t)) \
   LAME_FUNC_ID3(f,x, size_t, lame_get_id3v2_tag, (lame_global_flags *, unsigned char*, size_t)) \
-  LAME_FUNC_ID3(f,x, int, id3tag_set_fieldvalue, (lame_global_flags *, const char *))
+  LAME_FUNC_ID3(f,x, int, id3tag_set_fieldvalue, (lame_global_flags *, const char *)) \
+  LAME_FUNC_ID3(f,x, int, id3tag_set_fieldvalue_utf16, (lame_global_flags *, const unsigned short *))
 
 #ifdef HAVE_TWOLAME_H
 static const char* const twolame_library_names[] =
@@ -1060,26 +1054,15 @@ static void msgf(const char* fmt, va_list va)
 
 UNUSED static void id3tag_init_stub(lame_global_flags * gfp UNUSED)
   { return; }
-UNUSED static void id3tag_set_title_stub(lame_global_flags * gfp UNUSED, const char* title UNUSED)
-  { return; }
-UNUSED static void id3tag_set_artist_stub(lame_global_flags * gfp UNUSED, const char* artist UNUSED)
-  { return; }
-UNUSED static void id3tag_set_album_stub(lame_global_flags * gfp UNUSED, const char* album UNUSED)
-  { return; }
-UNUSED static void id3tag_set_year_stub(lame_global_flags * gfp UNUSED, const char* year UNUSED)
-  { return; }
-UNUSED static void id3tag_set_comment_stub(lame_global_flags * gfp UNUSED, const char* comment UNUSED)
-  { return; }
-UNUSED static void id3tag_set_track_stub(lame_global_flags * gfp UNUSED, const char* track UNUSED)
-  { return; }
-UNUSED static int id3tag_set_genre_stub(lame_global_flags * gfp UNUSED, const char* genre UNUSED)
-  { return 0; }
 UNUSED static size_t id3tag_set_pad_stub(lame_global_flags * gfp UNUSED, size_t n UNUSED)
   { return 0; }
 UNUSED static size_t lame_get_id3v2_tag_stub(lame_global_flags * gfp UNUSED, unsigned char * buffer UNUSED, size_t size UNUSED)
   { return 0; }
 UNUSED static int id3tag_set_fieldvalue_stub(lame_global_flags * gfp UNUSED, const char *fieldvalue UNUSED)
   { return 0; }
+UNUSED static int id3tag_set_fieldvalue_utf16_stub(lame_global_flags * gfp UNUSED, const unsigned short *fieldvalue UNUSED)
+  { return 0; }
+
 
 static int get_id3v2_tag_size(sox_format_t * ft)
 {
