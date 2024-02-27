@@ -15,9 +15,11 @@
 #cmakedefine HAVE_GETTIMEOFDAY        1
 #cmakedefine HAVE_GLOB_H              1
 #define HAVE_GSM                      1
+#cmakedefine HAVE_ICONV               1
 #cmakedefine HAVE_ID3TAG              1
 #cmakedefine HAVE_INTTYPES_H          1
 #cmakedefine HAVE_IO_H                1
+#cmakedefine HAVE_LAME_ID3TAG         1
 #cmakedefine HAVE_LAME_LAME_H         1
 #cmakedefine HAVE_LAME_SET_VBR_QUALITY 1
 #define HAVE_LPC10                    1

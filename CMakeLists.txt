@@ -169,6 +169,14 @@ endif (HAVE_LAME_LAME_H OR HAVE_MAD_H OR HAVE_MPG123_H)
 
 set(CMAKE_REQUIRED_LIBRARIES mp3lame m)
 check_function_exists("lame_set_VBR_quality" HAVE_LAME_SET_VBR_QUALITY)
+check_function_exists("id3tag_set_fieldvalue" HAVE_LAME_ID3TAG)
+
+if (HAVE_LAME_LAME_H AND (NOT WIN32))
+  check_library_exists(iconv iconv "" HAVE_ICONV)
+  if (HAVE_ICONV)
+    set(optional_libs ${optional_libs} iconv)
+  endif (HAVE_ICONV)
+endif (HAVE_LAME_LAME_H AND (NOT WIN32))
 
 if (HAVE_SUN_AUDIOIO_H OR HAVE_SYS_AUDIOIO_H)
   set(HAVE_SUN_AUDIO 1)
