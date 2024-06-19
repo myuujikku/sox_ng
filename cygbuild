@@ -83,7 +83,7 @@ fi
 
 make -s all pdf txt || exit 1
 
-dir=sox-`grep Version: sox.pc | cut -d ' ' -f 2`
+dir=sox_ng-`grep Version: sox_ng.pc | cut -d ' ' -f 2`
 rm -rf $dir $dir-cygwin32.zip
 mkdir -p $dir
 
@@ -92,7 +92,7 @@ for f in ChangeLog LICENSE.GPL README README.win32; do
   unix2dos $dir/$f.txt
 done
 
-binaries=src/sox
+binaries=src/sox_ng
 
 [ ! -r "../wget-1.11.4/wget.exe" -a -r /usr/bin/wget ] && binaries+=" /usr/bin/wget"
 
@@ -101,9 +101,9 @@ binaries=$(for f in `cygcheck $binaries|dos2unix`
 
 cp -p \
   $binaries \
-  sox.pdf \
-  soxformat.pdf \
-  soxi.pdf \
+  sox_ng.pdf \
+  soxformat_ng.pdf \
+  soxi_ng.pdf \
   scripts/batch-example.bat \
   $dir
 

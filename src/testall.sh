@@ -2,14 +2,14 @@ bindir="."
 srcdir="."
 effect=""
 
-if [ -f ./sox.exe ] ; then
+if [ -f ./sox_ng.exe ] ; then
   EXEEXT=".exe"
 else
   EXEEXXT=""
 fi
 
 # Allow user to override paths.  Useful for testing an installed
-# sox.
+# sox_ng.
 while [ $# -ne 0 ]; do
     case "$1" in
         --bindir=*)
@@ -42,8 +42,8 @@ t() {
 	opts="$*"
 
 	echo "Format: $format   Options: $opts"
-	${bindir}/sox${EXEEXT} ${srcdir}/monkey.wav $opts /tmp/monkey.$format $effect
-	${bindir}/sox${EXEEXT} $opts /tmp/monkey.$format /tmp/monkey1.wav  $effect
+	${bindir}/sox_ng${EXEEXT} ${srcdir}/monkey.wav $opts /tmp/monkey.$format $effect
+	${bindir}/sox_ng${EXEEXT} $opts /tmp/monkey.$format /tmp/monkey1.wav  $effect
 }
 t 8svx
 t aiff

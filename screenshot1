@@ -1,6 +1,6 @@
 
- $ sox track1.wav track1-processed.flac remix - norm -3 highpass 22
- gain -3 rate 48k norm -3 dither
+ $ sox_ng -V3 track1.wav track1-processed.flac remix - norm -3 highpass 22 \
+   gain -3 rate 48k norm -3 dither
 
  Input File     : 'track1.wav'
  Channels       : 2
@@ -17,17 +17,17 @@
  Duration       : 00:02:54.97 = 8398720 samples ~ 13123 CDDA sectors
  Sample Encoding: 16-bit FLAC
 
- sox: effects chain: input      44100Hz 2 channels 16 bits (multi)
- sox: effects chain: remix      44100Hz 2 channels 16 bits (multi)
- sox: effects chain: norm       44100Hz 1 channels 16 bits
- sox: effects chain: highpass   44100Hz 1 channels 16 bits
- sox: effects chain: gain       44100Hz 1 channels 16 bits (multi)
- sox: effects chain: rate       44100Hz 1 channels 16 bits
- sox: effects chain: norm       48000Hz 1 channels 16 bits
- sox: effects chain: dither     48000Hz 1 channels 16 bits
- sox: effects chain: output     48000Hz 1 channels 16 bits (multi)
+ sox_ng: effects chain: input      44100Hz 2 channels 16 bits (multi)
+ sox_ng: effects chain: remix      44100Hz 2 channels 16 bits (multi)
+ sox_ng: effects chain: norm       44100Hz 1 channels 16 bits
+ sox_ng: effects chain: highpass   44100Hz 1 channels 16 bits
+ sox_ng: effects chain: gain       44100Hz 1 channels 16 bits (multi)
+ sox_ng: effects chain: rate       44100Hz 1 channels 16 bits
+ sox_ng: effects chain: norm       48000Hz 1 channels 16 bits
+ sox_ng: effects chain: dither     48000Hz 1 channels 16 bits
+ sox_ng: effects chain: output     48000Hz 1 channels 16 bits (multi)
 
- $ play *.ogg
+ $ play_ng *.ogg
 
  01 - Summer's Cauldron.ogg:
 

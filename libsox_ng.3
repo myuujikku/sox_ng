@@ -29,12 +29,12 @@
 .SP
 .fi
 ..
-.TH SoX 3 "February 19, 2011" "libsox" "Sound eXchange"
+.TH SoX 3 "February 19, 2011" "libsox_ng" "Sound eXchange_ng"
 .SH NAME
-libsox \- SoX, an audio file-format and effect library
+libsox_ng \- SoX, another audio file-format and effect library
 .SH SYNOPSIS
 .nf
-.B #include <sox.h>
+.B #include <sox_ng.h>
 .P
 .B int sox_format_init(void);
 .P
@@ -67,7 +67,7 @@ libsox \- SoX, an audio file-format and effect library
 .B cc \fIfile.c\fB -o \fIfile \fB-lsox
 .fi
 .SH DESCRIPTION
-.I libsox
+.I libsox_ng
 is a library of sound sample file format readers/writers and sound
 effects processors. It is mainly developed for use by SoX but is
 useful for any sound application.
@@ -162,7 +162,7 @@ can often just deal with the header and then use raw.c's routines
 for reading and writing.
 
 example0.c and example1.c are a good starting point to see how
-to write applications using libsox.  sox.c itself is also a good
+to write applications using libsox_ng.  sox_ng.c itself is also a good
 reference.
 
 .SH RETURN VALUE
@@ -352,23 +352,23 @@ is called to allow resources allocated by
 to be released.
 See pad.c for an example.
 .SH LINKING
-The method of linking against libsox depends on how SoX was
+The method of linking against libsox_ng depends on how SoX was
 built on your system. For a static build, just link against the
 libraries as normal. For a dynamic build, you should use libtool to
 link with the correct linker flags. See the libtool manual for
 details; basically, you use it as:
 .EX
-   libtool \-\-mode=link gcc \-o prog /path/to/libsox.la
+   libtool \-\-mode=link gcc \-o prog /path/to/libsox_ng.la
 .EE
 .SH BUGS
 This manual page is both incomplete and out of date.
 .SH SEE ALSO
-.BR sox (1),
-.BR soxformat (7)
+.BR sox_ng (1),
+.BR soxformat_ng (7)
 .SP
 example*.c in the SoX source distribution.
 .SH LICENSE
-Copyright 1998\-2011 by Chris Bagwell and SoX Contributors.
+Copyright 1998\-2011 by Chris Bagwell and SoX and SoX Contributors.
 .br
 Copyright 1991 Lance Norskog and Sundry Contributors.
 .SP

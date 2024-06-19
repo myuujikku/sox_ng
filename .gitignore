@@ -21,7 +21,7 @@ sox*.tar.gz
 *.txt
 *.pdf
 *.html
-sox.pc
+sox_ng.pc
 README
 Docs.Features
 

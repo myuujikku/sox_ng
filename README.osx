@@ -1,23 +1,23 @@
 SoX
----
+------
 
 This file contains information specific to the MacOS X version of SoX.
 Please refer to the README file for general information.
 
-The sox executable can be installed anywhere you desire.  It is a
+The sox_ng executable can be installed anywhere you desire.  It is a
 self-contained statically linked executable.
 
-If the sox executable is invoked with an executable name of soxi, play,
-or rec it will perform the functions of those applications as defined
+If the sox_ng executable is invoked with an executable name of soxi_ng, play_ng,
+or rec_ng it will perform the functions of those applications as defined
 in included documents.  Symlinks are included with this package
 but you can also make your own.
 
 Acknowledgements
 ----------------
 
-The sox exectables included in this package makes use of the following projects:
+The sox_ng exectables included in this package makes use of the following projects:
 
-  SoX - http://sox.sourceforge.net
+  SoX - https://codeberg.org/sox_ng
 
   FLAC - http://flac.sourceforge.net
 
@@ -36,7 +36,7 @@ The sox exectables included in this package makes use of the following projects:
   WavPack - http://www.wavpack.com
 
 Enjoy,
-The SoX Development Team
+The SoX and SoX Development Teams
 
 Appendix - wget Support
 -----------------------

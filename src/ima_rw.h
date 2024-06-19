@@ -17,7 +17,7 @@
 
 */
 
-#include "sox.h"
+#include "sox_ng.h"
 
 #ifndef SAMPL
 #define SAMPL short

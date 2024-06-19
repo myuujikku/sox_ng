@@ -6,7 +6,7 @@ includedir=@includedir@
 Name: SoX
 Description: Audio file format and effects library
 Version: @VERSION@
-URL: http://sox.sourceforge.net
-Libs: -L${libdir} -lsox
+URL: https://codeberg.org/sox_ng
+Libs: -L${libdir} -lsox_ng
 Libs.private: @LIBS@
 Cflags: -I${includedir}

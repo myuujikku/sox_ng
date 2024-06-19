@@ -73,10 +73,10 @@ lsx_enum_item const * lsx_find_enum_text(char const * text, lsx_enum_item const 
   sox_bool sensitive = !!(flags & lsx_find_enum_item_case_sensitive);
 
   while (enum_items->text) {
-    if ((!sensitive && !strcasecmp(text, enum_items->text)) ||
+    if ((!sensitive && !lsx_strcasecmp(text, enum_items->text)) ||
         ( sensitive && !    strcmp(text, enum_items->text)))
       return enum_items;    /* Found exact match */
-    if ((!sensitive && !strncasecmp(text, enum_items->text, strlen(text))) ||
+    if ((!sensitive && !lsx_strncasecmp(text, enum_items->text, strlen(text))) ||
         ( sensitive && !    strncmp(text, enum_items->text, strlen(text)))) {
       if (result != NULL && result->value != enum_items->value)
         return NULL;        /* Found ambiguity */

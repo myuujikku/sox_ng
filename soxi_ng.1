@@ -29,17 +29,17 @@
 .SP
 .fi
 ..
-.TH SoXI 1 "February 1, 2013" "soxi" "Sound eXchange"
+.TH SoXI_ng 1 "February 1, 2013" "soxi_ng" "Sound eXchange_ng"
 .SH NAME
-SoXI \- Sound eXchange Information, display sound file metadata
+SoXI_ng \- Sound eXchange Information, display sound file metadata
 .SH SYNOPSIS
-\fBsoxi\fR [\fB\-V\fR[\fIlevel\fR]] [\fB\-T\fR] [\fB\-t\fR\^|\^\fB\-r\fR\^|\^\fB\-c\fR\^|\^\fB\-s\fR\^|\^\fB\-d\fR\^|\^\fB\-D\fR\^|\^\fB\-b\fR\^|\^\fB\-B\fR\^|\^\fB\-p\fR\^|\^\fB\-e\fR\^|\^\fB\-a\fR] \fIinfile1\fR ...
+\fBsoxi_ng\fR [\fB\-V\fR[\fIlevel\fR]] [\fB\-T\fR] [\fB\-t\fR\^|\^\fB\-r\fR\^|\^\fB\-c\fR\^|\^\fB\-s\fR\^|\^\fB\-d\fR\^|\^\fB\-D\fR\^|\^\fB\-b\fR\^|\^\fB\-B\fR\^|\^\fB\-p\fR\^|\^\fB\-e\fR\^|\^\fB\-a\fR] \fIinfile1\fR ...
 .SH DESCRIPTION
 Displays information from the header of a given audio file or files.
 Supported audio file types are listed and described in
-.BR soxformat (7).
+.BR soxformat_ng (7).
 Note however, that
-.B soxi
+.B soxi_ng
 is intended for use only with audio files with a self-describing header.
 .SP
 By default, as much information as is available is shown.
@@ -49,7 +49,7 @@ An option may be given to select just a single piece of information
 .TP
 \fB\-V\fR
 Set verbosity. See
-.BR sox (1)
+.BR sox_ng (1)
 for details.
 .TP
 \fB\-T\fR
@@ -98,15 +98,16 @@ Show the name of the audio encoding.
 Show file comments (annotations) if available.
 .SH BUGS
 Please report any bugs found in this version of SoX to the mailing list
-(sox-users@lists.sourceforge.net).
+(~sox_ng/users@list.sr.ht)
 .SH SEE ALSO
-.BR sox (1),
-.BR soxformat (7),
-.BR libsox (3)
+.BR sox_ng (1),
+.BR soxformat_ng (7),
+.BR libsox_ng (3)
 .SP
-The SoX web site at http://sox.sourceforge.net
+The SoX web site at https://codeberg.org/sox_ng
+.br
 .SH LICENSE
-Copyright 2008\-2013 by Chris Bagwell and SoX Contributors.
+Copyright 2008\-2013 by Chris Bagwell and SoX and SoX Contributors.
 .SP
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

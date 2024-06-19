@@ -14,7 +14,7 @@
 #define SOX_I_H
 
 #include "soxomp.h"  /* Note: soxomp.h includes soxconfig.h */
-#include "sox.h"
+#include "sox_ng.h"
 
 #if defined HAVE_FMEMOPEN
 #define _GNU_SOURCE
@@ -199,7 +199,7 @@ int lsx_error(sox_format_t * ft);
 int lsx_flush(sox_format_t * ft);
 int lsx_seeki(sox_format_t * ft, off_t offset, int whence);
 int lsx_unreadb(sox_format_t * ft, unsigned ub);
-/* uint64_t lsx_filelength(sox_format_t * ft); Temporarily Moved to sox.h. */
+/* uint64_t lsx_filelength(sox_format_t * ft); Temporarily Moved to sox_ng.h. */
 off_t lsx_tell(sox_format_t * ft);
 void lsx_clearerr(sox_format_t * ft);
 void lsx_rewind(sox_format_t * ft);

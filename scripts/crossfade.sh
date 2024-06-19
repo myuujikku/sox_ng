@@ -34,7 +34,7 @@
 # more examples of sox features.
 #
 
-SOX=../src/sox
+SOX=../src/sox_ng
 
 if [ "$3" == "" ]; then
     echo "Usage: $0 crossfade_seconds first_file second_file [ fadeout ] [ fadein ]"

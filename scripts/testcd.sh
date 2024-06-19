@@ -34,7 +34,7 @@ VOL=""
 OFT=".wav"
 
 #our binary
-SOX=../src/sox
+SOX=../src/sox_ng
 
 # filenameprefix
 if  [ "$1" = "" ] ; then

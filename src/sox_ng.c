@@ -1,7 +1,7 @@
 /* SoX - The Swiss Army Knife of Audio Manipulation.
  *
  * This is the main function for the SoX command line programs:
- *   sox, play, rec, soxi.
+ *   sox_ng, play_ng, rec_ng, soxi_ng.
  *
  * Copyright 1998-2009 Chris Bagwell and SoX contributors
  * Copyright 1991 Lance Norskog And Sundry Contributors
@@ -22,7 +22,7 @@
  */
 
 #include "soxconfig.h"
-#include "sox.h"
+#include "sox_ng.h"
 #include "util.h"
 
 #include <ctype.h>
@@ -2731,7 +2731,7 @@ static void soxi_usage(int return_code)
   display_SoX_version(stdout);
   printf(
     "\n"
-    "Usage: soxi [-V[level]] [-T] [-t|-r|-c|-s|-d|-D|-b|-B|-p|-e|-a] infile1 ...\n"
+    "Usage: soxi_ng [-V[level]] [-T] [-t|-r|-c|-s|-d|-D|-b|-B|-p|-e|-a] infile1 ...\n"
     "\n"
     "-V[n]\tIncrement or set verbosity level (default is 2)\n"
     "-T\tWith -s, -d or -D, display the total across all given files\n"
@@ -2859,11 +2859,11 @@ int main(int argc, char **argv)
 
   if (0 != sox_basename(mybase, sizeof(mybase), myname))
   {
-    if (0 == lsx_strcasecmp(mybase, "play"))
+    if (0 == lsx_strncasecmp(mybase, "play", 4))
       sox_mode = sox_play;
-    else if (0 == lsx_strcasecmp(mybase, "rec"))
+    else if (0 == lsx_strncasecmp(mybase, "rec", 3))
       sox_mode = sox_rec;
-    else if (0 == lsx_strcasecmp(mybase, "soxi"))
+    else if (0 == lsx_strncasecmp(mybase, "soxi", 4))
       sox_mode = sox_soxi;
   }
 

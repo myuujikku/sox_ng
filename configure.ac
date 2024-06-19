@@ -2,7 +2,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.62)
 
-AC_INIT(SoX, 14.4.2, sox-devel@lists.sourceforge.net)
+AC_INIT(sox_ng, 14.4.2, u.sox_ng.devel-devel@lists.sr.ht)
 
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -16,7 +16,7 @@ dnl create a config.h file (Automake will add -DHAVE_CONFIG_H)
 AC_CONFIG_HEADERS([src/soxconfig.h])
 
 dnl Check we have the right srcdir
-AC_CONFIG_SRCDIR(sox.1)
+AC_CONFIG_SRCDIR(sox_ng.1)
 
 dnl Checks for programs.
 AC_PROG_CC
@@ -646,7 +646,7 @@ AC_OPTIONAL_FORMAT(lpc10, LPC10)
 dnl Check if we want to disable all symlinks
 AC_MSG_CHECKING([whether to enable symlinks])
 AC_ARG_ENABLE(symlinks,
-    AS_HELP_STRING([--disable-symlinks], [Don't make any symlinks to sox.]),,enable_symlinks=yes)
+    AS_HELP_STRING([--disable-symlinks], [Don't make any symlinks to sox_ng.]),,enable_symlinks=yes)
 AC_MSG_RESULT($enable_symlinks)
 
 enable_playrec_symlinks=no
@@ -670,7 +670,7 @@ AC_SUBST(PLAYRECLINKS)
 AM_CONDITIONAL(STATIC_LIBSOX_ONLY, test "$enable_shared" = "no" -a "$enable_static" = "yes")
 
 dnl Generate output files.
-AC_CONFIG_FILES(Makefile src/Makefile libgsm/Makefile lpc10/Makefile msvc9/Makefile msvc10/Makefile sox.pc)
+AC_CONFIG_FILES(Makefile src/Makefile libgsm/Makefile lpc10/Makefile msvc9/Makefile msvc10/Makefile sox_ng.pc)
 AC_OUTPUT
 
 if test "$using_gsm" != "no"; then

@@ -29,13 +29,13 @@
 .SP
 .fi
 ..
-.TH SoX 7 "December 31, 2014" "soxformat" "Sound eXchange"
+.TH SoX 7 "December 31, 2014" "soxformat_ng" "Sound eXchange_ng"
 .SH NAME
-SoX \- Sound eXchange, the Swiss Army knife of audio manipulation
+SoX \- Sound eXchange_ng, another Swiss Army knife of audio manipulation
 .SH DESCRIPTION
 This manual describes SoX supported file formats and audio device types;
 the SoX manual set starts with
-.BR sox (1).
+.BR sox_ng (1).
 .SP
 Format types that can SoX can determine by a filename
 extension are listed with their names preceded by a dot.
@@ -51,10 +51,10 @@ readers and writers, and there's an external reader or writer for that
 format.
 .SP
 To see if SoX has support for an optional format or device, enter
-.B sox \-h
+.B sox_ng \-h
 and look for its name under the list:
 `AUDIO FILE FORMATS' or `AUDIO DEVICE DRIVERS'.
-.SS SOX FORMATS & DEVICE DRIVERS
+.SS SOX_NG FORMATS & DEVICE DRIVERS
 \&\fB.raw\fR (also with \fB\-t sndfile\fR),
 \&\fB.f32\fR, \fB.f64\fR,
 \&\fB.s8\fR, \fB.s16\fR, \fB.s24\fR, \fB.s32\fR,
@@ -143,16 +143,16 @@ Advanced Linux Sound Architecture device driver; supports both playing and
 recording audio.  ALSA is only used in Linux-based operating systems, though
 these often support OSS (see below) as well.  Examples:
 .EX
-	sox infile \-t alsa
-	sox infile \-t alsa default
-	sox infile \-t alsa plughw:0,0
-	sox \-b 16 \-t alsa hw:1 outfile
+	sox_ng infile \-t alsa
+	sox_ng infile \-t alsa default
+	sox_ng infile \-t alsa plughw:0,0
+	sox_ng \-b 16 \-t alsa hw:1 outfile
 .EE
 See also
-.BR play (1),
-.BR rec (1),
+.BR play_ng (1),
+.BR rec_ng (1),
 and
-.BR sox (1)
+.BR sox_ng (1)
 .BR \-d .
 .TP
 .B .amb
@@ -197,14 +197,14 @@ doesn't give the desired behavior then you can specify the short name
 for a given plugin (such as \fBpulse\fR for pulse audio plugin).
 Examples:
 .EX
-	sox infile \-t ao
-	sox infile \-t ao default
-	sox infile \-t ao pulse
+	sox_ng infile \-t ao
+	sox_ng infile \-t ao default
+	sox_ng infile \-t ao pulse
 .EE
 See also
-.BR play (1)
+.BR play_ng (1)
 and
-.BR sox (1)
+.BR sox_ng (1)
 .BR \-d .
 .TP
 \&\fB.au\fR, \fB.snd\fR (also with \fB\-t sndfile\fR)
@@ -251,15 +251,15 @@ System Preferences->Sound menu and then under the Output and Input tabs.
 
 Examples:
 .EX
-	sox infile \-t coreaudio
-	sox infile \-t coreaudio default
-	sox infile \-t coreaudio "Internal Speakers"
+	sox_ng infile \-t coreaudio
+	sox_ng infile \-t coreaudio default
+	sox_ng infile \-t coreaudio "Internal Speakers"
 .EE
 See also
-.BR play (1),
-.BR rec (1),
+.BR play_ng (1),
+.BR rec_ng (1),
 and
-.BR sox (1)
+.BR sox_ng (1)
 .BR \-d .
 .TP
 \&\fB.cvsd\fR, \fB.cvs\fR
@@ -274,7 +274,7 @@ Continuously Variable Slope Delta modulation (unfiltered).
 This is an alternative handler for CVSD that is unfiltered but can
 be used with any bit-rate.  E.g.
 .EX
-	sox infile outfile.cvu rate 28k
+	sox_ng infile outfile.cvu rate 28k
 	play \-r 28k outfile.cvu sinc \-3.4k
 .EE
 .TP
@@ -332,7 +332,7 @@ best (but slowest) compression; 0 gives the least (but fastest)
 compression.  The compression level is selected using the
 .B \-C
 option [see
-.BR sox (1)]
+.BR sox_ng (1)]
 with a whole number from 0 to 8.
 .TP
 .B .fssd
@@ -346,7 +346,7 @@ Whilst this file format can contain A-Law, \(*m-law, GSM, G.722,
 G.723, G.726, G.728, or iLBC encoded audio, SoX supports reading and
 writing only A-Law and \(*m-law.  E.g.
 .EX
-   sox music.wav \-t gsrt ring.bin
+   sox_ng music.wav \-t gsrt ring.bin
    play ring.bin
 .EE
 .TP
@@ -489,15 +489,15 @@ Open Sound System /dev/dsp device driver; supports both playing and
 recording audio.  OSS support is available in Unix-like operating systems,
 sometimes together with alternative sound systems (such as ALSA).  Examples:
 .EX
-	sox infile \-t oss
-	sox infile \-t oss /dev/dsp
-	sox \-b 16 \-t oss /dev/dsp outfile
+	sox_ng infile \-t oss
+	sox_ng infile \-t oss /dev/dsp
+	sox_ng \-b 16 \-t oss /dev/dsp outfile
 .EE
 See also
-.BR play (1),
-.BR rec (1),
+.BR play_ng (1),
+.BR rec_ng (1),
 and
-.BR sox (1)
+.BR sox_ng (1)
 .BR \-d .
 .TP
 \&\fB.paf\fR, \fB.fap\fR (optional)
@@ -534,14 +534,14 @@ PulseAudio driver; supports both playing and recording of audio.
 PulseAudio is a cross platform networked sound server.  
 If a file name is specified with this driver, it is ignored.  Examples:
 .EX
-	sox infile \-t pulseaudio
-	sox infile \-t pulseaudio default
+	sox_ng infile \-t pulseaudio
+	sox_ng infile \-t pulseaudio default
 .EE
 See also
-.BR play (1),
-.BR rec (1),
+.BR play_ng (1),
+.BR rec_ng (1),
 and
-.BR sox (1)
+.BR sox_ng (1)
 .BR \-d .
 .TP
 \&\fB.pvf\fR (optional)
@@ -594,13 +594,13 @@ them, it is deduced from the file.
 \fBsndio\fR (optional)
 OpenBSD audio device driver; supports both playing and recording audio.
 .EX
-	sox infile \-t sndio
+	sox_ng infile \-t sndio
 .EE
 See also
-.BR play (1),
-.BR rec (1),
+.BR play_ng (1),
+.BR rec_ng (1),
 and
-.BR sox (1)
+.BR sox_ng (1)
 .BR \-d .
 .TP
 .B .sndr
@@ -628,7 +628,7 @@ default) as `native endian', and the number of samples in the file is
 recorded as a 64-bit integer.  Comments are also supported.
 .SP
 See `Special Filenames' in
-.BR sox (1)
+.BR sox_ng (1)
 for examples of using the
 .B .sox
 format with `pipes'.
@@ -637,19 +637,19 @@ format with `pipes'.
 Sun /dev/audio device driver; supports both playing and
 recording audio.  For example:
 .EX
-	sox infile \-t sunau /dev/audio
+	sox_ng infile \-t sunau /dev/audio
 .EE
 or
 .EX
-	sox infile \-t sunau \-e mu-law \-c 1 /dev/audio
+	sox_ng infile \-t sunau \-e mu-law \-c 1 /dev/audio
 .EE
 for older sun equipment.
 .SP
 See also
-.BR play (1),
-.BR rec (1),
+.BR play_ng (1),
+.BR rec_ng (1),
 and
-.BR sox (1)
+.BR sox_ng (1)
 .BR \-d .
 .TP
 .B .txw
@@ -689,7 +689,7 @@ and/or DC offset problems when it comes to decoding the audio.  Whilst
 little can be done about the clipping, a DC offset can be removed by
 passing the decoded audio through a high-pass filter, e.g.:
 .EX
-	sox input.vox output.wav highpass 10
+	sox_ng input.vox output.wav highpass 10
 .EE
 .TP
 \&\fB.w64\fR (optional)
@@ -722,10 +722,10 @@ option with the output file options.
 \fBwaveaudio\fR (optional)
 MS-Windows native audio device driver.  Examples:
 .EX
-	sox infile \-t waveaudio
-	sox infile \-t waveaudio default
-	sox infile \-t waveaudio 1
-	sox infile \-t waveaudio "High Definition Audio Device ("
+	sox_ng infile \-t waveaudio
+	sox_ng infile \-t waveaudio default
+	sox_ng infile \-t waveaudio 1
+	sox_ng infile \-t waveaudio "High Definition Audio Device ("
 .EE
 If the device name is omitted, \fB-1\fR, or \fBdefault\fR, then you
 get the `Microsoft Wave Mapper' device.  Wave Mapper means `use the
@@ -743,10 +743,10 @@ to match it (maximum 31 characters) against the names of the available
 devices.
 .SP
 See also
-.BR play (1),
-.BR rec (1),
+.BR play_ng (1),
+.BR rec_ng (1),
 and
-.BR sox (1)
+.BR sox_ng (1)
 .BR \-d .
 .TP
 .B .wavpcm
@@ -764,7 +764,7 @@ detect and read WAV files with the non-standard header.)
 The most common use of this file-type is likely to be along the following
 lines:
 .EX
-	sox infile.any \-t wavpcm \-e signed-integer outfile.wav
+	sox_ng infile.any \-t wavpcm \-e signed-integer outfile.wav
 .EE
 .TP
 \&\fB.wv\fR (optional)
@@ -787,15 +787,17 @@ difficult.
 \&\fB.xi\fR (optional)
 Fasttracker 2 Extended Instrument format.
 .SH SEE ALSO
-.BR sox (1),
-.BR soxi (1),
-.BR libsox (3),
+.BR sox_ng (1),
+.BR soxi_ng (1),
+.BR libsox_ng (3),
 .BR octave (1),
 .BR wget (1)
 .SP
-The SoX web page at http://sox.sourceforge.net
+The SoX web site at https://codeberg.org/sox_ng
 .br
-SoX scripting examples at http://sox.sourceforge.net/Docs/Scripts
+SoX scripting examples at
+.br
+https://codeberg.org/sox_ng/sox_ng/src/branch/master/scripts
 .SS References
 .TP
 [1]
@@ -808,7 +810,7 @@ Wikipedia,
 .IR "PLS" ,
 http://en.wikipedia.org/wiki/PLS_(file_format)
 .SH LICENSE
-Copyright 1998\-2013 Chris Bagwell and SoX Contributors.
+Copyright 1998\-2013 Chris Bagwell and SoX and SoX Contributors.
 .br
 Copyright 1991 Lance Norskog and Sundry Contributors.
 .SH AUTHORS

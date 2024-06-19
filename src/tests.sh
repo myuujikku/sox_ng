@@ -6,14 +6,14 @@ bindir="."
 builddir="."
 srcdir="."
 
-if [ -f ./sox.exe ] ; then 
+if [ -f ./sox_ng.exe ] ; then 
   EXEEXT=".exe"
 else
   EXEEXT=""
 fi
 
 # Set options & allow user to override paths.  Useful for testing an
-# installed sox.
+# installed sox_ng.
 while [ $# -ne 0 ]; do
     case "$1" in
         -e)
@@ -93,9 +93,9 @@ convertToAndFrom () {
       if [ "${format1_skip}x" = "x" -a "${from_skip}x" = "x" ] ; then
         getFormat ${format1}; format1Ext=$formatExt; format1Text=$formatText; format1Flags=$formatFlags
         getFormat         $1; format2Ext=$formatExt; format2Text=$formatText; format2Flags=$formatFlags
-        execute ${bindir}/sox${EXEEXT} $verbose -RD -r $rate -c $channels -n $format1Flags input.$format1Ext synth $samples's' sin 300-3300 noise trapezium
-        execute ${bindir}/sox${EXEEXT} $verbose -RD -r $rate -c $channels $format1Flags input.$format1Ext $format2Flags intermediate.$format2Ext
-        execute ${bindir}/sox${EXEEXT} $verbose -RD -r $rate -c $channels $format2Flags intermediate.$format2Ext $format1Flags output.$format1Ext
+        execute ${bindir}/sox_ng${EXEEXT} $verbose -RD -r $rate -c $channels -n $format1Flags input.$format1Ext synth $samples's' sin 300-3300 noise trapezium
+        execute ${bindir}/sox_ng${EXEEXT} $verbose -RD -r $rate -c $channels $format1Flags input.$format1Ext $format2Flags intermediate.$format2Ext
+        execute ${bindir}/sox_ng${EXEEXT} $verbose -RD -r $rate -c $channels $format2Flags intermediate.$format2Ext $format1Flags output.$format1Ext
         intermediateReference=vectors/intermediate`echo "$channels $rate $format1Flags $format1Ext $format2Flags"|tr " " "_"`.$format2Ext
 
 	# Uncomment to generate new reference files
@@ -184,7 +184,7 @@ stderr_time () {
 # Reading and writing performance test
 time="/usr/bin/time -p"
 timeIO () {
-  $time ${bindir}/sox${EXEEXT} -c $channels -r $rate -n tmp.sox synth $samples's' saw 0:`expr $rate / 2` noise brown vol .9 2> tmp.write
+  $time ${bindir}/sox_ng${EXEEXT} -c $channels -r $rate -n tmp.sox synth $samples's' saw 0:`expr $rate / 2` noise brown vol .9 2> tmp.write
   echo TIME synth channels=$channels samples=$samples `stderr_time tmp.write`s
   if [ `uname` != SunOS ]; then
     while [ $# != 0 ]; do
@@ -193,8 +193,8 @@ timeIO () {
       fi
       if [ "${from_skip}x" = "x" ] ; then
         getFormat $1;
-        ($time ${bindir}/sox${EXEEXT} $verbose -D tmp.sox $formatFlags -t $1 - 2> tmp.read) | \
-        ($time ${bindir}/sox${EXEEXT} $verbose -t $1 -c $channels -r $rate - -t sox /dev/null 2> tmp.write)
+        ($time ${bindir}/sox_ng${EXEEXT} $verbose -D tmp.sox $formatFlags -t $1 - 2> tmp.read) | \
+        ($time ${bindir}/sox_ng${EXEEXT} $verbose -t $1 -c $channels -r $rate - -t sox /dev/null 2> tmp.write)
         echo "TIME `printf %4s $formatText` write=`stderr_time tmp.write`s read=`stderr_time tmp.read`s"
       fi
       shift
@@ -206,7 +206,7 @@ timeIO () {
 # Don't try to test un-built formats
 skip_check () {
   while [ $# -ne 0 ]; do
-    ${bindir}/sox${EXEEXT} --help|grep "^AUDIO FILE.*\<$1\>">/dev/null || skip="$1 $skip"
+    ${bindir}/sox_ng${EXEEXT} --help|grep "^AUDIO FILE.*\<$1\>">/dev/null || skip="$1 $skip"
     shift
   done
 }
@@ -251,7 +251,7 @@ else
 fi
 fi
 
-${bindir}/sox${EXEEXT} -c 1 -r 44100 -n output.u8 synth .01 vol .5
+${bindir}/sox_ng${EXEEXT} -c 1 -r 44100 -n output.u8 synth .01 vol .5
 if [ `wc -c <output.u8` = 441 ]; then
   echo "ok     synth size"
 else

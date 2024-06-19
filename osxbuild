@@ -74,7 +74,7 @@ fi
 
 make -s all txt || exit 1
 
-dylib_need_to_ship=`otool -L src/sox | grep -v CoreAudio.framework | grep -v libz | grep -v libiconv | grep -v libSystem | grep -v libgcc_s | grep -v src/sox`
+dylib_need_to_ship=`otool -L src/sox_ng | grep -v CoreAudio.framework | grep -v libz | grep -v libiconv | grep -v libSystem | grep -v libgcc_s | grep -v src/sox_ng`
 
 # Make sure we are only relying on OS dynamic libraries.  If not
 # then app won't run unless user's box looks just like this one
@@ -86,7 +86,7 @@ if [ ! "${dylib_need_to_ship}x" = "x" ]; then
     exit 1
 fi
 
-dir=sox-`grep Version: sox.pc | cut -d ' ' -f 2`
+dir=sox_ng-`grep Version: sox_ng.pc | cut -d ' ' -f 2`
 rm -rf $dir $dir-macosx.zip
 mkdir -p $dir
 
@@ -100,20 +100,20 @@ for f in ChangeLog README; do
   cp -p $f $dir/$f
 done
 
-binaries=src/sox
+binaries=src/sox_ng
 
 # TODO: Distribute wget binary
 #[ -r "../wget-1.11.4/wget" ] && binaries+=" ../wget-1.11.4/wget"
 
 cp -p \
   $binaries \
-  sox.txt \
-  soxformat.txt \
-  soxi.txt \
-  libsox.txt \
+  sox_ng.txt \
+  soxformat_ng.txt \
+  soxi_ng.txt \
+  libsox_ng.txt \
   $dir
 
-(cd $dir; ln -s sox soxi; ln -s sox play; ln -s sox rec)
+(cd $dir; ln -s sox_ng soxi_ng; ln -s sox_ng play_ng; ln -s sox_ng rec_ng)
 
 #if test -r "../wget-1.11.4/wget"; then
 #  cp ../wget-1.11.4/wget.ini $dir

@@ -21,7 +21,7 @@
 #undef NDEBUG /* Must undef above assert.h or other that might include it. */
 #endif
 
-#include "sox.h"
+#include "sox_ng.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>

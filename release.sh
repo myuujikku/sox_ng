@@ -2,11 +2,11 @@
 #
 # Before a release:
 # * Update configure.ac, src/soxconfig.h.cmake, and possibly ChangeLog and
-#   src/sox.h (SOX_LIB_VERSION_CODE) to match release #. If this is a
+#   src/sox_ng.h (SOX_LIB_VERSION_CODE) to match release #. If this is a
 #   release candidate, add "rcN" to end of version in configure.ac and
 #   src/soxconfig.h.cmake.
 # * Update date strings and possibly copyright years in man pages.
-# * Tag files to release using following form: git tag sox-14.4.0rc1
+# * Tag files to release using following form: git tag sox_ng-14.4.0rc1
 #
 # Automatable release steps.   Most are optional but default to enabled.
 #
@@ -54,10 +54,10 @@ ignore_changes=no
 short_log=yes
 user=$USER
 remote=origin
-module="sox"
-webpath="sourceforge.net/projects/sox/files"
+module="sox_ng"
+webpath="codeberg.org/sox_ng/sox_ng/packages"
 rcpath=""
-email_list="sox-users@lists.sourceforge.net,sox-devel@lists.sourceforge.net"
+email_list="~sox_ng/users@lists.sr.ht,~sox_ng/devel@lists.sr.ht"
 hostname="shell.sourceforge.net"
 release_path="/home/frs/project/s/so/sox"
 release_force="no"
@@ -299,7 +299,7 @@ fi
 
 create_email > $email_file
 
-username="${user},sox"
+username="${user},sox_ng"
 
 if [ $update_web = "yes" -o $release_files = "yes" ]; then
     echo "Creating shell on sourceforge for $username"

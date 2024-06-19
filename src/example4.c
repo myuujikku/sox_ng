@@ -17,7 +17,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "sox.h"
+#include "sox_ng.h"
 #include <stdio.h>
 
 /* Concatenate audio files.  Note that the files must have the same number

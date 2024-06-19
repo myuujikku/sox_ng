@@ -9,8 +9,8 @@ manually construct a custom `soxconfig.h' and `Makefile' for that
 system (the minimum requirements are 32-bit CPU, 64-bit FPU, C89
 compiler).
 
-Note that the `play', `rec', and `soxi' programs are in fact just
-copies-of or links-to (depending on OS) `sox'.
+Note that the `play_ng', `rec_ng', and `soxi_ng' programs are in fact just
+copies-of or links-to (depending on OS) `sox_ng'.
 
 SoX optionally makes use of some external libraries to obtain support
 for additional file formats and/or effects.  Optional libraries should
@@ -67,7 +67,7 @@ on some systems, the following modification to the command is needed:
 
 	sudo make install
 
-To run a selection of tests on the installed sox executable:
+To run a selection of tests on the installed sox_ng executable:
 
 	make installcheck
 
@@ -182,21 +182,21 @@ MacOS.  In the following example, we'll use .xxx as the extension of
 your preferred format.
 
         cd src
-	./sox monkey.wav monkey.xxx
+	./sox_ng monkey.wav monkey.xxx
 
 You may have to give the word size and rate for the file. For example,
 this command will make a sound file with a data rate of 12,500 samples
 per second and the data formatted as 2-byte (16-bit) signed integers:
 
-	./sox monkey.wav -r 12500 -2 -s monkey.xxx
+	./sox_ng monkey.wav -r 12500 -2 -s monkey.xxx
 
 If playback support was compiled in then it can be played like this:
 
-        ./play monkey.xxx
+        ./play_ng monkey.xxx
 
 or, equivalently:
 
-        ./sox monkey.xxx -d
+        ./sox_ng monkey.xxx -d
 
 If monkey.xxx plays properly (it's a very short monkey screech),
 congratulations! SoX works.

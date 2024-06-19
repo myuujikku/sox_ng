@@ -9,18 +9,18 @@ RM = rm -f
 
 # man pages are not considered to be sources, so need to add "dist_"
 # prefix to ensure they are added to the distribution.
-dist_man_MANS = sox.1 soxi.1 soxformat.7 libsox.3
-EXTRA_DIST = sox.txt soxi.txt soxformat.txt libsox.txt \
-	     CMakeLists.txt sox.pc.in LICENSE.GPL LICENSE.LGPL \
+dist_man_MANS = sox_ng.1 soxi_ng.1 soxformat_ng.7 libsox_ng.3
+EXTRA_DIST = sox_ng.txt soxi_ng.txt soxformat_ng.txt libsox_ng.txt \
+	     CMakeLists.txt sox_ng.pc.in LICENSE.GPL LICENSE.LGPL \
 	     cygbuild README.win32 README.osx scripts/batch-example.bat \
 	     README.sh FEATURES.in
 
 if HAVE_PKGCONFIG
 pkgconfigdir = @PKGCONFIGDIR@
-pkgconfig_DATA = sox.pc
+pkgconfig_DATA = sox_ng.pc
 endif
 
-play.1 rec.1: sox.1
+play_ng.1 rec_ng.1: sox_ng.1
 	$(RM) $@ && $(LN_S) $< $@
 
 README: README.sh FEATURES.in
@@ -34,7 +34,7 @@ README: README.sh FEATURES.in
 .7.txt:
 	tbl $(srcdir)/$< | nroff -man -c | sed "s/.//g" > $@
 
-DOCTXT = sox.txt soxi.txt soxformat.txt libsox.txt README
+DOCTXT = sox_ng.txt soxi_ng.txt soxformat_ng.txt libsox_ng.txt README
 txt: $(DOCTXT)
 
 # Rule for making PDF man pages
@@ -45,7 +45,7 @@ txt: $(DOCTXT)
 .7.pdf:
 	pdfroff -t -man -Tps $(srcdir)/$< > $@
 
-DOCPDF = sox.pdf soxi.pdf soxformat.pdf libsox.pdf
+DOCPDF = sox_ng.pdf soxi_ng.pdf soxformat_ng.pdf libsox_ng.pdf
 pdf: $(DOCPDF)
 
 install-pdf: pdf
@@ -73,7 +73,7 @@ distclean-local:
 # Rule for making HTML man pages
 #
 # Get rid on unneeded Content-Type, man directory and manpage index in extension.
-# e.g. ../man1/soxi.1.html becomes ../soxi.html
+# e.g. ../man1/soxi_ng.1.html becomes ../soxi_ng.html
 # Return to Main Contents and link to man2html are also modified.
 FIXHTML = sed 's,<head>,&<link rel="stylesheet" href="http://sox.sourceforge.net/pub/skins/sox/sox.css" type="text/css"></link>,' 
 
@@ -84,7 +84,7 @@ FIXHTML = sed 's,<head>,&<link rel="stylesheet" href="http://sox.sourceforge.net
 .7.html:
 	groff -t -man -Thtml -P -Dsoxpng $(srcdir)/$< | $(FIXHTML) > $@
 
-DOCHTML = sox.html soxi.html soxformat.html libsox.html
+DOCHTML = sox_ng.html soxi_ng.html soxformat_ng.html libsox_ng.html
 html: $(DOCHTML)
 
 install-html: html 	 
@@ -116,14 +116,14 @@ DISTCLEANFILES = $(DOCHTML) $(DOCPDF)
 MAINTAINERCLEANFILES = $(DOCTXT)
 
 install-data-hook:
-	cd $(DESTDIR)$(mandir)/man1 && $(RM) play.1 && $(LN_S) sox.1 play.1
-	cd $(DESTDIR)$(mandir)/man1 && $(RM) rec.1 && $(LN_S) sox.1 rec.1
-	cd $(DESTDIR)$(mandir)/man7 && $(RM) soxeffect.7 && $(LN_S) ../man1/sox.1 soxeffect.7
+	cd $(DESTDIR)$(mandir)/man1 && $(RM) play_ng.1 && $(LN_S) sox_ng.1 play_ng.1
+	cd $(DESTDIR)$(mandir)/man1 && $(RM) rec_ng.1 && $(LN_S) sox_ng.1 rec_ng.1
+	cd $(DESTDIR)$(mandir)/man7 && $(RM) soxeffect_ng.7 && $(LN_S) ../man1/sox_ng.1 soxeffect_ng.7
 
 uninstall-hook:
-	$(RM) $(DESTDIR)$(mandir)/man1/play.1
-	$(RM) $(DESTDIR)$(mandir)/man1/rec.1
-	$(RM) $(DESTDIR)$(mandir)/man7/soxeffect.7
+	$(RM) $(DESTDIR)$(mandir)/man1/play_ng.1
+	$(RM) $(DESTDIR)$(mandir)/man1/rec_ng.1
+	$(RM) $(DESTDIR)$(mandir)/man7/soxeffect_ng.7
 
 # Automatically update libtool script if it gets out-of-date
 libtool: $(LIBTOOL_DEPS)
