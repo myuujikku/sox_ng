@@ -516,7 +516,7 @@ static int axis(double to, int max_steps, double * limit, char * * prefix)
     prefix_num = floor(log_10 / 3);
     scale = pow(10., -3. * prefix_num);
   }
-  *prefix = "pnum-kMGTPE" + prefix_num + (prefix_num? 4 : 11);
+  *prefix = &"pnum-kMGTPE"[prefix_num + (prefix_num? 4 : 11)];
   *limit = to * scale;
   return step * scale + .5;
 }

@@ -1025,8 +1025,8 @@ and increment a counter if clipping occurs.
 @returns Clipped value.
 */
 #define SOX_INTEGER_CLIP_COUNT(bits,i,clips) ( \
-  (i) >(1 << ((bits)-1))- 1? ++(clips),(1 << ((bits)-1))- 1 : \
-  (i) <-1 << ((bits)-1)    ? ++(clips),-1 << ((bits)-1) : (i))
+  (i) >(int)((unsigned)1 << ((bits)-1))- 1 ? ++(clips),((unsigned)1 << ((bits)-1))- 1 : \
+  (i) <(int)((unsigned)-1 << ((bits)-1))   ? ++(clips),(unsigned)-1 << ((bits)-1) : (i))
 
 /**
 Client API:

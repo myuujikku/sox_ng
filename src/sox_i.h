@@ -124,8 +124,8 @@ void lsx_load_samples(double * const dest, sox_sample_t const * const src,
 
 #ifdef HAVE_BYTESWAP_H
 #include <byteswap.h>
-#define lsx_swapw(x) bswap_16(x)
-#define lsx_swapdw(x) bswap_32(x)
+#define lsx_swapw(x) bswap_16((uint16_t)(x))
+#define lsx_swapdw(x) bswap_32((uint32_t)(x))
 #elif defined(_MSC_VER)
 #define lsx_swapw(x) _byteswap_ushort(x)
 #define lsx_swapdw(x) _byteswap_ulong(x)

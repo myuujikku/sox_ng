@@ -143,7 +143,7 @@ static int startread(sox_format_t * ft)
     return SOX_EOF;
   }
   lsx_report("found %s identifier", id[i].desc);
-  ft->encoding.reverse_bytes = id[i].reverse_bytes;
+  ft->encoding.reverse_bytes = (sox_option_t)(id[i].reverse_bytes);
 
   if (lsx_readdw(ft, &hdr_size) ||
       lsx_readdw(ft, &data_size) ||   /* Can be SUN_UNSPEC */

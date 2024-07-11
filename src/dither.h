@@ -44,7 +44,7 @@ static int NAME(sox_effect_t * effp, const sox_sample_t * ibuf,
       i = d1 < 0? d1 - .5 : d1 + .5;
       p->previous_errors[p->pos + N] = p->previous_errors[p->pos] =
           (double)i * (1 << (32 - p->prec)) - d;
-      if (i < (-1 << (p->prec-1)))
+      if (i < (int)((unsigned)-1 << (p->prec-1)))
         ++effp->clips, *obuf = SOX_SAMPLE_MIN;
       else if (i > (int)SOX_INT_MAX(p->prec))
         ++effp->clips, *obuf = SOX_INT_MAX(p->prec) << (32 - p->prec);

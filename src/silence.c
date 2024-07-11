@@ -277,7 +277,7 @@ static sox_bool aboveThreshold(sox_effect_t const * effp,
 {
   /* When scaling low bit data, noise values got scaled way up */
   /* Only consider the original bits when looking for silence */
-  sox_sample_t masked_value = value & (-1 << (32 - effp->in_signal.precision));
+ sox_sample_t masked_value = value & ((unsigned)-1 << (32 - effp->in_signal.precision));
 
   double scaled_value = (double)masked_value / SOX_SAMPLE_MAX;
 

@@ -235,7 +235,8 @@ static int flowTrigger(sox_effect_t * effp, sox_sample_t const * ibuf,
         c->meanMeas = c->meanMeas * p->triggerMeasTcMult +
             meas *(1 - p->triggerMeasTcMult);
 
-        if (hasTriggered |= c->meanMeas >= p->triggerLevel) {
+        hasTriggered |= c->meanMeas >= p->triggerLevel;
+        if (hasTriggered >= p->triggerLevel) {
           unsigned n = p->measuresLen, k = p->measuresIndex;
           unsigned j, jTrigger = n, jZero = n;
           for (j = 0; j < n; ++j, k = (k + n - 1) % n)

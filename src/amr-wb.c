@@ -76,6 +76,7 @@ static char const amrwb_magic[] = "#!AMR-WB\n";
   D_IF_exit(state)
 
 #define AMR_OPENCORE_DESC "amr-wb OpenCore library"
+#ifdef AMR_OPENCORE
 static const char* const amr_opencore_library_names[] =
 {
 #ifdef DL_AMRWB
@@ -84,6 +85,7 @@ static const char* const amr_opencore_library_names[] =
 #endif
   NULL
 };
+#endif /* AMR_OPENCORE */
 
 /* 3GPP (reference implementation) definitions: */
 
@@ -113,16 +115,16 @@ static const char* const amr_opencore_library_names[] =
   D_IF_exit(state)
 
 #define AMR_GP3_DESC "amr-wb 3GPP reference library"
+#ifdef DL_AMRWB
 static const char* const amr_gp3_library_names[] =
 {
-#ifdef DL_AMRWB
   "libamrwb-3",
   "libamrwb",
   "amrwb",
   "cygamrwb-3",
-#endif
   NULL
 };
+#endif
 
 #include "amr.h"
 

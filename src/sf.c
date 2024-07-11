@@ -85,7 +85,7 @@ static int startread(sox_format_t * ft)
     return SOX_EOF;
   }
   lsx_report("found %s identifier", id[i].desc);
-  ft->encoding.reverse_bytes = id[i].reverse_bytes;
+  ft->encoding.reverse_bytes = (sox_option_t)(id[i].reverse_bytes);
 
   if (lsx_readf(ft, &rate) || lsx_readdw(ft, &channels) || lsx_readdw(ft, &ft_encoding))
     return SOX_EOF;

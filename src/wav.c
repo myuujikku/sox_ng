@@ -384,14 +384,14 @@ static int sndfile_workaround(uint64_t *len, sox_format_t *ft) {
     /* Seek to last four bytes of chunk, assuming size is correct. */
     if (lsx_seeki(ft, (off_t)(*len)-4, SEEK_CUR) != SOX_SUCCESS)
     {
-        lsx_fail_errno(ft, SOX_EHDR, "WAV chunk appears to have invalid size %ld.", *len);
+        lsx_fail_errno(ft, SOX_EHDR, "WAV chunk appears to have invalid size %" PRIu64 ".", *len);
         return SOX_EOF;
     }
 
     /* Get the last four bytes to see if it is an "fmt " chunk */
     if (lsx_reads(ft, magic, (size_t)4) == SOX_EOF)
     {
-        lsx_fail_errno(ft,SOX_EHDR, "WAV chunk appears to have invalid size %ld.", *len);
+        lsx_fail_errno(ft,SOX_EHDR, "WAV chunk appears to have invalid size %" PRIu64 ".", *len);
         return SOX_EOF;
     }
 
@@ -404,7 +404,7 @@ static int sndfile_workaround(uint64_t *len, sox_format_t *ft) {
     if (memcmp(magic, "fmt ", (size_t)4)==0)
     {
         /* If the last four bytes were "fmt ", len is almost certainly four bytes too big. */
-        lsx_debug("File had libsndfile bug, working around tell=%ld", lsx_tell(ft));
+        lsx_debug("File had libsndfile bug, working around tell=%lld", (long long int)lsx_tell(ft));
         *len -= 4;
     }
     return SOX_SUCCESS;
@@ -472,7 +472,7 @@ static int findChunk(sox_format_t * ft, const char *Label, uint64_t *len)
         if (*len > 0 && lsx_seeki(ft, (off_t)(*len), SEEK_CUR) != SOX_SUCCESS)
         {
             lsx_fail_errno(ft,SOX_EHDR,
-                          "WAV chunk appears to have invalid size %ld.", *len);
+                          "WAV chunk appears to have invalid size %" PRIu64 ".", *len);
             return SOX_EOF;
         }
     }
@@ -923,7 +923,7 @@ static int startread(sox_format_t * ft)
         wav->numSamples =
             lsx_ms_adpcm_samples_in((size_t)qwDataLength, (size_t)ft->signal.channels,
                            (size_t)wav->blockAlign, (size_t)wav->samplesPerBlock);
-        lsx_debug_more("datalen %ld, numSamples %lu",qwDataLength, (unsigned long)wav->numSamples);
+        lsx_debug_more("datalen %" PRIu64 ", numSamples %lu",qwDataLength, (unsigned long)wav->numSamples);
         wav->blockSamplesRemaining = 0;        /* Samples left in buffer */
         ft->signal.length = wav->numSamples*ft->signal.channels;
         break;
@@ -934,7 +934,7 @@ static int startread(sox_format_t * ft)
         wav->numSamples =
             lsx_ima_samples_in((size_t)qwDataLength, (size_t)ft->signal.channels,
                          (size_t)wav->blockAlign, (size_t)wav->samplesPerBlock);
-        lsx_debug_more("datalen %ld, numSamples %lu",qwDataLength, (unsigned long)wav->numSamples);
+        lsx_debug_more("datalen %" PRIu64 ", numSamples %lu",qwDataLength, (unsigned long)wav->numSamples);
         wav->blockSamplesRemaining = 0;        /* Samples left in buffer */
         lsx_ima_init_table();
         ft->signal.length = wav->numSamples*ft->signal.channels;
@@ -960,7 +960,7 @@ static int startread(sox_format_t * ft)
     lsx_debug("Reading Wave file: %s format, %d channel%s, %d samp/sec",
            wav_format_str(wav->formatTag), ft->signal.channels,
            wChannels == 1 ? "" : "s", dwSamplesPerSecond);
-    lsx_debug("        %d byte/sec, %d block align, %d bits/samp, %lu data bytes",
+    lsx_debug("        %d byte/sec, %d block align, %d bits/samp, %" PRIu64 " data bytes",
            dwAvgBytesPerSec, wav->blockAlign, wBitsPerSample, qwDataLength);
 
     /* Can also report extended fmt information */
@@ -1085,7 +1085,7 @@ static int startread(sox_format_t * ft)
                     }
                     else
                     {
-                        lsx_debug("Attempting to seek beyond unsupported chunk `%c%c%c%c' of length %ld bytes", magic[0], magic[1], magic[2], magic[3], len);
+                        lsx_debug("Attempting to seek beyond unsupported chunk `%c%c%c%c' of length %" PRIu64 " bytes", magic[0], magic[1], magic[2], magic[3], len);
                         len = (len + 1) & ~1u;
                         lsx_seeki(ft, (off_t)len, SEEK_CUR);
                     }

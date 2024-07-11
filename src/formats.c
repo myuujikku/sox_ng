@@ -299,17 +299,19 @@ static void set_endiannesses(sox_format_t * ft)
 {
   if (ft->encoding.opposite_endian)
     ft->encoding.reverse_bytes = (ft->handler.flags & SOX_FILE_ENDIAN)?
-      !(ft->handler.flags & SOX_FILE_ENDBIG) != MACHINE_IS_BIGENDIAN : sox_true;
+      (!(ft->handler.flags & SOX_FILE_ENDBIG)) != MACHINE_IS_BIGENDIAN :
+      (sox_option_t)sox_true;
   else if (ft->encoding.reverse_bytes == sox_option_default)
     ft->encoding.reverse_bytes = (ft->handler.flags & SOX_FILE_ENDIAN)?
-      !(ft->handler.flags & SOX_FILE_ENDBIG) == MACHINE_IS_BIGENDIAN : sox_false;
+      (!(ft->handler.flags & SOX_FILE_ENDBIG)) == MACHINE_IS_BIGENDIAN :
+      (sox_option_t)sox_false;
 
   /* FIXME: Change reports to suitable warnings if trying
    * to override something that can't be overridden. */
 
   if (ft->handler.flags & SOX_FILE_ENDIAN) {
     if (ft->encoding.reverse_bytes == (sox_option_t)
-        (!(ft->handler.flags & SOX_FILE_ENDBIG) != MACHINE_IS_BIGENDIAN))
+        ((!(ft->handler.flags & SOX_FILE_ENDBIG)) != MACHINE_IS_BIGENDIAN))
       lsx_report("`%s': overriding file-type byte-order", ft->filename);
   } else if (ft->encoding.reverse_bytes == sox_option_yes)
     lsx_report("`%s': overriding machine byte-order", ft->filename);

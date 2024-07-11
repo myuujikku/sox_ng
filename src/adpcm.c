@@ -307,7 +307,7 @@ void lsx_ms_adpcm_block_mash_i(
         unsigned char *p;
 
         lsx_debug_more("AdpcmMashI(chans %d, ip %p, n %d, st %p, obuff %p, bA %d)\n",
-            chans, (void *)ip, n, (void *)st, obuff, blockAlign);
+            chans, (void *)ip, n, (void *)st, (void *)obuff, blockAlign);
 
         for (p=obuff+7*chans; p<obuff+blockAlign; p++) *p=0;
 

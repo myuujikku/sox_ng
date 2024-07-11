@@ -161,7 +161,7 @@ static int stop(sox_effect_t * effp)
   priv_t * p = (priv_t *)effp->priv;
 
   if (!effp->flow) {
-    double min_runs = 0, max_count = 0, min = 2, max = -2, max_sigma_x = 0, sigma_x = 0, sigma_x2 = 0, min_sigma_x2 = 2, max_sigma_x2 = 0, avg_peak = 0;
+    double min_runs = 0, max_count = 0, min = 2, max = -2, max_sigma_x = 0, sigma_x2 = 0, min_sigma_x2 = 2, max_sigma_x2 = 0, avg_peak = 0;
     off_t num_samples = 0, min_count = 0, max_runs = 0;
     uint32_t mask = 0;
     unsigned b1, b2, i, n = effp->flows > 1 ? effp->flows : 0;
@@ -174,7 +174,6 @@ static int stop(sox_effect_t * effp)
         q->min_sigma_x2 = q->max_sigma_x2 = q->sigma_x2 / q->num_samples;
       min_sigma_x2 = min(min_sigma_x2, q->min_sigma_x2);
       max_sigma_x2 = max(max_sigma_x2, q->max_sigma_x2);
-      sigma_x += q->sigma_x;
       sigma_x2 += q->sigma_x2;
       num_samples += q->num_samples;
       mask |= q->mask;

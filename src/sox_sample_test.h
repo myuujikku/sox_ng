@@ -36,7 +36,7 @@
  \
   uint##bits = SOX_INT_MAX(bits); \
   sample = SOX_UNSIGNED_TO_SAMPLE(bits,uint##bits); \
-  assert(sample * SOX_INT_MAX(bits) == SOX_UNSIGNED_TO_SAMPLE(bits,1)); \
+  assert((sox_sample_t)(sample * SOX_INT_MAX(bits)) == SOX_UNSIGNED_TO_SAMPLE(bits,1)); \
   uint##bits = SOX_SAMPLE_TO_UNSIGNED(bits,sample, clips); \
   assert(uint##bits == SOX_INT_MAX(bits) && clips == 0); \
  \
@@ -93,7 +93,7 @@
  \
   int##bits = SOX_UINT_MAX(bits) /* i.e. -1 */; \
   sample = SOX_SIGNED_TO_SAMPLE(bits,int##bits); \
-  assert(sample * SOX_INT_MAX(bits) == SOX_SIGNED_TO_SAMPLE(bits,SOX_INT_MIN(bits)+1)); \
+  assert((sox_sample_t)(sample * SOX_INT_MAX(bits)) == SOX_SIGNED_TO_SAMPLE(bits,SOX_INT_MIN(bits)+1)); \
   int##bits##_2 = SOX_SAMPLE_TO_SIGNED(bits,sample, clips); \
   assert(int##bits##_2 == int##bits && clips == 0); \
  \

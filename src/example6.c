@@ -86,8 +86,10 @@ int main(int argc, char * argv[])
 
   assert(argc == 3);
   assert(sox_init() == SOX_SUCCESS);
-  assert(in = sox_open_read(argv[1], NULL, NULL, NULL));
-  assert(out = sox_open_write(argv[2], &out_signal, &out_encoding, NULL, NULL, NULL));
+  in = sox_open_read(argv[1], NULL, NULL, NULL);
+  assert(in);
+  out = sox_open_write(argv[2], &out_signal, &out_encoding, NULL, NULL, NULL);
+  assert(out);
 
   chain = sox_create_effects_chain(&in->encoding, &out->encoding);
 
