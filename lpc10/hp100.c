@@ -26,18 +26,18 @@ $Log: hp100.c,v $
 
 */
 
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int hp100_(real *speech, integer *start, integer *end,
-		  struct lpc10_encoder_state *st);
-extern int inithp100_(void);
-#endif
-
 /*  -- translated by f2c (version 19951025).
    You must link the resulting object file with the libraries:
 	-lf2c -lm   (in that order)
 */
 
 #include "f2c.h"
+
+#ifdef P_R_O_T_O_T_Y_P_E_S
+extern int hp100_(real *speech, integer *start, integer *end,
+		  struct lpc10_encoder_state *st);
+extern int inithp100_(void);
+#endif
 
 /* ********************************************************************* */
 

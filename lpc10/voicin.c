@@ -26,18 +26,18 @@ $Log: voicin.c,v $
 
 */
 
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int voicin_(integer *vwin, real *inbuf, real *lpbuf, integer *buflim, integer *half, real *minamd, real *maxamd, integer *mintau, real *ivrc, integer *obound, integer *voibuf, integer *af, struct lpc10_encoder_state *st);
-/* comlen contrl_ 12 */
-/*:ref: vparms_ 14 14 4 6 6 4 4 6 4 4 4 4 6 6 6 6 */
-#endif
-
 /*  -- translated by f2c (version 19951025).
    You must link the resulting object file with the libraries:
 	-lf2c -lm   (in that order)
 */
 
 #include "f2c.h"
+
+#ifdef P_R_O_T_O_T_Y_P_E_S
+extern int voicin_(integer *vwin, real *inbuf, real *lpbuf, integer *buflim, integer *half, real *minamd, real *maxamd, integer *mintau, real *ivrc, integer *obound, integer *voibuf, integer *af, struct lpc10_encoder_state *st);
+/* comlen contrl_ 12 */
+/*:ref: vparms_ 14 14 4 6 6 4 4 6 4 4 4 4 6 6 6 6 */
+#endif
 
 /* Common Block Declarations */
 
@@ -457,14 +457,10 @@ s*/
     if (buflim) {
 	--buflim;
 	}
-    if (inbuf) {
-	inbuf_offset = buflim[1];
-	inbuf -= inbuf_offset;
-	}
-    if (lpbuf) {
-	lpbuf_offset = buflim[3];
-	lpbuf -= lpbuf_offset;
-	}
+    inbuf_offset = buflim[1];
+    inbuf -= inbuf_offset;
+    lpbuf_offset = buflim[3];
+    lpbuf -= lpbuf_offset;
     if (ivrc) {
 	--ivrc;
 	}

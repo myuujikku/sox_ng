@@ -184,8 +184,8 @@ if test "$GCC" = "yes"; then
     gccver=`$CC -dumpversion`
     AC_MSG_RESULT($gccver)
 
-    CFLAGS="$CFLAGS -Wall -W -Wmissing-prototypes -Wstrict-prototypes -pedantic"
-    CFLAGS="$CFLAGS -Wno-implicit-fallthrough -Wno-unused-value"
+    CFLAGS="$CFLAGS -Wall -W -Wstrict-prototypes -pedantic"
+    CFLAGS="$CFLAGS -Wno-implicit-fallthrough -Wno-unused-value -Wno-unused-parameter"
 
     dnl Define stricter policy on GNU/Linux, all symbols must be resolved
     case $target in

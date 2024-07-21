@@ -26,19 +26,19 @@ $Log: decode.c,v $
 
 */
 
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int decode_(integer *ipitv, integer *irms, integer *irc, integer *voice, integer *pitch, real *rms, real *rc, struct lpc10_decoder_state *st);
-/* comlen contrl_ 12 */
-/*:ref: ham84_ 14 3 4 4 4 */
-/*:ref: median_ 4 3 4 4 4 */
-#endif
-
 /*  -- translated by f2c (version 19951025).
    You must link the resulting object file with the libraries:
 	-lf2c -lm   (in that order)
 */
 
 #include "f2c.h"
+
+#ifdef P_R_O_T_O_T_Y_P_E_S
+extern int decode_(integer *ipitv, integer *irms, integer *irc, integer *voice, integer *pitch, real *rms, real *rc, struct lpc10_decoder_state *st);
+/* comlen contrl_ 12 */
+/*:ref: ham84_ 14 3 4 4 4 */
+/*:ref: median_ 4 3 4 4 4 */
+#endif
 
 /* Common Block Declarations */
 

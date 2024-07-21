@@ -26,6 +26,13 @@ $Log: analys.c,v $
 
 */
 
+/*  -- translated by f2c (version 19951025).
+   You must link the resulting object file with the libraries:
+	-lf2c -lm   (in that order)
+*/
+
+#include "f2c.h"
+
 #ifdef P_R_O_T_O_T_Y_P_E_S
 extern int analys_(real *speech, integer *voice, integer *pitch, real *rms, real *rc, struct lpc10_encoder_state *st);
 /* comlen contrl_ 12 */
@@ -48,13 +55,6 @@ extern int analys_(real *speech, integer *voice, integer *pitch, real *rms, real
 /*:ref: initdyptrk_ 14 0 */
 /* Rerunning f2c -P may change prototypes or declarations. */
 #endif
-
-/*  -- translated by f2c (version 19951025).
-   You must link the resulting object file with the libraries:
-	-lf2c -lm   (in that order)
-*/
-
-#include "f2c.h"
 
 /* Common Block Declarations */
 

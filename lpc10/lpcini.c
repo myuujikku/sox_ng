@@ -22,21 +22,21 @@ $Log: lpcini.c,v $
 
 */
 
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int lpcini_(void);
-/* comlen contrl_ 12 */
-/*:ref: initlpcenc_ 14 0 */
-/*:ref: initlpcdec_ 14 0 */
-#endif
+#include <stdlib.h>	/* for malloc() */
 
 /*  -- translated by f2c (version 19951025).
    You must link the resulting object file with the libraries:
 	-lf2c -lm   (in that order)
 */
 
-#include <stdlib.h>
-
 #include "f2c.h"
+
+#ifdef P_R_O_T_O_T_Y_P_E_S
+extern int lpcini_(void);
+/* comlen contrl_ 12 */
+/*:ref: initlpcenc_ 14 0 */
+/*:ref: initlpcdec_ 14 0 */
+#endif
 
 /* Common Block Declarations */
 

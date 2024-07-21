@@ -26,16 +26,16 @@ $Log: pitsyn.c,v $
 
 */
 
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int pitsyn_(integer *order, integer *voice, integer *pitch, real *rms, real *rc, integer *lframe, integer *ivuv, integer *ipiti, real *rmsi, real *rci, integer *nout, real *ratio, struct lpc10_decoder_state *st);
-#endif
-
 /*  -- translated by f2c (version 19951025).
    You must link the resulting object file with the libraries:
 	-lf2c -lm   (in that order)
 */
 
 #include "f2c.h"
+
+#ifdef P_R_O_T_O_T_Y_P_E_S
+extern int pitsyn_(integer *order, integer *voice, integer *pitch, real *rms, real *rc, integer *lframe, integer *ivuv, integer *ipiti, real *rmsi, real *rci, integer *nout, real *ratio, struct lpc10_decoder_state *st);
+#endif
 
 /* ***************************************************************** */
 
@@ -121,7 +121,8 @@ extern int pitsyn_(integer *order, integer *voice, integer *pitch, real *rms, re
     logical *first;
 
     /* System generated locals */
-    integer rci_dim1, rci_offset, i__1, i__2;
+    integer rci_dim1 = 0;  /* Suppress compiler warning */
+    integer rci_offset, i__1, i__2;
     real r__1;
 
     /* Builtin functions */

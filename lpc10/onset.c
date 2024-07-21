@@ -26,16 +26,16 @@ $Log: onset.c,v $
 
 */
 
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int onset_(real *pebuf, integer *osbuf, integer *osptr, integer *oslen, integer *sbufl, integer *sbufh, integer *lframe, struct lpc10_encoder_state *st);
-#endif
-
 /*  -- translated by f2c (version 19951025).
    You must link the resulting object file with the libraries:
 	-lf2c -lm   (in that order)
 */
 
 #include "f2c.h"
+
+#ifdef P_R_O_T_O_T_Y_P_E_S
+extern int onset_(real *pebuf, integer *osbuf, integer *osptr, integer *oslen, integer *sbufl, integer *sbufh, integer *lframe, struct lpc10_encoder_state *st);
+#endif
 
 /* Table of constant values */
 

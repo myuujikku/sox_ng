@@ -26,17 +26,17 @@ $Log: dyptrk.c,v $
 
 */
 
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int dyptrk_(real *amdf, integer *ltau, integer *minptr, integer *voice, integer *pitch, integer *midx, struct lpc10_encoder_state *st);
-/* comlen contrl_ 12 */
-#endif
-
 /*  -- translated by f2c (version 19951025).
    You must link the resulting object file with the libraries:
 	-lf2c -lm   (in that order)
 */
 
 #include "f2c.h"
+
+#ifdef P_R_O_T_O_T_Y_P_E_S
+extern int dyptrk_(real *amdf, integer *ltau, integer *minptr, integer *voice, integer *pitch, integer *midx, struct lpc10_encoder_state *st);
+/* comlen contrl_ 12 */
+#endif
 
 /* Common Block Declarations */
 

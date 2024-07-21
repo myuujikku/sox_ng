@@ -26,16 +26,16 @@ $Log: random.c,v $
 
 */
 
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern integer random_(struct lpc10_decoder_state *st);
-#endif
-
 /*  -- translated by f2c (version 19951025).
    You must link the resulting object file with the libraries:
 	-lf2c -lm   (in that order)
 */
 
 #include "f2c.h"
+
+#ifdef P_R_O_T_O_T_Y_P_E_S
+extern integer random_(struct lpc10_decoder_state *st);
+#endif
 
 /* ********************************************************************** */
 

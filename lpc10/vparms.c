@@ -18,16 +18,16 @@ $Log: vparms.c,v $
 
 */
 
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int vparms_(integer *vwin, real *inbuf, real *lpbuf, integer *buflim, integer *half, real *dither, integer *mintau, integer *zc, integer *lbe, integer *fbe, real *qs, real *rc1, real *ar_b__, real *ar_f__);
-#endif
-
 /*  -- translated by f2c (version 19951025).
    You must link the resulting object file with the libraries:
 	-lf2c -lm   (in that order)
 */
 
 #include "f2c.h"
+
+#ifdef P_R_O_T_O_T_Y_P_E_S
+extern int vparms_(integer *vwin, real *inbuf, real *lpbuf, integer *buflim, integer *half, real *dither, integer *mintau, integer *zc, integer *lbe, integer *fbe, real *qs, real *rc1, real *ar_b__, real *ar_f__);
+#endif
 
 /* Table of constant values */
 

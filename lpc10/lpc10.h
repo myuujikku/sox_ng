@@ -223,11 +223,11 @@ struct lpc10_decoder_state {
   
   */
 
-struct lpc10_encoder_state * create_lpc10_encoder_state ();
+struct lpc10_encoder_state * create_lpc10_encoder_state (void);
 void init_lpc10_encoder_state (struct lpc10_encoder_state *st);
 int lpc10_encode (real *speech, INT32 *bits, struct lpc10_encoder_state *st);
 
-struct lpc10_decoder_state * create_lpc10_decoder_state ();
+struct lpc10_decoder_state * create_lpc10_decoder_state (void);
 void init_lpc10_decoder_state (struct lpc10_decoder_state *st);
 int lpc10_decode (INT32 *bits, real *speech, struct lpc10_decoder_state *st);
 

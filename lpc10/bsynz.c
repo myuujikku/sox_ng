@@ -26,18 +26,18 @@ $Log: bsynz.c,v $
 
 */
 
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int bsynz_(real *coef, integer *ip, integer *iv, real *sout, real *rms, real *ratio, real *g2pass, struct lpc10_decoder_state *st);
-/* comlen contrl_ 12 */
-/*:ref: random_ 4 0 */
-#endif
-
 /*  -- translated by f2c (version 19951025).
    You must link the resulting object file with the libraries:
 	-lf2c -lm   (in that order)
 */
 
 #include "f2c.h"
+
+#ifdef P_R_O_T_O_T_Y_P_E_S
+extern int bsynz_(real *coef, integer *ip, integer *iv, real *sout, real *rms, real *ratio, real *g2pass, struct lpc10_decoder_state *st);
+/* comlen contrl_ 12 */
+/*:ref: random_ 4 0 */
+#endif
 
 /* Common Block Declarations */
 

@@ -23,17 +23,17 @@ $Log: chanwr.c,v $
 
 */
 
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int chanwr_(integer *order, integer *ipitv, integer *irms, integer *irc, integer *ibits, struct lpc10_encoder_state *st);
-extern int chanrd_(integer *order, integer *ipitv, integer *irms, integer *irc, integer *ibits);
-#endif
-
 /*  -- translated by f2c (version 19951025).
    You must link the resulting object file with the libraries:
 	-lf2c -lm   (in that order)
 */
 
 #include "f2c.h"
+
+#ifdef P_R_O_T_O_T_Y_P_E_S
+extern int chanwr_(integer *order, integer *ipitv, integer *irms, integer *irc, integer *ibits, struct lpc10_encoder_state *st);
+extern int chanrd_(integer *order, integer *ipitv, integer *irms, integer *irc, integer *ibits);
+#endif
 
 /* *********************************************************************** */
 

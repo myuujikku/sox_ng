@@ -18,16 +18,16 @@ $Log: invert.c,v $
 
 */
 
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int invert_(integer *order, real *phi, real *psi, real *rc);
-#endif
-
 /*  -- translated by f2c (version 19951025).
    You must link the resulting object file with the libraries:
 	-lf2c -lm   (in that order)
 */
 
 #include "f2c.h"
+
+#ifdef P_R_O_T_O_T_Y_P_E_S
+extern int invert_(integer *order, real *phi, real *psi, real *rc);
+#endif
 
 /* **************************************************************** */
 

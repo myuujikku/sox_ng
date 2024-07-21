@@ -29,6 +29,13 @@ $Log: lpcenc.c,v $
 
 */
 
+/*  -- translated by f2c (version 19951025).
+   You must link the resulting object file with the libraries:
+	-lf2c -lm   (in that order)
+*/
+
+#include "f2c.h"
+
 #ifdef P_R_O_T_O_T_Y_P_E_S
 extern int lpcenc_(real *speech, integer *bits);
 extern int initlpcenc_(void);
@@ -39,13 +46,6 @@ extern int initlpcenc_(void);
 /*:ref: initprepro_ 14 0 */
 /*:ref: initanalys_ 14 0 */
 #endif
-
-/*  -- translated by f2c (version 19951025).
-   You must link the resulting object file with the libraries:
-	-lf2c -lm   (in that order)
-*/
-
-#include "f2c.h"
 
 /* Table of constant values */
 

@@ -18,9 +18,7 @@ $Log: lpfilt.c,v $
 
 */
 
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int lpfilt_(real *inbuf, real *lpbuf, integer *len, integer *nsamp);
-#endif
+#include <stdlib.h>
 
 /*  -- translated by f2c (version 19951025).
    You must link the resulting object file with the libraries:
@@ -28,6 +26,10 @@ extern int lpfilt_(real *inbuf, real *lpbuf, integer *len, integer *nsamp);
 */
 
 #include "f2c.h"
+
+#ifdef P_R_O_T_O_T_Y_P_E_S
+extern int lpfilt_(real *inbuf, real *lpbuf, integer *len, integer *nsamp);
+#endif
 
 /* *********************************************************************** */
 
