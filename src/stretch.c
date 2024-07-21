@@ -1,5 +1,6 @@
 /* libSoX Basic time stretcher.
- * (c) march/april 2000 Fabien COELHO <fabien@coelho.net> for sox.
+ * Copyright (c) 2000 Fabien COELHO <fabien@coelho.net>
+ * This source code is freely redistributable and may be used for any purpose.
  *
  * cross fade samples so as to go slower or faster.
  *

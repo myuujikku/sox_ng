@@ -1,8 +1,23 @@
 /* Silence effect for SoX
- * by Heikki Leinonen (heilei@iki.fi) 25.03.2001
- * Major Modifications by Chris Bagwell 06.08.2001
- * Minor addition by Donnie Smith 13.08.2003
  *
+ * Copyright (C) 2001 Heikki Leinonen (heilei@iki.fi)
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or (at
+ * your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
+/*
  * This effect can delete samples from the start of a sound file
  * until it sees a specified count of samples exceed a given threshold
  * (any of the channels).
@@ -10,7 +25,7 @@
  * when it sees a specified count of samples below a given threshold
  * (all channels).
  * It may also be used to delete samples anywhere in a sound file.
- * Thesholds can be given as either a percentage or in decibels.
+ * Thresholds can be given as either a percentage or in decibels.
  */
 
 #include "sox_i.h"

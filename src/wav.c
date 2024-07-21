@@ -1,14 +1,29 @@
 /* libSoX microsoft's WAVE sound format handler
  *
- * Copyright 1998-2006 Chris Bagwell and SoX Contributors
- * Copyright 1997 Graeme W. Gill, 93/5/17
- * Copyright 1992 Rick Richardson
- * Copyright 1991 Lance Norskog And Sundry Contributors
+ * Copyright (C) 1998-2006 Chris Bagwell (cbagwell@sprynet.com)
+ * Copyright (C) 1997 Graeme W. Gill
+ * Copyright (C) 1992 Rick Richardson
+ * Copyright (C) 1991 Lance Norskog And Sundry Contributors
  *
- * Info for format tags can be found at:
- *   http://www-mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/WAVE.html
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or (at
+ * your option) any later version.
  *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
+
+ /*
+  * Info for format tags can be found at:
+  *   http://www-mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/WAVE.html
+  */
 
 #include "sox_i.h"
 

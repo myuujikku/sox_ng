@@ -1,15 +1,32 @@
 /* libSoX dcshift.c
- * (c) 2000.04.15 Chris Ausbrooks <weed@bucket.pp.ualr.edu>
+ *
+ * Copyright (c) 2000 Chris Ausbrooks <weed@bucket.pp.ualr.edu>
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or (at
+ * your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * based on vol.c which is
- * (c) 20/03/2000 Fabien COELHO <fabien@coelho.net> for sox.
- *
+ * Copyright (c) 20/03/2000 Fabien COELHO <fabien@coelho.net> for sox.
+ * This source code is freely redistributable and may be used for any purpose.
+ */
+
+/*
  * DC shift a sound file, with basic linear amplitude formula.
  * Beware of saturations! clipping is checked and reported.
  * Cannot handle different number of channels.
  * Cannot handle rate change.
  */
-
 #include "sox_i.h"
 
 typedef struct {
