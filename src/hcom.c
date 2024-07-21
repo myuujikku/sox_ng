@@ -73,7 +73,7 @@ typedef struct {
   size_t pos;                /* Where next byte goes */
 } priv_t;
 
-static int dictvalid(int n, int size, int left, int right)
+static int dictvalid(int n, unsigned size, int left, int right)
 {
         if (n > 0 && left < 0)
                 return 1;
