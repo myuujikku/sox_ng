@@ -1,5 +1,17 @@
 /*
+ * Copyright 2006 John Andrew Fingerhut (andy.fingerhut@gmail.com)
+ *
+ * Released under the BSD 3-Clause "New" or "Revised" License
+ *
+ * https://spdx.org/licenses/BSD-3-Clause.html
+ * SPDX Full name: BSD 3-Clause "New" or "Revised" License
+ * SPDX Identifier: name BSD-3-Clause
+ *
+ */
 
+/*
+
+$Log: prepro.c,v $
  * Revision 1.2  1996/08/20  20:40:51  jaf
  * Removed all static local variables that were SAVE'd in the Fortran
  * code, and put them in struct lpc10_encoder_state that is passed as an
@@ -14,15 +26,19 @@
 
 */
 
+#ifdef P_R_O_T_O_T_Y_P_E_S
+extern int prepro_(real *speech, integer *length,
+		   struct lpc10_encoder_state *st)
+/*:ref: hp100_ 14 3 6 4 4 */
+/*:ref: inithp100_ 14 0 */
+#endif
+
 /*  -- translated by f2c (version 19951025).
    You must link the resulting object file with the libraries:
 	-lf2c -lm   (in that order)
 */
 
 #include "f2c.h"
-
-extern int prepro_(real *speech, integer *length,
-		   struct lpc10_encoder_state *st);
 
 /* Table of constant values */
 
@@ -32,7 +48,7 @@ static integer c__1 = 1;
 
 /* 	PREPRO Version 48 */
 
-/*
+/* $Log: prepro.c,v $
  * Revision 1.2  1996/08/20  20:40:51  jaf
  * Removed all static local variables that were SAVE'd in the Fortran
  * code, and put them in struct lpc10_encoder_state that is passed as an

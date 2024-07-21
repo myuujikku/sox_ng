@@ -1,19 +1,17 @@
 /*
+ * Copyright 2006 John Andrew Fingerhut (andy.fingerhut@gmail.com)
+ *
+ * Released under the BSD 3-Clause "New" or "Revised" License
+ *
+ * https://spdx.org/licenses/BSD-3-Clause.html
+ * SPDX Full name: BSD 3-Clause "New" or "Revised" License
+ * SPDX Identifier: name BSD-3-Clause
+ *
+ */
+
+/*
 
 $Log: lpc10.h,v $
-Revision 1.3  2008/03/21 13:34:21  robs
-fix (I hope) [1913986] Error during make of static sox
-
-Revision 1.2  2007/12/26 16:12:42  robs
-support out-of-source-build
-
-Revision 1.1  2007/04/16 21:57:22  rrt
-LPC-10 support, documentation still to come; I wanted to land the code
-before 14.0.0 went into test, and I'll be busy tomorrow.
-
-Not highly tested either, but it's just a format, doesn't interfere
-with anything else, and I'll get on that case before we go stable.
-
  * Revision 1.1  1996/08/19  22:47:31  jaf
  * Initial revision
  *
@@ -23,71 +21,30 @@ with anything else, and I'll get on that case before we go stable.
 #ifndef __LPC10_H__
 #define __LPC10_H__
 
-#include <limits.h>
-
-/* aliases */
-#define analys_ lsx_lpc10_analys_
-#define bsynz_ lsx_lpc10_bsynz_
-#define chanrd_ lsx_lpc10_chanrd_
-#define chanwr_ lsx_lpc10_chanwr_
-#define contrl_ lsx_lpc10_contrl_
-#define create_lpc10_decoder_state lsx_lpc10_create_decoder_state
-#define create_lpc10_encoder_state lsx_lpc10_create_encoder_state
-#define dcbias_ lsx_lpc10_dcbias_
-#define decode_ lsx_lpc10_decode_
-#define deemp_ lsx_lpc10_deemp_
-#define difmag_ lsx_lpc10_difmag_
-#define dyptrk_ lsx_lpc10_dyptrk_
-#define encode_ lsx_lpc10_encode_
-#define energy_ lsx_lpc10_energy_
-#define ham84_ lsx_lpc10_ham84_
-#define hp100_ lsx_lpc10_hp100_
-#define i_nint lsx_lpc10_i_nint
-#define init_lpc10_decoder_state lsx_lpc10_init_decoder_state
-#define init_lpc10_encoder_state lsx_lpc10_init_encoder_state
-#define invert_ lsx_lpc10_invert_
-#define irc2pc_ lsx_lpc10_irc2pc_
-#define ivfilt_ lsx_lpc10_ivfilt_
-#define lpc10_decode lsx_lpc10_decode
-#define lpc10_encode lsx_lpc10_encode
-#define lpcini_ lsx_lpc10_lpcini_
-#define lpfilt_ lsx_lpc10_lpfilt_
-#define median_ lsx_lpc10_median_
-#define mload_ lsx_lpc10_mload_
-#define onset_ lsx_lpc10_onset_
-#define pitsyn_ lsx_lpc10_pitsyn_
-#define placea_ lsx_lpc10_placea_
-#define placev_ lsx_lpc10_placev_
-#define pow_ii lsx_lpc10_pow_ii
-#define preemp_ lsx_lpc10_preemp_
-#define prepro_ lsx_lpc10_prepro_
-#define random_ lsx_lpc10_random_
-#define rcchk_ lsx_lpc10_rcchk_
-#define r_sign lsx_lpc10_r_sign
-#define synths_ lsx_lpc10_synths_
-#define tbdm_ lsx_lpc10_tbdm_
-#define voicin_ lsx_lpc10_voicin_
-#define vparms_ lsx_lpc10_vparms_
-
 #define LPC10_SAMPLES_PER_FRAME 180
 #define LPC10_BITS_IN_COMPRESSED_FRAME 54
 
 
-#if defined(SHRT_MAX) && defined(SHRT_MIN) && SHRT_MAX==32767 && SHRT_MIN==(-32768)
-typedef short INT16;
-#elif defined(INT_MAX) && defined(INT_MIN) && INT_MAX==32767 && INT_MIN==(-32768)
-typedef int INT16;
-#else
-#error Unable to determine an appropriate definition for INT16.
+/*
+
+  The "#if defined"'s in this file are by no means intended to be
+  complete.  They are what Nautilus uses, which has been successfully
+  compiled under DOS with the Microsoft C compiler, and under a few
+  versions of Unix with the GNU C compiler.
+
+ */
+
+#if 1
+typedef short		INT16;
+typedef int		INT32;
 #endif
 
-#if defined(INT_MAX) && defined(INT_MIN) && INT_MAX==2147483647 && INT_MIN==(-2147483647-1)
-typedef int INT32;
-#elif defined(LONG_MAX) && defined(LONG_MIN) && LONG_MAX==2147483647 && LONG_MIN==(-2147483647-1)
-typedef long INT32;
-#else
-#error Unable to determine an appropriate definition for INT32.
+
+#if defined(__MSDOS__) || defined(MSDOS)
+typedef int		INT16;
+typedef long		INT32;
 #endif
+
 
 
 /* The initial values for every member of this structure is 0, except
@@ -266,11 +223,11 @@ struct lpc10_decoder_state {
   
   */
 
-struct lpc10_encoder_state * create_lpc10_encoder_state (void);
+struct lpc10_encoder_state * create_lpc10_encoder_state ();
 void init_lpc10_encoder_state (struct lpc10_encoder_state *st);
 int lpc10_encode (real *speech, INT32 *bits, struct lpc10_encoder_state *st);
 
-struct lpc10_decoder_state * create_lpc10_decoder_state (void);
+struct lpc10_decoder_state * create_lpc10_decoder_state ();
 void init_lpc10_decoder_state (struct lpc10_decoder_state *st);
 int lpc10_decode (INT32 *bits, real *speech, struct lpc10_decoder_state *st);
 

@@ -1,11 +1,60 @@
+/*
+ * Copyright 2006 John Andrew Fingerhut (andy.fingerhut@gmail.com)
+ *
+ * Released under the BSD 3-Clause "New" or "Revised" License
+ *
+ * https://spdx.org/licenses/BSD-3-Clause.html
+ * SPDX Full name: BSD 3-Clause "New" or "Revised" License
+ * SPDX Identifier: name BSD-3-Clause
+ *
+ */
+
+/*
+
+$Log: analys.c,v $
+ * Revision 1.2  1996/08/20  20:16:01  jaf
+ * Removed all static local variables that were SAVE'd in the Fortran
+ * code, and put them in struct lpc10_encoder_state that is passed as an
+ * argument.
+ *
+ * Removed init function, since all initialization is now done in
+ * init_lpc10_encoder_state().
+ *
+ * Revision 1.1  1996/08/19  22:29:08  jaf
+ * Initial revision
+ *
+
+*/
+
+#ifdef P_R_O_T_O_T_Y_P_E_S
+extern int analys_(real *speech, integer *voice, integer *pitch, real *rms, real *rc, struct lpc10_encoder_state *st);
+/* comlen contrl_ 12 */
+/*:ref: preemp_ 14 5 6 6 4 6 6 */
+/*:ref: onset_ 14 7 6 4 4 4 4 4 4 */
+/*:ref: placev_ 14 11 4 4 4 4 4 4 4 4 4 4 4 */
+/*:ref: lpfilt_ 14 4 6 6 4 4 */
+/*:ref: ivfilt_ 14 5 6 6 4 4 6 */
+/*:ref: tbdm_ 14 8 6 4 4 4 6 4 4 4 */
+/*:ref: voicin_ 14 12 4 6 6 4 4 6 6 4 6 4 4 4 */
+/*:ref: dyptrk_ 14 6 6 4 4 4 4 4 */
+/*:ref: placea_ 14 9 4 4 4 4 4 4 4 4 4 */
+/*:ref: dcbias_ 14 3 4 6 6 */
+/*:ref: energy_ 14 3 4 6 6 */
+/*:ref: mload_ 14 6 4 4 4 6 6 6 */
+/*:ref: invert_ 14 4 4 6 6 6 */
+/*:ref: rcchk_ 14 3 4 6 6 */
+/*:ref: initonset_ 14 0 */
+/*:ref: initvoicin_ 14 0 */
+/*:ref: initdyptrk_ 14 0 */
+/* Rerunning f2c -P may change prototypes or declarations. */
+#endif
+
 /*  -- translated by f2c (version 19951025).
    You must link the resulting object file with the libraries:
 	-lf2c -lm   (in that order)
 */
 
 #include "f2c.h"
-
-int analys_(real *speech, integer *voice, integer *pitch, real *rms, real *rc, struct lpc10_encoder_state *st);
 
 /* Common Block Declarations */
 
@@ -34,6 +83,18 @@ static integer c__1 = 1;
 
 /* 	ANALYS Version 55 */
 
+/* $Log: analys.c,v $
+ * Revision 1.2  1996/08/20  20:16:01  jaf
+ * Removed all static local variables that were SAVE'd in the Fortran
+ * code, and put them in struct lpc10_encoder_state that is passed as an
+ * argument.
+ *
+ * Removed init function, since all initialization is now done in
+ * init_lpc10_encoder_state().
+ *
+ * Revision 1.1  1996/08/19  22:29:08  jaf
+ * Initial revision
+ * */
 /* Revision 1.9  1996/05/23  19:41:07  jaf */
 /* Commented out some unnecessary lines that were reading uninitialized */
 /* values. */
@@ -160,7 +221,7 @@ static integer c__1 = 1;
     extern /* Subroutine */ int onset_(real *, integer *, integer *, integer *
 	    , integer *, integer *, integer *, struct lpc10_encoder_state *);
     integer *osptr;
-    extern int placea_(integer *, integer *
+    extern /* Subroutine */ int placea_(integer *, integer *
 	    , integer *, integer *, integer *, integer *, integer *, integer *
 	    , integer *), dcbias_(integer *, real *, real *), placev_(integer 
 	    *, integer *, integer *, integer *, integer *, integer *, integer 
@@ -182,6 +243,54 @@ static integer c__1 = 1;
     extern /* Subroutine */ int dyptrk_(real *, integer *, integer *, integer 
 	    *, integer *, integer *, struct lpc10_encoder_state *);
     real phi[100]	/* was [10][10] */, psi[10];
+
+/* $Log: analys.c,v $
+ * Revision 1.2  1996/08/20  20:16:01  jaf
+ * Removed all static local variables that were SAVE'd in the Fortran
+ * code, and put them in struct lpc10_encoder_state that is passed as an
+ * argument.
+ *
+ * Removed init function, since all initialization is now done in
+ * init_lpc10_encoder_state().
+ *
+ * Revision 1.1  1996/08/19  22:29:08  jaf
+ * Initial revision
+ * */
+/* Revision 1.3  1996/03/29  22:03:47  jaf */
+/* Removed definitions for any constants that were no longer used. */
+
+/* Revision 1.2  1996/03/26  19:34:33  jaf */
+/* Added comments indicating which constants are not needed in an */
+/* application that uses the LPC-10 coder. */
+
+/* Revision 1.1  1996/02/07  14:43:51  jaf */
+/* Initial revision */
+
+/*   LPC Configuration parameters: */
+/* Frame size, Prediction order, Pitch period */
+/*       Arguments to ANALYS */
+/* $Log: analys.c,v $
+ * Revision 1.2  1996/08/20  20:16:01  jaf
+ * Removed all static local variables that were SAVE'd in the Fortran
+ * code, and put them in struct lpc10_encoder_state that is passed as an
+ * argument.
+ *
+ * Removed init function, since all initialization is now done in
+ * init_lpc10_encoder_state().
+ *
+ * Revision 1.1  1996/08/19  22:29:08  jaf
+ * Initial revision
+ * */
+/* Revision 1.3  1996/03/29  22:05:55  jaf */
+/* Commented out the common block variables that are not needed by the */
+/* embedded version. */
+
+/* Revision 1.2  1996/03/26  19:34:50  jaf */
+/* Added comments indicating which constants are not needed in an */
+/* application that uses the LPC-10 coder. */
+
+/* Revision 1.1  1996/02/07  14:44:09  jaf */
+/* Initial revision */
 
 /*   LPC Processing control variables: */
 

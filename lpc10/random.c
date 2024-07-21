@@ -1,5 +1,17 @@
 /*
+ * Copyright 2006 John Andrew Fingerhut (andy.fingerhut@gmail.com)
+ *
+ * Released under the BSD 3-Clause "New" or "Revised" License
+ *
+ * https://spdx.org/licenses/BSD-3-Clause.html
+ * SPDX Full name: BSD 3-Clause "New" or "Revised" License
+ * SPDX Identifier: name BSD-3-Clause
+ *
+ */
 
+/*
+
+$Log: random.c,v $
  * Revision 1.2  1996/08/20  20:41:32  jaf
  * Removed all static local variables that were SAVE'd in the Fortran
  * code, and put them in struct lpc10_decoder_state that is passed as an
@@ -14,6 +26,10 @@
 
 */
 
+#ifdef P_R_O_T_O_T_Y_P_E_S
+extern integer random_(struct lpc10_decoder_state *st);
+#endif
+
 /*  -- translated by f2c (version 19951025).
    You must link the resulting object file with the libraries:
 	-lf2c -lm   (in that order)
@@ -21,13 +37,11 @@
 
 #include "f2c.h"
 
-extern integer random_(struct lpc10_decoder_state *st);
-
 /* ********************************************************************** */
 
 /* 	RANDOM Version 49 */
 
-/*
+/* $Log: random.c,v $
  * Revision 1.2  1996/08/20  20:41:32  jaf
  * Removed all static local variables that were SAVE'd in the Fortran
  * code, and put them in struct lpc10_decoder_state that is passed as an

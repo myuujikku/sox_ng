@@ -1,10 +1,26 @@
 /*
+ * Copyright 2006 John Andrew Fingerhut (andy.fingerhut@gmail.com)
+ *
+ * Released under the BSD 3-Clause "New" or "Revised" License
+ *
+ * https://spdx.org/licenses/BSD-3-Clause.html
+ * SPDX Full name: BSD 3-Clause "New" or "Revised" License
+ * SPDX Identifier: name BSD-3-Clause
+ *
+ */
 
+/*
+
+$Log: ivfilt.c,v $
  * Revision 1.1  1996/08/19  22:31:53  jaf
  * Initial revision
  *
 
 */
+
+#ifdef P_R_O_T_O_T_Y_P_E_S
+extern int ivfilt_(real *lpbuf, real *ivbuf, integer *len, integer *nsamp, real *ivrc);
+#endif
 
 /*  -- translated by f2c (version 19951025).
    You must link the resulting object file with the libraries:
@@ -13,13 +29,11 @@
 
 #include "f2c.h"
 
-extern int ivfilt_(real *lpbuf, real *ivbuf, integer *len, integer *nsamp, real *ivrc);
-
 /* ********************************************************************* */
 
 /* 	IVFILT Version 48 */
 
-/*
+/* $Log: ivfilt.c,v $
  * Revision 1.1  1996/08/19  22:31:53  jaf
  * Initial revision
  * */

@@ -1,5 +1,17 @@
 /*
+ * Copyright 2006 John Andrew Fingerhut (andy.fingerhut@gmail.com)
+ *
+ * Released under the BSD 3-Clause "New" or "Revised" License
+ *
+ * https://spdx.org/licenses/BSD-3-Clause.html
+ * SPDX Full name: BSD 3-Clause "New" or "Revised" License
+ * SPDX Identifier: name BSD-3-Clause
+ *
+ */
 
+/*
+
+$Log: lpcdec.c,v $
  * Revision 1.2  1996/08/20  20:30:11  jaf
  * Removed all static local variables that were SAVE'd in the Fortran
  * code, and put them in struct lpc10_encoder_state that is passed as an
@@ -17,15 +29,23 @@
 
 */
 
+#ifdef P_R_O_T_O_T_Y_P_E_S
+extern int lpcdec_(integer *bits, real *speech);
+extern int initlpcdec_(void);
+/* comlen contrl_ 12 */
+/*:ref: chanrd_ 14 5 4 4 4 4 4 */
+/*:ref: decode_ 14 7 4 4 4 4 4 6 6 */
+/*:ref: synths_ 14 6 4 4 6 6 6 4 */
+/*:ref: initdecode_ 14 0 */
+/*:ref: initsynths_ 14 0 */
+#endif
+
 /*  -- translated by f2c (version 19951025).
    You must link the resulting object file with the libraries:
 	-lf2c -lm   (in that order)
 */
 
 #include "f2c.h"
-
-extern int lpcdec_(integer *bits, real *speech);
-extern int initlpcdec_(void);
 
 /* Common Block Declarations */
 
@@ -42,7 +62,7 @@ static integer c__10 = 10;
 
 /* ***************************************************************** */
 
-/*
+/* $Log: lpcdec.c,v $
  * Revision 1.2  1996/08/20  20:30:11  jaf
  * Removed all static local variables that were SAVE'd in the Fortran
  * code, and put them in struct lpc10_encoder_state that is passed as an
@@ -91,10 +111,60 @@ static integer c__10 = 10;
     integer irc[10], len;
     real rms;
 
+/* $Log: lpcdec.c,v $
+ * Revision 1.2  1996/08/20  20:30:11  jaf
+ * Removed all static local variables that were SAVE'd in the Fortran
+ * code, and put them in struct lpc10_encoder_state that is passed as an
+ * argument.
+ *
+ * Removed init function, since all initialization is now done in
+ * init_lpc10_encoder_state().
+ *
+ * Changed name of function from lpcenc_ to lpc10_encode, simply to make
+ * all lpc10 functions have more consistent naming with each other.
+ *
+ * Revision 1.1  1996/08/19  22:31:48  jaf
+ * Initial revision
+ * */
+/* Revision 1.3  1996/03/29  22:03:47  jaf */
+/* Removed definitions for any constants that were no longer used. */
+
+/* Revision 1.2  1996/03/26  19:34:33  jaf */
+/* Added comments indicating which constants are not needed in an */
+/* application that uses the LPC-10 coder. */
+
+/* Revision 1.1  1996/02/07  14:43:51  jaf */
+/* Initial revision */
 
 /*   LPC Configuration parameters: */
 /* Frame size, Prediction order, Pitch period */
 /*       Arguments */
+/* $Log: lpcdec.c,v $
+ * Revision 1.2  1996/08/20  20:30:11  jaf
+ * Removed all static local variables that were SAVE'd in the Fortran
+ * code, and put them in struct lpc10_encoder_state that is passed as an
+ * argument.
+ *
+ * Removed init function, since all initialization is now done in
+ * init_lpc10_encoder_state().
+ *
+ * Changed name of function from lpcenc_ to lpc10_encode, simply to make
+ * all lpc10 functions have more consistent naming with each other.
+ *
+ * Revision 1.1  1996/08/19  22:31:48  jaf
+ * Initial revision
+ * */
+/* Revision 1.3  1996/03/29  22:05:55  jaf */
+/* Commented out the common block variables that are not needed by the */
+/* embedded version. */
+
+/* Revision 1.2  1996/03/26  19:34:50  jaf */
+/* Added comments indicating which constants are not needed in an */
+/* application that uses the LPC-10 coder. */
+
+/* Revision 1.1  1996/02/07  14:44:09  jaf */
+/* Initial revision */
+
 /*   LPC Processing control variables: */
 
 /* *** Read-only: initialized in setup */

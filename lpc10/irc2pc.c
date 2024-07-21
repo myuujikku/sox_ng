@@ -1,10 +1,26 @@
 /*
+ * Copyright 2006 John Andrew Fingerhut (andy.fingerhut@gmail.com)
+ *
+ * Released under the BSD 3-Clause "New" or "Revised" License
+ *
+ * https://spdx.org/licenses/BSD-3-Clause.html
+ * SPDX Full name: BSD 3-Clause "New" or "Revised" License
+ * SPDX Identifier: name BSD-3-Clause
+ *
+ */
 
+/*
+
+$Log: irc2pc.c,v $
  * Revision 1.1  1996/08/19  22:31:56  jaf
  * Initial revision
  *
 
 */
+
+#ifdef P_R_O_T_O_T_Y_P_E_S
+extern int irc2pc_(real *rc, real *pc, integer *order, real *gprime, real *g2pass);
+#endif
 
 /*  -- translated by f2c (version 19951025).
    You must link the resulting object file with the libraries:
@@ -13,13 +29,11 @@
 
 #include "f2c.h"
 
-extern int irc2pc_(real *rc, real *pc, integer *order, real *gprime, real *g2pass);
-
 /* ***************************************************************** */
 
 /* 	IRC2PC Version 48 */
 
-/*
+/* $Log: irc2pc.c,v $
  * Revision 1.1  1996/08/19  22:31:56  jaf
  * Initial revision
  * */
@@ -66,6 +80,20 @@ extern int irc2pc_(real *rc, real *pc, integer *order, real *gprime, real *g2pas
     integer i__, j;
 
 /* 	Arguments */
+/* $Log: irc2pc.c,v $
+ * Revision 1.1  1996/08/19  22:31:56  jaf
+ * Initial revision
+ * */
+/* Revision 1.3  1996/03/29  22:03:47  jaf */
+/* Removed definitions for any constants that were no longer used. */
+
+/* Revision 1.2  1996/03/26  19:34:33  jaf */
+/* Added comments indicating which constants are not needed in an */
+/* application that uses the LPC-10 coder. */
+
+/* Revision 1.1  1996/02/07  14:43:51  jaf */
+/* Initial revision */
+
 /*   LPC Configuration parameters: */
 /* Frame size, Prediction order, Pitch period */
 /*       Local variables that need not be saved */

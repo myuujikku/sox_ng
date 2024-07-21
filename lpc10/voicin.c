@@ -1,5 +1,17 @@
 /*
+ * Copyright 2006 John Andrew Fingerhut (andy.fingerhut@gmail.com)
+ *
+ * Released under the BSD 3-Clause "New" or "Revised" License
+ *
+ * https://spdx.org/licenses/BSD-3-Clause.html
+ * SPDX Full name: BSD 3-Clause "New" or "Revised" License
+ * SPDX Identifier: name BSD-3-Clause
+ *
+ */
 
+/*
+
+$Log: voicin.c,v $
  * Revision 1.2  1996/08/20  20:45:00  jaf
  * Removed all static local variables that were SAVE'd in the Fortran
  * code, and put them in struct lpc10_encoder_state that is passed as an
@@ -14,14 +26,18 @@
 
 */
 
+#ifdef P_R_O_T_O_T_Y_P_E_S
+extern int voicin_(integer *vwin, real *inbuf, real *lpbuf, integer *buflim, integer *half, real *minamd, real *maxamd, integer *mintau, real *ivrc, integer *obound, integer *voibuf, integer *af, struct lpc10_encoder_state *st);
+/* comlen contrl_ 12 */
+/*:ref: vparms_ 14 14 4 6 6 4 4 6 4 4 4 4 6 6 6 6 */
+#endif
+
 /*  -- translated by f2c (version 19951025).
    You must link the resulting object file with the libraries:
 	-lf2c -lm   (in that order)
 */
 
 #include "f2c.h"
-
-extern int voicin_(integer *vwin, real *inbuf, real *lpbuf, integer *buflim, integer *half, real *minamd, real *maxamd, integer *mintau, real *ivrc, integer *obound, integer *voibuf, integer *af, struct lpc10_encoder_state *st);
 
 /* Common Block Declarations */
 
@@ -36,7 +52,7 @@ extern struct {
 
 /* 	VOICIN Version 52 */
 
-/*
+/* $Log: voicin.c,v $
  * Revision 1.2  1996/08/20  20:45:00  jaf
  * Removed all static local variables that were SAVE'd in the Fortran
  * code, and put them in struct lpc10_encoder_state that is passed as an
@@ -242,7 +258,7 @@ s*/
 	    ;
 
     /* System generated locals */
-    integer inbuf_offset = 0, lpbuf_offset = 0, i__1, i__2;
+    integer inbuf_offset, lpbuf_offset, i__1, i__2;
     real r__1, r__2;
 
     /* Builtin functions */
@@ -270,9 +286,30 @@ s*/
     real *snr;
     real snr2;
 
-    (void)af;
 /* 	Global Variables: */
 /*       Arguments */
+/* $Log: voicin.c,v $
+ * Revision 1.2  1996/08/20  20:45:00  jaf
+ * Removed all static local variables that were SAVE'd in the Fortran
+ * code, and put them in struct lpc10_encoder_state that is passed as an
+ * argument.
+ *
+ * Removed init function, since all initialization is now done in
+ * init_lpc10_encoder_state().
+ *
+ * Revision 1.1  1996/08/19  22:30:14  jaf
+ * Initial revision
+ * */
+/* Revision 1.3  1996/03/29  22:05:55  jaf */
+/* Commented out the common block variables that are not needed by the */
+/* embedded version. */
+
+/* Revision 1.2  1996/03/26  19:34:50  jaf */
+/* Added comments indicating which constants are not needed in an */
+/* application that uses the LPC-10 coder. */
+
+/* Revision 1.1  1996/02/07  14:44:09  jaf */
+/* Initial revision */
 
 /*   LPC Processing control variables: */
 

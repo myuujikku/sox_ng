@@ -1,10 +1,27 @@
 /*
+ * Copyright 2006 John Andrew Fingerhut (andy.fingerhut@gmail.com)
+ *
+ * Released under the BSD 3-Clause "New" or "Revised" License
+ *
+ * https://spdx.org/licenses/BSD-3-Clause.html
+ * SPDX Full name: BSD 3-Clause "New" or "Revised" License
+ * SPDX Identifier: name BSD-3-Clause
+ *
+ */
 
+/*
+
+$Log: tbdm.c,v $
  * Revision 1.1  1996/08/19  22:30:26  jaf
  * Initial revision
  *
 
 */
+
+#ifdef P_R_O_T_O_T_Y_P_E_S
+extern int tbdm_(real *speech, integer *lpita, integer *tau, integer *ltau, real *amdf, integer *minptr, integer *maxptr, integer *mintau);
+/*:ref: difmag_ 14 8 6 4 4 4 4 6 4 4 */
+#endif
 
 /*  -- translated by f2c (version 19951025).
    You must link the resulting object file with the libraries:
@@ -13,13 +30,11 @@
 
 #include "f2c.h"
 
-extern int tbdm_(real *speech, integer *lpita, integer *tau, integer *ltau, real *amdf, integer *minptr, integer *maxptr, integer *mintau);
-
 /* ********************************************************************** */
 
 /* 	TBDM Version 49 */
 
-/*
+/* $Log: tbdm.c,v $
  * Revision 1.1  1996/08/19  22:30:26  jaf
  * Initial revision
  * */
