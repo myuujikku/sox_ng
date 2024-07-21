@@ -614,6 +614,10 @@ static int getblock(sox_format_t * ft)
         v->rate = new_rate_32;
         ft->signal.rate = new_rate_32;
         lsx_readb(ft, &uc);
+        if (uc == 0) {
+          lsx_fail_errno(ft, SOX_EFMT, "word width is zero?");
+	  return (SOX_EOF);
+	}
         v->size = uc;
         lsx_readb(ft, &(v->channels));
         lsx_readw(ft, &(v->format));    /* ANN: added format */
