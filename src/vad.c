@@ -20,7 +20,7 @@
 
 typedef struct {
   double    * dftBuf, * noiseSpectrum, * spectrum, * measures, meanMeas;
-} chan_t;
+} channel_t;
 
 typedef struct {                /* Configuration parameters: */
   double    bootTime, noiseTcUp, noiseTcDown, noiseReductionAmount;
@@ -37,7 +37,7 @@ typedef struct {                /* Configuration parameters: */
   double    noiseTcUpMult, noiseTcDownMult;
   double    measureTcMult, triggerMeasTcMult;
   double    * spectrumWindow, * cepstrumWindow;
-  chan_t    * channels;
+  channel_t * channels;
 } priv_t;
 
 #define GETOPT_FREQ(optstate, c, name, min) \
@@ -121,7 +121,7 @@ static int start(sox_effect_t * effp)
 
   lsx_Calloc(p->channels, effp->in_signal.channels);
   for (i = 0; i < effp->in_signal.channels; ++i) {
-    chan_t * c = &p->channels[i];
+    channel_t * c = &p->channels[i];
     lsx_Calloc(c->dftBuf, p->dftLen_ws);
     lsx_Calloc(c->spectrum, p->dftLen_ws);
     lsx_Calloc(c->noiseSpectrum, p->dftLen_ws);
@@ -185,7 +185,7 @@ static int flowFlush(sox_effect_t * effp, sox_sample_t const * ibuf,
 }
 
 static double measure(
-    priv_t * p, chan_t * c, size_t index_ns, unsigned step_ns, int bootCount)
+    priv_t * p, channel_t * c, size_t index_ns, unsigned step_ns, int bootCount)
 {
   double mult, result = 0;
   size_t i;
@@ -226,7 +226,7 @@ static int flowTrigger(sox_effect_t * effp, sox_sample_t const * ibuf,
   while (idone < *ilen && !hasTriggered) {
     p->measureTimer_ns -= effp->in_signal.channels;
     for (i = 0; i < effp->in_signal.channels; ++i, ++idone) {
-      chan_t * c = &p->channels[i];
+      channel_t * c = &p->channels[i];
       p->samples[p->samplesIndex_ns++] = *ibuf++;
       if (!p->measureTimer_ns) {
         size_t x = (p->samplesIndex_ns + p->samplesLen_ns - p->measureLen_ns) % p->samplesLen_ns;
@@ -285,7 +285,7 @@ static int stop(sox_effect_t * effp)
   unsigned i;
 
   for (i = 0; i < effp->in_signal.channels; ++i) {
-    chan_t * c = &p->channels[i];
+    channel_t * c = &p->channels[i];
     free(c->measures);
     free(c->noiseSpectrum);
     free(c->spectrum);
