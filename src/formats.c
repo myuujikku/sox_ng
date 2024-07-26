@@ -421,10 +421,9 @@ static void UNUSED rewind_pipe(FILE * fp)
       defined _ISO_STDIO_ISO_H || defined __sgi
   fp->_ptr = fp->_base;
 #else
-  /* To fix this #error, either simply remove the #error line and live without
-   * file-type detection with pipes, or add support for your compiler in the
-   * lines above.  Test with cat monkey.wav | ./sox --info - */
-  #error FIX NEEDED HERE
+  /* Either live without file-type detection with pipes,
+   * or add support for your compiler in the lines above.
+   * Test with cat monkey.wav | ./sox --info - */
   #define NO_REWIND_PIPE
   (void)fp;
 #endif
