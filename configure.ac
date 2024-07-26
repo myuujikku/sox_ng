@@ -99,7 +99,7 @@ AC_MSG_CHECKING([whether to make a debug build])
 AC_ARG_ENABLE(debug, AS_HELP_STRING([--enable-debug], [make a debug build]))
 AC_MSG_RESULT($enable_debug)
 if test "$enable_debug" = "yes"; then
-    CFLAGS="-g"
+    CFLAGS="$CFLAGS -g"
     if test "$GCC" = "yes"; then
         CFLAGS="$CFLAGS -ggdb"
     fi
