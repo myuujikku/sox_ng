@@ -19,6 +19,7 @@
 #undef NDEBUG /* Must undef above assert.h or other that might include it. */
 #endif
 #include <assert.h>
+#include <math.h>
 #include "sox_ng.h"
 
 #define TEST_UINT(bits) \
