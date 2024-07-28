@@ -3,6 +3,7 @@ Makefile.in
 autom4te.cache
 mingw32-config.cache
 configure
+configure~
 config.log
 config.status
 confdefs.h
