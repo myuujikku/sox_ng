@@ -29,7 +29,7 @@ make
 and to install it:
 ```
 sudo make install
- '''
+```
 
 You can edit and commit the code, which is in C, shell, autoconf
 and the wiki which is .md and image files.
