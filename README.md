@@ -1,9 +1,9 @@
 @ README
 
-`sox` means [sox.sf.net](http://sox.sf.net).<BR>
-`sox_ng` means this hard fork of `sox-14.4.2`.<BR>
+`sox` means [sox.sf.net](http://sox.sf.net).<BR
+`sox_ng` means this hard fork of `sox-14.4.2`<BR>
 SoX means the Swiss Army Knife of command-line audio processing and its spirit
-in any of its incarnations.<BR>
+in any of its incarnations<BR>
 
 The SoX_ng project makes regular releases of SoX
 with a six-monthly scadence for each of the micro, minor and major releases.
