@@ -8,8 +8,8 @@ in any of its incarnations<BR>
 The SoX_ng project makes regular releases of SoX
 with a six-monthly scadence for each of the micro, minor and major releases.
 
-It lives on
-[codeberg.org](https:///sox_ng/sox_nghttps://codeberg.org/sox_ng/sox_ng)
+It lives at
+[codeberg.org/sox_ng/sox_ng](https:/codeberg.org//sox_ng/sox_ng)
 and is composed of a SoX code base, an issue tracker and a wiki.
 
 To get it:
