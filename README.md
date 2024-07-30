@@ -16,7 +16,7 @@ To get it:
 ```
 git clone https://codeberg.org/sox_ng/sox_ng
 cd sox_ng
-git clone https://codeberg.org/sox_ng/sox_ng,wiki wiki
+git clone https://codeberg.org/sox_ng/sox_ng.wiki wiki
 bin/getissues
 ```
 
