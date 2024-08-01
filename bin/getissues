@@ -1,0 +1,126 @@
+#! /bin/sh
+
+# Fetch issues from a forgejo instance into the issues/ directory.
+#
+# For an issue with title "CVE-2017-18189",
+# the markdown for its body goes into issues/CVE-2017-18189.md
+# We also create issues/CVE-2017-18189/ with files for its
+# labels (one per line), milestone (only one) and the number of the remote bug.
+#
+# By default it only fetches open issues. With -c it also fetches closed issues.
+#
+# Documentation for the codeberg issues API is at
+# https://codeberg.org/api/swagger#/issue
+#
+#	Martin Guy <martinwguy@gmail.com>, July 2024.
+
+state=open
+if [ "$1" = "-c" ]
+then
+    state=all
+    shift
+fi
+if [ "$#" -ne 0 ]
+then
+    echo "Usage: getissues [-c]"
+    echo "-c  Also fetch closed issues"
+    exit 1
+fi
+
+site=codeberg.org
+user=sox_ng
+repo=sox_ng
+# martinwguy's issues-read-only token
+token=0c465f25b4eefc87be686cd89ae6043329c286c2
+
+# dash's built-in "echo" always interprets backslash sequences
+# so replace it with the more portable "printf"
+echo() {
+    printf '%s\n' "$*"
+}
+
+mkdir -p issues
+
+# Remove any previously produced output
+for a in issues/*
+do
+    if [ -d "$a" ]
+    then rm -r "$a"
+    else case "$a" in
+	 *.md) rm "$a";;
+	 esac
+    fi
+done
+
+# Fetch a URL and output the result to stdout.
+curlget() {
+    result="$(curl --fail --silent -X GET "$1" \
+      -H "accept: application/json" \
+      -H "authorization: token $token")"
+    status=$?
+    if [ $status != 0 ]
+    then
+	echo "Failed to fetch $1" 1>&2
+	exit $status
+    fi
+    echo "$result"
+}
+
+settings="$(curlget "https://$site/api/v1/settings/api")"
+
+# The API can only return a maximum of 50 items per request so
+# fetch each page until it returns [].
+limit="$(echo "$settings" | jq -r '.max_response_items')"
+page=0
+issues=""
+until [ "$issues" = "[]" ]
+do
+    page=$(($page + 1))
+    # Get a list of the issues
+    issues="$(curlget "https://$site/api/v1/repos/$user/$repo/issues?state=$state&limit=$limit&page=$page")"
+    if [ "$issues" = "[]" ]; then continue; fi
+
+    # Keep a local formatted copy for inspection.
+    # echo "$issues" | jq . > issues/issues$page.json
+
+    echo "$issues" | jq -r '.[].number' | while read -r number
+    do
+        # The list of issues doesn't include the attachments (.assets) but
+	# we can get that by fetching an individual issue by its issue number.
+	issue="$(curlget "https://$site/api/v1/repos/$user/$repo/issues/$number")"
+	title="$(echo "$issue" | jq -r ".title")"
+
+	# Replace / with \ for the local filename.
+	# Windows and MSDOS on FAT32 also ban : \ ". Tough.
+	ftitle="$(echo "$title" | sed 's|/|\\|g')"
+
+	# Check for duplicate titles
+	if [ -f "$ftitle".md ]
+	then
+	    echo "Ignoring another issue with the same title: $ftitle" 1>&2
+	    continue
+	fi
+	    # Some issue bodies have all \n and others have all \r\n. Go figure.
+	echo "$issue" | jq -r ".body" | \
+	    sed 's/\r\n/\n/g' > "issues/$ftitle".md
+
+	# Save interesting metadata: labels, milestone and id (remote bug number)
+	mkdir issues/"$ftitle"
+	(
+	    cd issues/"$ftitle"
+
+	    echo "$number" > number
+	    echo "$issue" | jq -r ".state" > state
+	    echo "$issue" | jq -r ".milestone.title" > milestone
+	    echo "$issue" | jq -r ".labels|.[].name" > labels
+
+	    assets="$(echo "$issue" | jq '.assets')"  # json
+	    nassets="$(echo "$assets" | jq -r length)"
+	    for i in $(seq 0 $(($nassets - 1))); do
+		name="$(echo "$assets" | jq -r ".[$i].name")"
+		url="$(echo "$assets" | jq -r ".[$i].browser_download_url")"
+		curlget "$url" > "$name"
+	    done
+	)
+    done
+done
