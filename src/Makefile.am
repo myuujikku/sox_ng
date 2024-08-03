@@ -175,6 +175,29 @@ install-exec-hook:
 	if test "$(SYMLINKS)" = "yes"; then	\
 		cd $(DESTDIR)$(bindir); $(RM) soxi_ng$(EXEEXT); $(LN_S) sox_ng$(EXEEXT) soxi_ng$(EXEEXT); \
 	fi
+	if test "$(REPLACE)" = "yes"; then \
+		cd $(DESTDIR)$(bindir); \
+		$(RM) sox$(EXEEXT); $(LN_S) sox_ng$(EXEEXT) sox$(EXEEXT); \
+		if test "$(PLAYRECLINKS)" = "yes"; then	\
+			$(RM) play$(EXEEXT) rec$(EXEEXT); \
+			$(LN_S) play_ng$(EXEEXT) play$(EXEEXT); \
+			$(LN_S) rec_ng$(EXEEXT) rec$(EXEEXT); \
+		fi; \
+		if test "$(SYMLINKS)" = "yes"; then \
+			$(RM) soxi$(EXEEXT); \
+			$(LN_S) soxi_ng$(EXEEXT) soxi$(EXEEXT); \
+		fi; \
+		cd $(DESTDIR)$(includedir); \
+		$(RM) sox.h; $(LN_S) sox_ng.h sox.h; \
+		cd $(DESTDIR)$(libdir); \
+		$(RM) libsox.a; $(LN_S) libsox_ng.a libsox.a; \
+		$(RM) libsox.la; $(LN_S) libsox_ng.la libsox.la; \
+		$(RM) libsox.so; $(LN_S) libsox_ng.so libsox.so; \
+		if test "$(pkgconfigdir)"; then \
+			cd $(DESTDIR)$(pkfconfigdir); \
+			$(RM) "sox.pc"; $(LN_S) sox_ng.pc sox.pc; \
+		fi; \
+	fi
 
 uninstall-hook:
 	if test "$(PLAYRECLINKS)" = "yes"; then	\
@@ -182,6 +205,23 @@ uninstall-hook:
 	fi
 	if test "$(SYMLINKS)" = "yes"; then	\
 		cd $(DESTDIR)$(bindir); $(RM) soxi_ng$(EXEEXT); \
+	fi; \
+	if test "$(REPLACE)" = "yes"; then \
+		cd $(DESTDIR)$(bindir); \
+		$(RM) sox$(EXEEXT); \
+		if test "$(PLAYRECLINKS)" = "yes"; then	\
+			$(RM) play$(EXEEXT) rec$(EXEEXT); \
+		fi; \
+		if test "$(SYMLINKS)" = "yes"; then \
+			$(RM) soxi$(EXEEXT); \
+		fi; \
+		cd $(DESTDIR)$(includedir); $(RM) sox.h;\
+		cd $(DESTDIR)$(libdir); \
+		$(RM) libsox.a libsox.la libsox.so; \
+		if test "$pkgconfigdir"; then \
+			cd $(DESTDIR)$(pkfconfigdir); \
+			$(RM) "sox.pc";\
+		fi; \
 	fi
 
 clean-local:

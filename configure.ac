@@ -658,6 +658,7 @@ AC_OPTIONAL_FORMAT(lpc10, LPC10)
 
 
 dnl Check if we want to disable all symlinks
+dnl from "play_ng" to "sox_ng", "soxi_ng" to "sox_ng" etc.
 AC_MSG_CHECKING([whether to enable symlinks])
 AC_ARG_ENABLE(symlinks,
     AS_HELP_STRING([--disable-symlinks], [Don't make any symlinks to sox_ng.]),,enable_symlinks=yes)
@@ -680,6 +681,20 @@ if test "$enable_symlinks" = "yes"; then
 fi
 AC_SUBST(SYMLINKS)
 AC_SUBST(PLAYRECLINKS)
+
+dnl Check if we want to make links from "sox" to "sox_ng" and so on
+dnl thereby making it work as if it were sox.
+dnl --disable-symlinks is distinct from this and refers to
+dnl                    the soxi/play/rec aliases.
+AC_MSG_CHECKING([whether to replace sox with sox_ng])
+AC_ARG_ENABLE(replace,
+    AS_HELP_STRING([--enable-replace], [Make links from "sox" to "sox_ng" and so on.]),enable_replace=yes)
+AC_MSG_RESULT($enable_replace)
+
+if test "$enable_replace" = "yes"; then
+  REPLACE=yes
+fi
+AC_SUBST(REPLACE)
 
 AM_CONDITIONAL(STATIC_LIBSOX_ONLY, test "$enable_shared" = "no" -a "$enable_static" = "yes")
 
@@ -718,6 +733,7 @@ echo "Dynamic loading support....$using_libltdl"
 echo "Pkg-config location........$pkgconfig_option"
 echo "Play and rec symlinks......$enable_playrec_symlinks"
 echo "Symlinks enabled...........$enable_symlinks"
+echo "Replace sox................$enable_replace"
 echo
 echo "OPTIONAL DEVICE DRIVERS"
 echo "ao (Xiph)..................$using_ao"

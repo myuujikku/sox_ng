@@ -136,6 +136,25 @@ install-data-hook:
 	    cd $(DESTDIR)$(mandir)/man1 && $(RM) rec_ng.1 && $(LN_S) sox_ng.1 rec_ng.1; \
 	fi
 	cd $(DESTDIR)$(mandir)/man7 && $(RM) soxeffect_ng.7 && $(LN_S) ../man1/sox_ng.1 soxeffect_ng.7
+	if test "$(REPLACE)" = "yes"; then \
+		cd $(DESTDIR)$(mandir)/man1 && $(RM) sox.1 && $(LN_S) sox_ng.1 sox.1; \
+		cd $(DESTDIR)$(mandir)/man3 && $(RM) libsox.3 && $(LN_S) libsox_ng.3 libsox.3; \
+		cd $(DESTDIR)$(mandir)/man7 && $(RM) soxformat.7 && $(LN_S) soxformat_ng.7 soxformat.7; \
+		cd $(DESTDIR)$(mandir)/man7 && $(RM) soxeffect.7 && $(LN_S) soxeffect_ng.7 soxeffect.7; \
+		if test "$(PLAYRECLINKS)" = "yes"; then	\
+			cd $(DESTDIR)$(mandir)/man1 && $(RM) play.1 rec.1 && \
+			    $(LN_S) play_ng.1 play.1 && \
+			    $(LN_S) rec_ng.1 rec.1; \
+		fi; \
+		if test "$(SYMLINKS)" = "yes"; then \
+			cd $(DESTDIR)$(mandir)/man1 && $(RM) soxi.1 && \
+			    $(LN_S) soxi_ng.1 soxi.1; \
+		fi; \
+		: pkgconfig_DATA is set above if HAVE_PKGCONFIG; \
+		if [ -n "$(pkgconfig_DATA)" ]; then \
+			cd "$(pkgconfigdir)" && $(RM) sox.pc && $(LN_S) sox_ng.pc sox.pc;  \
+		fi; \
+	fi
 
 uninstall-hook:
 	if test "$(PLAYRECLINKS)" = "yes"; then	\
@@ -143,6 +162,22 @@ uninstall-hook:
 		$(RM) $(DESTDIR)$(mandir)/man1/rec_ng.1; \
 	fi
 	$(RM) $(DESTDIR)$(mandir)/man7/soxeffect_ng.7
+	if test "$(REPLACE)" = "yes"; then \
+		$(RM) $(DESTDIR)$(mandir)/man1/sox.1; \
+		$(RM) $(DESTDIR)$(mandir)/man3/libsox.3; \
+		$(RM) $(DESTDIR)$(mandir)/man7/soxformat.7; \
+		$(RM) $(DESTDIR)$(mandir)/man7/soxeffect.7; \
+		if test "$(PLAYRECLINKS)" = "yes"; then	\
+			$(RM) $(DESTDIR)$(mandir)/man1/play.1; \
+			$(RM) $(DESTDIR)$(mandir)/man1/rec.1; \
+		fi; \
+		if test "$(SYMLINKS)" = "yes"; then \
+			$(RM) $(DESTDIR)$(mandir)/man1/soxi.1; \
+		fi; \
+		if [ -n "$(pkgconfig_DATA)" ]; then \
+			$(RM) $(pkgconfigdir)/sox.pc; \
+		fi; \
+	fi
 
 # Automatically update libtool script if it gets out-of-date
 libtool: $(LIBTOOL_DEPS)
