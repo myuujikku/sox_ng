@@ -19,7 +19,7 @@ dnl $2 package name in conditionals  e.g. FLAC
 dnl $3 using check
 
 AC_DEFUN([AC_OPTIONAL_FORMAT],
-  [AC_ARG_WITH($1, AC_HELP_STRING([--with-$1=dyn], [load $1 dynamically]))
+  [AC_ARG_WITH($1, AS_HELP_STRING([--with-$1=dyn], [load $1 dynamically]))
   using_$1=$with_$1
   if test "_$with_$1" = _dyn; then
     if test $using_libltdl != yes; then
