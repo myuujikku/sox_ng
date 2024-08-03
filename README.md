@@ -1,4 +1,4 @@
-@ README
+# README.md
 
 `sox` means [sox.sf.net](http://sox.sf.net)<BR>
 `sox_ng` means this hard fork of `sox-14.4.2`<BR>
@@ -6,7 +6,7 @@
 in any of its incarnations<BR>
 
 The `SoX_ng` project imports, compares and refines bug fixes and new work 
-from the 57 software distributions that package SoX
+from the 50-odd software distributions that package SoX
 and from the plethora of forks on github and elsewhere,
 and makes regular releases with a six-monthly cadence
 for each of the micro (bug fixes) and minor (new features) releases.
@@ -23,10 +23,10 @@ To fetch it:
 git clone https://codeberg.org/sox_ng/sox_ng
 cd sox_ng
 ```
-and, optionally,
+and if you want local copies of the wiki and the issues:
 ```
 git clone https://codeberg.org/sox_ng/sox_ng.wiki wiki
-bin/getissues	# into issues/
+issues/getissues.sh
 ```
 
 To compile it:
@@ -39,18 +39,21 @@ and to install it:
 ```
 sudo make install
 ```
+This installs it as `sox_ng`, `sox_ng.h`, `libsox_ng` and so on, so as
+not to conflict with traditional `sox`. If you want it to work the same
+as the original `sox`, use `./configure --enable-replace`
 
-You can edit and commit to the code, which is in C, Bourne shell and autoconf,
-and to the wiki, which is `.md` and image files, from Codeberg's web interface
-or from the command-line.
+You can edit and commit to the code and the wiki using Codeberg's web interface
+or from the command-line. In fact, the command-line is the only way to add
+images and attachments to the wiki.
 
 The issues are currently read-only to the command line
 and editable only on the Codeberg web site.
 
 ## Community
-The SoX_ng project has two mailing lists on sourcehut.org:
-`u.sox_ng.users@lists.sr.ht` and `u.sox_ng.devel@lists.sr.ht`,
-both for discussion both of `sox_ng's codebase and of the project itself.
+The SoX_ng project has two mailing lists hosted by sourcehut.org:
+`u.sox_ng.users@lists.sr.ht` and `u.sox_ng.devel@lists.sr.ht`;
+both are for discussion of the `sox_ng` codebase and of the project itself.
 
 Discussion of SoX itself should remain on the sox.sf.net mailing lists.
 
