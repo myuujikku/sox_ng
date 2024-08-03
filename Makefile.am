@@ -131,13 +131,17 @@ DISTCLEANFILES = $(DOCHTML) $(DOCPDF)
 MAINTAINERCLEANFILES = $(DOCTXT)
 
 install-data-hook:
-	cd $(DESTDIR)$(mandir)/man1 && $(RM) play_ng.1 && $(LN_S) sox_ng.1 play_ng.1
-	cd $(DESTDIR)$(mandir)/man1 && $(RM) rec_ng.1 && $(LN_S) sox_ng.1 rec_ng.1
+	if test "$(PLAYRECLINKS)" = "yes"; then	\
+	    cd $(DESTDIR)$(mandir)/man1 && $(RM) play_ng.1 && $(LN_S) sox_ng.1 play_ng.1; \
+	    cd $(DESTDIR)$(mandir)/man1 && $(RM) rec_ng.1 && $(LN_S) sox_ng.1 rec_ng.1; \
+	fi
 	cd $(DESTDIR)$(mandir)/man7 && $(RM) soxeffect_ng.7 && $(LN_S) ../man1/sox_ng.1 soxeffect_ng.7
 
 uninstall-hook:
-	$(RM) $(DESTDIR)$(mandir)/man1/play_ng.1
-	$(RM) $(DESTDIR)$(mandir)/man1/rec_ng.1
+	if test "$(PLAYRECLINKS)" = "yes"; then	\
+		$(RM) $(DESTDIR)$(mandir)/man1/play_ng.1; \
+		$(RM) $(DESTDIR)$(mandir)/man1/rec_ng.1; \
+	fi
 	$(RM) $(DESTDIR)$(mandir)/man7/soxeffect_ng.7
 
 # Automatically update libtool script if it gets out-of-date
