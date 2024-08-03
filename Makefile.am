@@ -32,7 +32,6 @@ EXTRA_DIST = sox_ng.txt soxi_ng.txt soxformat_ng.txt libsox_ng.txt \
 	     README.sh FEATURES.in
 
 if HAVE_PKGCONFIG
-pkgconfigdir = @PKGCONFIGDIR@
 pkgconfig_DATA = sox_ng.pc
 endif
 

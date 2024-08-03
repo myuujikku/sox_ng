@@ -79,9 +79,10 @@ if test "$with_pkgconfigdir" != "no"; then
     fi
     using_pkgconfig="yes"
     PKG_PROG_PKG_CONFIG
+    pkgconfigdir=$with_pkgconfigdir
+    AC_SUBST(pkgconfigdir)
 fi
 AM_CONDITIONAL(HAVE_PKGCONFIG, test x$using_pkgconfig = xyes)
-AC_SUBST(PKGCONFIGDIR, $with_pkgconfigdir)
 
 using_win32_glob="no"
 case $target in
