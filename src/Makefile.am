@@ -28,7 +28,7 @@ if HAVE_LIBLTDL
 # is ignored when you specify a more specific one.
 # We want to version libsox_ng and we are OK because they
 # have a more specific LDFLAGS that includes -version-info.
-AM_LDFLAGS = -avoid-version -module
+AM_LDFLAGS = -avoid-version -module @APP_LDFLAGS@
 AM_CPPFLAGS += -DPKGLIBDIR="\"$(pkglibdir)\""
 endif
 if HAVE_WIN32_LTDL
