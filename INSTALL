@@ -200,7 +200,7 @@ or, equivalently:
 If monkey.xxx plays properly (it's a very short monkey screech),
 congratulations! SoX works.
 
-If you're adding new features to SoX or want to perform advance tests
+If you're adding new features to SoX or want to perform advanced tests
 on a new platform then you can use the scripts "tests.sh" and
 "testall.sh" to stress SoX.
 
