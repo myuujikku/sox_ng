@@ -10,12 +10,8 @@ and fetch a copy by
 git clone https://codeberg.org/sox_ng/sox_ng.git
 ```
 
-There are no other rules except, when modifying the code,
-to follow the existing style in its bizarre formatting
-and dense grammar.
-
-Adding a header comment to each source file saying what it does
-would be nice. #82
+There are no other rules except for the GPL and, when modifying the code,
+to follow the existing style in its bizarre formatting and dense grammar.
 
 See also the rules [for the wiki](RULES-wiki)
 and [for the issues](RULES-issues).

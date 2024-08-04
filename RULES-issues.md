@@ -9,12 +9,11 @@ containing its initial description and into a directory of the same name
 without the `.md` suffix containing attachments and
 - if the issue has labels, they are listed one per line in a file `labels`
 - if the issue has a milestone, a file `milestone` containing
-  `micro`, `minor`, `major` or `release`.
+  `micro`, `minor`, `major`, `release` or `null` if it has no milestone.
   The milestones are used instead of labels `bug` or `enhancement`.
-- a file `number` contining the issue number.
+- a file `number` contining its issue number.
 
 Comments are not currently fetched. #34
-Attachments are not currently fetched. #35
 
 Attachments to issues are not currently migrated if you
 migrate the codeberg repository to another Forgejo instance.
@@ -23,4 +22,4 @@ migrate the codeberg repository to another Forgejo instance.
 In future, the master copy of the issue database will live in the
 source tree and the web version will be a copy of it. #80
 
-Like the wiki, there will be a script to make HTML pages of it. #81
+Like the wiki, it has a script `makehtml.sh` to make HTML pages of it.
