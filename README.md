@@ -10,7 +10,7 @@ from the 50-odd software distributions that package SoX
 and from the plethora of forks on github and elsewhere,
 and makes regular releases with a six-monthly cadence
 for each of the micro (bug fixes) and minor (new features) releases.
-Major releases (non-backwards-compatible changes) are being considered.
+A major release (non-backwards-compatible changes) is being considered.
 
 ## How to get it
 
@@ -51,6 +51,7 @@ The issues are currently read-only to the command line
 and editable only on the Codeberg web site.
 
 ## Community
+
 The SoX_ng project has two mailing lists hosted by sourcehut.org:
 `u.sox_ng.users@lists.sr.ht` and `u.sox_ng.devel@lists.sr.ht`;
 both are for discussion of the `sox_ng` codebase and of the project itself.
@@ -59,3 +60,7 @@ Discussion of SoX itself should remain on the sox.sf.net mailing lists.
 
 [`SoX_ng`'s financial accounts](Accounting) are public and
 [Bounties] can be offered for specific work.
+
+## README
+
+To generate sox's original README, run README.sh
