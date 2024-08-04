@@ -1,8 +1,15 @@
-SoX is currently maintained by
+SoX was written by Lance Norskog with significant contributions from
 
 	Chris Bagwell		cbagwell at users.sourceforge.net
+	Reuben Thomas		rrt at sc3d.org
 	Rob Sykes		robs at users.sourceforge.net
 	Pascal Giard		evilynux at users.sourceforge.net
+	Doug Cook		idigdoug at users.sourceforge.net^M
+	Ulrich Klauer		uklauer at users.sourceforge.net^M
+	M\303\244ns Rull\303\244rd		mans at mansr.com
 
-Many people contribute new features and bug fixes to SoX.  See the
-ChangeLog file for records of all changes and contributors so far.
+and many other contributers.
+
+sox_ng is currently maintained by
+
+	Martin Guy		martinwguy at gmail.com
