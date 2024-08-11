@@ -21,11 +21,15 @@ Like the wiki, it has a script `makehtml.sh` to make HTML pages of it.
 ### Title
 A one-liner, as short as possible.
 
+When issues are downloaded to a Unix system, slashes in the Title are converted to backslashes in the file/dir names. For now, for it to work on Windows and MS/DOS, you should also avoid backslash, colon and double quote. #XX
+
 ### Description
-The first line of every issue is # Title`, the same as the Title:
+The first line of every issue is `# Title`, the same as the Title.
 
 The second-level headings are normally
-`## Links``, `## Repeat by``, `## Analysis` and `## Conclusion`.
+`## Links``, `## Repeat by`, `## Results`, `## Analysis` and `## Conclusion`.
+
+In their contents, long lines are preferred to readable line breaks so that `grep`ping for a two-word phrase has a better chance of finding matching issues but it's not obligatory.
 
 ### Attachments
 Test files and patches are attached to the description.
@@ -33,10 +37,7 @@ Test files and patches are attached to the description.
 ### Comments
 Issue comments are not kept in the source tree.
 
-If people add them to the web versiobn, other webby people can
-edit their wisdom into the main description;
-that way our serious command-line friends will get the best version
-of the problem description and be spared wading through chitchat.
+If people add them to the web version, other webby people can edit the wisdom in them into the main description; that way our serious command-line friends get the best version of the problem description and are spared wading through chitchat in search of gems.
 
 - if the issue has a milestone, a file `milestone` containing
   `micro`, `minor`, `major`, `release` or `null` if it has no milestone.
