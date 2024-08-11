@@ -37,7 +37,7 @@ pkgconfig_DATA = sox_ng.pc
 endif
 
 play_ng.1 rec_ng.1: sox_ng.1
-	$(RM) $@ && $(LN_S) $< $@
+	@$(RM) $@ && $(LN_S) $< $@
 
 README: README.sh FEATURES.in
 	./README.sh
@@ -132,12 +132,12 @@ DISTCLEANFILES = $(DOCHTML) $(DOCPDF)
 MAINTAINERCLEANFILES = $(DOCTXT)
 
 install-data-hook:
-	if test "$(PLAYRECLINKS)" = "yes"; then	\
+	@if test "$(PLAYRECLINKS)" = "yes"; then	\
 	    cd $(DESTDIR)$(mandir)/man1 && $(RM) play_ng.1 && $(LN_S) sox_ng.1 play_ng.1; \
 	    cd $(DESTDIR)$(mandir)/man1 && $(RM) rec_ng.1 && $(LN_S) sox_ng.1 rec_ng.1; \
 	fi
-	cd $(DESTDIR)$(mandir)/man7 && $(RM) soxeffect_ng.7 && $(LN_S) ../man1/sox_ng.1 soxeffect_ng.7
-	if test "$(REPLACE)" = "yes"; then \
+	@cd $(DESTDIR)$(mandir)/man7 && $(RM) soxeffect_ng.7 && $(LN_S) ../man1/sox_ng.1 soxeffect_ng.7
+	@if test "$(REPLACE)" = "yes"; then \
 		cd $(DESTDIR)$(mandir)/man1 && $(RM) sox.1 && $(LN_S) sox_ng.1 sox.1; \
 		cd $(DESTDIR)$(mandir)/man3 && $(RM) libsox.3 && $(LN_S) libsox_ng.3 libsox.3; \
 		cd $(DESTDIR)$(mandir)/man7 && $(RM) soxformat.7 && $(LN_S) soxformat_ng.7 soxformat.7; \
@@ -153,17 +153,17 @@ install-data-hook:
 		fi; \
 		: pkgconfig_DATA is set above if HAVE_PKGCONFIG; \
 		if [ -n "$(pkgconfig_DATA)" ]; then \
-			cd "$(pkgconfigdir)" && $(RM) sox.pc && $(LN_S) sox_ng.pc sox.pc;  \
+			cd "$(pkgconfigdir)" && $(RM) sox.pc && $(LN_S) sox_ng.pc sox.pc; \
 		fi; \
 	fi
 
 uninstall-hook:
-	if test "$(PLAYRECLINKS)" = "yes"; then	\
+	@if test "$(PLAYRECLINKS)" = "yes"; then	\
 		$(RM) $(DESTDIR)$(mandir)/man1/play_ng.1; \
 		$(RM) $(DESTDIR)$(mandir)/man1/rec_ng.1; \
 	fi
-	$(RM) $(DESTDIR)$(mandir)/man7/soxeffect_ng.7
-	if test "$(REPLACE)" = "yes"; then \
+	@$(RM) $(DESTDIR)$(mandir)/man7/soxeffect_ng.7
+	@if test "$(REPLACE)" = "yes"; then \
 		$(RM) $(DESTDIR)$(mandir)/man1/sox.1; \
 		$(RM) $(DESTDIR)$(mandir)/man3/libsox.3; \
 		$(RM) $(DESTDIR)$(mandir)/man7/soxformat.7; \

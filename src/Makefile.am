@@ -164,18 +164,18 @@ EXTRA_DIST = monkey.wav optional-fmts.am \
 all: sox_ng$(EXEEXT) play_ng$(EXEEXT) rec_ng$(EXEEXT) soxi_ng$(EXEEXT) sox_sample_test$(EXEEXT) example0$(EXEEXT) example1$(EXEEXT) example2$(EXEEXT) example3$(EXEEXT) example4$(EXEEXT) example5$(EXEEXT) example6$(EXEEXT)
 
 play_ng$(EXEEXT) rec_ng$(EXEEXT) soxi_ng$(EXEEXT): sox_ng$(EXEEXT)
-	if test "$(PLAYRECLINKS)" = "yes"; then	\
+	@if test "$(PLAYRECLINKS)" = "yes"; then	\
 		test -f sox_ng$(EXEEXT) && ( $(RM) $@ && $(LN_S) sox_ng$(EXEEXT) $@ ) || $(LN_S) sox_ng $@; \
 	fi
 
 install-exec-hook:
-	if test "$(PLAYRECLINKS)" = "yes"; then	\
+	@if test "$(PLAYRECLINKS)" = "yes"; then	\
 		cd $(DESTDIR)$(bindir); $(RM) play_ng$(EXEEXT) rec_ng$(EXEEXT); $(LN_S) sox_ng$(EXEEXT) play_ng$(EXEEXT); $(LN_S) sox_ng$(EXEEXT) rec_ng$(EXEEXT); \
 	fi
-	if test "$(SYMLINKS)" = "yes"; then	\
+	@if test "$(SYMLINKS)" = "yes"; then	\
 		cd $(DESTDIR)$(bindir); $(RM) soxi_ng$(EXEEXT); $(LN_S) sox_ng$(EXEEXT) soxi_ng$(EXEEXT); \
 	fi
-	if test "$(REPLACE)" = "yes"; then \
+	@if test "$(REPLACE)" = "yes"; then \
 		cd $(DESTDIR)$(bindir); \
 		$(RM) sox$(EXEEXT); $(LN_S) sox_ng$(EXEEXT) sox$(EXEEXT); \
 		if test "$(PLAYRECLINKS)" = "yes"; then	\
@@ -200,13 +200,13 @@ install-exec-hook:
 	fi
 
 uninstall-hook:
-	if test "$(PLAYRECLINKS)" = "yes"; then	\
+	@if test "$(PLAYRECLINKS)" = "yes"; then	\
 		cd $(DESTDIR)$(bindir); $(RM) play_ng$(EXTEXT) rec_ng$(EXEEXT); \
 	fi
-	if test "$(SYMLINKS)" = "yes"; then	\
+	@if test "$(SYMLINKS)" = "yes"; then	\
 		cd $(DESTDIR)$(bindir); $(RM) soxi_ng$(EXEEXT); \
 	fi; \
-	if test "$(REPLACE)" = "yes"; then \
+	@if test "$(REPLACE)" = "yes"; then \
 		cd $(DESTDIR)$(bindir); \
 		$(RM) sox$(EXEEXT); \
 		if test "$(PLAYRECLINKS)" = "yes"; then	\
