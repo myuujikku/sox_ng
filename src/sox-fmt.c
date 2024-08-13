@@ -89,7 +89,7 @@ static int write_header(sox_format_t * ft)
   ||lsx_writedf(ft, ft->signal.rate)
   ||lsx_writedw(ft, ft->signal.channels)
   ||lsx_writedw(ft, (unsigned)comments_len)
-  ||lsx_writechars(ft, comments, comments_len)
+  ||lsx_writechars(ft, comments, comments_len) != SOX_SUCCESS
   ||lsx_padbytes(ft, comments_bytes - comments_len);
   free(comments);
   return error? SOX_EOF: SOX_SUCCESS;
