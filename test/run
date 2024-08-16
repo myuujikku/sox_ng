@@ -1,0 +1,23 @@
+#! /bin/sh
+
+# Template for "run" scripts
+
+# 14.4.2
+
+# Debian
+
+# 42b355
+
+rm -f core out.*
+
+${sox:-sox} 
+status=$?
+
+rm -f core out.*
+
+case "$status" in
+0) status=255;;
+2) status=0;;
+esac
+
+exit $status

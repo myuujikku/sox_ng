@@ -1,0 +1,12 @@
+Marcus Meissner 2017-12-19
+
+--- sox-14.4.2/src/aiff.c.xx	2017-12-19 08:11:20.195415511 +0100
++++ sox-14.4.2/src/aiff.c	2017-12-19 08:11:40.335389318 +0100
+@@ -504,6 +504,7 @@
+   unsigned int totalReadLength = 0;
+   unsigned int commentIndex;
+ 
++  *text = NULL;
+   lsx_readdw(ft, &chunksize);
+   lsx_readw(ft, &numComments);
+   totalReadLength += 2; /* chunksize doesn't count */
