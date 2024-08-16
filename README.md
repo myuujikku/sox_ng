@@ -1,10 +1,5 @@
 # README.md
 
-`sox` means [sox.sf.net](http://sox.sf.net)<BR>
-`sox_ng` means this hard fork of `sox-14.4.2`<BR>
-`SoX` means the Swiss Army Knife of command-line audio processing and its spirit
-in any of its incarnations<BR>
-
 The `SoX_ng` project imports, compares and refines bug fixes and new work 
 from the 50-odd software distributions that package SoX
 and from the plethora of forks on github and elsewhere,
@@ -12,16 +7,23 @@ and makes regular releases with a six-monthly cadence
 for each of the micro (bug fixes) and minor (new features) releases.
 A major release (non-backwards-compatible changes) is being considered.
 
+## Terminology
+`sox` means [sox.sf.net](http://sox.sf.net)<BR>
+`SoX` means the Swiss Army Knife of command-line audio processing in any of its incarnations<BR>
+`sox_ng` means the hard fork of `sox-14.4.2` aiming to sanitize `SoX`<BR>
+`SoX_ng` means the project to maintain `sox_ng`
+
 ## How to get it
 
 `sox_ng` lives at
 [codeberg.org/sox_ng/sox_ng](https://codeberg.org/sox_ng/sox_ng)
 and is composed of a SoX code base, a wiki and an issue tracker.
 
-To fetch it:
+To fetch the latest version:
 ```
 git clone https://codeberg.org/sox_ng/sox_ng
 cd sox_ng
+autoreconf -i
 ```
 and if you want local copies of the wiki and the issues:
 ```
@@ -31,7 +33,6 @@ issues/getissues.sh
 
 To compile it:
 ```
-autoreconf -i
 ./configure
 make
 ```
@@ -43,24 +44,65 @@ This installs it as `sox_ng`, `sox_ng.h`, `libsox_ng` and so on, so as
 not to conflict with traditional `sox`. If you want it to work the same
 as the original `sox`, use `./configure --enable-replace`
 
+## Build dependencies
+To compile a release tarball you will need `make`, `libtool`
+and `gcc` or `clang` (`./configure CC=clang`)
+
+To build the git repository you will also need `autoconf` and `automake`.
+
+To enable all of SoX's optional modules you can install
+`ladspa-sdk`
+`lame`,
+`libao`,
+`libflac`,
+`libid3tag`,
+`libmad`,
+`libogg`,
+`libopusfile`,
+`libpng`,
+`libsndfile`,
+`libvorbis`,
+`opencore-amr`,
+`twolame`,
+`wavpack`.
+### Debian, Ubuntu etc.
+```
+apt-get install gcc make libtool ladspa-sdk libao-dev libasound2-dev libgsm1-dev libid3tag0-dev libltdl-dev libmad0-dev libmagic-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev libopusfile-dev libpng-dev libpulse-dev libsamplerate0-dev libsndfile1-dev libtwolame-dev libvorbis-dev libwavpack-dev
+```
+and to run `issues/getissues.sh` and `makehtml.sh`
+```
+apt-get install jq libtext-multimarkdown-perl
+```
+
+### Fedora, Red Hat, CentOS etc.
+```
+yum install gcc make libtool libvorbis-devel alsa-lib-devel libtool-ltdl-devel libsamplerate-devel gsm-devel wavpack-devel ladspa-devel libpng-devel flac-devel libao-devel libsndfile-devel libid3tag-devel pulseaudio-libs-devel opusfile-devel libtool libmad-devel lame-devel twolame-devel
+```
+and to run `issues/getissues.sh` and `makehtml.sh`
+```
+yum install jq multimarkdown
+```
+
+## Accessibility
 You can edit and commit to the code and the wiki using Codeberg's web interface
-or from the command-line. In fact, the command-line is the only way to add
-images and attachments to the wiki.
+or from the command-line. The command-line is the only way to add images
+and attachments to the wiki.
 
 The issues are currently read-only to the command line
-and editable only on the Codeberg web site.
+and editable only on the Codeberg web site. This will change.
 
 ## Community
 
 The SoX_ng project has two mailing lists hosted by sourcehut.org:
-`u.sox_ng.users@lists.sr.ht` and `u.sox_ng.devel@lists.sr.ht`;
-both are for discussion of the `sox_ng` codebase and of the project itself.
+- `~sox_ng/users@lists.sr.ht` or `u.sox_ng.users@lists.sr.ht`
+- `~sox_ng/devel@lists.sr.ht` or `u.sox_ng.devel@lists.sr.ht`
+Both are for discussion of the `sox_ng` codebase and of the project itself.
 
-Discussion of SoX itself should remain on the sox.sf.net mailing lists.
+Discussion of SoX itself should remain on the `sox.sf.net` mailing lists.
 
 [`SoX_ng`'s financial accounts](Accounting) are public and
-[Bounties] can be offered for specific work.
+[Bounties] can be offered for specific works.
 
 ## README
 
-To generate sox's original README, run README.sh
+To generate SoX's original README, run `./README.sh`
