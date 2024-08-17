@@ -92,7 +92,8 @@ do
         do (
 	    vformat=" %-$(strlen $version)s"
 	    cd "$bug"
-	    ulimit -t 60
+	    # cfarm185 takes 3m09 to run CVE-2019-8357 so max 4m
+	    ulimit -t 240
 	    sox="$exe" sh run > $errs 2>&1
 	    status=$?
 	    case $status in
