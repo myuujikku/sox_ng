@@ -22,6 +22,11 @@ ASAN_OPTIONS=detect_leaks=0
 export ASAN_OPTIONS
 
 errs=$(mktemp)
+# On some systems mktemp doen't exist
+if [ -z "$errs" ]
+then
+    errs=/tmp/check$$
+fi
 
 # Print the legend
 cat << \EOF
@@ -42,6 +47,7 @@ EXEC Can't execute the sox binary. Missing shared libraries also provoke this.
 
 EOF
 
+# The exit code the whole script should give: 0 unless anything fails
 endexit=0
 
 for a in $args
@@ -57,26 +63,26 @@ do
 		continue
 	    fi
 	    ulimit -t 60
-	    sh run > $errs 2>&1
-	    status=$?
-	    case $status in
-	    0)   result=OK ;;
-	    1)   result=ASAN ;;
-	    127) result=EXEC ;;
-	    134) result=ABRT ;;
-	    136) result=FPE ;;
-	    137) result=LOOP ;;
-	    139) result=SEGV ;;
-	    255) result=SUCC ;;
-	    *)   result=$status ;;
-	    esac
-	    echo $result
-	    rm $errs
-	    if [ $status -ne 0 ]
-	    then
-		endexit=$status
-	    fi
-	)
+	    sh run
+	) > $errs 2>&1
+	status=$?
+	case $status in
+	0)   result=OK ;;
+	1)   result=ASAN ;;
+	127) result=EXEC ;;
+	134) result=ABRT ;;
+	136) result=FPE ;;
+	137) result=LOOP ;;
+	139) result=SEGV ;;
+	255) result=SUCC ;;
+	*)   result=$status ;;
+	esac
+	echo $result
+	rm $errs
+	if [ $status -ne 0 ]
+	then
+	    endexit=$status
+	fi
     fi
 done
 
