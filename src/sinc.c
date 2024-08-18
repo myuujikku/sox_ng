@@ -24,7 +24,6 @@ typedef struct {
   double             att, beta, phase, Fc0, Fc1, tbw0, tbw1;
   int                num_taps[2];
   sox_bool           round;
-  sox_bool           copy_thru;	/* Copy the data unmodified? */
 } priv_t;
 
 static int create(sox_effect_t * effp, int argc, char * * argv)
@@ -109,15 +108,8 @@ static int start(sox_effect_t * effp)
     int i, n, post_peak, longer;
 
     if (p->Fc0 >= Fn || p->Fc1 >= Fn) {
-      /* low-pass filtering at a frequency above the sample rate
-       * is equivalent to copying the data unmodified */
-      if (p->Fc0 == 0) {
-        lsx_warn("low-pass filter frequency is above sample-rate / 2");
-        p->Fc1 = Fn;
-      } else {
-        lsx_fail("filter frequency must be less than sample-rate / 2");
-        return SOX_EOF;
-      }
+      lsx_fail("filter frequency must be less than sample-rate / 2");
+      return SOX_EOF;
     }
     h[0] = lpf(Fn, p->Fc0, p->tbw0, &p->num_taps[0], p->att, &p->beta,p->round);
     h[1] = lpf(Fn, p->Fc1, p->tbw1, &p->num_taps[1], p->att, &p->beta,p->round);
