@@ -2,10 +2,13 @@
 
 The `SoX_ng` project imports, compares and refines bug fixes and new work 
 from the 50-odd software distributions that package SoX
-and from the plethora of forks on github and elsewhere,
+and from the plethora of forks on github and elsewhere
 and makes regular releases with a six-monthly cadence
 for each of the micro (bug fixes) and minor (new features) releases.
 A major release (non-backwards-compatible changes) is being considered.
+
+The first micro release is scheduled for the 18th August 2024.<BR>
+The first minor release is scheduled for the 18th October 2024.
 
 ## Terminology
 
