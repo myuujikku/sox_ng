@@ -4,6 +4,46 @@ Change History
 This file contains a list of all changes starting after the release of
 sox-11gamma, followed by a list of prior authors and features.
 
+$ox_ng-14.4.3	2024-08-14
+-------------
+
+New features:
+
+  o There is a new regression test suite, primarily against the CVEs
+  o A wiki and the issues open on the tracker are included in the release
+
+Bug fixes:
+
+  o For CVE-2017-11332, CVE-2017-11333, CVE-2017-11358, CVE-2017-11359,
+    CVE-2017-15370, CVE-2017-15371, CVE-2017-15372, CVE-2017-15642,
+    CVE-2017-18189, CVE-2019-1010004, CVE-2019-13590, CVE-2019-8354,
+    CVE-2019-8355, CVE-2019-8356, CVE-2019-8357, CVE-2021-23159,
+    CVE-2021-23172, CVE-2021-23210, CVE-2021-33844, CVE-2021-3643,
+    CVE-2021-40426, CVE-2022-31650, CVE-2022-31651, CVE-2023-26590,
+    CVE-2023-32627, CVE-2023-34318, CVE-2023-34432,
+  o spectrogram segfault when width exceeds number of samples
+  o segmentation fault in rate.c
+  o floating point exception in startwrite()
+  o wavpack check errors
+  o writing hcom files on bigendian systems
+  O Fixes for memory leaks and a double free()s
+  o It now compiles under C99 and on AIX
+  o Support for uClibc and builds with other non-glibc C libraries
+  o Various build system fixes from the software distributions
+j o Spelling errors are fixed
+  o Almost all compiler warnings are fixed
+
+Copyright:
+
+  o Uncopyrighted files have been attributed
+  o Copyrighted files with no license now have licences
+  o Multiple copyright notices in single files have been harmonized
+  o The lpc10 module was of dubious copyright and is now 3-clause BSD
+  o The libgsm module was missing its copyright notice
+  o There was an erroneous address for the FSF
+  o The copyright of opus.c is GPLv2-only because it's based on oggenc.c
+  o Therefore the overall copyright of sox_ng and libsox_ng is GPLv2
+
 $ox-14.4.2	2015-02-22
 ----------
 
