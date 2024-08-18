@@ -97,11 +97,17 @@ and editable only on the Codeberg web site. This will change.
 
 ## Community
 
-The SoX_ng project's first release is waiting for a suitable mailing list.
-In the meantime you can mail sox_ng@proton.me
+### Mailing lists
+* [sox_ng@freelists.org](https://www.freelists.org/list/sox_ng)
+  To subscribe, go there or send an email with `Subject: subscribe` to
+  [sox_ng-request@freelists.org](mailto:sox_ng-request@freelists.org)
 
-[`SoX_ng`'s financial accounts](Accounting) are public and
-[Bounties](Bounties) can be offered for specific works.
+### Private email
+* [sox_ng@proton.me](mailto:sox_ng@proton.me)
+
+### Finances
+* [`SoX_ng`'s financial accounts](Accounting) are public and
+* [Bounties](Bounties) can be offered for specific issues to be resolved
 
 ## README
 

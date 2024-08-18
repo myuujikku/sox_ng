@@ -44,15 +44,8 @@ users are encouraged to implement them!
 Please submit bug reports, new feature requests, and patches to the relevant
 tracker at the above address, or by email:
 
-		   mailto:u.sox_ng.devel@lists.sr.ht
+		   mailto:sox_ng@freelists.org
 
-Also accessible via the project home-page is the SoX users' discussion
-mailing list which you can join to discuss all matters SoX with other SoX
-users; the mail address for this list is:
-
-		   mailto:u.sox_ng.users@lists.sr.ht
-
-.
 cat FEATURES.in \
 	| sed "s/!!/			/" \
 	| sed "s/^\*\*/    o /" \
