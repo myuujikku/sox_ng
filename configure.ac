@@ -18,7 +18,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.62)
 
-AC_INIT(sox_ng, 14.4.3git, sox_ng@freelists.org)
+AC_INIT(sox_ng, 14.4.3-rc1, sox_ng@freelists.org)
 
 AC_CONFIG_MACRO_DIR([m4])
 
