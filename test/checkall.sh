@@ -47,7 +47,7 @@ do
 done
 $fail && exit 1
 
-errs=$(mktemp)
+errs=/tmp/checkall$$
 
 strlen() {
     printf "$1" | wc -c

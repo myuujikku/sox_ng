@@ -21,12 +21,7 @@ fi
 ASAN_OPTIONS=detect_leaks=0
 export ASAN_OPTIONS
 
-errs=$(mktemp)
-# On some systems mktemp doen't exist
-if [ -z "$errs" ]
-then
-    errs=/tmp/check$$
-fi
+errs=/tmp/check$$
 
 # Print the legend
 cat << \EOF
