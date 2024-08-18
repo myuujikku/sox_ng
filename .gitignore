@@ -31,3 +31,4 @@ Makefile.in
 /cmake_install.cmake
 *.a
 tags
+/wiki
