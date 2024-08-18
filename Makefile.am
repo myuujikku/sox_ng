@@ -30,7 +30,7 @@ EXTRA_DIST = sox_ng.txt soxi_ng.txt soxformat_ng.txt libsox_ng.txt \
 	     CMakeLists.txt sox_ng.pc.in COPYING AUTHORS INSTALL \
 	     cygbuild README.win32 README.osx scripts/batch-example.bat \
 	     README.md RULES.md RULES-issues.md RULES-wiki.md \
-	     README.sh FEATURES.in wiki/ issues/
+	     README.sh FEATURES.in issues test wiki/*
 
 if HAVE_PKGCONFIG
 pkgconfig_DATA = sox_ng.pc
