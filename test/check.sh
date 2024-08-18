@@ -11,6 +11,23 @@
 # e.g.
 #	sh check.sh CVE-2017-18189
 
+usage() {
+    {
+	echo "Usage: check.sh [-n] [test] ..."
+	echo "-n  Don't print the legend"
+    } 1>&2
+}
+
+legend=true
+while [ $# -gt 0 ]
+do
+    case "$1" in
+    -n) legend=false; shift;;
+    -*) usage; exit 1;;
+    *)  break;;
+    esac
+done
+
 args="$*"
 if [ -z "$args" ]
 then
@@ -24,7 +41,7 @@ export ASAN_OPTIONS
 errs=/tmp/check$$
 
 # Print the legend
-cat << \EOF
+$legend && cat << \EOF
 Legend
 OK   The test succeeded and sox succeeded or failed as it should
 SUCC sox "succeeded" (exit 0) when it should have failed (exit 2)
