@@ -8,6 +8,7 @@ for each of the micro (bug fixes) and minor (new features) releases.
 A major release (non-backwards-compatible changes) is being considered.
 
 ## Terminology
+
 `sox` means [sox.sf.net](http://sox.sf.net)<BR>
 `SoX` means the Swiss Army Knife of command-line audio processing in any of its incarnations<BR>
 `sox_ng` means the hard fork of `sox-14.4.2` aiming to sanitize `SoX`<BR>
@@ -45,6 +46,7 @@ not to conflict with traditional `sox`. If you want it to work the same
 as the original `sox`, use `./configure --enable-replace`
 
 ## Build dependencies
+
 To compile a release tarball you will need `make`, `libtool`
 and `gcc` or `clang` (`./configure CC=clang`)
 
@@ -65,6 +67,7 @@ To enable all of SoX's optional modules you can install
 `opencore-amr`,
 `twolame`,
 `wavpack`.
+
 ### Debian, Ubuntu etc.
 ```
 apt-get install gcc make libtool ladspa-sdk libao-dev libasound2-dev libgsm1-dev libid3tag0-dev libltdl-dev libmad0-dev libmagic-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev libopusfile-dev libpng-dev libpulse-dev libsamplerate0-dev libsndfile1-dev libtwolame-dev libvorbis-dev libwavpack-dev
@@ -84,6 +87,7 @@ yum install jq multimarkdown
 ```
 
 ## Accessibility
+
 You can edit and commit to the code and the wiki using Codeberg's web interface
 or from the command-line. The command-line is the only way to add images
 and attachments to the wiki.
@@ -93,15 +97,11 @@ and editable only on the Codeberg web site. This will change.
 
 ## Community
 
-The SoX_ng project has two mailing lists hosted by sourcehut.org:
-- `~sox_ng/users@lists.sr.ht` or `u.sox_ng.users@lists.sr.ht`
-- `~sox_ng/devel@lists.sr.ht` or `u.sox_ng.devel@lists.sr.ht`
-Both are for discussion of the `sox_ng` codebase and of the project itself.
-
-Discussion of SoX itself should remain on the `sox.sf.net` mailing lists.
+The SoX_ng project's first release is waiting for a suitable mailing list.
+In the meantime you can mail sox_ng@proton.me
 
 [`SoX_ng`'s financial accounts](Accounting) are public and
-[Bounties] can be offered for specific works.
+[Bounties](Bounties) can be offered for specific works.
 
 ## README
 
