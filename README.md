@@ -101,7 +101,7 @@ and editable only on the Codeberg web site. This will change.
 ## Community
 
 ### Mailing lists
-* [sox_ng@freelists.org](https://www.freelists.org/list/sox_ng)
+* [sox_ng@freelists.org](https://www.freelists.org/list/sox_ng)<BR>
   To subscribe, go there or send an email with `Subject: subscribe` to
   [sox_ng-request@freelists.org](mailto:sox_ng-request@freelists.org)
 
