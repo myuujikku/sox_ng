@@ -205,7 +205,7 @@ uninstall-hook:
 	fi
 	@if test "$(SYMLINKS)" = "yes"; then	\
 		cd $(DESTDIR)$(bindir); $(RM) soxi_ng$(EXEEXT); \
-	fi; \
+	fi
 	@if test "$(REPLACE)" = "yes"; then \
 		cd $(DESTDIR)$(bindir); \
 		$(RM) sox$(EXEEXT); \
