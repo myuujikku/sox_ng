@@ -194,7 +194,7 @@ install-exec-hook:
 		$(RM) libsox.la; $(LN_S) libsox_ng.la libsox.la; \
 		$(RM) libsox.so; $(LN_S) libsox_ng.so libsox.so; \
 		if test "$(pkgconfigdir)"; then \
-			cd $(DESTDIR)$(pkfconfigdir); \
+			cd $(DESTDIR)$(pkgconfigdir); \
 			$(RM) "sox.pc"; $(LN_S) sox_ng.pc sox.pc; \
 		fi; \
 	fi

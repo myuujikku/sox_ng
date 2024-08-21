@@ -151,10 +151,6 @@ install-data-hook:
 			cd $(DESTDIR)$(mandir)/man1 && $(RM) soxi.1 && \
 			    $(LN_S) soxi_ng.1 soxi.1; \
 		fi; \
-		: pkgconfig_DATA is set above if HAVE_PKGCONFIG; \
-		if [ -n "$(pkgconfig_DATA)" ]; then \
-			cd "$(pkgconfigdir)" && $(RM) sox.pc && $(LN_S) sox_ng.pc sox.pc; \
-		fi; \
 	fi
 
 uninstall-hook:
@@ -174,9 +170,6 @@ uninstall-hook:
 		fi; \
 		if test "$(SYMLINKS)" = "yes"; then \
 			$(RM) $(DESTDIR)$(mandir)/man1/soxi.1; \
-		fi; \
-		if [ -n "$(pkgconfig_DATA)" ]; then \
-			$(RM) $(pkgconfigdir)/sox.pc; \
 		fi; \
 	fi
 
