@@ -19,5 +19,6 @@ it creates `index.html` and an HTML page for each page of the wiki.
 If there is a `Home.md` page, this will become `index.html`
 as well as `Home.html`.
 
-Internal wikilinks should be written as `[Accounting](Accounting)`
-for the HTML encoding to work properly.
+For the HTML encoding to work properly.
+internal wikilinks should be written as `[Accounting](Accounting)`
+instead of just `[Accounting]`.

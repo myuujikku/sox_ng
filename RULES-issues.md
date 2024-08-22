@@ -26,28 +26,28 @@ When issues are downloaded to a Unix system, slashes in the Title are converted 
 ### Description
 The first line of every issue is `# Title`, the same as the Title.
 
-The second-level headings are normally
-`## Links``, `## Repeat by`, `## Results`, `## Analysis` and `## Conclusion`.
+The second-level headings are usually
+`## Links`, `## Repeat by`, `## Results`, `## Analysis` and `## Conclusion`.
 
-In their contents, long lines are preferred to
-[semantic line breaks](Stallman rant on using line breaks as punctuation)
+In the content, long lines are preferred to
+[semantic line breaks](https://sembr.org)
 so that `grep`ping for a two-word phrase has a better chance of finding
 matching issues, but it's not obligatory.
 
+For further info on the Markdown used in issues and the wiki
+see RULES-Markdown.md
+
 ### Attachments
-Test files and patches are attached to the description.
+Test files and patches need to be attached to the main description,
 
 ### Comments
 Issue comments are not kept in the source tree.
 
 If people add them to the web version, other webby people can edit
-the wisdom in them into the main description; that way our serious
+the wisdom in them into the main description; that way our
 command-line friends get the best version of the problem description
 and are spared wading through chitchat in search of gems.
 
-- if the issue has a milestone, a file `milestone` containing
-  `micro`, `minor`, `major`, `release` or `null` if it has no milestone.
-  The milestones are used instead of labels `bug` or `enhancement`.
 - a file `number` contining its issue number.
 ### Milestone
 Kept in a file `miletone`, one of:
@@ -57,9 +57,11 @@ Kept in a file `miletone`, one of:
 * `release` if it regards the SoX_ng project's infrastructure
   and should be included in the next release
 
+Milestones `micro` or `minor` are used instead of labels `bug` or `enhancement`.
+
 ### Labels
 Kept in a file `labels`, one per line, all optional:
-* `patch`: Patches are included
+* `patch`: A solution is suggested in the issue, maybe as a patch
 * `copyright`: The issue impacts on `sox_ng`'s copyright status.
 * `needswork`: All info seems to be in but work is needed.
 * `duplicate`: This report has the same cause as another issue..
@@ -74,16 +76,14 @@ Kept in a file `state` containing `open` or `closed`.
 ### Issue number
 Kept in a file `number` in decimal.
 
-Issue numbers, how 1960s,
-and showing them by default in reverse order of submission,
-with the newewst and most noisy first, is just odd.
+Issue numbers are assigned by Forgejo on Codeberg.org when issues are created;
+it is not possible to tell it what number to assign to an issue.
 
-Random numbers would be better; that way individuals can create
-issues offline with vanishing risk of issue number clashes and
-if you really want to see them sorted by most recent activity,
-there's `ls -t`.
-
-I wonder what the word size of an issue number is in `forgejo`.
+### Issue id
+In a file called `id` there is another number which Forgejo also assigns
+and which is a different, bigger number,
+presumably unique within the Forgejo instance.
 
 ### Anything else
-Mo, but submitter and submission date would probably be useful.
+No, but the submitter and submission date would probably be useful
+to be able to include them in the HTML index and the HTML version of each issue.
