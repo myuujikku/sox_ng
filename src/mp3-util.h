@@ -18,6 +18,7 @@
 #include <sys/stat.h>
 
 #ifdef USING_ID3TAG
+#ifdef HAVE_MAD_H
 
 static char const * id3tagmap[][2] =
 {
@@ -32,6 +33,7 @@ static char const * id3tagmap[][2] =
   {NULL, NULL}
 };
 
+#endif /* HAVE_MAD_H */
 #endif /* USING_ID3TAG */
 
 #if defined(HAVE_LAME)
@@ -81,6 +83,7 @@ static void write_comments(sox_format_t * ft)
 
 #ifdef USING_ID3TAG
 
+#ifdef HAVE_MAD_H
 static id3_utf8_t * utf8_id3tag_findframe(
     struct id3_tag * tag, const char * const frameid, unsigned index)
 {
@@ -235,6 +238,7 @@ static void read_comments(sox_format_t * ft)
     id3_tag_delete(info.tag);
   }
 }
+#endif /* HAVE_MAD_H */
 
 #endif /* USING_ID3TAG */
 

@@ -130,6 +130,7 @@ static mad_timer_t const mad_timer_zero_stub = {0, 0};
    align with most users expectation of output file should be 16 bits. */
 #define MP3_MAD_PRECISION  16
 
+#ifdef HAVE_MAD_H
 static const char* const mad_library_names[] =
 {
 #ifdef DL_MAD
@@ -139,6 +140,7 @@ static const char* const mad_library_names[] =
 #endif
     NULL
 };
+#endif
 
 #ifdef DL_MAD
   #define MAD_FUNC LSX_DLENTRY_DYNAMIC
