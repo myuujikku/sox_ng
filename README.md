@@ -25,7 +25,27 @@ and is composed of a SoX code base, a wiki and an issue tracker.
 
 ### Releases
 
-[`sox_ng`'s release tarballs](https://codeberg.org/sox_ng/sox_ng/releases)
+Download one of the
+[release tarballs](https://codeberg.org/sox_ng/sox_ng/releases).
+
+Extract it:
+```
+tar xzf sox_ng-*.tar.gz
+```
+Build it:
+```
+./configure
+make
+```
+Install it:
+```
+make install
+```
+
+It installs as `sox_ng` so that `sox` and `sox_ng` can
+coexist on the same system.
+For it to work the same as the original `sox`, use
+`./configure --enable-replace` instead.
 
 ### Development branches
 #### main
