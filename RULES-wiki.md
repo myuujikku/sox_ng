@@ -45,8 +45,8 @@ instead of just `[Accounting]`.
 
 We indent second-level lists and continuation lines by two spaces,
 not four like the standard says
-not only because that's how 150 issues are already formatted
-but also because it makes for better typography of the `.md` files.
+not only because that's how 120 issues are already formatted
+but also because the typography of `.md` files is better.
 
 `makehtml.sh` converts each pair of spaces in `.md` files to four
 before feeding it to `multimarkdown` so that lists format correctly.
