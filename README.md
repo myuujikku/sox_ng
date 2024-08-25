@@ -23,13 +23,20 @@ The first minor release is scheduled for the 18th October 2024.
 [codeberg.org/sox_ng/sox_ng](https://codeberg.org/sox_ng/sox_ng)
 and is composed of a SoX code base, a wiki and an issue tracker.
 
+### Releases
+
+[`sox_ng`'s release tarballs](https://codeberg.org/sox_ng/sox_ng/releases)
+
+### Development branches
+#### main
+
 To fetch the latest version:
 ```
 git clone https://codeberg.org/sox_ng/sox_ng
 cd sox_ng
 autoreconf -i
 ```
-and if you want local copies of the wiki and the issues:
+and to make local copies of the wiki and the issues:
 ```
 git clone https://codeberg.org/sox_ng/sox_ng.wiki wiki
 issues/getissues.sh
@@ -100,7 +107,7 @@ and editable only on the Codeberg web site. This will change.
 
 ## Community
 
-### Mailing lists
+### Mailing list
 * [sox_ng@freelists.org](https://www.freelists.org/list/sox_ng)<BR>
   To subscribe, go there or send an email with `Subject: subscribe` to
   [sox_ng-request@freelists.org](mailto:sox_ng-request@freelists.org)
