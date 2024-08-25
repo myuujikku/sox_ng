@@ -182,7 +182,7 @@ dnl Extra CFLAGS if we have gcc
 if test "$GCC" = "yes"; then
 
     AC_MSG_CHECKING([gcc version])
-    gccver=`$CC -dumpversion`
+    gccver=$($CC -dumpversion)
     AC_MSG_RESULT($gccver)
 
     CFLAGS="$CFLAGS -Wall -W -Wstrict-prototypes -pedantic"
@@ -282,7 +282,7 @@ dnl Check for OpenMP
 AC_OPENMP
 if test "x$OPENMP_CFLAGS" != "x"; then  dnl Old libtool workaround start
   AC_MSG_CHECKING([for libtool version])
-  lt_version="`grep '^VERSION' $srcdir/ltmain.sh | sed -e 's/VERSION\=//g;s/ .*//g;s/"//g'`"
+  lt_version="$(grep '^VERSION' $srcdir/ltmain.sh | sed -e 's/VERSION\=//g;s/ .*//g;s/"//g')"
   AS_VERSION_COMPARE([$lt_version], [2.4],
     [AS_IF([test "$GCC" = "yes"],
        [AC_MSG_RESULT([$lt_version, needs OpenMP linker workaround])
