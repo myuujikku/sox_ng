@@ -686,7 +686,7 @@ dnl --disable-symlinks is distinct from this and refers to
 dnl                    the soxi/play/rec aliases.
 AC_MSG_CHECKING([whether to replace sox with sox_ng])
 AC_ARG_ENABLE(replace,
-    AS_HELP_STRING([--enable-replace], [Make links from "sox" to "sox_ng" and so on.]),enable_replace=yes)
+    AS_HELP_STRING([--enable-replace], [Make links from "sox" to "sox_ng" and so on.]),enable_replace=yes,enable_replace=no)
 AC_MSG_RESULT($enable_replace)
 
 if test "$enable_replace" = "yes"; then
