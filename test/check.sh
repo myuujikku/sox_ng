@@ -49,13 +49,14 @@ ABRT sox Aborted (core dumped)
 SEGV sox got a Segmentation fault (core dumped)
 FPE  sox got a Floating Point Exception (core dumped)
 LOOP sox ran for more than one minute of CPU.
+EXEC Can't execute the sox binary. Missing shared libraries also provoke this.
+VOID This test cannot be run with the sox you have installed
 ASAN The Address Sanitizer reports problems other than memory leaks:
      buffer overflows, freeing free memory, allocating until running out of VM.
      It means exit(1), which sox only gives for command-line syntax errors.
      Other failures (SEGV, FPE etc) will be caught by ASAN in such builds.
      You will also get an ASAN error if your sox wasn't built with support
      for the input or output format, in which case it exits 1.
-EXEC Can't execute the sox binary. Missing shared libraries also provoke this.
 
 EOF
 
@@ -87,12 +88,13 @@ do
 	136) result=FPE ;;
 	137) result=LOOP ;;
 	139) result=SEGV ;;
+	254) result=VOID ;;
 	255) result=SUCC ;;
 	*)   result=$status ;;
 	esac
 	echo $result
 	rm $errs
-	if [ $status -ne 0 ]
+	if [ $status -ne 0 -a $status != 254 ]
 	then
 	    endexit=$status
 	fi

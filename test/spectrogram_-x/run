@@ -11,6 +11,9 @@
 #
 # See https://sourceforge.net/p/sox/mailman/message/33196362
 
+# Check whether sox was compiled with the spectrogram effect
+${sox:-sox} 2>&1 | grep -q '^EFFECTS:.*spectrogram' || exit 254
+
 ${sox:-sox} file.wav -n spectrogram -X 1001
 status=$?
 
