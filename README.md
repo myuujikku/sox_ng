@@ -48,6 +48,7 @@ For it to work the same as the original `sox`, use
 `./configure --enable-replace` instead.
 
 ### Development branches
+
 #### main
 
 To fetch the latest version:
@@ -128,14 +129,17 @@ and editable only on the Codeberg web site. This will change.
 ## Community
 
 ### Mailing list
+
 * [sox_ng@freelists.org](https://www.freelists.org/list/sox_ng)<BR>
   To subscribe, go there or send an email with `Subject: subscribe` to
   [sox_ng-request@freelists.org](mailto:sox_ng-request@freelists.org)
 
 ### Private email
+
 * [sox_ng@proton.me](mailto:sox_ng@proton.me)
 
 ### Finances
+
 * [`SoX_ng`'s financial accounts](Accounting) are public and
 * [Bounties](Bounties) can be offered for specific issues to be resolved
 
