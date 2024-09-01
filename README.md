@@ -110,7 +110,7 @@ apt-get install jq libtext-multimarkdown-perl
 
 ### Fedora, Red Hat, CentOS etc.
 ```
-yum install gcc make libtool libvorbis-devel alsa-lib-devel libtool-ltdl-devel libsamplerate-devel gsm-devel wavpack-devel ladspa-devel libpng-devel flac-devel libao-devel libsndfile-devel libid3tag-devel pulseaudio-libs-devel opusfile-devel libtool libmad-devel lame-devel twolame-devel opencore-amr-devel file-devel
+yum install gcc make libtool libvorbis-devel alsa-lib-devel libtool-ltdl-devel libsamplerate-devel gsm-devel wavpack-devel ladspa-devel libpng-devel flac-devel libao-devel libsndfile-devel libid3tag-devel pulseaudio-libs-devel opusfile-devel libtool libmad-devel lame-devel twolame-devel opencore-amr-devel file-devel libcaca-devel
 ```
 and to run `issues/getissues.sh` and `makehtml.sh`
 ```
