@@ -7,7 +7,7 @@ and makes regular releases with a six-monthly cadence
 for each of the micro (bug fixes) and minor (new features) releases.
 A major release (non-backwards-compatible changes) is being considered.
 
-The first micro release is scheduled for the 18th August 2024.<BR>
+The next micro release is scheduled for the 18th February 2025.<BR>
 The first minor release is scheduled for the 18th October 2024.
 
 ## Terminology

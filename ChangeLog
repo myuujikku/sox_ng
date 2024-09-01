@@ -5,36 +5,12 @@ This file contains a list of all changes starting after the release of
 sox-11gamma, followed by a list of prior authors and features.
 
 
-$ox_ng-14.4.3-rc2	2024-08-25
------------------
-
-New features:
-
- o List issues' attachments in their HTML versions
- o Let 'getissues.sh' and 'makehtml.sh' be run from the top-level directory
- o Make 'makehtml.sh's typography more similar to that of Forgejo
- o Skip tests that depend on FLAC or 'sox spectrogram' when they are
-   not included in the version of SoX under test
-
-Bug fixes:
-
- o Fix building on AIX, FreeBSD, OpenBSD and Solaris
- o Add missing Fedora build dependencies
- o Fix 'configure --enable-replace' also installing 'sox.pc'
-   in the --prefix directory
- o Fix compiler warnings when libmad is not installed
- o Download issues' non-patch attachments correctly
- o makehtml.sh: Escape escapes special characters in target URLs
- o makehtml.sh: Format nested lists and list continuation lines correctly
-
-
-$ox_ng-14.4.3-rc1	2024-08-14
------------------
+$ox_ng-14.4.3	2024-09-01
+-------------
 
 New features:
 
   o There is a new regression test suite, primarily against the CVEs
-  o A wiki and the issues open on the tracker are included in the release
 
 Bug fixes:
 
@@ -55,6 +31,7 @@ Bug fixes:
   o Support for uClibc and builds with other non-glibc C libraries
   o Various build system fixes from the software distributions
 j o Spelling errors are fixed
+  o It now builds on AIX, FreeBSD, OpenBSD and Solaris
   o Almost all compiler warnings are fixed
 
 Copyright:
