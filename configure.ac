@@ -25,7 +25,8 @@ AC_CONFIG_MACRO_DIR([m4])
 dnl Find target architecture
 AC_CANONICAL_TARGET
 
-AM_INIT_AUTOMAKE
+dnl Don't insist on NEWS etc being present
+AM_INIT_AUTOMAKE([foreign])
 AM_SILENT_RULES([yes])
 
 dnl create a config.h file (Automake will add -DHAVE_CONFIG_H)
