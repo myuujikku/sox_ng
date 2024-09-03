@@ -2851,7 +2851,7 @@ static sox_bool cmp_comment_text(char const * c1, char const * c2)
 int main(int argc, char **argv)
 {
   size_t i;
-  char mybase[6];
+  char mybase[8];
 
   gettimeofday(&load_timeofday, NULL);
   myname = argv[0];
