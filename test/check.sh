@@ -48,7 +48,7 @@ SUCC sox "succeeded" (exit 0) when it should have failed (exit 2)
 ABRT sox Aborted (core dumped)
 SEGV sox got a Segmentation fault (core dumped)
 FPE  sox got a Floating Point Exception (core dumped)
-LOOP sox ran for more than one minute of CPU.
+LOOP sox ran for more than four minutes of CPU.
 EXEC Can't execute the sox binary. Missing shared libraries also provoke this.
 VOID This test cannot be run with the sox you have installed
 ASAN The Address Sanitizer reports problems other than memory leaks:
