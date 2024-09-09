@@ -42,9 +42,9 @@ static int write_header(sox_format_t * ft)
 {
   uint64_t size64 = ft->olength? ft->olength:ft->signal.length;
   unsigned size = size64 > UINT_MAX ? 0 : (unsigned)size64;
-  return lsx_writechars(ft, ID1, sizeof(ID1))
+  return lsx_writechars(ft, ID1, sizeof(ID1)) != SOX_SUCCESS
       || lsx_writedw(ft, size)
-      || lsx_writechars(ft, ID2, sizeof(ID2))? SOX_EOF:SOX_SUCCESS;
+      || lsx_writechars(ft, ID2, sizeof(ID2)) != SOX_SUCCESS ? SOX_EOF:SOX_SUCCESS;
 }
 
 LSX_FORMAT_HANDLER(wve)

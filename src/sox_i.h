@@ -146,7 +146,7 @@ size_t lsx_writebuf(sox_format_t * ft, void const *buf, size_t len);
 int lsx_reads(sox_format_t * ft, char *c, size_t len);
 int lsx_writes(sox_format_t * ft, char const * c);
 void lsx_set_signal_defaults(sox_format_t * ft);
-#define lsx_writechars(ft, chars, len) (lsx_writebuf(ft, chars, len) == len? SOX_SUCCESS : SOX_EOF)
+#define lsx_writechars(ft, chars, len) ((lsx_writebuf(ft, chars, len) == len) ? SOX_SUCCESS : SOX_EOF)
 
 size_t lsx_read_3_buf(sox_format_t * ft, sox_uint24_t *buf, size_t len);
 size_t lsx_read_b_buf(sox_format_t * ft, uint8_t *buf, size_t len);

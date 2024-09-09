@@ -51,7 +51,7 @@ static int write_header(sox_format_t * ft)
   memset(text_buf, 0, sizeof(text_buf));
   strncpy(text_buf, comment, text_field_len - 1);
   free(comment);
-  return lsx_writechars(ft, ID1, sizeof(ID1))
+  return lsx_writechars(ft, ID1, sizeof(ID1)) != SOX_SUCCESS
       || lsx_writew  (ft, 0)      /* GSound: not used */
       || lsx_writedw (ft, (unsigned) length) /* length of complete sample */
       || lsx_writedw (ft, 0)      /* first byte to play from sample */
@@ -60,7 +60,8 @@ static int write_header(sox_format_t * ft)
       || lsx_writew  (ft, 0)      /* sample size/type */
       || lsx_writew  (ft, 10)     /* speaker driver volume */
       || lsx_writew  (ft, 4)      /* speaker driver DC shift */
-      || lsx_writechars(ft, text_buf, sizeof(text_buf))?  SOX_EOF:SOX_SUCCESS;
+      || lsx_writechars(ft, text_buf, sizeof(text_buf)) != SOX_SUCCESS
+      ? SOX_EOF : SOX_SUCCESS;
 }
 
 LSX_FORMAT_HANDLER(soundtool)
