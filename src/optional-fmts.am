@@ -152,7 +152,6 @@ endif
 if HAVE_OPUS
 if STATIC_OPUS
   libsox_ng_la_SOURCES += opus.c
-  libsox_ng_la_CFLAGS += @OPUS_CFLAGS@
 if STATIC_LIBSOX_ONLY
   sox_ng_LDADD += @OPUS_LIBS@
 else
@@ -160,7 +159,6 @@ else
 endif
 else
   libsox_ng_fmt_opus_la_SOURCES = opus.c
-  libsox_ng_fmt_opus_la_CFLAGS = @OPUS_CFLAGS@
   libsox_ng_fmt_opus_la_LIBADD = libsox.la @OPUS_LIBS@
   pkglib_LTLIBRARIES += libsox_ng_fmt_opus.la
 endif

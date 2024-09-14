@@ -502,14 +502,31 @@ AC_OPTIONAL_FORMAT(oggvorbis, OGG_VORBIS, [AC_CHECK_HEADER(vorbis/codec.h,
   AC_CHECK_LIB(vorbisenc, vorbis_encode_init_vbr, OGG_VORBIS_LIBS="-lvorbisenc $OGG_VORBIS_LIBS", using_oggvorbis=no, $OGG_VORBIS_LIBS)],
   using_oggvorbis=no)])
 
-# Check for Opus
-AC_OPTIONAL_FORMAT(opus, OPUS,
-  [PKG_CHECK_MODULES(OPUS, [opusfile], [], using_opus=no)],
-  using_opus=no)
-if test "$GCC" = "yes"; then
-  OPUS_CFLAGS="$OPUS_CFLAGS -Wno-long-long"
-fi
 
+# Check for Opus
+
+# We need libopusfile and libopusfile needs libopus but unfortunately
+# there is a bug in opusfile.h which does
+#  #include <opus_multistream.h>
+# instead of what it should do, which is
+#  #include "opus_multistream.h"
+# or
+#  #include <opus/opus_multistream.h>
+# because it is next to opusfile.h in $prefix/include/opus/
+# They currently refuse to fix it
+# https://gitlab.xiph.org/xiph/opusfile/-/issues/2335
+# so we have to work round it by changing all -I dirs to */opus
+# before checking opusfile.
+
+opus_old_cflags="$CFLAGS"
+# Extra square brackets are required otherwise m4 mangles them
+CFLAGS="$(echo $CFLAGS | sed 's|\(-I[[^ ]]*\)|\1 \1/opus|g') -I/usr/local/include/opus -I/usr/include/opus"
+
+AC_OPTIONAL_FORMAT(opus, OPUS, [AC_CHECK_HEADER(opus/opusfile.h,
+  [AC_CHECK_LIB(opus, opus_decoder_create, OPUS_LIBS="$OPUS_LIBS -lopus", using_opus=no)
+  AC_CHECK_LIB(opusfile, op_open_callbacks, OPUS_LIBS="$OPUS_LIBS -lopusfile", using_opus=no, $OPUS_LIBS)],
+  using_opus=no)])
+CFLAGS="$opus_old_cflags"
 
 # Check for FLAC libraries
 #  Note passing in OGG_VORBIS_LIBS.  That is because FLAC has optional
