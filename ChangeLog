@@ -5,6 +5,21 @@ This file contains a list of all changes starting after the release of
 sox-11gamma, followed by a list of prior authors and features.
 
 
+$ox_ng-14.4.3.1	2024-09-14
+---------------
+
+New features:
+
+  o Document the "sinc -r" flag
+  o Added releases.json for freshcode.club's benefit
+
+Bug fixes:
+
+  o Fix detection of opus. The AIX "fix" in 14.4.3-rc1 broke it elsewhere
+  o Don't call sox_write from output effect if input buffer is empty
+  o Correct the mailing list's address
+
+
 $ox_ng-14.4.3	2024-09-01
 -------------
 

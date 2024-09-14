@@ -7,6 +7,23 @@
    "tags": "audio, audio-editing, audio-processing, c, commandline-tool, digital-audio-editor, opensource, sound",
    "releases": [
       {
+         "version": "14.4.3.1",
+         "state": "stable",
+         "scope": "minor bugfix",
+         "changes": "New features:
+
+  o Document the "sinc -r" flag
+  o Added releases.json for freshcode.club's benefit
+
+Bug fixes:
+
+  o Fix detection of opus. The AIX "fix" in 14.4.3-rc1 broke it elsewhere
+  o Don't call sox_write from output effect if input buffer is empty
+  o Correct the mailing list's address",
+         "download": "https://codeberg.org/sox_ng/sox_ng/releases/download/sox_ng-14.4.3.1/sox_ng-14.4.3.1.tar.gz",
+         "published": "2024-09-14T18:20:00+00:00"
+      },
+      {
          "version": "14.4.3",
          "state": "stable",
          "scope": "major bugfix",
@@ -48,14 +65,6 @@ Copyright:
   o Therefore the overall copyright of sox_ng and libsox_ng is GPLv2",
          "download": "https://codeberg.org/sox_ng/sox_ng/releases/download/sox_ng-14.4.3/sox_ng-14.4.3.tar.gz",
          "published": "2024-09-02T17:00:00+00:00"
-      },
-      {
-         "version": "2.0.0",
-         "state": "stable",
-         "scope": "major feature",
-         "changes": "Added completely new GUI, etc...",
-         "download": "http://example.org/downl/proj-2.0.0.txz",
-         "published": "2024-09-01T16:03:00+02:00"
       }
    ]
 }
