@@ -9,8 +9,11 @@ git clone https://codeberg.org/sox_ng/sox_ng.wiki wiki
 ```
 One usually clones it onto the `wiki` subdirectory of a clone of `sox_ng`.
 
-The command-line interface is the only way to add images and attachments
-to the wiki.
+Editing the clone and pushing the changes is preferred to using the web
+interface because the WI adds CRLF to every line, making the git diffs
+incomprehensible.
+
+The command-line interface is the only way to add images and attachments.
 
 ## Local HTML version
 
@@ -31,19 +34,21 @@ In practice we use forgejo/github/gitlab Markdown because it
 seems to work mostly, with a couple of extra rules so that
 `makehtml.sh` produces similar output to what Forgejo does.
 
-Let's put blank lines either side of headings anyway as a general style
-for consistency and better typography of the `.md` files.
+### Headers
+
+Put a blank line either side of #Header lines for better readability
+of the `.md` files.
 
 ### Internal wikilinks
 
 Internal wikilinks should be written as `[Accounting](Accounting)`
-instead of just `[Accounting]`.
+instead of just `[Accounting]`, otherwise `makehtml.sh` gets them wrong.
 
 ### Lists
 
 #### List indentation
 
-We indent second-level lists and continuation lines by two spaces,
+Indent second-level lists and continuation lines by two spaces,
 not four like the standard says
 not only because that's how 120 issues are already formatted
 but also because the typography of `.md` files is better.
@@ -53,17 +58,6 @@ before feeding it to `multimarkdown` so that lists format correctly.
 
 Double spaces other than at the start of a line currently get
 converted to four at the moment. Issue #139.
-That won't affect running text but would change double spaces in
-a grave-quoted code fragment to four.
-
-#### Code blocks
-
-Enclose paragraphs of code with a line of three grave quotes
-before and after them.
-
-Markdown also allows code blocks indented with spaces
-but the two-space-to-four-space conversion for lists
-will probably mess the indentation up.
 
 #### Line breaks in list items
 
@@ -88,3 +82,12 @@ you must use an inline `<BR>` with no newline on either side:
 * mansr's 2015 post says<BR>When I recently decided to take a closer look at the DSD phenomenon
 ```
 but a paragraph break is preferred to make the `.md` file more readable.
+
+#### Code blocks
+
+Enclose paragraphs of code with a line of three grave quotes
+before and after them.
+
+Markdown also allows code blocks indented with spaces
+but the two-space-to-four-space conversion for lists
+may mess up the indentation.
