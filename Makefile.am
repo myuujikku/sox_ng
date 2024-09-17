@@ -176,3 +176,6 @@ uninstall-hook:
 # Automatically update libtool script if it gets out-of-date
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status --recheck
+
+check-am:
+	cd test && sox=../../src/sox_ng sh check.sh
