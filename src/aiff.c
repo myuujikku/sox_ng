@@ -221,10 +221,10 @@ int lsx_aiffstartread(sox_format_t * ft)
     else if (strncmp(buf, "INST", (size_t)4) == 0) {
       /* INST chunk */
       lsx_readdw(ft, &chunksize);
-      lsx_readsb(ft, &(ft->oob.instr.MIDInote));
+      lsx_readsb(ft, (int8_t *)&(ft->oob.instr.MIDInote));
       lsx_readb(ft, &trash8);
-      lsx_readsb(ft, &(ft->oob.instr.MIDIlow));
-      lsx_readsb(ft, &(ft->oob.instr.MIDIhi));
+      lsx_readsb(ft, (int8_t *)&(ft->oob.instr.MIDIlow));
+      lsx_readsb(ft, (int8_t *)&(ft->oob.instr.MIDIhi));
       /* Low  velocity */
       lsx_readb(ft, &trash8);
       /* Hi  velocity */
