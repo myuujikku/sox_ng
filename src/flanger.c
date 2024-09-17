@@ -258,16 +258,16 @@ sox_effect_handler_t const * lsx_flanger_effect_fn(void)
     "      |              |_____|phase            |   |",
     "      +------------------------------------->|   |",
     "                                             |___|",
-    "       RANGE DEFAULT DESCRIPTION",
-    "delay   0 30    0    base delay in milliseconds",
-    "depth   0 10    2    added swept delay in milliseconds",
-    "regen -95 +95   0    percentage regeneration (delayed signal feedback)",
-    "width   0 100   71   percentage of delayed signal mixed with original",
-    "speed  0.01 10 0.5   sweeps per second (Hz) ",
-    "shape    --    sin   swept wave shape: sine|triangle",
-    "phase   0 100   25   swept wave percentage phase-shift for multi-channel",
-    "                     (e.g. stereo) flange; 0 = 100 = same phase on each channel",
-    "interp   --    lin   delay-line interpolation: linear|quadratic"
+    "        RANGE DEFAULT DESCRIPTION",
+    "delay    0 30     0   base delay in milliseconds",
+    "depth    0 10     2   added swept delay in milliseconds",
+    "regen  -95 +95    0   percentage regeneration (delayed signal feedback)",
+    "width    0 100   71   percentage of delayed signal mixed with original",
+    "speed 0.01 10   0.5   sweeps per second (Hz) ",
+    "shape    --     sin   swept wave shape: sine|triangle",
+    "phase    0 100   25   swept wave percentage phase-shift for multi-channel",
+    "                      (e.g. stereo) flange; 0 = 100 = same phase on each channel",
+    "interp   --     lin   delay-line interpolation: linear|quadratic"
   };
   static char * usage;
   handler.usage = lsx_usage_lines(&usage, lines, array_length(lines));
