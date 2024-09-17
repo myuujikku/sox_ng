@@ -3026,7 +3026,7 @@ int main(int argc, char **argv)
                               "`%s' output clipped %" PRIu64 " samples; decrease volume?",
           (files[i]->ft->handler.flags & SOX_FILE_DEVICE)?
                        files[i]->ft->handler.names[0] : files[i]->ft->filename,
-          files[i]->ft->clips);
+          (uint64_t)(files[i]->ft->clips));
 
   if (mixing_clips > 0)
     lsx_warn("mix-combining clipped %" PRIu64 " samples; decrease volume?", mixing_clips);

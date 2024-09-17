@@ -489,7 +489,7 @@ static int stopwrite(sox_format_t * ft)
   return SOX_SUCCESS;
 }
 
-static int seek(sox_format_t * ft, uint64_t offset)
+static int seek(sox_format_t * ft, sox_uint64_t offset)
 {
   priv_t * sf = (priv_t *)ft->priv;
   sf->sf_seek(sf->sf_file, (sf_count_t)(offset / ft->signal.channels), SEEK_CUR);

@@ -167,6 +167,7 @@ static const char* const mad_library_names[] =
   MAD_FUNC(f,x, signed long, mad_timer_count, (mad_timer_t, enum mad_units)) \
   MAD_FUNC(f,x, void, mad_timer_multiply, (mad_timer_t *, signed long))
 
+#ifdef HAVE_LAME
 static const char* const lame_library_names[] =
 {
 #ifdef DL_LAME
@@ -177,6 +178,7 @@ static const char* const lame_library_names[] =
 #endif
   NULL
 };
+#endif
 
 #ifdef DL_LAME
 
@@ -1278,7 +1280,9 @@ static size_t sox_mp3write(sox_format_t * ft, const sox_sample_t *buf, size_t sa
 static int stopwrite(sox_format_t * ft)
 {
   priv_t *p = (priv_t *) ft->priv;
+#ifdef HAVE_LAME
   uint64_t num_samples = ft->olength == SOX_IGNORE_LENGTH ? 0 : ft->olength / max(ft->signal.channels, 1);
+#endif
   int written = 0;
 
   if (p->mp2) {
