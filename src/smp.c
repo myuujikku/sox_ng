@@ -172,7 +172,7 @@ static int writetrailer(sox_format_t * ft, struct smptrailer *trailer)
         return(SOX_SUCCESS);
 }
 
-static int sox_smpseek(sox_format_t * ft, uint64_t offset)
+static int sox_smpseek(sox_format_t * ft, sox_uint64_t offset)
 {
     uint64_t new_offset;
     size_t channel_block, alignment;

@@ -235,7 +235,7 @@ size_t lsx_rawread(sox_format_t * ft, sox_sample_t *buf, size_t nsamp);
 int lsx_rawstopread(sox_format_t * ft);
 int lsx_rawstartwrite(sox_format_t * ft);
 size_t lsx_rawwrite(sox_format_t * ft, const sox_sample_t *buf, size_t nsamp);
-int lsx_rawseek(sox_format_t * ft, uint64_t offset);
+int lsx_rawseek(sox_format_t * ft, sox_uint64_t offset);
 int lsx_rawstart(sox_format_t * ft, sox_bool default_rate, sox_bool default_channels, sox_bool default_length, sox_encoding_t encoding, unsigned bits_per_sample);
 #define lsx_rawstartread(ft) lsx_rawstart(ft, sox_false, sox_false, sox_false, SOX_ENCODING_UNKNOWN, 0)
 #define lsx_rawstartwrite lsx_rawstartread

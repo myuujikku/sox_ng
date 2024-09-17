@@ -68,7 +68,7 @@ typedef struct {
 
 static void prcwriteheader(sox_format_t * ft);
 
-static int seek(sox_format_t * ft, uint64_t offset)
+static int seek(sox_format_t * ft, sox_uint64_t offset)
 {
   priv_t * p = (priv_t *)ft->priv;
   if (ft->encoding.encoding == SOX_ENCODING_ALAW)

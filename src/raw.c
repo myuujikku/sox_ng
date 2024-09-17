@@ -19,7 +19,7 @@ typedef sox_int16_t sox_int13_t;
 #define SOX_SAMPLE_TO_ULAW_BYTE(d,c) sox_14linear2ulaw(SOX_SAMPLE_TO_UNSIGNED(14,d,c) - 0x2000)
 #define SOX_SAMPLE_TO_ALAW_BYTE(d,c) sox_13linear2alaw(SOX_SAMPLE_TO_UNSIGNED(13,d,c) - 0x1000)
 
-int lsx_rawseek(sox_format_t * ft, uint64_t offset)
+int lsx_rawseek(sox_format_t * ft, sox_uint64_t offset)
 {
   return lsx_offset_seek(ft, (off_t)ft->data_start, (off_t)offset);
 }
