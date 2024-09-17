@@ -71,13 +71,13 @@ static int getopts(sox_effect_t * effp, int argc, char *argv[])
   p->channel_phase= 25;
 
   do { /* break-able block */
-    NUMERIC_PARAMETER(delay_min    , 0  , 30 )
-    NUMERIC_PARAMETER(delay_depth  , 0  , 10 )
-    NUMERIC_PARAMETER(feedback_gain,-95 , 95 )
-    NUMERIC_PARAMETER(delay_gain   , 0  , 100)
-    NUMERIC_PARAMETER(speed        , 0.1, 10 )
+    NUMERIC_PARAMETER(delay_min    , 0   , 30 )
+    NUMERIC_PARAMETER(delay_depth  , 0   , 10 )
+    NUMERIC_PARAMETER(feedback_gain,-95  , 95 )
+    NUMERIC_PARAMETER(delay_gain   , 0   , 100)
+    NUMERIC_PARAMETER(speed        , 0.01, 10 )
     TEXTUAL_PARAMETER(wave_shape, lsx_get_wave_enum())
-    NUMERIC_PARAMETER(channel_phase, 0  , 100)
+    NUMERIC_PARAMETER(channel_phase, 0   , 100)
     TEXTUAL_PARAMETER(interpolation, interp_enum)
   } while (0);
 
@@ -263,7 +263,7 @@ sox_effect_handler_t const * lsx_flanger_effect_fn(void)
     "depth   0 10    2    added swept delay in milliseconds",
     "regen -95 +95   0    percentage regeneration (delayed signal feedback)",
     "width   0 100   71   percentage of delayed signal mixed with original",
-    "speed  0.1 10  0.5   sweeps per second (Hz) ",
+    "speed  0.01 10 0.5   sweeps per second (Hz) ",
     "shape    --    sin   swept wave shape: sine|triangle",
     "phase   0 100   25   swept wave percentage phase-shift for multi-channel",
     "                     (e.g. stereo) flange; 0 = 100 = same phase on each channel",
