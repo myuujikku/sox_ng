@@ -65,7 +65,7 @@ macro(optional4 variable header library1 function1 library2 function2 library3 f
   endif (${variable}1)
 endmacro(optional4)
 
-project(sox C)
+project(sox_ng C)
 
 if(CMAKE_COMPILER_IS_GNUCC)
 	add_definitions(-fstack-protector -Wall -W -Wmissing-prototypes -Wstrict-prototypes -pedantic -Wno-format -Wno-long-long)
@@ -177,8 +177,8 @@ if (HAVE_SYS_SOUNDCARD_H OR HAVE_MACHINE_SOUNDCARD_H)
   set(HAVE_OSS 1)
 endif (HAVE_SYS_SOUNDCARD_H OR HAVE_MACHINE_SOUNDCARD_H)
 
-configure_file(sox.pc.in sox.pc @ONLY)
-install_files(/lib/pkgconfig FILES sox.pc)
+configure_file(sox_ng.pc.in sox_ng.pc @ONLY)
+install_files(/lib/pkgconfig FILES sox_ng.pc)
 
 subdirs(src)
 
