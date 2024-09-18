@@ -609,7 +609,7 @@ static int stopread(sox_format_t * ft)
   return SOX_SUCCESS;
 }
 
-static int sox_mp3seek(sox_format_t * ft, uint64_t offset)
+static int sox_mp3seek(sox_format_t * ft, sox_uint64_t offset)
 {
   priv_t   * p = (priv_t *) ft->priv;
   size_t   initial_bitrate = p->Frame.header.bitrate;
