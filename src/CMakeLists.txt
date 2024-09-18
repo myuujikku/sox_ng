@@ -1,4 +1,4 @@
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}config.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/soxconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/soxconfig.h)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
@@ -145,7 +145,7 @@ add_library(lib${PROJECT_NAME}
   effects_i               ${formats_srcs}         ${optional_srcs}
   effects_i_dsp           getopt
   ${effects_srcs}         util
-  formats                 libsox                  xmalloc
+  formats                 libsox_ng                  xmalloc
 )
 add_executable(${PROJECT_NAME} ${PROJECT_NAME}.c)
 target_link_libraries(${PROJECT_NAME} lib${PROJECT_NAME} lpc10 ${optional_libs})
@@ -166,9 +166,9 @@ add_executable(example6 example6.c)
 target_link_libraries(example6 lib${PROJECT_NAME} lpc10 ${optional_libs})
 find_program(LN ln)
 if (LN)
-  add_custom_target(rec ALL ${LN} -sf sox rec DEPENDS sox)
-  add_custom_target(play ALL ${LN} -sf sox play DEPENDS sox)
-  add_custom_target(soxi ALL ${LN} -sf sox soxi DEPENDS sox)
+  add_custom_target(rec_ng ALL ${LN} -sf sox_ng rec_ng DEPENDS sox_ng)
+  add_custom_target(play_ng ALL ${LN} -sf sox_ng play_ng DEPENDS sox_ng)
+  add_custom_target(soxi_ng ALL ${LN} -sf sox_ng soxi_ng DEPENDS sox_ng)
 endif (LN)
 find_program(CTAGS NAMES exuberant-ctags ctags)
 add_custom_target(tags ${CTAGS} --recurse --extra=fq ${CMAKE_CURRENT_SOURCE_DIR})
