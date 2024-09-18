@@ -235,6 +235,7 @@ static const char* const lame_library_names[] =
   LAME_FUNC_ID3(f,x, size_t, lame_get_id3v2_tag, (lame_global_flags *, unsigned char*, size_t)) \
   LAME_FUNC_ID3(f,x, int, id3tag_set_fieldvalue, (lame_global_flags *, const char *))
 
+#ifdef HAVE_TWOLAME_H
 static const char* const twolame_library_names[] =
 {
 #ifdef DL_TWOLAME
@@ -261,6 +262,7 @@ static const char* const twolame_library_names[] =
   TWOLAME_FUNC(f,x, int, twolame_encode_buffer_float32_interleaved, (twolame_options *, const float [], int, unsigned char *, int)) \
   TWOLAME_FUNC(f,x, int, twolame_encode_flush, (twolame_options *, unsigned char *, int)) \
   TWOLAME_FUNC(f,x, void, twolame_close, (twolame_options **))
+#endif /* HAVE_TWOLANE_H */
 
 /* Private data */
 typedef struct mp3_priv_t {
