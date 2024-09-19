@@ -49,7 +49,7 @@ SoX \- Sound eXchange_ng, another Swiss Army knife of audio manipulation
 .SS Introduction
 SoX reads and writes audio files in most popular formats and can
 optionally apply effects to them. It can combine multiple input
-sources, synthesise audio, and, on many systems, act as a general
+sources, synthesize audio, and, on many systems, act as a general
 purpose audio player or a multi-track audio recorder. It also has
 limited ability to split the input into multiple output files.
 .SP
@@ -78,7 +78,7 @@ c8 c8 c.
 .TE
 .DT
 .SP
-The overall SoX processing chain can be summarised as follows:
+The overall SoX processing chain can be summarized as follows:
 .TS
 center;
 l.
@@ -100,7 +100,7 @@ translates an audio file in Sun AU format to a Microsoft WAV file, whilst
    sox_ng recital.au \-b 16 recital.wav channels 1 rate 16k fade 3 norm
 .EE
 performs the same format translation, but also applies four effects
-(down-mix to one channel, sample rate change, fade-in, nomalize),
+(down-mix to one channel, sample rate change, fade-in, normalize),
 and stores the result at a bit-depth of 16.
 .EX
    sox_ng \-r 16k \-e signed \-b 8 \-c 1 voice-memo.raw voice-memo.wav
@@ -125,7 +125,7 @@ plays a collection of audio files whilst applying a bass boosting effect,
 .EX
    play_ng \-n \-c1 synth sin %\-12 sin %\-9 sin %\-5 sin %\-2 fade h 0.1 1 0.1
 .EE
-plays a synthesised `A minor seventh' chord with a pipe-organ sound,
+plays a synthesized `A minor seventh' chord with a pipe organ sound,
 .EX
    rec_ng \-c 2 radio.aiff trim 0 30:00
 .EE
@@ -384,7 +384,7 @@ Applying multiple effects with a single SoX invocation will,
 in general, produce more accurate results than those produced using
 multiple SoX invocations.
 .SS Dithering
-Dithering is a technique used to maximise the dynamic range of audio
+Dithering is a technique used to maximize the dynamic range of audio
 stored at a particular bit-depth. Any distortion introduced by
 quantisation is decorrelated by adding a small amount of white noise
 to the signal.  In most cases, SoX can determine whether the selected
@@ -408,7 +408,7 @@ For example, adjusting volume with
 .B vol 0.25
 requires two additional bits in which to losslessly store its results
 (since 0\*d25 decimal equals 0\*d01 binary).  So if the input file
-bit-depth is 16, then SoX's internal representation will utilise 18
+bit-depth is 16, then SoX's internal representation will utilize 18
 bits after processing this volume change.  In order to store the
 output at the same depth as the input, dithering is used to remove the
 additional bits.
@@ -821,7 +821,7 @@ no processing is needed after all and the original 16 bit file has
 been lost, then, strictly speaking, no dither is needed if converting the
 file back to 16 bit.  See also the
 .B stats
-effect for how to determine the actual bit depth of the audio within a
+effect for how to determine the actual bit-depth of the audio within a
 file.
 .TP
 \fB\-\-effects\-file \fIFILENAME\fR
@@ -908,7 +908,7 @@ enabling it.
 \fB\-\-norm\fR[\fB=\fIdB-level\fR]
 Automatically invoke the
 .B gain
-effect to guard against clipping and to normalise the audio. E.g.
+effect to guard against clipping and to normalize the audio. E.g.
 .EX
    sox_ng \-\-norm infile \-b 16 outfile rate 44100 dither \-s
 .EE
@@ -1198,7 +1198,7 @@ Microsoft 4-bit ADPCM; it has a precision equivalent to roughly 14-bit
 PCM.
 .IP \fBgsm-full-rate\fR
 GSM is currently used for the vast majority of the world's digital
-wireless telephone calls.  It utilises several audio
+wireless telephone calls.  It utilizes several audio
 formats with different bit-rates and associated speech quality.
 SoX has support for GSM's original 13kbps `Full Rate' audio format.
 It is usually CPU-intensive to work with GSM audio.
@@ -1524,7 +1524,7 @@ To see if SoX has support for an optional effect, enter
 .B sox_ng \-h
 and look for its name under the list: `EFFECTS'.
 .SS Supported Effects
-Note: a categorised list of the effects can be found in the
+Note: a categorized list of the effects can be found in the
 accompanying `README' file.
 .TP
 \fBallpass\fR \fIfrequency\fR[\fBk\fR]\fI width\fR[\fBh\fR\^|\^\fBk\fR\^|\^\fBo\fR\^|\^\fBq\fR]
@@ -1637,7 +1637,7 @@ specifies one bend.
 bend the pitch. The other values specify the points in time at which to start
 and end bending the pitch, respectively.
 .SP
-The pitch-bending algorithm utilises the Discrete Fourier Transform (DFT)
+The pitch-bending algorithm utilizes the Discrete Fourier Transform (DFT)
 at a particular frame rate and over-sampling rate.
 The
 .B \-f
@@ -1908,16 +1908,16 @@ Pre-emphasis was applied in the mastering of some CDs issued in the early
 sought-after issues of albums by The Beatles, Pink Floyd and others.
 Pre-emphasis should be removed at playback time by a de-emphasis
 filter in the playback device.  However, not all modern CD players have
-this filter, and very few PC CD drives have it; playing pre-emphasised
+this filter, and very few PC CD drives have it; playing pre-emphasized
 audio without the correct de-emphasis filter results in audio that sounds harsh
 and is far from what its creators intended.
 .SP
 With the
 .B deemph
 effect, it is possible to apply the necessary de-emphasis to audio that
-has been extracted from a pre-emphasised CD, and then either burn the
-de-emphasised audio to a new CD (which will then play correctly on any
-CD player), or simply play the correctly de-emphasised audio files on the
+has been extracted from a pre-emphasized CD, and then either burn the
+de-emphasized audio to a new CD (which will then play correctly on any
+CD player), or simply play the correctly de-emphasized audio files on the
 PC.  For example:
 .EX
    sox_ng track1.wav track1\-deemph.wav deemph
@@ -2241,12 +2241,12 @@ amplification or attenuation is (logically) applied after the processing due to 
 .SP
 Given the
 .B \-e
-option, the levels of the audio channels of a multi-channel file are `equalised', i.e.
+option, the levels of the audio channels of a multi-channel file are `equalized', i.e.
 gain is applied to all channels other than that with the highest peak
 level, such that all channels attain the same peak level
 (but, without also giving
 .BR \-n ,
-the audio is not `normalised').
+the audio is not `normalized').
 .SP
 The
 .B \-B
@@ -2285,18 +2285,18 @@ option\*msee below for details.
 .SP
 The
 .B \-n
-option normalises the audio to 0dB FSD; it is often used in conjunction with a negative
+option normalizes the audio to 0dB FSD; it is often used in conjunction with a negative
 .I gain-dB
-to the effect that the audio is normalised to a given level below 0dB.
+to the effect that the audio is normalized to a given level below 0dB.
 For example,
 .EX
    sox_ng infile outfile gain \-n
 .EE
-normalises to 0dB, and
+normalizes to 0dB, and
 .EX
    sox_ng infile outfile gain \-n \-3
 .EE
-normalises to \-3dB.
+normalizes to \-3dB.
 .SP
 The
 .B \-l
@@ -2417,10 +2417,10 @@ effect, but provides equalisation for the human auditory system.  See
 http://en.wikipedia.org/wiki/Loudness for a detailed description of
 loudness.  The gain is adjusted by the given
 .I gain
-parameter (usually negative) and the signal equalised according to ISO
+parameter (usually negative) and the signal equalized according to ISO
 226 w.r.t. a reference level of 65dB, though an alternative
 .I reference
-level may be given if the original audio has been equalised for some
+level may be given if the original audio has been equalized for some
 other optimal level.
 A default gain of \-10dB is used if a
 .I gain
@@ -2513,7 +2513,7 @@ using a pipe, e.g.
 .EE
 .TP
 \fBnorm\fR [\fIdB-level\fR]
-Normalise the audio.
+Normalize the audio.
 .B norm
 is just an alias for \fBgain \-n\fR; see the
 .B gain
@@ -3169,7 +3169,7 @@ larger than the specified spectrogram size.  In this example:
    sox_ng \-n \-n synth 6 tri 10k:14k spectrogram \-z 100 \-w kaiser
 .EE
 an analysis `window' with high dynamic range is selected to best
-display the spectrogram of a swept triangular wave.  For a smilar
+display the spectrogram of a swept triangular wave.  For a similar
 example, append the following to the `chime' command in the
 description of the
 .B delay
@@ -3774,12 +3774,12 @@ Multiple synth effects can be cascaded to produce more complex
 waveforms; at each stage it is possible to choose whether the generated
 waveform will be mixed with, or modulated onto
 the output from the previous stage.
-Audio for each channel in a multi-channel audio file can be synthesised
+Audio for each channel in a multi-channel audio file can be synthesized
 independently.
 .SP
 Though this effect is used to generate audio, an input file must still
 be given, the characteristics of which will be used to set the
-synthesised audio length, the number of channels, and the sampling rate;
+synthesized audio length, the number of channels, and the sampling rate;
 however, since the input file's audio is not normally needed, a `null
 file' (with the special name \fB\-n\fR) is often given instead (and the
 length specified as a parameter to \fBsynth\fR or by another given
@@ -3794,7 +3794,7 @@ and this produces an 8\ kHz version:
 .EX
    sox_ng \-r 8000 \-n output.wav synth 3 sine 300\-3300
 .EE
-Multiple channels can be synthesised by specifying the set of
+Multiple channels can be synthesized by specifying the set of
 parameters shown between braces multiple times;
 the following puts the swept tone in the left channel and adds `brown'
 noise in the right:
@@ -3847,7 +3847,7 @@ A detailed description of each
 .B synth
 parameter follows:
 .SP
-\fIlen\fR is the length of audio to synthesise (any time specification);
+\fIlen\fR is the length of audio to synthesize (any time specification);
 a value of 0 indicated to use the input length, which is also the default.
 .SP
 \fItype\fR is one of sine, square, triangle, sawtooth, trapezium, exp,
