@@ -2723,7 +2723,7 @@ then the artefacts will lie outside the range of human hearing.
 A phase response setting may be used to control the distribution of any
 transient echo between
 `pre' and `post': with minimum phase, there is no pre-echo but the
-longest post-echo; with linear phase, pre and post echo are in equal
+longest -echo; with linear phase, pre and post echo are in equal
 amounts (in signal terms, but not audibility terms); the intermediate
 phase setting attempts to find the best compromise by selecting a small
 length (and level) of pre-echo and a medium lengthed post-echo.
@@ -3304,6 +3304,16 @@ left of the spectrogram.
 Name of the spectrogram output PNG file, default `spectrogram.png'.
 If `-' is given, the spectrogram will be sent to standard output
 (stdout).
+.IP \fB\-L\fR
+Plot the frequency on a logarithmic axis.
+\
+.IP \fB\-R\ \fIL\fR:\fIH\fR
+Specify the frequency range (from \fIL\fR to \fIH\fR)"
+The frequencies can have an optional suffix such as
+'k' (x 1000) and 'M' (x 1000000), e.g. with
+.EX
+   sox mymusic.mp3 \-n spectrogram \-L \-R 100:8k
+.EE
 .RE
 .TP
 \ 

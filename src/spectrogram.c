@@ -15,6 +15,14 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+/*
+ * Plotting on a log frequency axis (-L) and limiting the frequency range of the plot
+ * (-R low:high) are by Joe Desbonnet 17 Feb 2014 from
+ * https://github.com/jdesbonnet/joe-desbonnet-blog/tree/dc6c44bfc06dfac875224eda18690ffacf70409d/projects/sox-log-spectrogram
+ * More details from this blog post:
+ * http://jdesbonnet.blogspot.ie/2014/02/sox-spectrogram-log-frequency-axis-and.html
+ */
+
 #ifdef NDEBUG /* Enable assert always. */
 #undef NDEBUG /* Must undef above assert.h or other that might include it. */
 #endif
@@ -70,6 +78,8 @@ typedef struct {
   char const * out_name, * title, * comment;
   char const *duration_str, *start_time_str;
   sox_bool   using_stdout; /* output image to stdout */
+  sox_bool   log10_axis;   /* plot frequency on log10 axis */
+  int        low_freq, high_freq;
 
   /* Shared work area */
   double     * shared, * * shared_ptr;
@@ -115,6 +125,70 @@ static unsigned char const alt_palette[] =
   "\341\361\377\344\361\377\346\362\377\350\362\377\353";
 #define alt_palette_len ((array_length(alt_palette) - 1) / 3)
 
+/**
+ * Parse an integer and allow for multiplier suffix
+ * such as 'k' (x 1000) and 'M' (x 1000000).
+ * Return 0 of successful, -1 on failure.
+ */
+static int parse_num_with_suffix (const char *s, int *a) {
+
+  size_t n;
+  char k,dummy;
+
+  /* Empty string interpreted as 0 */
+  if (*s==0) {
+	return 0;
+  }
+
+  n = sscanf(s, "%d %c %c",a, &k, &dummy);
+  if (n < 1 || n > 2) {
+    return -1;
+  }
+
+  /* Allow for 'k' and 'M' suffix, but make case insensitive */
+  if (n==2) {
+    switch (k) {
+      case 'k':
+      case 'K':
+        *a *= 1000;
+        break;
+      case 'M':
+      case 'm':
+        *a *= 1000000;
+        break;
+      default: return -1;
+    }
+  }
+
+  /* Success */
+  return 0;
+}
+
+/**
+ * Given a string in format <a>:<b> where <a> and <b> are integers
+ * but may have multiplier suffix eg 'k' (eg 10:1000 or 10:8k)
+ * return the upper and lower values as integers.
+ * If there is no colon set a value in 'a', and
+ * b is left unchanged. If :<b> then 'a' will be set to 0.
+ * Return 0 of successful, -1 on failure.
+ */
+static int parse_range (const char *s, int *a, int *b) {
+  int a_status, b_status;
+  char *colon = index(s,':');
+  if (colon) {
+    /* Colon found, so have a number range */
+    *colon = 0; /* Temporarily put string terminator where colon is */
+    a_status = parse_num_with_suffix(s, a);
+    b_status = parse_num_with_suffix(colon+1,b);
+    *colon = ':'; /* Restore colon */
+    return a_status || b_status;
+  } else {
+    /* no colon: so just one value */
+    return parse_num_with_suffix(s, a);
+  }
+}
+
+
 static int getopts(sox_effect_t * effp, int argc, char **argv)
 {
   priv_t * p = (priv_t *)effp->priv;
@@ -122,10 +196,15 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
   char const * next;
   int c;
   lsx_getopt_t optstate;
-  lsx_getopt_init(argc, argv, "+S:d:x:X:y:Y:z:Z:q:p:W:w:st:c:AarmnlhTo:", NULL, lsx_getopt_flag_none, 1, &optstate);
+  lsx_getopt_init(argc, argv, "+S:d:x:X:y:Y:z:Z:q:p:W:w:st:c:AarmnlhTo:LR:", NULL, lsx_getopt_flag_none, 1, &optstate);
 
   p->dB_range = 120, p->spectrum_points = 249, p->perm = 1; /* Non-0 defaults */
   p->out_name = "spectrogram.png", p->comment = "Created by SoX";
+
+  /* Default to 0 -> nyquist freq. But don't have sample rate at this point so
+   * set high_freq=-1 as flag. Replace with nyquist freq in stop() function. */
+  p->low_freq = 0;
+  p->high_freq = -1;
 
   while ((c = lsx_getopt(&optstate)) != -1) switch (c) {
     GETOPT_NUMERIC(optstate, 'x', x_size0       , 100, MAX_X_SIZE)
@@ -147,6 +226,7 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
     case 'l': p->light_background = sox_true;   break;
     case 'h': p->high_colour      = sox_true;   break;
     case 'T': p->truncate         = sox_true;   break;
+    case 'L': p->log10_axis       = sox_true;   break;
     case 't': p->title            = optstate.arg; break;
     case 'c': p->comment          = optstate.arg; break;
     case 'o': p->out_name         = optstate.arg; break;
@@ -156,6 +236,20 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
     case 'd': next = lsx_parsesamples(1e5, optstate.arg, &dummy, 't');
       if (next && !*next) {p->duration_str = lsx_strdup(optstate.arg); break;}
       return lsx_usage(effp);
+    case 'R':
+      if (parse_range (optstate.arg, &p->low_freq, &p->high_freq)) {
+         lsx_fail("Frequency range `%s' is invalid.", optstate.arg);
+         return SOX_EOF;
+      }
+      if (p->low_freq < 0 || p->high_freq < 0) {
+        lsx_fail("Frequency range `%s' is invalid. Frequencies must be positive.", optstate.arg);
+        return SOX_EOF;
+      }
+      if (p->low_freq >= p->high_freq) {
+        lsx_fail("Frequency range `%s' is invalid. Lower frequency must be less than higher frequency.", optstate.arg);
+        exit(1);
+      }
+      break;
     default: lsx_fail("invalid option `-%c'", optstate.opt); return lsx_usage(effp);
   }
   if (!!p->x_size0 + !!p->pixels_per_sec + !!p->duration_str > 2) {
@@ -183,10 +277,12 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
   return optstate.ind !=argc || p->win_type == INT_MAX? lsx_usage(effp) : SOX_SUCCESS;
 }
 
+
+
 static double make_window(priv_t * p, int end)
 {
   double sum = 0, * w = end < 0? p->window : p->window + end;
-  int i, n = 1 + p->dft_size - abs(end);
+  int i, n = p->dft_size - abs(end);
 
   if (end) memset(p->window, 0, sizeof(*p->window) * (p->dft_size + 1));
   for (i = 0; i < n; ++i) w[i] = 1;
@@ -201,7 +297,7 @@ static double make_window(priv_t * p, int end)
         (p->dB_range + p->gain) * (1.005 + p->window_adjust / 50) + 6);
   }
   for (i = 0; i < p->dft_size; ++i) sum += p->window[i];
-  for (--n, i = 0; i < p->dft_size; ++i) p->window[i] *= 2 / sum
+  for (i = 0; i < p->dft_size; ++i) p->window[i] *= 2 / sum
     * sqr((double)n / p->dft_size);    /* empirical small window adjustment */
   return sum;
 }
@@ -291,7 +387,7 @@ static int start(sox_effect_t * effp)
   /* Now that dft_size is set, allocate variable-sized elements of priv_t */
   p->buf        = lsx_calloc(p->dft_size, sizeof(*p->buf));
   p->dft_buf    = lsx_calloc(p->dft_size, sizeof(*p->dft_buf));
-  p->window     = lsx_calloc(p->dft_size + 1, sizeof(*p->window));
+  p->window     = lsx_calloc(p->dft_size, sizeof(*p->window));
   p->magnitudes = lsx_calloc(p->dft_size / 2 + 1, sizeof(*p->magnitudes));
 
   /* Initialize the FFT routine */
@@ -597,6 +693,21 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
   double      limit;
   float       autogain = 0.0;	/* Is changed if the -n flag was supplied */
 
+  float log10_low_freq, log10_high_freq;
+  float nyquist_freq = (float)effp->in_signal.rate / 2;
+
+  /* No chart upper freq set, so use nyquist freq as default */
+  if (p->high_freq == -1) {
+    p->high_freq = effp->in_signal.rate/2;
+  }
+  /* Cannot have 0Hz on log axis. Use 1Hz instead. */
+  if (p->log10_axis && p->low_freq==0) {
+    p->low_freq = 1;
+  }
+
+  log10_low_freq = log10f((float)p->low_freq);
+  log10_high_freq = log10f((float)p->high_freq);
+
   free(p->shared);
   if (p->using_stdout) {
     SET_BINARY_MODE(stdout);
@@ -630,6 +741,9 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
     autogain = -p->max;
 
   for (k = 0; k < chans; ++k) {
+    int freq, dBfsi;
+    float log_scale_factor = (log10_high_freq- log10_low_freq)/(float)p->rows;
+    float lin_scale_factor = (p->high_freq-p->low_freq)/(float)p->rows;
     priv_t * q = (priv_t *)(effp - effp->flow + k)->priv;
 
     if (p->normalize) {
@@ -639,9 +753,22 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
     }
 
     base = !p->raw * below + (chans - 1 - k) * (p->rows + 1);
+
     for (j = 0; j < p->rows; ++j) {
-      for (i = 0; i < p->cols; ++i)
-        pixel(!p->raw * left + i, base + j) = colour(p, q->dBfs[i*p->rows + j]);
+      if (p->log10_axis) {
+        freq = (int)powf (10.0, (float)j * log_scale_factor + log10_low_freq);
+      } else {
+        freq = (float)j * lin_scale_factor + p->low_freq;
+      }
+      /* dBfsi: the index into dBfs[] corresponding to frequency at row j */
+      dBfsi  = (freq*p->rows)/nyquist_freq;
+      /* It is possible that upper freq > nyquist freq: deal with that */
+      if (dBfsi >= p->rows) {
+        dBfsi = p->rows-1;
+      }
+      for (i = 0; i < p->cols; ++i) {
+        pixel(!p->raw * left + i, base + j) = colour(p, q->dBfs[i*p->rows + dBfsi]);
+      }
       if (!p->raw && !p->no_axes)                                 /* Y-axis lines */
         pixel(left - 1, base + j) = pixel(left + p->cols, base + j) = Grid;
     }
@@ -673,24 +800,66 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
     }
 
     /* Y-axis */
-    step = axis(effp->in_signal.rate / 2,
+    if (p->log10_axis) {
+      /* Log Y axis ticks and labels */
+
+      int x,y;
+      int start_decade = (int)log10_low_freq;
+      int end_decade = (int)log10_high_freq;
+      float log_scale = (float)p->rows/(log10_high_freq - log10_low_freq);
+
+      print_up(10, below + (c_rows - font_X * (int)strlen(text)) / 2, Text, "Frequency (Hz)");
+
+      for (k = 0; k < chans; ++k) {
+        base = below + k * (p->rows + 1);
+	/* Label 10^n decades in view */
+        for (i = start_decade; i <= end_decade; i++) {
+          int f = (int)powf(10.0,(float)i);
+          y = ( (float)i-log10_low_freq)*log_scale;
+          if (y>=0) {
+            sprintf(text, i?"%5i":"   DC",  f);          /* Tick label (left) */
+            print_at(left - 4 - font_X * 5, base + y + 5, Labels, text);
+            sprintf(text, i?"%i":"DC",  f);              /* Tick label (right) */
+            print_at(left + p->cols + 6, base + y + 5, Labels, text);
+          }
+
+          /* intra-decade tick marks */
+          for (j = 0; j < 10; j++) {
+            y = (log10f((float)(f + j*f))-log10_low_freq)*log_scale;
+            if (y>0 && y < p->rows) {
+              for (x = 0; x < tick_len; ++x) {
+                pixel(left-1-x, base+y) = pixel(left+p->cols+x, base+y) = Grid;
+              }
+            }
+          }
+
+        }
+
+      }
+    } else {
+      /* Linear Y axis ticks and labels */
+      step = axis(p->high_freq - p->low_freq,
         (p->rows - 1) / ((font_y * 3 + 1) >> 1), &limit, &prefix);
-    sprintf(text, "Frequency (%.1sHz)", prefix);         /* Axis label */
-    print_up(10, below + (c_rows - font_X * (int)strlen(text)) / 2, Text, text);
-    for (k = 0; k < chans; ++k) {
-      base = below + k * (p->rows + 1);
-      for (i = 0; i <= limit; i += step) {
-        int x, y = limit? (double)i / limit * (p->rows - 1) + .5 : 0;
-        for (x = 0; x < tick_len; ++x)                   /* Ticks */
-          pixel(left-1-x, base+y) = pixel(left+p->cols+x, base+y) = Grid;
-        if ((step == 5 && (i%10)) || (!i && k && chans > 1))
-          continue;
-        sprintf(text, i?"%5g":"   DC", .1 * i);          /* Tick labels */
-        print_at(left - 4 - font_X * 5, base + y + 5, Labels, text);
-        sprintf(text, i?"%g":"DC", .1 * i);
-        print_at(left + p->cols + 6, base + y + 5, Labels, text);
+      sprintf(text, "Frequency (%.1sHz)", prefix);         /* Axis label */
+      print_up(10, below + (c_rows - font_X * (int)strlen(text)) / 2, Text, text);
+      for (k = 0; k < chans; ++k) {
+        base = below + k * (p->rows + 1);
+        for (i = 0; i <= limit; i += step) {
+          int f = p->low_freq/100 + i;                     /* Frequency in 100Hz units */
+          int x, y = limit? (double)i / limit * (p->rows - 1) + .5 : 0;
+          for (x = 0; x < tick_len; ++x)                   /* Ticks */
+            pixel(left-1-x, base+y) = pixel(left+p->cols+x, base+y) = Grid;
+          if ((step == 5 && (i%10)) || (!i && k && chans > 1))
+            continue;
+
+          sprintf(text, f?"%5g":"   DC", .1 * f);          /* Tick labels */
+          print_at(left - 4 - font_X * 5, base + y + 5, Labels, text);
+          sprintf(text, f?"%g":"DC", .1 * f);
+          print_at(left + p->cols + 6, base + y + 5, Labels, text);
+        }
       }
     }
+
 
     /* Z-axis */
     k = min(400, c_rows);
@@ -755,6 +924,8 @@ sox_effect_handler_t const * lsx_spectrogram_effect_fn(void)
     "\t-l\tLight background",
     "\t-m\tMonochrome",
     "\t-h\tHigh colour",
+    "\t-L\tPlot the frequency on logarithmic axis",
+    "\t-R L:H\tSpecify the frequency range (from L to H)",
     "\t-p num\tPermute colours (1 - 6); default 1",
     "\t-A\tAlternative, inferior, fixed colour-set (for compatibility only)",
     "\t-t text\tTitle text",
