@@ -379,7 +379,7 @@ static int sox_checkformat(sox_format_t * ft)
   return SOX_SUCCESS;
 }
 
-static sox_bool is_url(char const * text) /* detects only wget-supported URLs */
+static sox_bool is_url(char const * text)
 {
   return !(
       strncasecmp(text, "http:" , (size_t)5) &&
@@ -461,7 +461,11 @@ static FILE * xfopen(char const * identifier, char const * mode, lsx_io_type * i
   else if (is_url(identifier)) {
     FILE * f = NULL;
 #ifdef HAVE_POPEN
+# ifdef USING_CURL
+    char const * const command_format = "curl --no-cert-status -s -o - \"%s\"";
+# else
     char const * const command_format = "wget --no-check-certificate -q -O- \"%s\"";
+# endif
     char * command = lsx_malloc(strlen(command_format) + strlen(identifier));
     sprintf(command, command_format, identifier);
     f = popen(command, POPEN_MODE);

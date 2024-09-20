@@ -384,6 +384,17 @@ AC_SUBST(LADSPA_PATH)
 
 
 
+dnl Test for using curl
+AC_ARG_WITH(curl,
+    AS_HELP_STRING([--with-curl], [Use curl instead of wget]))
+using_curl=no
+if test "$with_curl" = "yes"; then
+    using_curl=yes
+    AC_DEFINE(USING_CURL, 1, [1 if should use curl instead of wget])
+fi
+
+
+
 dnl Check for MP3-reading libraries
 
 dnl libmad and libmpg123 are mutually exclusive so
@@ -866,6 +877,7 @@ fi
 echo "wavpack....................$using_wavpack"
 echo
 echo "OTHER OPTIONS"
+echo "curl support...............$using_curl"
 echo "ladspa effects.............$using_ladspa"
 echo "magic support..............$using_magic"
 echo "png support................$using_png"
