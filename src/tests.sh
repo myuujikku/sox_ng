@@ -3,6 +3,7 @@
 # SoX Regression Test script: Lossless file conversion
 
 bindir="."
+libdir="."
 builddir="."
 srcdir="."
 
@@ -36,6 +37,15 @@ while [ $# -ne 0 ]; do
         -i)
         shift
         bindir=$1
+        ;;
+
+        --libdir=*)
+        libdir=`echo $1 | sed 's/.*=//'`
+        ;;
+
+        -l)
+        shift
+        libdir=$1
         ;;
 
         --builddir=*)
@@ -81,7 +91,7 @@ execute() {
   fi
   cmd=$1
   shift
-  echo $* | xargs $cmd
+  echo $* | LD_LIBRARY_PATH="${libdir}" xargs $cmd
 }
 
 convertToAndFrom () {
@@ -206,7 +216,7 @@ timeIO () {
 # Don't try to test un-built formats
 skip_check () {
   while [ $# -ne 0 ]; do
-    ${bindir}/sox_ng${EXEEXT} --help|grep "^AUDIO FILE.*\<$1\>">/dev/null || skip="$1 $skip"
+    LD_LIBRARY_PATH=${libdir} ${bindir}/sox_ng${EXEEXT} --help|grep "^AUDIO FILE.*\<$1\>">/dev/null || skip="$1 $skip"
     shift
   done
 }

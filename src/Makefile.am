@@ -253,5 +253,9 @@ loc:
 # would run the test suite, but an uninstalled libltdl build cannot
 # currently load its formats and effects, so the checks would fail.
 installcheck: sox_sample_test
-	$(srcdir)/tests.sh --bindir=$(DESTDIR)${bindir} --builddir=${builddir} --srcdir=${srcdir}
-	$(srcdir)/testall.sh --bindir=$(DESTDIR)${bindir} --srcdir=${srcdir}
+	$(srcdir)/tests.sh --bindir=$(DESTDIR)${bindir} \
+		--libdir=$(DESTDIR)${libdir} \
+		--builddir=${builddir} --srcdir=${srcdir}
+	$(srcdir)/testall.sh --bindir=$(DESTDIR)${bindir} \
+		--libdir=$(DESTDIR)${libdir} \
+		--srcdir=${srcdir}

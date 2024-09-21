@@ -1,4 +1,5 @@
 bindir="."
+libdir="."
 srcdir="."
 effect=""
 
@@ -19,6 +20,15 @@ while [ $# -ne 0 ]; do
         -i)
         shift
         bindir=$1
+        ;;
+
+        --libdir=*)
+        libdir=`echo $1 | sed 's/.*=//'`
+        ;;
+
+        -i)
+        shift
+        libdir=$1
         ;;
 
         --srcdir=*)
@@ -42,8 +52,8 @@ t() {
 	opts="$*"
 
 	echo "Format: $format   Options: $opts"
-	${bindir}/sox_ng${EXEEXT} ${srcdir}/monkey.wav $opts /tmp/monkey.$format $effect
-	${bindir}/sox_ng${EXEEXT} $opts /tmp/monkey.$format /tmp/monkey1.wav  $effect
+	LD_LIBRARY_PATH=${libdir} ${bindir}/sox_ng${EXEEXT} ${srcdir}/monkey.wav $opts /tmp/monkey.$format $effect
+	LD_LIBRARY_PATH=${libdir} ${bindir}/sox_ng${EXEEXT} $opts /tmp/monkey.$format /tmp/monkey1.wav  $effect
 }
 t 8svx
 t aiff
