@@ -5,6 +5,33 @@ This file contains a list of all changes starting after the release of
 sox-11gamma, followed by a list of prior authors and features.
 
 
+$ox_ng-14.5.0	2024-11-18
+-------------
+
+New features:
+
+  o Add "stat -a" to give the average power spectrum
+  o Add "spectrogram -n" flag to normalize its brightness
+  o Add "spectrogram -L" flag to give a logarithmic frequency axis
+  o Add "spectrogram -R" flag to specify the frequency range
+  o Auto-detect MP3 files
+  o Lower the minimum speed of the flanger effect from 1 to 0.01Hz
+  o Raise spectrogram's height limit from 2050 to 200000 pixels
+  o Use posix_fadvise to increase readahead and double its speed
+  o spectrogram uses FFTW to make non-2^n-size FFTs a hundred times faster
+  o Resize Linux pipe buffers to make multi-threaded effects 10-80% faster
+  o MP3 decoding can now be done with libmpg123 instead of libmad
+  o URLs can be fetched with curl instead of wget
+  o Make "make check" run the regression test suite
+  o sox_version_info_t's "time" element has gone to get reproducible builds
+
+Bug fixes:
+
+  o Fix coreaudio device name truncation
+  o It should now compile on Haiku and work with the ucrt and sun C libraries
+  o Spelling in the manual has been Americanized
+
+
 $ox_ng-14.4.3.1	2024-09-14
 ---------------
 
