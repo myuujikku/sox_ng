@@ -1321,7 +1321,6 @@ typedef struct sox_version_info_t {
     sox_uint32_t version_code; /**< version number = 0x140400 */
     char const * version;      /**< version string = sox_version(), for example, "14.4.0" */
     char const * version_extra;/**< version extra info or null = "PACKAGE_EXTRA", for example, "beta" */
-    char const * time;         /**< build time = "__DATE__ __TIME__", for example, "Jan  7 2010 03:31:50" */
     char const * distro;       /**< distro or null = "DISTRO", for example, "Debian" */
     char const * compiler;     /**< compiler info or null, for example, "msvc 160040219" */
     char const * arch;         /**< arch, for example, "1248 48 44 L OMP" */

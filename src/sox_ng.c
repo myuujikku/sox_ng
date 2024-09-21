@@ -1840,8 +1840,6 @@ static void display_SoX_version(FILE * file)
       info->version_extra ? info->version_extra : "");
 
   if (sox_globals.verbosity > 3) {
-    if (info->time)
-      fprintf(file, "time:     %s\n", info->time);
     if (info->distro)
       fprintf(file, "issue:    %s\n", info->distro);
 #if HAVE_SYS_UTSNAME_H
