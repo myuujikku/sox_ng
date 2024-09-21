@@ -164,7 +164,7 @@ EXTRA_DIST = monkey.wav optional-fmts.am \
 	     CMakeLists.txt soxconfig.h.cmake \
 	     tests.sh testall.sh tests.bat testall.bat test-comments
 
-all: sox_ng$(EXEEXT) play_ng$(EXEEXT) rec_ng$(EXEEXT) soxi_ng$(EXEEXT) sox_sample_test$(EXEEXT) example0$(EXEEXT) example1$(EXEEXT) example2$(EXEEXT) example3$(EXEEXT) example4$(EXEEXT) example5$(EXEEXT) example6$(EXEEXT)
+all: sox_ng$(EXEEXT) play_ng$(EXEEXT) rec_ng$(EXEEXT) soxi_ng$(EXEEXT)
 
 play_ng$(EXEEXT) rec_ng$(EXEEXT) soxi_ng$(EXEEXT): sox_ng$(EXEEXT)
 	@if test "$(PLAYRECLINKS)" = "yes"; then	\
@@ -252,7 +252,6 @@ loc:
 # Ideally we would use the "check" target so that "make distcheck"
 # would run the test suite, but an uninstalled libltdl build cannot
 # currently load its formats and effects, so the checks would fail.
-installcheck:
+installcheck: sox_sample_test
 	$(srcdir)/tests.sh --bindir=$(DESTDIR)${bindir} --builddir=${builddir} --srcdir=${srcdir}
 	$(srcdir)/testall.sh --bindir=$(DESTDIR)${bindir} --srcdir=${srcdir}
-
