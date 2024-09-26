@@ -307,7 +307,7 @@ static double make_window(priv_t * p, int end)
 static double * rdft_init(size_t n)
 {
   double * q = lsx_malloc(2 * (n / 2 + 1) * n * sizeof(*q)), * p = q;
-  int i, j;
+  size_t i, j;
   for (j = 0; j <= n / 2; ++j) for (i = 0; i < n; ++i)
     *p++ = cos(2 * M_PI * j * i / n), *p++ = sin(2 * M_PI * j * i / n);
   return q;
