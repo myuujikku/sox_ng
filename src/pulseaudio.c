@@ -96,10 +96,10 @@ static int setup(sox_format_t *ft, int is_input)
        is likely to happen for the default pulseaudio input (--input-buffer defaults to 0)
        ToDo: Add a pacat/parec-like --latency-msec option?
     */
-    buffer_attr.fragsize = sox_globals.input_bufsiz ? sox_globals.input_bufsiz : -1;
+    buffer_attr.fragsize = sox_globals.input_bufsiz ? sox_globals.input_bufsiz : (uint32_t) -1;
     lsx_debug("INPUT cmd buffer size=%zu, pulseaudio buffer size=%u", sox_globals.input_bufsiz, buffer_attr.fragsize);
   } else {
-    buffer_attr.tlength = sox_globals.bufsiz ? sox_globals.bufsiz : -1;
+    buffer_attr.tlength = sox_globals.bufsiz ? sox_globals.bufsiz : (uint32_t) -1;
     lsx_debug("OUTPUT cmd buffer size=%zu, pulseaudio buffer size=%u", sox_globals.bufsiz, buffer_attr.tlength);
   }
 
