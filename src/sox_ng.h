@@ -81,7 +81,8 @@ Attribute applied to a function to indicate that it has no side effects and
 depends only its input parameters and global memory. If called repeatedly, it
 returns the same result each time.
 */
-#ifdef __GNUC__
+/* gcc 2.95.3 on Haiku blurts many warnings about ignoring pure */
+#if defined(__GNUC__) && __GNUC__ > 2
 #define LSX_RETURN_PURE __attribute__ ((pure)) /* Function is pure. */
 #else
 #define LSX_RETURN_PURE /* Function is pure. */
