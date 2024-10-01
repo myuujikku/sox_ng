@@ -437,6 +437,8 @@ static void incr_pipe_size(FILE *f)
       lsx_warn("couldn't set pipe size to %ld bytes: %s\n",
                max_pipe_size, strerror(errno));
   }
+#else
+  (void) f;
 #endif /* do nothing for platforms without F_{GET,SET}PIPE_SZ */
 }
 

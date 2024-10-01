@@ -744,5 +744,6 @@ d*/
     r__1 = max(r__2,1.f);
     *dither = min(r__1,20.f);
 /*   Voicing decisions are returned in VOIBUF. */
+    (void) af;
     return 0;
 } /* voicin_ */

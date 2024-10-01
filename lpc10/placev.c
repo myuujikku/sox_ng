@@ -251,6 +251,8 @@ L120:
 	    *obound = 1;
 	}
     }
+    (void) oslen;
+    (void) dvwinh;
     return 0;
 } /* placev_ */
 
