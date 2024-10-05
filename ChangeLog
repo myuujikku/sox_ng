@@ -12,26 +12,36 @@ New features:
 
   o Auto-detect MP3 files
   o Add "stat -a" to give the average power spectrum
+  o stats: Print the peak RMS location in seconds
   o Add "spectrogram -n" flag to normalize its brightness
   o Add "spectrogram -L" flag to give a logarithmic frequency axis
   o Add "spectrogram -R" flag to specify the frequency range
-  o Lower the minimum speed of the flanger effect from 1 to 0.01Hz
-  o riaa: Add 192kHz sample rate
   o Raise spectrogram's height limit from 8193 to 200000 pixels
+  o Lower the minimum speed of the flanger effect from 1 to 0.01Hz
+  o Make combine effects work when there's a single file
+  o riaa: Add 192kHz sample rate
+  o sphere format: Support ALAW encoding
+  o SD2 format: Support resource forks
+  o ID3 tags: Support unicode when writing
+  o WAV files: Read when the number of valid bits is less that the sample size
   o Use posix_fadvise to increase readahead and double its speed
-  o spectrogram uses FFTW to make non-2^n-size FFTs a hundred times faster
+  o Use FFTW to make non-2^n-size spectrograms a hundred times faster
   o Resize Linux pipe buffers to make multi-threaded effects 10-80% faster
-  o MP3 decoding can now be done with libmpg123 instead of libmad
-  o URLs can be fetched with curl instead of wget
+  o Reduce sox -t pulseaudio --[input-]buffer latency from up to 2 secs to low
+  o Read files that are still being written to by another process
+  o Enable building with libmpg123 instead of libmad (no seek support yet)
+  o Enable building to fetch URLs with curl instead of wget
   o Make "make check" run the regression test suite
-  o sox_version_info_t's "time" element has gone to get reproducible builds
+  o Drop sox_version_info_t's "time" element to get reproducible builds
 
 Bug fixes:
 
-  o Fix coreaudio device name truncation
-  o It should now compile on Haiku and work with the ucrt and sun C libraries
-  o Spelling in the manual has been Americanized
-
+  o Fix coreaudio device name truncation on MacOS X
+  o Make it compile on Haiku and NetBSD and with gcc-2.95
+  o Make it work with the ucrt and Sun C libraries
+  o Americanize Spelling in the manual
+  o Make "make installcheck" work again
+  o Fix the delay buffer full flag assigned during drain
 
 $ox_ng-14.4.3.1	2024-09-14
 ---------------
