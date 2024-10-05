@@ -1000,7 +1000,7 @@ static int stopread(sox_format_t * ft)
   return SOX_SUCCESS;
 }
 
-static int sox_mp3seek(sox_format_t * ft, uint64_t offset)
+static int sox_mp3seek(sox_format_t * ft UNUSED, uint64_t offset UNUSED)
 {
   lsx_fail("Seeking in mp3 is not yet implemented");
   return SOX_EOF;

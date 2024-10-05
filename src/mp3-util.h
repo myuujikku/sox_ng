@@ -17,7 +17,7 @@
 
 #include <sys/stat.h>
 
-#if defined(USING_ID3TAG) || defined(HAVE_LAME_ID3TAG)
+#if (defined(USING_ID3TAG) && (defined(HAVE_MAD_H) || defined(HAVE_MPG123_H))) || defined(HAVE_LAME_ID3TAG)
 
 static char const * id3tagmap[][2] =
 {
@@ -32,10 +32,9 @@ static char const * id3tagmap[][2] =
   {NULL, NULL}
 };
 
-#endif /* USING_ID3TAG || HAVE_LAME_ID3TAG */
+#endif
 
 #if defined(HAVE_LAME)
-
 
 #if defined _WIN32 || defined _WIN64
 
