@@ -358,7 +358,7 @@ static uint8_t const cswap[256] = {
   size_t lsx_read_ ## type ## _buf( \
       sox_format_t * ft, ctype *buf, size_t len) \
   { \
-    size_t n, bytesread, nread, spill; \
+    int n, bytesread, nread, spill; \
     sox_uint8_t *rawbuf = (sox_uint8_t*)buf; \
     for (n = 0; n < ft->spill_size; n++) \
       rawbuf[n] = ft->spill[n]; \
@@ -384,7 +384,7 @@ static uint8_t const cswap[256] = {
   size_t lsx_read_ ## type ## _buf( \
       sox_format_t * ft, ctype *buf, size_t len) \
   { \
-    size_t n, bytesread, nread, spill; \
+    int n, bytesread, nread, spill; \
     uint8_t *data = lsx_malloc(size * len); \
     for (n = 0; n < ft->spill_size; n++) \
       data[n] = ft->spill[n]; \
