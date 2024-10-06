@@ -45,10 +45,14 @@ static char const * id3tagmap[][2] =
 
 static unsigned short * utf8_to_utf16 (const char * utf8)
 {
-  int len = strlen(utf8);
-  int wlength = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, utf8, len, 0, 0);
+  int len;
+  int wlength;
+  LPWSTR wstr;
+
+  len = strlen(utf8);
+  wlength = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, utf8, len, 0, 0);
   if (wlength == 0) return NULL;
-  LPWSTR wstr = (LPWSTR)calloc((size_t)(wlength+2), sizeof(wchar_t));
+  wstr = (LPWSTR)calloc((size_t)(wlength+2), sizeof(wchar_t));
   MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, utf8, len, wstr+1, wlength);
   wstr[0] = 0xFEFF; /* add BOM, it is required by LAME */
   return (unsigned short *) wstr;
@@ -63,6 +67,8 @@ static unsigned short * utf8_to_utf16 (const char * utf8)
 static unsigned short * utf8_to_utf16 (const char * utf8) {
     size_t inSize, outSize, cstrSize;
     char *in, *out, *cstr;
+    iconv_t conv;
+    size_t  status;
 
     inSize  = strlen(utf8);
     outSize = inSize * 2 + 2; /* worst case, UTF-16 can take max twice as much space as UTF-8 */
@@ -70,8 +76,8 @@ static unsigned short * utf8_to_utf16 (const char * utf8) {
     out     = lsx_malloc(outSize);
     cstr    = out;
     
-    iconv_t conv   = iconv_open("UTF-16", "UTF-8");
-    size_t  status = iconv(conv, &in, &inSize, &out, &outSize);
+    conv   = iconv_open("UTF-16", "UTF-8");
+    status = iconv(conv, &in, &inSize, &out, &outSize);
     iconv_close(conv);
 
     if (status == ((size_t) -1)) {
@@ -92,11 +98,13 @@ static unsigned short * utf8_to_utf16 (const char * utf8) {
 static void set_id3_field (priv_t * p, const char * field, const char * value)
 {
   char* buf = lsx_malloc(strlen(field) + strlen(value) + 2);
+  unsigned short * utf16;
+
   if (!buf) return;
   sprintf(buf, "%s=%s", field, value);
 
 #if defined(UTF16_ID3)
-  unsigned short * utf16 = utf8_to_utf16(buf);
+  utf16 = utf8_to_utf16(buf);
   if (utf16) {
     p->id3tag_set_fieldvalue_utf16(p->gfp, utf16);
     free(utf16);
@@ -406,12 +414,18 @@ static size_t mp3_duration(sox_format_t * ft)
 {
   priv_t * p = (priv_t *) ft->priv;
   FILE * fp = ft->fp;
+  mpg123_handle * handle;
+  int error;
+  off_t samples;
+  int channels;
+  int encoding;
+  long sample_rate;
+
   if (!fp || !ft->seekable) {
     lsx_fail_errno(ft, SOX_EOF, "File pointer is undefined or not seekable in mp3_duration_ms");
     return SOX_UNSPEC;
   }
-  int error;
-  mpg123_handle * handle = p->mpg123_new(NULL, &error);
+  handle = p->mpg123_new(NULL, &error);
   if (!handle) {
     lsx_fail_errno(ft, SOX_EOF, "Could not get mpg123 handle: %s", mpg123_plain_strerror(error));
     return SOX_UNSPEC;
@@ -419,10 +433,8 @@ static size_t mp3_duration(sox_format_t * ft)
 
   p->mpg123_open_fd(handle, fileno(fp));
   p->mpg123_scan(handle);
-  off_t samples = p->mpg123_length(handle);
-  int channels = 0;
-  int encoding = 0;
-  long sample_rate = 0;
+
+  samples = p->mpg123_length(handle);
   mpg123_getformat(handle, &sample_rate, &channels, &encoding);
   p->mpg123_close(handle);
   p->mpg123_delete(handle);

@@ -938,6 +938,8 @@ static size_t sox_mp3read(sox_format_t * ft, sox_sample_t *buf, size_t len)
     do {
         /* copy from raw_buffer to return buffer */
         size_t samples = (p->raw_buffer_end - p->raw_buffer_start) / sizeof(float);
+        int ret;
+
         donow=min(len, samples);
         if (donow > 0) {
           float *ibuf = (float*)(p->raw_buffer + p->raw_buffer_start);
@@ -965,7 +967,7 @@ static size_t sox_mp3read(sox_format_t * ft, sox_sample_t *buf, size_t len)
         sox_mpg123_input(ft);
 
         /* decode data and place in raw_buffer */
-        int ret = MPG123_OK;
+        ret = MPG123_OK;
         while((ret != MPG123_ERR) && (ret != MPG123_NEED_MORE)
               && ((p->raw_buffer_size - p->raw_buffer_end) > p->mpg123_outblock(p->handle))) {
           size_t bytes;
