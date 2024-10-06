@@ -17,7 +17,7 @@ New features:
   o Add "spectrogram -L" flag to give a logarithmic frequency axis
   o Add "spectrogram -R" flag to specify the frequency range
   o Raise spectrogram's height limit from 8193 to 200000 pixels
-  o Lower the minimum speed of the flanger effect from 1 to 0.01Hz
+  o Lower the minimum speed of the flanger effect from 0.1 to 0.01 Hz
   o Make combine effects work when there's a single file
   o riaa: Add 192kHz sample rate
   o sphere format: Support ALAW encoding
@@ -39,7 +39,7 @@ Bug fixes:
   o Fix coreaudio device name truncation on MacOS X
   o Make it compile on Haiku and NetBSD and with gcc-2.95
   o Make it work with the ucrt and Sun C libraries
-  o Americanize Spelling in the manual
+  o Americanize spelling in the manual
   o Make "make installcheck" work again
   o Fix the delay buffer full flag assigned during drain
 
