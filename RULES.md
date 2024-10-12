@@ -7,7 +7,14 @@ You can browse it online at
 [`codeberg.org/sox_ng/sox_ng`](https://codeberg.org/sox_ng/sox_ng)
 and fetch a copy by
 ```
-git clone https://codeberg.org/sox_ng/sox_ng.git
+git clone https://codeberg.org/sox_ng/sox_ng
+```
+
+If you need an access token to migrate the repository
+instead of forking or cloning it,
+you can use `martinwguy`'s everything-read-only one:
+```
+0be3ba8084bada7fce53de965703d9d89153b9a7
 ```
 
 There are no other rules except for the GPL and, when modifying the code,
