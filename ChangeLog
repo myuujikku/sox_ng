@@ -5,6 +5,25 @@ This file contains a list of all changes starting after the release of
 sox-11gamma, followed by a list of prior authors and features.
 
 
+$ox_ng-14.4.4	2024-09-14
+-------------
+
+New features:
+
+  o Americanize the spelling in the manual page
+
+Bug fixes:
+
+  o Fix coreaudio device name truncation on MacOS X
+  o Fix delay buffer full flag assigned during drain
+  o Revert "fix" to "Floating point exception in startwrite()" which caused
+    playing with -t ao to play only the first part of an audio file.
+    The original bug was hard to reproduce on Fedora; most of them say
+    "sox FAIL sox: `vgacpy3.voc' premature EOF: Numerical result out of range"
+  o Now works on Haiku and with the ucrt and Sun C libraries
+  o Fix more compiler warnings and errors
+
+
 $ox_ng-14.4.3.1	2024-09-14
 ---------------
 
