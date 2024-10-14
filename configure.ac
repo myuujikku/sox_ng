@@ -646,7 +646,7 @@ if test "x$using_libltdl" = "xyes" -a "x$enable_dl_amrwb" = "xyes"; then
 else
   enable_dl_amrwb="no"
 fi
-AC_OPTIONAL_FORMAT(amrwb, AMRWB, [using_amrwb=$tmp_using_amrwb])
+AC_OPTIONAL_FORMAT(amrwb, AMRWB, [if test "x$tmp_using_amrwb" = "xno"; then using_amrwb=no; fi])
 
 dnl When enable_dl_amrnb, do not let add libraries to be linked in
 dnl since they will be dlopen()'ed instead.
@@ -673,7 +673,7 @@ if test "x$using_libltdl" = "xyes" -a "x$enable_dl_amrnb" = "xyes"; then
 else
   enable_dl_amrnb="no"
 fi
-AC_OPTIONAL_FORMAT(amrnb, AMRNB, [using_amrnb=$tmp_using_amrnb])
+AC_OPTIONAL_FORMAT(amrnb, AMRNB, [if test "x$tmp_using_amrnb" = "xno"; then using_amrnb=no; fi])
 
 
 AC_OPTIONAL_FORMAT(wavpack, WAVPACK, [AC_CHECK_HEADER(wavpack/wavpack.h, [AC_CHECK_LIB(wavpack, WavpackGetSampleRate, WAVPACK_LIBS="$WAVPACK_LIBS -lwavpack",using_wavpack=no)], using_wavpack=no)])
@@ -719,7 +719,7 @@ if test "x$using_sndfile" = "xyes"; then
     enable_dl_sndfile="no"
   fi
 fi
-AC_OPTIONAL_FORMAT(sndfile, SNDFILE, [using_sndfile=$tmp_using_sndfile])
+AC_OPTIONAL_FORMAT(sndfile, SNDFILE, [if test "x$tmp_using_sndfile" = "xno"; then using_sndfile=no; fi])
 
 
 
