@@ -229,7 +229,9 @@ static const char* const mpg123_library_names[] =
   MPG123_FUNC(f,x, int, mpg123_scan, (mpg123_handle *)) \
   MPG123_FUNC(f,x, off_t, mpg123_length, (mpg123_handle *)) \
   MPG123_FUNC(f,x, size_t, mpg123_outblock, (mpg123_handle *)) \
-  MPG123_FUNC(f,x, size_t, mpg123_safe_buffer, (void))
+  MPG123_FUNC(f,x, size_t, mpg123_safe_buffer, (void)) \
+  MPG123_FUNC(f,x, int, mpg123_info, (mpg123_handle *, struct mpg123_frameinfo *)) \
+  MPG123_FUNC(f,x, int, mpg123_getstate, (mpg123_handle *, enum mpg123_state, long *, double *))
 
 #if HAVE_LAME
 static const char* const lame_library_names[] =
