@@ -10,11 +10,10 @@ and fetch a copy by
 git clone https://codeberg.org/sox_ng/sox_ng
 ```
 
-If you need an access token to migrate the repository
-instead of forking or cloning it,
-you can use `martinwguy`'s everything-read-only one:
+If you need to migrate the repository instead of forking or cloning it,
+you can use `sox_ng`'s everything-read-only access token:
 ```
-0be3ba8084bada7fce53de965703d9d89153b9a7
+7b3e922513587437ba698e2fa3421f92a044a990
 ```
 
 There are no other rules except for the GPL and, when modifying the code,
