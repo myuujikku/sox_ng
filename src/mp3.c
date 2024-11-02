@@ -867,12 +867,13 @@ static int startread(sox_format_t * ft)
     return SOX_EOF;
   }
   error = mpg123_param(p->handle, MPG123_FLAGS, MPG123_FUZZY | MPG123_SEEKBUFFER | MPG123_GAPLESS | MPG123_FORCE_FLOAT
-  /* Before mpg123-1.32.8 there was a potential exploit for which one workaround
-   * is to set MPG123_NO_FRANKENSTEIN but there seems to be no way to check
-   * the exact mpg123 version (mpg123_distversion() is undefined),
-   * so do this for all versions up to and including the fixed version
-   * so that in the future this workaround will go away.
-   * https://mpg123.de/#2024-10-26
+  /* Before mpg123-1.32.8 there was a potential exploit
+   * CVE-2024-10573 https://mpg123.de/cgi-bin/news.cgi#2024-10-26
+   * for which one workaround is to set MPG123_NO_FRANKENSTEIN
+   * but there seems to be no way to check the exact mpg123 version 
+   * (mpg123_distversion() is undefined) so do this for all versions
+   * up to and including the fixed version so that in the future
+   * this workaround will go away.
    */
 #if !defined(MPG123_API_VERSION) || !defined(MPG123_PATCHLEVEL) || MPG123_API_VERSION < 48 || (MPG123_API_VERSION == 48 && MPG123_PATCHLEVEL <= 2)
 				  | MPG123_NO_FRANKENSTEIN
