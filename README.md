@@ -30,10 +30,11 @@ Download one of the
 
 Extract it:
 ```
-tar xzf sox_ng-*.tar.gz
+gzip -d < sox_ng-*.tar.gz | tar xf -
 ```
 Build it:
 ```
+cd sox_ng*
 ./configure
 make
 ```
@@ -42,9 +43,9 @@ Install it:
 make install
 ```
 
-It installs as `sox_ng` so that `sox` and `sox_ng` can
-coexist on the same system.
-For it to work the same as the original `sox`, use
+It installs as `sox_ng`, `sox_ng.h`, `libsox_ng.so` and so on
+so that `sox` and `sox_ng` can coexist on the same system.
+To make it work the same as the original `sox`, use
 `./configure --enable-replace` instead.
 
 ### Development branches
@@ -55,16 +56,17 @@ To fetch the latest version:
 ```
 git clone https://codeberg.org/sox_ng/sox_ng
 cd sox_ng
-autoreconf -i
 ```
 and to make local copies of the wiki and the issues:
 ```
 git clone https://codeberg.org/sox_ng/sox_ng.wiki wiki
+git clone https://codeberg.org/sox_ng/issues
 issues/getissues.sh
 ```
 
 To compile it:
 ```
+autoreconf -i
 ./configure
 make
 ```
@@ -73,8 +75,8 @@ and to install it:
 sudo make install
 ```
 This installs it as `sox_ng`, `sox_ng.h`, `libsox_ng` and so on, so as
-not to conflict with traditional `sox`. If you want it to work the same
-as the original `sox`, use `./configure --enable-replace`
+not to conflict with traditional `sox`. If you want it also to work
+with the same names as the original `sox`, use `./configure --enable-replace`
 
 ## Build dependencies
 
@@ -103,7 +105,7 @@ To enable all of SoX's optional modules you can install
 ```
 apt-get install gcc make libtool ladspa-sdk libao-dev libasound2-dev libgsm1-dev libid3tag0-dev libltdl-dev libmad0-dev libmagic-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev libopusfile-dev libpng-dev libpulse-dev libsamplerate0-dev libsndfile1-dev libtwolame-dev libvorbis-dev libwavpack-dev
 ```
-and to run `issues/getissues.sh` and `makehtml.sh`
+and to run `issues/getissues.sh` and the `makehtml.sh` scripts you will need
 ```
 apt-get install jq libtext-multimarkdown-perl
 ```
@@ -112,7 +114,7 @@ apt-get install jq libtext-multimarkdown-perl
 ```
 yum install gcc make libtool libvorbis-devel alsa-lib-devel libtool-ltdl-devel libsamplerate-devel gsm-devel wavpack-devel ladspa-devel libpng-devel flac-devel libao-devel libsndfile-devel libid3tag-devel pulseaudio-libs-devel opusfile-devel libtool libmad-devel lame-devel twolame-devel opencore-amr-devel file-devel libcaca-devel
 ```
-and to run `issues/getissues.sh` and `makehtml.sh`
+and to run `issues/getissues.sh` and the `makehtml.sh` scripts you will need
 ```
 yum install jq multimarkdown
 ```
@@ -120,8 +122,8 @@ yum install jq multimarkdown
 ## Accessibility
 
 You can edit and commit to the code and the wiki using Codeberg's web interface
-or from the command-line. The command-line is the only way to add images
-and attachments to the wiki.
+or from the command-line.
+The command-line is the only way to add images and attachments to the wiki.
 
 The issues are currently read-only to the command line
 and editable only on the Codeberg web site. This will change.
@@ -143,6 +145,8 @@ and editable only on the Codeberg web site. This will change.
 * [`SoX_ng`'s financial accounts](Accounting) are public and
 * [Bounties](Bounties) can be offered for specific issues to be resolved
 
-## README
+## README and PDFs
 
 To generate SoX's original README, run `./README.sh`
+
+To generate the PDF version of the documentation, `make pdf`

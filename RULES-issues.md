@@ -5,19 +5,29 @@
 The master copy of the issues lives on Codeberg.
 
 You can make a local copy of them into the `issues` subdirectory
-where there is a script `getissues.sh` that fetches each open issue
-into an `.md` file named according to the issue's title,
-containing its initial description and into a directory of the same name
-without the `.md` suffix for its metadata and attachments.
+by going
+```
+git clone https://codeberg.org/sox_ng/issues
+issues/getissues.sh
+```
+which fetches each issue into an `.md` file named according
+to the issue's title, and its metadata and attachments into
+a directory of the same name without the `.md` suffix.
 
-Attachments to issues are not currently migrated if you
-migrate the codeberg repository to another Forgejo instance.
-[codeberg.org/forgejo/forgejo issue 4787](https://codeberg.org/forgejo/forgejo/issues/4787)
+If you migrate the Codeberg repository to another Forgejo instance,
+attachments to issues do not make it
+[forgejo issue 4787](https://codeberg.org/forgejo/forgejo/issues/4787)
+but if `pincopallino` has made a migration on codeberg.org,
+they can be restored from the copy made above by going:
+```
+ssues/putissues.sh codeberg.org/pincopallino/sox_ng -f
+```
+where `-f` means "don't worry if the issue `id`s don't match."
+
+Like the wiki, it has a script `makehtml.sh` to make HTML pages of the issues.
 
 In future, the master copy of the issue database will live in the
-source tree and the web version will be a copy of it. #80
-
-Like the wiki, it has a script `makehtml.sh` to make HTML pages of it.
+source repository and the web version will be a copy of it. #80
 
 ## Format of an issue
 
@@ -25,81 +35,59 @@ Like the wiki, it has a script `makehtml.sh` to make HTML pages of it.
 
 A one-liner, as short as possible.
 
-When issues are downloaded to a Unix system, slashes in the Title
-are converted to backslashes in the file/dir names.
+For the issue downloader to work on Windows and MS/DOS,
+you should avoid slash, backslash, colon and double quotes.
 
-For now, for it to work on Windows and MS/DOS,
-you should also avoid backslash, colon and double quotes.
+If a new issue has the same cause as an existing one,
+its title (not its first line) should end `=#35`
+so that the summary of issues says where to go for the best info.
 
 ### Description
 
 The first line of every issue is `# Title`, the same as the Title.
 
-The second-level headings are usually
-`## Links`, `## Repeat by`, `## Results`, `## Analysis` and `## Conclusion`.
+The second-level headings are usually some of
+`## Links`, `## Description`, `## Repeat by`, `## Results`,
+`## Analysis` and `## Conclusion`.
 
-In the content, long lines are preferred to
-[semantic line breaks](https://sembr.org)
-so that `grep`ping for a two-word phrase has a better chance of finding
-matching issues, but it's not obligatory.
+In the content, [semantic line breaks](https://sembr.org)
+and less-than-80-column lines are preferred to long lines
+so that the `.md` version is more readable.
 
 For further info on the Markdown used in issues and the wiki
 see RULES-Markdown.md
 
 ### Attachments
 
-Test files and patches need to be attached to the main description,
+Test files and patches need to be attached to the main description.
 
 ### Comments
 
-Issue comments are not kept in the source tree.
+Issue comments are not downloaded.
 
-If people add them to the web version, other webby people can edit
+If people add them on the web version, other webby people can edit
 the wisdom in them into the main description; that way our
 command-line friends get the best version of the problem description
-and are spared wading through chitchat in search of gems.
+and are spared wading through the chitchat in search of gems.
 
 ### Milestone
 
-Kept in a file `miletone`, one of:
+All issues should have a milestone, one of:
 * `micro` for bug fixes
 * `minor` for enhancements
 * `major` for non backward-compatible changes
 * `release` if it regards the SoX_ng project's infrastructure
-  and should be included in the next release
 
-Milestones `micro` or `minor` are used instead of labels `bug` or `enhancement`.
+Milestones `micro` or `minor` are used instead of
+the conventional labels `bug` or `enhancement`.
 
 ### Labels
 
-Kept in a file `labels`, one per line, all optional:
-* `patch`: A solution is suggested in the issue, maybe as a patch
-* `copyright`: The issue impacts on `sox_ng`'s copyright status.
-* `needswork`: All info seems to be in but work is needed.
-* `duplicate`: This report has the same cause as another issue..
-  A duplicate issue's title (not its first line) should end `=#35`
-  to say which is the page for this problem and so that where to go
-  appears for duplicates in the summary list of issues.
-* `unconfirmed`: We have heard of a bug but not seen if it bites us yet.
-
-### Open or Closed
-
-Kept in a file `state` containing `open` or `closed`.
-
-### Issue number
-
-Kept in a file `number` in decimal.
-
-Issue numbers are assigned by Forgejo on Codeberg.org when issues are created;
-it is not possible to tell it what number to assign to an issue.
-
-### Issue id
-
-In a file called `id` there is another number which Forgejo also assigns
-and which is a different, bigger number,
-presumably unique within the Forgejo instance.
-
-### Anything else
-
-No, but the submitter and submission date would probably be useful
-to be able to include them in the HTML index and the HTML version of each issue.
+All optional:
+* `bounty`: Someone has offered money to whoever resolves this issue
+* `copyright`: The issue impacts on `sox_ng`'s copyright status
+* `duplicate`: This report has the same cause as another issue; go there
+* `invalid`: This reported bug does not affect `sox_ng`
+* `needswork`: All info seems to be in, but work is needed
+* `patch`: A solution is available, maybe as an attached patch
+* `unconfirmed`: We have heard of a bug but not yet seen whether it bites us

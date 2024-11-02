@@ -7,20 +7,18 @@ and fetch a copy by
 ```
 git clone https://codeberg.org/sox_ng/sox_ng.wiki wiki
 ```
-One usually clones it onto the `wiki` subdirectory of a clone of `sox_ng`.
+One usually clones it into the `wiki` subdirectory of a clone of `sox_ng`.
 
-Editing the clone and pushing the changes is preferred to using the web
-interface because the WI adds CRLF to every line, making the git diffs
-incomprehensible.
+Editing the clone's -md files and pushing the changes to codeberg
+is preferred to using the web interface to ensure the `.md` files
+are as comprehensible as possible.
 
 The command-line interface is the only way to add images and attachments.
 
 ## Local HTML version
 
 In the `wiki` directory there is a script `makehtml.sh`. If you run it,
-it creates `index.html` and an HTML page for each page of the wiki.
-If there is a `Home.md` page, this will become `index.html`
-as well as `Home.html`.
+it creates `index.html` (=`Home.md`) and an HTML page for each page of the wiki.
 
 ## Markdown style
 
@@ -36,7 +34,7 @@ seems to work mostly, with a couple of extra rules so that
 
 ### Headers
 
-Put a blank line either side of #Header lines for better readability
+Put a blank line either side of `## Header` lines for better readability
 of the `.md` files.
 
 ### Internal wikilinks
@@ -61,7 +59,7 @@ converted to four at the moment. Issue #139.
 
 #### Line breaks in list items
 
-Line breaks inside list items should be done with a blank line,.
+Line breaks inside list items should be done with a blank line.
 
 Instead of
 ```
