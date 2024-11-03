@@ -25,10 +25,10 @@ Makefile.in
 /sox_ng.pc
 /README
 /Docs.Features
-
 /CMakeCache.txt
 /CMakeFiles
 /cmake_install.cmake
 *.a
 tags
+/issues
 /wiki
