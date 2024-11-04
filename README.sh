@@ -24,7 +24,7 @@ Changes between this release and previous releases of SoX can be found in
 the 'ChangeLog' file; a summary of the file formats and effects supported in
 this release can be found below.  Detailed documentation for using SoX can
 be found in the distributed 'man' pages:
- o  sox_ng(1)
+  o  sox_ng(1)
   o  soxi_ng(1)
   o  soxformat_ng(7)
   o  libsox_ng(3)
