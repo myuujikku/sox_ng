@@ -3757,16 +3757,6 @@ See also the
 .B stat
 effect.
 .TP
-\fBswap\fR
-Swap stereo channels.  If the input is not stereo, pairs of channels are
-swapped, and a possible odd last channel passed through.  E.g., for seven
-channels, the output order will be 2, 1, 4, 3, 6, 5, 7.
-.SP
-See also
-.B remix
-for an effect that allows arbitrary channel selection and ordering
-(and mixing).
-.TP
 \fBstretch \fIfactor\fR [\fIwindow fade shift fading\fR]
 Change the audio duration (but not its pitch).
 This effect is broadly equivalent to the
@@ -3797,6 +3787,16 @@ See also the
 .B tempo
 effect.
 .na
+.TP
+\fBswap\fR
+Swap stereo channels.  If the input is not stereo, pairs of channels are
+swapped, and a possible odd last channel passed through.  E.g., for seven
+channels, the output order will be 2, 1, 4, 3, 6, 5, 7.
+.SP
+See also
+.B remix
+for an effect that allows arbitrary channel selection and ordering
+(and mixing).
 .TP
 \fBsynth\fR [\fB\-j \fIKEY\fR] [\fB\-n\fR] [\fIlen\fR [\fIoff\fR [\fIph\fR [\fIp1\fR [\fIp2\fR [\fIp3\fR]]]]]] {[\fItype\fR] [\fIcombine\fR] \:[[\fB%\fR]\fIfreq\fR[\fBk\fR][\fB:\fR\^|\^\fB+\fR\^|\^\fB/\fR\^|\^\fB\-\fR[\fB%\fR]\fIfreq2\fR[\fBk\fR]]] [\fIoff\fR [\fIph\fR [\fIp1\fR [\fIp2\fR [\fIp3\fR]]]]]}
 .ad
