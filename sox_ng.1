@@ -2014,6 +2014,15 @@ affects the audio.
 .SP
 See also the `Dithering' section above.
 .TP
+\fBdivide\fR
+Divide the 2nd, 3rd, 4th... channels by the value in the first channel
+considered as a value from -1.0 to +1.0.
+When the value in the first channel is zero, repeat the sample values
+in the others.
+.SP
+This has the effect of amplifying the other channels by a variable amount
+controlled by the first channel.
+.TP
 \fBdownsample\fR [\fIfactor\fR(2)]
 Downsample the signal by an integer factor: Only the first out of
 each \fIfactor\fR samples is retained, the others are discarded.
@@ -2180,6 +2189,36 @@ with coefs.txt containing
     \-6.6502926320995331e\-02
    ...
 .EE
+.SP
+This effect supports the \fB\-\-plot\fR global option.
+.TP
+\fBfirfit\fR [\fIknots-file\fR|<\fIfreq gain\fR>]
+Use SoX's FFT convolution engine to make a filter whose frequency response
+approximates a spline passing through frequency/gain pairs.
+If a single argument is given then this is treated as the name of a file
+containing the knots (white-space separated; may contain
+`#' comments).  If the given filename is `\-', or if no argument is
+given, then the knots are read from the `standard input' (stdin);
+otherwise, knots may be given on the command line.
+Examples:
+.EX
+   sox_ng infile outfile firfit 300 -100 400 -10 480 0 2800 0 3000 -10 3400 -100
+.EE
+.EX
+   sox_ng infile outfile firfit knots.txt
+.EE
+with knots.txt containing
+.EX
+   # Approximate telephone response
+   300  -100
+   400   -10
+   480     0
+   2800    0
+   3000  -10
+   3400 -100
+.EE
+.SP
+The knot frequencies must be in increasing order.
 .SP
 This effect supports the \fB\-\-plot\fR global option.
 .TP
