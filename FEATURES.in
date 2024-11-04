@@ -126,6 +126,8 @@ The audio effects/tools included in this release are as follows:
 * Miscellaneous effects
 ** ladspa: Apply LADSPA plug-in effects e.g. CMT (Computer Music Toolkit)
 ** synth: Synthesise/modulate audio tones or noise signals
+
+* Pseudo effects
 ** newfile: Create a new output file when an effects chain ends.
 ** restart: Restart 1st effects chain when multiple chains exist.
 
@@ -141,6 +143,8 @@ Multiple audio files can be combined (and then further processed with
 effects) using any one of the following combiner methods:
 
 * concatenate
-* mix
 * merge: E.g. two mono files to one stereo file
+* mix
+* mix-power: Mix to equal power
+* multiply
 * sequence: For playing multiple audio files/streams
