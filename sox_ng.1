@@ -3382,6 +3382,24 @@ and
 .B tempo
 effects.
 .TP
+\fBspeexdsp \fR[\fB\-agc\fR [\fItarget_level\fR(100)]] [\fB\-denoise\fR [\fImax_db\fR(15)]] [\fB\-dereverb\fR] [\fB\-fps\fR \fIframes_per_second\fR(20)] [\fB\-spf\fR \fIsamples_per_frame\fR]
+Use the Speex DSP library to improve perceived sound quality.
+.SP
+If no options are specified, the -agc and -denoise features are enabled.
+.RS
+.IP \fB\-agc\ \fR[\fItarget_level\fR]
+Enable automatic gain control and optionally specify
+a target volume level from 1 to 100.
+.IP \fB\-denoise\ \fR[\fImax_db\fR]
+Enable noise reduction and optionally specify the max attenuation.
+.IP \fB\-dereverb\fR
+Enable reverb reduction.
+.IP \fB\-fps\ \fIframes_per_second\fR
+Specify the number of frames per second from 1-100.
+.IP \fB\-spf\ \fIsamples_per_frame\fR
+Specify the number of samples per frame. The default is to use the \-fps setting.
+.RE
+.TP
 \fBsplice \fR [\fB\-h\fR\^|\^\fB\-t\fR\^|\^\fB\-q\fR] { \fIposition(=)\fR[\fB,\fIexcess\fR[\fB,\fIleeway\fR]] }
 Splice together audio sections.  This effect provides two things over
 simple audio concatenation: a (usually short) cross-fade is applied at

@@ -93,7 +93,7 @@ libsox_ng_la_SOURCES += \
 	noisered.h output.c overdrive.c pad.c phaser.c rate.c \
 	rate_filters.h rate_half_fir.h rate_poly_fir0.h rate_poly_fir.h \
 	remix.c repeat.c reverb.c reverse.c silence.c sinc.c skeleff.c \
-	speed.c splice.c stat.c stats.c stretch.c swap.c \
+	speed.c speexdsp.c splice.c stat.c stats.c stretch.c swap.c \
 	synth.c tempo.c tremolo.c trim.c upsample.c vad.c vol.c \
 	ignore-warning.h
 if HAVE_PNG
@@ -108,6 +108,9 @@ libsox_ng_la_LIBADD += @MAGIC_LIBS@
 endif
 if HAVE_FFTW
 libsox_ng_la_LIBADD += @FFTW_LIBS@
+endif
+if HAVE_SPEEXDSP
+libsox_ng_la_LIBADD += @SPEEXDSP_LIBS@
 endif
 
 libsox_ng_la_LIBADD += @GOMP_LIBS@

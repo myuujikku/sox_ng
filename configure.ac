@@ -369,6 +369,27 @@ AC_SUBST(FFTW_LIBS)
 
 
 
+dnl Check for speexdsp libraries
+AC_ARG_WITH(speexdsp,
+    AS_HELP_STRING([--without-speexdsp],
+        [Don't try to use libspeexdsp]))
+using_speexdsp=no
+AS_IF([test "x$with_speexdsp" != xno], [
+    AC_CHECK_HEADERS([speex/speex_preprocess.h], [using_speexdsp=yes])
+    AS_IF([test "x$using_speexdsp" = xyes],
+        [ AC_CHECK_LIB([speexdsp], [speex_preprocess_run],
+			[SPEEXDSP_LIBS="$SPEEXDSP_LIBS -lspeexdsp"], [using_speexdsp=no]) ])
+
+    AS_IF([test "x$with_speexdsp" = xyes && test "x$using_speexdsp" = xno],
+        [ AC_MSG_FAILURE([cannot find libspeexdsp]) ])
+])
+AS_IF([test "x$using_speexdsp" = xyes],
+   [ AC_DEFINE(HAVE_SPEEXDSP, 1, [Define to 1 if you have libspeexdsp.]) ])
+AM_CONDITIONAL(HAVE_SPEEXDSP, test x"$using_speexdsp" = xyes)
+AC_SUBST(SPEEXDSP_LIBS)
+
+
+
 dnl Test for LADSPA
 AC_ARG_WITH(ladspa,
     AS_HELP_STRING([--without-ladspa], [Don't try to use LADSPA]))
@@ -890,6 +911,7 @@ echo "ladspa effects.............$using_ladspa"
 echo "magic support..............$using_magic"
 echo "png support................$using_png"
 echo "FFTW support...............$using_fftw"
+echo "speexdsp support...........$using_speexdsp"
 if test "x$OPENMP_CFLAGS" = "x"; then
 echo "OpenMP support.............no"
 else

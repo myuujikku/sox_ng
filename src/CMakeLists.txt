@@ -62,6 +62,7 @@ set(effects_srcs
   sinc
   skeleff
   speed
+  speexdsp
   splice
   stat
   stats
