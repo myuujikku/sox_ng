@@ -15,9 +15,8 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-/* This is W.I.P. hence marked SOX_EFF_ALPHA for now.
- * Need to add other interpolation types e.g. linear, bspline, window types,
- * and filter length, maybe phase response type too.
+/* FIXME: Need to add other interpolation types e.g. linear, bspline,
+ * window types, and filter length, maybe phase response type too.
  */
 
 #include "sox_i.h"
@@ -34,10 +33,30 @@ static int create(sox_effect_t * effp, int argc, char **argv)
 {
   priv_t * p = (priv_t *)effp->priv;
   dft_filter_priv_t * b = &p->base;
+  int i;
+
   b->filter_ptr = &b->filter;
   --argc, ++argv;
-  if (argc == 1)
+  if (!argc)
+    p->filename = "-";
+  else if (argc == 1)
     p->filename = argv[0], --argc;
+  else {
+    if (argc % 2) return lsx_usage(effp);
+    for (i=0; i < argc - 1; i += 2) {
+      lsx_revalloc(p->knots, p->num_knots + 1);
+      if (sscanf(argv[i], "%lf", &p->knots[p->num_knots].f) != 1)
+	lsx_fail("knot frequency '%s' is not a number", argv[argc]);
+      if (sscanf(argv[i+1], "%lf", &p->knots[p->num_knots].gain) != 1)
+	lsx_fail("knot gain '%s' is not a number", argv[argc+1]);
+      if (p->num_knots > 0 && p->knots[p->num_knots].f <= p->knots[p->num_knots - 1].f) {
+	lsx_fail("knot frequencies must be strictly increasing");
+	break;
+      }
+      p->num_knots++;
+    }
+    argc = 0;
+  }
   p->n = 2047;
   return argc? lsx_usage(effp) : SOX_SUCCESS;
 }
@@ -136,8 +155,7 @@ sox_effect_handler_t const * lsx_firfit_effect_fn(void)
   static sox_effect_handler_t handler;
   handler = *lsx_dft_filter_effect_fn();
   handler.name = "firfit";
-  handler.usage = "[knots-file]";
-  handler.flags |= SOX_EFF_ALPHA;
+  handler.usage = "[ knots-file | [ freq gain ... ] ]";
   handler.getopts = create;
   handler.start = start;
   handler.priv_size = sizeof(priv_t);
