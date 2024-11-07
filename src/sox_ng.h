@@ -1556,6 +1556,9 @@ struct sox_format_t {
   int              sox_errno;       /**< Failure error code */
   char             sox_errstr[256]; /**< Failure error text */
   void             * fp;            /**< File stream pointer */
+  sox_uint8_t      * pending_buffer;/**< Buffer of bytes read but not returned */
+  sox_uint8_t      * pending_bytes; /**< Bytes read but not returned yet */
+  size_t           pending_count;   /**< How many bytes read but not returned */
   lsx_io_type      io_type;         /**< Stores whether this is a file, pipe or URL */
   sox_uint64_t     tell_off;        /**< Current offset within file */
   sox_uint64_t     data_start;      /**< Offset at which headers end and sound data begins (set by lsx_check_read_params) */

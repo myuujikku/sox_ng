@@ -107,11 +107,76 @@ int lsx_check_read_params(sox_format_t * ft, unsigned channels,
  */
 size_t lsx_readbuf(sox_format_t * ft, void *buf, size_t len)
 {
+  size_t ret;
+  size_t bytes_read = 0;
+
+  if (ft->pending_count) {
+    bytes_read = min(len, ft->pending_count);
+    memcpy(buf, ft->pending_bytes, bytes_read);
+    ft->pending_bytes += bytes_read;
+    ft->pending_count -= bytes_read;
+    if (ft->pending_count == 0)
+      free(ft->pending_buffer);
+  }
+
   clearerr((FILE*)ft->fp);  /* So that we can read again from a file being written */
-  size_t ret = fread(buf, (size_t) 1, len, (FILE*)ft->fp);
+
+  ret = bytes_read;
+  if (bytes_read < len) {
+    size_t new = fread((char *)buf + bytes_read, (size_t) 1, len - bytes_read, (FILE*)ft->fp);
+    ret += new;
+  }
+
   if (ret != len && ferror((FILE*)ft->fp))
     lsx_fail_errno(ft, errno, "lsx_readbuf");
   ft->tell_off += ret;
+  return ret;
+}
+
+/* Read in a buffer of data of length len bytes and rewind the stream.
+ * Returns number of bytes read. Unlike lsx_readbuf, it always tries to
+ * read the number of bytes that were requested.
+ */
+size_t lsx_readbuf_rewind(sox_format_t * ft, void *buf, size_t len)
+{
+  size_t ret;
+  size_t bytes_read = 0;
+
+  if (ft->pending_count) {
+    bytes_read = min(len, ft->pending_count);
+    memcpy(buf, ft->pending_bytes, bytes_read);
+    /* We don't need to "consume" them from the buffer because
+     * readbuf_rewind called twice wuold return the same again
+     */
+    if (bytes_read < len) lsx_warn("Won't be able to rewind again");
+  }
+
+  clearerr((FILE*)ft->fp);  /* So that we can read again from a file being written */
+
+  while (bytes_read < len) {
+    size_t new;
+
+    new = fread((char *)buf + bytes_read, (size_t) 1, len - bytes_read, (FILE*)ft->fp);
+    if (new == 0) /* EOF */
+      break;
+    bytes_read += new;
+  }
+
+  ret = bytes_read;
+  if (ret != len && ferror((FILE*)ft->fp))
+    lsx_fail_errno(ft, errno, "lsx_readbuf");
+
+  if (!ft->seekable) {
+    /* Remember the bytes that were returned so that we can return them again
+     * when lsx_readbuf() or lsx_readbuf_rewind() is next called.
+     */
+    ft->pending_bytes = ft->pending_buffer = lsx_malloc(bytes_read);
+    memcpy(ft->pending_bytes, buf, bytes_read);
+    ft->pending_count = bytes_read;
+  } else {
+    rewind((FILE *)ft->fp);
+  }
+  ft->tell_off = 0;
   return ret;
 }
 
@@ -205,8 +270,19 @@ int lsx_unreadb(sox_format_t * ft, unsigned b)
 int lsx_seeki(sox_format_t * ft, off_t offset, int whence)
 {
     if (ft->seekable == 0) {
-        /* If a stream peel off chars else EPERM */
-        if (whence == SEEK_CUR) {
+        if (whence != SEEK_CUR) {
+            lsx_fail_errno(ft,SOX_EPERM, "file not seekable");
+	} else {
+	    while (offset > 0 && ft->pending_count > 0) {
+		++ft->pending_bytes;
+		--ft->pending_count;
+		--offset;
+		++ft->tell_off;
+	    }
+	    if (ft->pending_count == 0)
+		free(ft->pending_buffer);
+
+	    /* If a stream peel off chars else EPERM */
             while (offset > 0 && !feof((FILE*)ft->fp)) {
                 getc((FILE*)ft->fp);
                 offset--;
@@ -216,8 +292,7 @@ int lsx_seeki(sox_format_t * ft, off_t offset, int whence)
                 lsx_fail_errno(ft,SOX_EOF, "offset past EOF");
             else
                 ft->sox_errno = SOX_SUCCESS;
-        } else
-            lsx_fail_errno(ft,SOX_EPERM, "file not seekable");
+        }
     } else {
         if (fseeko((FILE*)ft->fp, offset, whence) == -1)
             lsx_fail_errno(ft,errno, "%s", strerror(errno));

@@ -18,6 +18,11 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+/* References:
+ * https://www.garykessler.net/library/file_sigs.html
+ * https://en.wikipedia.org/wiki/List_of_file_signatures
+ */
+
 #include "sox_i.h"
 
 #if defined HAVE_POSIX_FADVISE
@@ -55,7 +60,8 @@
 static char const * auto_detect_format(sox_format_t * ft, char const * ext)
 {
   char data[AUTO_DETECT_SIZE];
-  size_t len = lsx_readbuf(ft, data, ft->seekable? sizeof(data) : PIPE_AUTO_DETECT_SIZE);
+  size_t len = lsx_readbuf_rewind(ft, data, ft->seekable ? sizeof(data) : PIPE_AUTO_DETECT_SIZE);
+
   #define CHECK(type, p2, l2, d2, p1, l1, d1) if (len >= p1 + l1 && \
       !memcmp(data + p1, d1, (size_t)l1) && !memcmp(data + p2, d2, (size_t)l2)) return #type;
   CHECK(voc   , 0, 0, ""     , 0, 20, "Creative Voice File\x1a")
@@ -486,31 +492,6 @@ static FILE * xfopen(char const * identifier, char const * mode, lsx_io_type * i
   return fopen(identifier, mode);
 }
 
-/* Hack to rewind pipes (a small amount).
- * Works by resetting the FILE buffer pointer */
-static void UNUSED rewind_pipe(FILE * fp)
-{
-/* _FSTDIO is for Torek stdio (i.e. most BSD-derived libc's)
- * In theory, we no longer need to check _NEWLIB_VERSION or __APPLE__ */
-#if defined _FSTDIO || defined _NEWLIB_VERSION || defined __APPLE__
-  fp->_p -= PIPE_AUTO_DETECT_SIZE;
-  fp->_r += PIPE_AUTO_DETECT_SIZE;
-#elif (defined __GLIBC__ || defined __HAIKU__) && ! defined __UCLIBC__
-  fp->_IO_read_ptr = fp->_IO_read_base;
-#elif defined sun
-# define NO_REWIND_PIPE
-#elif (defined _MSC_VER && _MSC_VER < 1900 && !defined _UCRT) || defined _WIN32 || defined _WIN64 || \
-      defined _ISO_STDIO_ISO_H || defined __sgi
-  fp->_ptr = fp->_base;
-#else
-  /* Either live without file-type detection with pipes,
-   * or add support for your compiler in the lines above.
-   * Test with cat monkey.wav | ./sox --info - */
-# define NO_REWIND_PIPE
-#endif
-  (void)fp;
-}
-
 static sox_format_t * open_read(
     char               const * path,
     void                     * buffer UNUSED,
@@ -525,6 +506,7 @@ static sox_format_t * open_read(
   char const * type = "";
   size_t   input_bufsiz = sox_globals.input_bufsiz?
       sox_globals.input_bufsiz : sox_globals.bufsiz;
+  ft->pending_count = 0;
 
   if (filetype) {
     if (!(handler = sox_find_format(filetype, sox_false))) {
@@ -564,18 +546,7 @@ static sox_format_t * open_read(
   }
 
   if (!filetype) {
-    if (ft->seekable) {
-      filetype = auto_detect_format(ft, lsx_find_file_extension(path));
-      lsx_rewind(ft);
-    }
-#ifndef NO_REWIND_PIPE
-    else if (!(ft->handler.flags & SOX_FILE_NOSTDIO) &&
-        input_bufsiz >= PIPE_AUTO_DETECT_SIZE) {
-      filetype = auto_detect_format(ft, lsx_find_file_extension(path));
-      rewind_pipe(ft->fp);
-      ft->tell_off = 0;
-    }
-#endif
+    filetype = auto_detect_format(ft, lsx_find_file_extension(path));
 
     if (filetype) {
       lsx_report("detected file format type `%s'", filetype);

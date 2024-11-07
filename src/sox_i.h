@@ -140,6 +140,7 @@ void lsx_load_samples(double * const dest, sox_sample_t const * const src,
 
 /* Read and write basic data types from "ft" stream. */
 size_t lsx_readbuf(sox_format_t * ft, void *buf, size_t len);
+size_t lsx_readbuf_rewind(sox_format_t * ft, void *buf, size_t len);
 int lsx_skipbytes(sox_format_t * ft, size_t n);
 int lsx_padbytes(sox_format_t * ft, size_t n);
 size_t lsx_writebuf(sox_format_t * ft, void const *buf, size_t len);
