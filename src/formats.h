@@ -128,3 +128,23 @@
 #if defined HAVE_WAVPACK && (defined STATIC_WAVPACK || !defined HAVE_LIBLTDL)
   FORMAT(wavpack)
 #endif
+
+/*--------------------- Handlers using an external program -------------------*/
+
+#if HAVE_POPEN
+
+/* ffmpeg */
+FORMAT(ffmpeg)
+FORMAT(3gp)
+FORMAT(aac)
+FORMAT(ac3)
+FORMAT(dts)
+FORMAT(m4a)
+FORMAT(m4v)
+FORMAT(oga)
+FORMAT(ra)
+FORMAT(spx)
+FORMAT(tta)
+FORMAT(wma)
+
+#endif /* HAVE_POPEN */

@@ -244,6 +244,9 @@ int lsx_rawstart(sox_format_t * ft, sox_bool default_rate, sox_bool default_chan
 #define lsx_rawstopwrite NULL
 
 extern sox_format_handler_t const * lsx_sndfile_format_fn(void);
+#if HAVE_POPEN
+extern sox_format_handler_t const * lsx_ffmpeg_format_fn(void);
+#endif
 
 char * lsx_cat_comments(sox_comments_t comments);
 

@@ -107,6 +107,20 @@ static char const * auto_detect_format(sox_format_t * ft, char const * ext)
   CHECK(sox   , 0, 0, ""     , 0,  4, "XoS.")
   CHECK(mp3   , 0, 0, ""     , 0,  3, "ID3")
   CHECK(mp3   , 0, 0, ""     , 0,  2, "\xFF\xFB")
+  /* ffmpeg formats */
+  CHECK(3gp   , 0, 0, ""     , 4,  6, "ftyp3g") /* or "ftyp3gp" */
+  CHECK(aac   , 0, 0, ""     , 0,  2, "\xFF\xF1")
+  CHECK(aac   , 0, 0, ""     , 0,  2, "\xFF\xF9")
+  CHECK(ac3   , 0, 0, ""     , 0,  2, "\x0B\x77")
+  /* Haven't found the signature for DTS files yet */
+  CHECK(m4a   , 0, 0, ""     , 4,  8, "ftypM4A ")
+  CHECK(m4v   , 0, 0, ""     , 4,  8, "ftypM4V ")
+  CHECK(m4v   , 0, 0, ""     , 4,  8, "ftypMSNV")
+  CHECK(oga   , 0, 0, ""     , 0, 14, "OggS\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00")
+  CHECK(ra    , 0, 0, ""     , 0,  9, "\x2E\x52\x4D\x46\x00\x00\x00\x12\x00")
+  CHECK(spx   , 0, 4, "OggS" , 28, 5, "Speex")
+  /* Haven't found the signature for TTA True Audio files yet */
+  CHECK(wma   , 0, 0, ""     , 0, 16, "\x30\x26\xB2\x75\x8E\x66\xCF\x11\xA6\xD9\x00\xAA\x00\x62\xCE\x6C")
 
   if (ext && !strcasecmp(ext, "snd"))
   CHECK(sndr  , 7, 1, ""     , 0,  2, "\0")
@@ -1206,7 +1220,7 @@ int sox_parse_playlist(sox_playlist_callback_t callback, void * p, char const * 
 /*----------------------------- Formats library ------------------------------*/
 
 enum {
-  #define FORMAT(f) f,
+  #define FORMAT(f) fmt_ ## f,
   #include "formats.h"
   #undef FORMAT
   NSTATIC_FORMATS
