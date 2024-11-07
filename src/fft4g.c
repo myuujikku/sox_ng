@@ -313,8 +313,10 @@ static void cft1st(int n, double *a, double const *w);
 static void cftbsub(int n, double *a, double const *w);
 static void cftfsub(int n, double *a, double const *w);
 static void cftmdl(int n, int l, double *a, double const *w);
+#ifndef SOX_H
 static void dctsub(int n, double *a, int nc, double const *c);
 static void dstsub(int n, double *a, int nc, double const *c);
+#endif
 static void makect(int nc, int *ip, double *c);
 static void makewt(int nw, int *ip, double *w);
 static void rftbsub(int n, double *a, int nc, double const *c);
@@ -389,7 +391,7 @@ void rdft(int n, int isgn, double *a, int *ip, double *w)
     }
 }
 
-
+#ifndef SOX_H
 void ddct(int n, int isgn, double *a, int *ip, double *w)
 {
     int j, nw, nc;
@@ -681,6 +683,7 @@ void dfst(int n, double *a, double *t, int *ip, double *w)
     }
     a[0] = 0;
 }
+#endif
 
 
 /* -------- initializing routines -------- */
@@ -1332,6 +1335,7 @@ static void rftbsub(int n, double *a, int nc, double const *c)
 }
 
 
+#ifndef SOX_H
 static void dctsub(int n, double *a, int nc, double const *c)
 {
     int j, k, kk, ks, m;
@@ -1372,4 +1376,4 @@ static void dstsub(int n, double *a, int nc, double const *c)
     }
     a[m] *= c[0];
 }
-
+#endif
