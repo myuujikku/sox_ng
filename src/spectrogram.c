@@ -313,14 +313,22 @@ static double * rdft_init(size_t n)
   return q;
 }
 
-#define _ re += in[i] * *q++, im += in[i++] * *q++,
 static void rdft_p(double const * q, double const * in, double * out, int n)
 {
   int i, j;
   for (j = 0; j <= n / 2; ++j) {
     double re = 0, im = 0;
-    for (i = 0; i < (n & ~7);) _ _ _ _ _ _ _ _ 0;
-    while (i < n) _ 0;
+    for (i = 0; i < (n & ~7);) {
+      re += in[i] * *q++, im += in[i++] * *q++;
+      re += in[i] * *q++, im += in[i++] * *q++;
+      re += in[i] * *q++, im += in[i++] * *q++;
+      re += in[i] * *q++, im += in[i++] * *q++;
+      re += in[i] * *q++, im += in[i++] * *q++;
+      re += in[i] * *q++, im += in[i++] * *q++;
+      re += in[i] * *q++, im += in[i++] * *q++;
+      re += in[i] * *q++, im += in[i++] * *q++;
+    }
+    while (i < n) re += in[i] * *q++, im += in[i++] * *q++;
     *out++ += re * re + im * im;
   }
 }
