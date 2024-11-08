@@ -45,10 +45,15 @@ are marked `(optional)'.
 Format types that can be handled by an
 external library via an optional pseudo file type (currently
 .BR sndfile )
-are marked e.g. `(also with \fB\-t sndfile\fR)'.  This might be
+are marked `(also with \fB\-t sndfile\fR)'.  This might be
 useful if you have a file that doesn't work with SoX's default format
 readers and writers, and there's an external reader or writer for that
 format.
+.SP
+Format types that can only be handled by the external program \fBffmpeg\fR
+are marked `(with ffmpeg)' and formats that \fBffmpeg\fR can read
+that are usually handled in other ways are marked
+`(also with \fB\-t ffmpeg\fR)'.
 .SP
 To see if SoX has support for an optional format or device, enter
 .B sox_ng \-h
@@ -108,10 +113,22 @@ Deprecated aliases for
 \fBs8\fR, \fBs16\fR, \fBs32\fR, \fBu8\fR, and \fBu16\fR
 respectively.
 .TP
+\&\fB.3gp\fR, \fB.3gpp\fR (with ffmpeg)
+Third Generation Partnership Project format, typically used with cellphones.
+.TP
 \&\fB.8svx\fR (also with \fB\-t sndfile\fR)
 Amiga 8SVX musical instrument description format.
 .TP
-\&\fB.aiff\fR, \fB.aif\fR (also with \fB\-t sndfile\fR)
+\&\fB.aac\fR (with ffmpeg)
+Advanced Audio Coding format.
+.TP
+\&\fB.ac3\fR (with ffmpeg)
+Audio Codec 3 (Dolby Digital) format.
+.TP
+\&\fB.adx\fR (with ffmpeg)
+CRI ADX format.
+.TP
+\&\fB.aiff\fR, \fB.aif\fR (also with \fB\-t sndfile\fR or \fB\-t ffmpeg\fR)
 AIFF files as used on old Apple Macs, Apple IIc/IIgs and SGI.
 SoX's AIFF support does not include multiple audio chunks,
 or the 8SVX musical instrument description format.
@@ -207,7 +224,22 @@ and
 .BR sox_ng (1)
 .BR \-d .
 .TP
-\&\fB.au\fR, \fB.snd\fR (also with \fB\-t sndfile\fR)
+\&\fB.apm\fR (with ffmpeg)
+Ubisoft Rayman 2 APM format.
+.TP
+\&\fB.aptx\fR (with ffmpeg)
+Audio Processing Technology for Bluetooth format.
+.TP
+\&\fB.argo_asf\fR (with ffmpeg)
+Argonaut Games ASF format.
+.TP
+\&\fB.asf\fR (with ffmpeg)
+Advanced / Active Streaming Format.
+.TP
+\&\fB.ast\fR (with ffmpeg)
+AST (Audio Stream) format.
+.TP
+\&\fB.au\fR, \fB.snd\fR (also with \fB\-t sndfile\fR or \fB\-t ffmpeg\fR)
 Sun Microsystems AU files.
 There are many types of AU file;
 DEC has invented its own with a different magic number
@@ -228,12 +260,15 @@ and
 .B \-c
 options, in which case SoX will issue a warning to that effect.
 .TP
+\&\fB.avi\fR (with ffmpeg)
+Audio Video Interleaved format.
+.TP
 .B .avr
 Audio Visual Research format;
 used by a number of commercial packages
 on the Mac.
 .TP
-\&\fB.caf\fR (optional)
+\&\fB.caf\fR (with sndfile, also with \fB\-t ffmpeg\fR)
 Apple's Core Audio File format.
 .TP
 \&\fB.cdda\fR, \fB.cdr\fR
@@ -304,16 +339,25 @@ Example containing only 2 stereo samples of silence:
     0.00012481278	0	0
 .EE
 .TP
+\&\fB.dfpwm\fR (with ffmpeg)
+DFPWM1a format.
+.TP
+\&\fB.dts\fR (with ffmpeg)
+Digital Theatre Systems format.
+.TP
 \&\fB.dvms\fR, \fB.vms\fR
 Used in Germany to compress speech audio for voice mail.
 A self-describing variant of
 .BR cvsd .
 .TP
+\&\fB.eac3\fR (with ffmpeg)
+E-AC-3 format.
+.TP
 \&\fB.fap\fR (optional)
 See
 .BR .paf .
 .TP
-\&\fB.flac\fR (optional; also with \fB\-t sndfile\fR)
+\&\fB.flac\fR (optional; also with \fB\-t sndfile\fR or \fB\-t ffmpeg\fB)
 Xiph.org's Free Lossless Audio CODEC compressed audio.
 FLAC is an open, patent-free CODEC designed for compressing
 music.  It is similar to MP3 and Ogg Vorbis, but lossless,
@@ -334,6 +378,9 @@ compression.  The compression level is selected using the
 option [see
 .BR sox_ng (1)]
 with a whole number from 0 to 8.
+.TP
+\&\fB.flv\fR (with ffmpeg)
+Macromedia Flash Video format.
 .TP
 .B .fssd
 An alias for the
@@ -359,6 +406,9 @@ lots of noise when a given audio signal is encoded and decoded
 multiple times.  This format is used by some voice mail applications.
 It is rather CPU intensive.
 .TP
+\&\fB.gxf\fR (with ffmpeg)
+General eXchange Format.
+.TP
 .B .hcom
 Macintosh HCOM files.
 These are Mac FSSD files with Huffman compression.
@@ -367,7 +417,7 @@ These are Mac FSSD files with Huffman compression.
 Single channel 16-bit PCM format used by HTK,
 a toolkit for building Hidden Markov Model speech processing tools.
 .TP
-\&\fB.ircam\fR (also with \fB\-t sndfile\fR)
+\&\fB.ircam\fR (also with \fB\-t sndfile\fR or \fB\-t ffmpeg\fR)
 Another name for
 .BR .sf .
 .TP
@@ -376,10 +426,19 @@ A headerless file of IMA ADPCM audio data. IMA ADPCM claims 16-bit precision
 packed into only 4 bits, but in fact sounds no better than
 .BR .vox .
 .TP
+\&\fB.kvag\fR (with ffmpeg)
+Simon & Schuster Interactive VAG format.
+.TP
 \&\fB.lpc\fR, \fB.lpc10\fR
 LPC-10 is a compression scheme for speech developed in the United
 States. See http://www.arl.wustl.edu/~jaf/lpc/ for details. There is
 no associated file format, so SoX's implementation is headerless.
+.TP
+\&\fB.m4a\fR (with ffmpeg)
+MPEG-4 Audio format.
+.TP
+\&\fB.m4v\fR, \fB.mp4\fR (with ffmpeg)
+MPEG-4 Video format.
 .TP
 \&\fB.mat\fR, \fB.mat4\fR, \fB.mat5\fR (optional)
 Matlab 4.2/5.0 (respectively GNU Octave 2.0/2.1) format (.mat is the same as .mat4).
@@ -398,7 +457,7 @@ with the `Toccata' sound-card on the Amiga.
 Allows 8bit linear, 16bit linear, A-Law, \(*m-law
 in mono and stereo.
 .TP
-\&\fB.mp3\fR, \fB.mp2\fR (optional read, optional write)
+\&\fB.mp3\fR, \fB.mp2\fR (optional read with mad or mpg123, optional write with liblame, also with \-t sndfile\fR or \fB\-t ffmpeg\fR)
 MP3 compressed audio; MP3 (MPEG Layer 3) is a part of the patent-encumbered
 MPEG standards for audio and video compression.  It is a lossy
 compression format that achieves good compression rates with little
@@ -455,10 +514,22 @@ See also
 .B Ogg Vorbis
 for a similar format.
 .TP
+\&\fB.mpeg\fR, \fB.mpg\fR (with ffmpeg)
+MPEG-1 Systems / MPEG program stream format.
+.TP
+\&\fB.mpegts\fR (with ffmpeg)
+MPEG-TS (MPEG-2 Transport Stream) format.
+.TP
 \&\fB.nist\fR (also with \fB\-t sndfile\fR)
 See \fB.sph\fR.
 .TP
-\&\fB.ogg\fR, \fB.vorbis\fR (optional)
+\&\fB.nut\fR (with ffmpeg)
+NUT format.
+.TP
+\&\fB.oga\fR (with ffmpeg)
+Ogg Audio format.
+.TP
+\&\fB.ogg\fR, \fB.vorbis\fR (optional, also with \fB-t sndfile\fR or \fB\-t ffmpeg\fR))
 Xiph.org's Ogg Vorbis compressed audio; an open, patent-free CODEC designed
 for music and streaming audio.  It is a lossy compression format (similar to
 MP3, VQF & AAC) that achieves good compression rates with a minimum amount
@@ -547,13 +618,25 @@ and
 \&\fB.pvf\fR (optional)
 Portable Voice Format.
 .TP
+\&\fB.ra\fR (with ffmpeg)
+RealAudio format.
+.TP
+\&\fB.rm\fR (with ffmpeg)
+RealMedia format.
+.TP
+\&\fB.rso\fR (with ffmpeg)
+Lego Mindstorms RSO format.
+.TP
+\&\fB.sbc\fR (with ffmpeg)
+SBC format.
+.TP
 \&\fB.sd2\fR (optional)
 Sound Designer 2 format.
 .TP
 \&\fB.sds\fR (optional)
 MIDI Sample Dump Standard.
 .TP
-\&\fB.sf\fR (also with \fB\-t sndfile\fR)
+\&\fB.sf\fR (also with \fB\-t sndfile\fR or \fB\-t ffmpeg\fR)
 IRCAM SDIF (Institut de Recherche et Coordination Acoustique/Musique
 Sound Description Interchange Format). Used by academic music software
 such as the CSound package, and the MixView sound sample editor.
@@ -562,15 +645,8 @@ such as the CSound package, and the MixView sound sample editor.
 Asterisk PBX `signed linear' 8khz, 16-bit signed integer, little-endian
 raw format.
 .TP
-\&\fB.sph\fR, \fB.nist\fR (also with \fB\-t sndfile\fR)
-SPHERE (SPeech HEader Resources) is a file format defined by NIST
-(National Institute of Standards and Technology) and is used with
-speech audio.  SoX can read these files when they contain
-\(*m-law and PCM data.  It will ignore any header information that
-says the data is compressed using \fIshorten\fR compression and
-will treat the data as either \(*m-law or PCM.  This will allow SoX
-and the command line \fIshorten\fR program to be run together using
-pipes to encompasses the data and then pass the result to SoX for processing.
+\&\fB.smjpeg\fR (with ffmpeg)
+Loki SDL MJPEG.
 .TP
 .B .smp
 Turtle Beach SampleVision files.
@@ -618,7 +694,7 @@ An alias for the
 .B .u8
 raw format.
 .TP
-.B .sox
+\fB.sox\fR (also with \fB\-t ffmpeg\fR)
 SoX's native uncompressed PCM format, intended for storing (or piping)
 audio at intermediate processing points (i.e. between SoX invocations).
 It has much in common with the popular WAV, AIFF, and AU uncompressed PCM
@@ -632,6 +708,22 @@ See `Special Filenames' in
 for examples of using the
 .B .sox
 format with `pipes'.
+.TP
+\&\fB.spdif\fR (with ffmpeg)
+IEC 61937 S/PDIF format.
+.TP
+\&\fB.sph\fR, \fB.nist\fR (also with \fB\-t sndfile\fR)
+SPHERE (SPeech HEader Resources) is a file format defined by NIST
+(National Institute of Standards and Technology) and is used with
+speech audio.  SoX can read these files when they contain
+\(*m-law and PCM data.  It will ignore any header information that
+says the data is compressed using \fIshorten\fR compression and
+will treat the data as either \(*m-law or PCM.  This will allow SoX
+and the command line \fIshorten\fR program to be run together using
+pipes to encompasses the data and then pass the result to SoX for processing.
+.TP
+\&\fB.spx\fR, \fB.speex\fR (with ffmpeg)
+Ogg Speex format.
 .TP
 \fBsunau\fR (optional)
 Sun /dev/audio device driver; supports both playing and
@@ -652,6 +744,9 @@ and
 .BR sox_ng (1)
 .BR \-d .
 .TP
+\&\fB.tta\fR (with ffmpeg)
+True Audio format.
+.TP
 .B .txw
 Yamaha TX-16W sampler.
 A file format from a Yamaha sampling keyboard which wrote IBM-PC
@@ -664,7 +759,7 @@ other bytes in the attack/loop length fields, and defaulting to
 See
 .BR .dvms .
 .TP
-\&\fB.voc\fR (also with \fB\-t sndfile\fR)
+\&\fB.voc\fR (also with \fB\-t sndfile\fR or \fB\-t ffmpeg\fR)
 Sound Blaster VOC files.
 VOC files are multi-part and contain silence parts, looping, and
 different sample rates for different chunks.
@@ -692,10 +787,10 @@ passing the decoded audio through a high-pass filter, e.g.:
 	sox_ng input.vox output.wav highpass 10
 .EE
 .TP
-\&\fB.w64\fR (optional)
+\&\fB.w64\fR (optional, also with \fB\-t ffmpeg\fR)
 Sonic Foundry's 64-bit RIFF/WAV format.
 .TP
-\&\fB.wav\fR (also with \fB\-t sndfile\fR)
+\&\fB.wav\fR (also with \fB\-t sndfile\fR or \fB\-t ffmpeg\fR)
 Microsoft .WAV RIFF files.
 This is the native audio file format of Windows, and widely used for uncompressed audio.
 .SP
@@ -767,7 +862,16 @@ lines:
 	sox_ng infile.any \-t wavpcm \-e signed-integer outfile.wav
 .EE
 .TP
-\&\fB.wv\fR (optional)
+\&\fB.wma\fR (with ffmpeg)
+Windows Media Audio format.
+.TP
+\&\fB.wsaud\fR (with ffmpeg)
+Westwood Studios audio format.
+.TP
+\&\fB.wtv\fR (with ffmpeg)
+Windows Television format.
+.TP
+\&\fB.wv\fR (optional, also with \fB\-t ffmpeg\fR)
 WavPack lossless audio compression.  Note that, when converting
 .B .wav
 to this format and back again,

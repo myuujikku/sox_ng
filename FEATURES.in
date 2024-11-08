@@ -1,6 +1,5 @@
 The current release handles the following audio file formats:
-(:table border=0:)
-(:cellnr:)
+
 * Raw files in various binary formats
 * Raw textual data
 * Amiga 8svx files
@@ -22,7 +21,6 @@ The current release handles the following audio file formats:
 * AMR-WB & AMR-NB (with optional libamrwb & libamrnb libraries)
 * MP2/MP3 (with optional libmad, libmpg123, libtwolame and libmp3lame libraries)
 * Opus files (read only; with optional Opus libraries)
-(:cell:)
 * Ogg Vorbis files (with optional Ogg Vorbis libraries)
 * FLAC files (with optional libFLAC)
 * IRCAM SoundFile files
@@ -43,7 +41,42 @@ The current release handles the following audio file formats:
 ** EA ADPCM (read support only, for now)
 * Pseudo formats that allow direct playing/recording from most audio devices
 * The "null" pseudo-file that reads and writes from/to nowhere
-(:tableend:)
+
+and if the `ffmpeg' program is installed it automatically reads:
+
+* 3GP/3GPP files
+* AAC Advanced Audio Coding files
+* AC3 Dolby Digital files
+* CRI ADX files
+* Advanced / Active Streaming Format ASF files
+* APTX Audio Processing Technology for Bluetooth files
+* Argonaut Games ASF files
+* AST Audio stream files
+* AVI Audio Video Interleaved files
+* DFPWM1a files
+* DTS Digital Theatre System files
+* E-AC-3 files
+* GXF General eXchange Format files
+* Lego Mindstorms RSO files
+* Loki SDL MJPEG files
+* M4A MPEG-4 Audio files
+* M4V/MP4 MPEG-4 Video files
+* Macromedia Flash Video files
+* MPEG-1 Program Stream files
+* MPEG-2 Transport Stream files
+* NUT audio files
+* RealAudio files
+* RealMedia files
+* SBC files
+* S/PDIF (IEC 61937) files
+* Ogg Speex files
+* Ogg FLAC files
+* Simon & Schuster Interactive KVAG files
+* True Audio TTA files
+* Unisoft Rayman 2 APM files
+* Westwood Studios Audio files
+* Windows Media Audio files
+* Windows Television files
 
 The audio effects/tools included in this release are as follows:
 

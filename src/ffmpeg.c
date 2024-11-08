@@ -82,122 +82,167 @@ LSX_FORMAT_HANDLER(ffmpeg)
   return &handler;
 }
 
-/* and all the formats it handles */
+/* All the formats ffmpeg handles that sox doesn't otherwise,
+ * created with yet more macros because there are too many! */
 
+/* For example, the three "3gp" macros expand to: */
+#if 0
 LSX_FORMAT_HANDLER(3gp)
 {
-  static char const * const names[] = {"3gp", "3gpp", NULL};
+  static char const * const names[] = { "3gp", "3gpp", NULL };
   static sox_format_handler_t handler;
 
   handler = *lsx_ffmpeg_format_fn();
-  handler.description = "Third Generation Partnership Project Format";
+  handler.description = "Third Generation Partnership Project"
   handler.names = names;
   return &handler;
 }
+#endif
 
-LSX_FORMAT_HANDLER(aac)
-{
-  static char const * const names[] = {"aac", NULL};
-  static sox_format_handler_t handler;
+#define FFMPEG_FORMAT(name) \
+LSX_FORMAT_HANDLER(name) \
+{ static char const * const names[] = {
 
-  handler = *lsx_ffmpeg_format_fn();
-  handler.description = "Advanced Audio Coding Format";
-  handler.names = names;
-  return &handler;
+#define FFMPEG_DESCRIPTION , NULL}; \
+  static sox_format_handler_t handler; \
+  handler = *lsx_ffmpeg_format_fn(); \
+  handler.description =
+
+#define FFMPEG_ENDFORMAT ; \
+  handler.names = names; \
+  return &handler; \
 }
 
-LSX_FORMAT_HANDLER(ac3)
-{
-  static char const * const names[] = {"ac3", NULL};
-  static sox_format_handler_t handler;
+FFMPEG_FORMAT(3gp) "3gp", "3gpp"
+FFMPEG_DESCRIPTION "Third Generation Partnership Project"
+FFMPEG_ENDFORMAT
 
-  handler = *lsx_ffmpeg_format_fn();
-  handler.description = "Audio Codec 3 (Dolby Digital) Format";
-  handler.names = names;
-  return &handler;
-}
+FFMPEG_FORMAT(aac) "aac"
+FFMPEG_DESCRIPTION "Advanced Audio Coding"
+FFMPEG_ENDFORMAT
 
-LSX_FORMAT_HANDLER(dts)
-{
-  static char const * const names[] = {"dts", NULL};
-  static sox_format_handler_t handler;
+FFMPEG_FORMAT(ac3) "ac3"
+FFMPEG_DESCRIPTION "Audio Codec 3 (Dolby Digital)"
+FFMPEG_ENDFORMAT
 
-  handler = *lsx_ffmpeg_format_fn();
-  handler.description = "Digital Theatre Systems Format";
-  handler.names = names;
-  return &handler;
-}
+FFMPEG_FORMAT(adx) "adx"
+FFMPEG_DESCRIPTION "CRI ADX"
+FFMPEG_ENDFORMAT
 
-LSX_FORMAT_HANDLER(m4a)
-{
-  static char const * const names[] = {"m4a", NULL};
-  static sox_format_handler_t handler;
+FFMPEG_FORMAT(apm) "apm"
+FFMPEG_DESCRIPTION "Ubisoft Rayman 2 APM"
+FFMPEG_ENDFORMAT
 
-  handler = *lsx_ffmpeg_format_fn();
-  handler.description = "MPEG-4 Audio Format";
-  handler.names = names;
-  return &handler;
-}
+FFMPEG_FORMAT(aptx) "aptx"
+FFMPEG_DESCRIPTION "Audio Processing Technology for Bluetooth"
+FFMPEG_ENDFORMAT
 
-LSX_FORMAT_HANDLER(m4v)
-{
-  static char const * const names[] = {"m4v", NULL};
-  static sox_format_handler_t handler;
-  handler = *lsx_ffmpeg_format_fn();
-  handler.description = "MPEG-4 Video Format";
-  handler.names = names;
-  return &handler;
-}
+FFMPEG_FORMAT(argo_asf) "argo_asf"
+FFMPEG_DESCRIPTION "Argonaut Games ASF"
+FFMPEG_ENDFORMAT
 
-LSX_FORMAT_HANDLER(oga)
-{
-  static char const * const names[] = {"oga", NULL};
-  static sox_format_handler_t handler;
-  handler = *lsx_ffmpeg_format_fn();
-  handler.description = "Ogg Vorbis Audio Format";
-  handler.names = names;
-  return &handler;
-}
+FFMPEG_FORMAT(asf) "asf"
+FFMPEG_DESCRIPTION "Advanced / Active Streaming Format"
+FFMPEG_ENDFORMAT
 
-LSX_FORMAT_HANDLER(ra)
-{
-  static char const * const names[] = {"ra", NULL};
-  static sox_format_handler_t handler;
-  handler = *lsx_ffmpeg_format_fn();
-  handler.description = "RealAudio Format";
-  handler.names = names;
-  return &handler;
-}
+FFMPEG_FORMAT(ast) "ast"
+FFMPEG_DESCRIPTION "AST (Audio Stream)"
+FFMPEG_ENDFORMAT
 
-LSX_FORMAT_HANDLER(spx)
-{
-  static char const * const names[] = {"spx", "speex", NULL};
-  static sox_format_handler_t handler;
-  handler = *lsx_ffmpeg_format_fn();
-  handler.description = "Speex Format";
-  handler.names = names;
-  return &handler;
-}
+FFMPEG_FORMAT(avi) "avi"
+FFMPEG_DESCRIPTION "Audio Video Interleaved"
+FFMPEG_ENDFORMAT
 
-LSX_FORMAT_HANDLER(tta)
-{
-  static char const * const names[] = {"tta", NULL};
-  static sox_format_handler_t handler;
-  handler = *lsx_ffmpeg_format_fn();
-  handler.description = "True Audio Format";
-  handler.names = names;
-  return &handler;
-}
+FFMPEG_FORMAT(dfpwm) "dfpwm"
+FFMPEG_DESCRIPTION "DFPWM1a"
+FFMPEG_ENDFORMAT
 
-LSX_FORMAT_HANDLER(wma)
-{
-  static char const * const names[] = {"wma", NULL};
-  static sox_format_handler_t handler;
+FFMPEG_FORMAT(dts) "dts"
+FFMPEG_DESCRIPTION "Digital Theatre Systems"
+FFMPEG_ENDFORMAT
 
-  handler = *lsx_ffmpeg_format_fn();
-  handler.description = "Windows Media Audio Format";
-  handler.names = names;
-  return &handler;
-}
+FFMPEG_FORMAT(eac3) "eac3"
+FFMPEG_DESCRIPTION "E-AC-3"
+FFMPEG_ENDFORMAT
+
+FFMPEG_FORMAT(flv) "flv"
+FFMPEG_DESCRIPTION "Macromedia Flash Video"
+FFMPEG_ENDFORMAT
+
+FFMPEG_FORMAT(gxf) "gxf"
+FFMPEG_DESCRIPTION "General eXchange Format"
+FFMPEG_ENDFORMAT
+
+FFMPEG_FORMAT(kvag) "kvag"
+FFMPEG_DESCRIPTION "Simon & Schuster Interactive VAG"
+FFMPEG_ENDFORMAT
+
+FFMPEG_FORMAT(m4a) "m4a"
+FFMPEG_DESCRIPTION "MPEG-4 Audio"
+FFMPEG_ENDFORMAT
+
+FFMPEG_FORMAT(m4v) "m4v" "mp4"
+FFMPEG_DESCRIPTION "MPEG-4 Video"
+FFMPEG_ENDFORMAT
+
+FFMPEG_FORMAT(mpeg) "mpg", "mpeg"
+FFMPEG_DESCRIPTION "MPEG-1 Systems / MPEG program stream"
+FFMPEG_ENDFORMAT
+
+FFMPEG_FORMAT(mpegts) "mpegts"
+FFMPEG_DESCRIPTION "MPEG-TS (MPEG-2 Transport Stream)"
+FFMPEG_ENDFORMAT
+
+FFMPEG_FORMAT(nut) "nut"
+FFMPEG_DESCRIPTION "NUT"
+FFMPEG_ENDFORMAT
+
+FFMPEG_FORMAT(oga) "oga"
+FFMPEG_DESCRIPTION "Ogg Audio"
+FFMPEG_ENDFORMAT
+
+FFMPEG_FORMAT(ra)  "ra"
+FFMPEG_DESCRIPTION "RealAudio"
+FFMPEG_ENDFORMAT
+
+FFMPEG_FORMAT(rm)  "rm"
+FFMPEG_DESCRIPTION "RealMedia"
+FFMPEG_ENDFORMAT
+
+FFMPEG_FORMAT(rso) "rso"
+FFMPEG_DESCRIPTION "Lego Mindstorms RSO"
+FFMPEG_ENDFORMAT
+
+FFMPEG_FORMAT(sbc) "sbc"
+FFMPEG_DESCRIPTION "SBC"
+FFMPEG_ENDFORMAT
+
+FFMPEG_FORMAT(smjpeg) "smjpeg"
+FFMPEG_DESCRIPTION "Loki SDL MJPEG"
+FFMPEG_ENDFORMAT
+
+FFMPEG_FORMAT(spdif) "spdif"
+FFMPEG_DESCRIPTION "IEC 61937 S/PDIF"
+FFMPEG_ENDFORMAT
+
+FFMPEG_FORMAT(spx) "spx", "speex"
+FFMPEG_DESCRIPTION "Ogg Speex"
+FFMPEG_ENDFORMAT
+
+FFMPEG_FORMAT(tta) "tta"
+FFMPEG_DESCRIPTION "True Audio"
+FFMPEG_ENDFORMAT
+
+FFMPEG_FORMAT(wma) "wma"
+FFMPEG_DESCRIPTION "Windows Media Audio"
+FFMPEG_ENDFORMAT
+
+FFMPEG_FORMAT(wsaud) "wsaud"
+FFMPEG_DESCRIPTION "Westwood Studios audio"
+FFMPEG_ENDFORMAT
+
+FFMPEG_FORMAT(wtv) "wtv"
+FFMPEG_DESCRIPTION "Windows Television"
+FFMPEG_ENDFORMAT
 
 #endif

@@ -138,13 +138,47 @@ FORMAT(ffmpeg)
 FORMAT(3gp)
 FORMAT(aac)
 FORMAT(ac3)
+FORMAT(adx)
+FORMAT(apm)
+FORMAT(aptx)
+FORMAT(argo_asf)
+FORMAT(asf)
+FORMAT(ast)
+FORMAT(avi)
+FORMAT(dfpwm)
 FORMAT(dts)
+FORMAT(eac3)
+FORMAT(flv)
+FORMAT(gxf)
+FORMAT(kvag)
 FORMAT(m4a)
 FORMAT(m4v)
+FORMAT(mpeg)
+FORMAT(mpegts)
+FORMAT(nut)
 FORMAT(oga)
 FORMAT(ra)
+FORMAT(rm)
+FORMAT(rso)
+FORMAT(sbc)
+FORMAT(smjpeg)
+FORMAT(spdif)
 FORMAT(spx)
 FORMAT(tta)
 FORMAT(wma)
+FORMAT(wsaud)
+FORMAT(wtv)
+
+/* It handles the following formats if you use -f ffmpeg
+caf
+flac
+ircam
+mp3
+ogg
+sox
+voc
+w64
+wv
+*/
 
 #endif /* HAVE_POPEN */
