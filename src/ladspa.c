@@ -22,7 +22,6 @@
 
 #include <assert.h>
 #include <limits.h>
-#include <string.h>
 #include <math.h>
 #include "ladspa.h"
 

@@ -29,7 +29,6 @@
 
 #include "sox_i.h"
 
-#include <string.h>
 #include <ctype.h>
 
 typedef enum {

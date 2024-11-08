@@ -18,10 +18,6 @@
 #define LSX_EFF_ALIAS
 #include "sox_i.h"
 #include <assert.h>
-#include <string.h>
-#ifdef HAVE_STRINGS_H
-  #include <strings.h>
-#endif
 
 #define DEBUG_EFFECTS_CHAIN 0
 

@@ -27,9 +27,6 @@
 
 #include "sox_i.h"
 
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
 
 #include "ima_rw.h"
 #include "adpcm.h"

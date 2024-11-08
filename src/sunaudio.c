@@ -29,9 +29,7 @@
 #if !defined(__NetBSD__) && !defined(__OpenBSD__)
 #include <stropts.h>
 #endif
-#include <stdlib.h>
 #include <fcntl.h>
-#include <string.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif

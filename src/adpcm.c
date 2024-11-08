@@ -35,7 +35,6 @@
 #include "adpcm.h"
 
 #include <sys/types.h>
-#include <stdio.h>
 
 typedef struct {
         sox_sample_t  step;      /* step size */

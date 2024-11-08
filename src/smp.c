@@ -16,7 +16,6 @@
  */
 
 #include "sox_i.h"
-#include <string.h>
 #include <errno.h>
 
 #define NAMELEN    30           /* Size of Samplevision name */

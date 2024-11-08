@@ -16,7 +16,6 @@
  */
 
 #include "sox_i.h"
-#include <string.h>
 
 typedef struct {
   double    * dftBuf, * noiseSpectrum, * spectrum, * measures, meanMeas;

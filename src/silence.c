@@ -30,7 +30,6 @@
 
 #include "sox_i.h"
 
-#include <string.h>
 
 /* Private data for silence effect. */
 

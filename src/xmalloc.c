@@ -18,7 +18,6 @@
  */
 
 #include "sox_i.h"
-#include <stdlib.h>
 
 static void *lsx_checkptr(void *ptr)
 {

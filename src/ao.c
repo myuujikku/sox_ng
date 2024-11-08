@@ -18,9 +18,6 @@
 
 #include "sox_i.h"
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include <ao/ao.h>
 
 typedef struct {

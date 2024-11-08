@@ -16,7 +16,6 @@
  */
 
 #include "sox_i.h"
-#include <string.h>
 
 static char const magic[2][4] = {".SoX", "XoS."};
 #define FIXED_HDR     (4 + 8 + 8 + 4 + 4) /* Without magic */

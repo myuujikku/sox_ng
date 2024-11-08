@@ -21,7 +21,12 @@
 #define LSX_MALLOC_H
 
 #include <stddef.h>
-#include <string.h>
+#if HAVE_STRING_H
+# include <string.h>
+#endif
+#if HAVE_STRINGS_H
+# include <strings.h>
+#endif
 
 LSX_RETURN_VALID void *lsx_malloc(size_t size);
 LSX_RETURN_VALID void *lsx_calloc(size_t n, size_t size);

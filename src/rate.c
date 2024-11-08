@@ -28,7 +28,6 @@
 #include "fft4g.h"
 #include "dft_filter.h"
 #include <assert.h>
-#include <string.h>
 
 #define calloc     lsx_calloc
 #define malloc     lsx_malloc

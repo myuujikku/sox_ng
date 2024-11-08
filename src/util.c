@@ -18,7 +18,6 @@
 
 #include "sox_i.h"
 #include <ctype.h>
-#include <stdio.h>
 
 int lsx_strcasecmp(const char * s1, const char * s2)
 {

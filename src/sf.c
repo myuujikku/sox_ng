@@ -18,7 +18,6 @@
  */
 
 #include "sox_i.h"
-#include <string.h>
 
 /* Magic numbers used in IRCAM audio files */
 static struct {char str[4]; sox_bool reverse_bytes; char const * desc;} id[] = {

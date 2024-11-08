@@ -21,8 +21,6 @@
 #include "ima_rw.h"
 
 #include <sys/types.h>
-#include <stdio.h>
-#include <stdlib.h>
 /*
  *
  * Lookup tables for IMA ADPCM format

@@ -17,7 +17,6 @@
  */
 
 #include "sox_i.h"
-#include <string.h>
 
 static char const ID1[6] = "SOUND\x1a";
 #define text_field_len (size_t)96  /* Includes null-terminator */

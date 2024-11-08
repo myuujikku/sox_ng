@@ -19,7 +19,6 @@
 
 #include "sox_i.h"
 
-#include <string.h>
 
 /* Private data for SKEL file */
 typedef struct {

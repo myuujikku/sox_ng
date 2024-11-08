@@ -18,7 +18,6 @@
  */
 
 #include "sox_i.h"
-#include <string.h>
 
 static char const ID1[18] = "ALawSoundFile**\0\017\020";
 static char const ID2[] = {0,0,0,1,0,0,0,0,0,0}; /* pad & repeat info: ignore */

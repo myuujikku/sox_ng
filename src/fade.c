@@ -20,7 +20,6 @@
 #define FADE_TRI        't'     /* Linear slope. */
 #define FADE_PAR        'p'     /* Inverted parabola. */
 
-#include <string.h>
 
 /* Private data for fade file */
 typedef struct { /* These are measured as samples */

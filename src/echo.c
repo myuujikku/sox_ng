@@ -44,7 +44,6 @@
 
 #include "sox_i.h"
 
-#include <stdlib.h> /* Harmless, and prototypes atof() etc. --dgc */
 
 #define DELAY_BUFSIZ ( 50 * 50U * 1024 )
 #define MAX_ECHOS 7     /* 24 bit x ( 1 + MAX_ECHOS ) = */

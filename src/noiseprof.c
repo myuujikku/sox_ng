@@ -21,7 +21,6 @@
 #include "noisered.h"
 
 #include <assert.h>
-#include <string.h>
 #include <errno.h>
 
 typedef struct {

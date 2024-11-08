@@ -60,7 +60,6 @@
 
 #include "biquad.h"
 #include <assert.h>
-#include <string.h>
 
 typedef biquad_t priv_t;
 

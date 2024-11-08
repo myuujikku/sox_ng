@@ -158,7 +158,6 @@ BLOCK 9 - data block that supersedes blocks 1 and 8.
 #include "g711.h"
 #include "adpcms.h"
 #include <assert.h>
-#include <string.h>
 
 /* Private data for VOC file */
 typedef struct {

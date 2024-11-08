@@ -18,7 +18,6 @@
 #include "sox_i.h"
 #include "fft4g.h"
 #include "dft_filter.h"
-#include <string.h>
 
 typedef dft_filter_t filter_t;
 typedef dft_filter_priv_t priv_t;

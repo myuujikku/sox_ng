@@ -16,7 +16,6 @@
  */
 
 #include "sox_i.h"
-#include <string.h>
 
 typedef struct {
   size_t argc;

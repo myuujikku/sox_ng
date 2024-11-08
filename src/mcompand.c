@@ -44,8 +44,6 @@
 
 #include "sox_i.h"
 #include <assert.h>
-#include <string.h>
-#include <stdlib.h>
 #include "compandt.h"
 #include "mcompand_xover.h"
 

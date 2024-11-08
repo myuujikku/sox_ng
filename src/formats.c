@@ -23,18 +23,23 @@
  * https://en.wikipedia.org/wiki/List_of_file_signatures
  */
 
-#include "sox_i.h"
 
-#if defined HAVE_POSIX_FADVISE
-#define _XOPEN_SOURCE 600
+/* This is necessary for fmemopen() and open_mem_stream()
+ * and must happen before system headers are included
+ * by sox_i.h and util.h
+ */
+#include "soxconfig.h"
+#if defined HAVE_FMEMOPEN
+# define _GNU_SOURCE
+# define _POSIX_C_SOURCE 200809L
 #endif
+
+#include "sox_i.h"
 
 #include <assert.h>
 #include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <stdlib.h>
-#include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -374,7 +379,7 @@ static sox_bool is_seekable(sox_format_t const * ft)
      return 0;
   fstat(fd, &st);
   seekable = ((st.st_mode & S_IFMT) == S_IFREG);
-#if defined HAVE_POSIX_FADVISE
+#if defined HAVE_POSIX_FADVISE && defined POSIX_FADV_SEQUENTIAL
   if (seekable) {
     /*
      * POSIX_FADV_NOREUSE can potentially be beneficial, too,

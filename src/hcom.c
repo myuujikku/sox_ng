@@ -22,9 +22,7 @@
 
 #include "sox_i.h"
 #include <assert.h>
-#include <string.h>
 #include <stdint.h>
-#include <stdlib.h>
 #include <errno.h>
 
 /* FIXME: eliminate these 2 functions */

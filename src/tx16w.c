@@ -34,8 +34,6 @@
  */
 
 #include "sox_i.h"
-#include <stdio.h>
-#include <string.h>
 
 #define TXMAXLEN 0x3FF80
 

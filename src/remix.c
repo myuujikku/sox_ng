@@ -16,7 +16,6 @@
  */
 
 #include "sox_i.h"
-#include <string.h>
 
 typedef struct {
   enum {semi, automatic, manual} mode;

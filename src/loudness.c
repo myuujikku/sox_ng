@@ -17,7 +17,6 @@
 
 #include "sox_i.h"
 #include "dft_filter.h"
-#include <string.h>
 
 typedef struct {
   dft_filter_priv_t base;

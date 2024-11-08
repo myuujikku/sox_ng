@@ -20,7 +20,6 @@
 
 #define LSX_EFF_ALIAS
 #include "sox_i.h"
-#include <string.h>
 #include <ctype.h>
 
 int lsx_usage(sox_effect_t * effp)

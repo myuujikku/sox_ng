@@ -60,7 +60,6 @@
  */
 
 #include "sox_i.h"
-#include <string.h>
 
 #if defined(HAVE_MAD_H) && defined(HAVE_MPG123_H)
 #error Trying to compile with both MAD and MPG123! Please choose at most one of them.

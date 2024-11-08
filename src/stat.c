@@ -14,7 +14,6 @@
 
 #include "sox_i.h"
 
-#include <string.h>
 
 /* Private data for stat effect */
 typedef struct {

@@ -20,9 +20,6 @@
 #include "sox_i.h"
 
 #include <errno.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
 
 #define BUFLEN 512
 

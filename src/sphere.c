@@ -20,7 +20,6 @@
  */
 
 #include "sox_i.h"
-#include <string.h>
 
 static int start_read(sox_format_t * ft)
 {

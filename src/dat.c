@@ -10,7 +10,6 @@
  */
 
 #include "sox_i.h"
-#include <string.h>
 
 #define LINEWIDTH (size_t)256
 

@@ -21,8 +21,6 @@
 
 #ifdef HAVE_POPEN
 
-#include <stdio.h>
-#include <string.h>
 #include <ctype.h>
 
 extern sox_format_handler_t const * lsx_au_format_fn(void);

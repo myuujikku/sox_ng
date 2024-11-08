@@ -16,8 +16,6 @@
  */
 
 #include "win32-glob.h"
-#include <stdlib.h>
-#include <stdio.h>
 #include <errno.h>
 #define WIN32_LEAN_AND_MEAN 1
 #include <windows.h>

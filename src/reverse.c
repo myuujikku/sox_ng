@@ -11,7 +11,6 @@
  */
 
 #include "sox_i.h"
-#include <string.h>
 
 typedef struct {
   off_t         pos;

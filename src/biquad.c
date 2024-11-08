@@ -16,7 +16,6 @@
  */
 
 #include "biquad.h"
-#include <string.h>
 
 typedef biquad_t priv_t;
 

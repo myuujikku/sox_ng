@@ -63,8 +63,6 @@
 
 #include "sox_i.h"
 
-#include <stdlib.h> /* Harmless, and prototypes atof() etc. --dgc */
-#include <string.h>
 
 #define MOD_SINE        0
 #define MOD_TRIANGLE    1

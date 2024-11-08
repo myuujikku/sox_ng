@@ -18,8 +18,6 @@
 
 #include "sox_i.h"
 
-#include <stdio.h>
-#include <string.h>
 
 #define AVR_MAGIC "2BIT"
 

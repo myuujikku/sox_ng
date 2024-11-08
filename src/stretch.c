@@ -17,8 +17,6 @@
  */
 #include "sox_i.h"
 
-#include <stdlib.h>
-#include <string.h>
 #include <assert.h>
 
 #define DEFAULT_SLOW_SHIFT_RATIO        0.8

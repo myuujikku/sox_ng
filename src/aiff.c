@@ -18,9 +18,6 @@
 #include "aiff.h"
 
 #include <time.h>      /* for time stamping comments */
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
 #include <errno.h>
 #include <limits.h>
 

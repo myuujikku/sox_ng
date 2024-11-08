@@ -24,7 +24,6 @@
 
 #include "sox_i.h"
 #include <assert.h>
-#include <string.h>
 
 /* Concurrent Control with "Readers" and "Writers", P.J. Courtois et al, 1971:*/
 

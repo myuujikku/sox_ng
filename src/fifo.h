@@ -18,8 +18,6 @@
 #ifndef fifo_included
 #define fifo_included
 
-#include <string.h>
-
 #ifndef FIFO_SIZE_T
 #define FIFO_SIZE_T size_t
 #endif

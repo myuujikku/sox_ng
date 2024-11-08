@@ -12,8 +12,6 @@
 
 #include "sox_i.h"
 
-#include <string.h>
-#include <stdlib.h>
 #include "compandt.h"
 
 /*

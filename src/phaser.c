@@ -42,7 +42,6 @@
  */
 
 #include "sox_i.h"
-#include <string.h>
 
 typedef struct {
   double     in_gain, out_gain, delay_ms, decay, mod_speed;

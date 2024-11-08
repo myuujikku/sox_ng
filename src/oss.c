@@ -26,8 +26,6 @@
 
 #include "sox_i.h"
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <fcntl.h>
 #ifdef HAVE_SYS_SOUNDCARD_H
   #include <sys/soundcard.h>

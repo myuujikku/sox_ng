@@ -22,9 +22,6 @@
 
 #include "sox_i.h"
 
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
 
 #define HNIBBLE(byte) (((byte) >> 4) & 0xf)
 #define LNIBBLE(byte) ((byte) & 0xf)

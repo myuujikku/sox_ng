@@ -18,7 +18,6 @@
 #define LSX_EFF_ALIAS
 #include "sox_i.h"
 #include <ctype.h>
-#include <string.h>
 
 typedef struct {
   sox_bool      do_equalise, do_balance, do_balance_no_clip, do_limiter;

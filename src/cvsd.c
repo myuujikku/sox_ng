@@ -45,7 +45,6 @@
 #include "cvsd.h"
 #include "cvsdfilt.h"
 
-#include <string.h>
 #include <time.h>
 
 /* ---------------------------------------------------------------------- */

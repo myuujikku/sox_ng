@@ -14,7 +14,6 @@
  */
 
 #include "sox_i.h"
-#include <string.h>
 
 static const sox_sample_t filt[32 * 2] = {
 /* 30°  330° */

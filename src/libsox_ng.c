@@ -19,7 +19,6 @@
  */
 
 #include "sox_i.h"
-#include <string.h>
 
 const char *sox_version(void)
 {

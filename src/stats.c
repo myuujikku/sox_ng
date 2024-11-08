@@ -17,7 +17,6 @@
 
 #include "sox_i.h"
 #include <ctype.h>
-#include <string.h>
 
 typedef struct {
   int       scale_bits, hex_bits;

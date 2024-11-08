@@ -20,7 +20,6 @@
 
 #include "sox_i.h"
 #include <limits.h>
-#include <string.h>
 #include <sys/stat.h>
 #include <stdarg.h>
 

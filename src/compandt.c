@@ -18,7 +18,6 @@
 #include "sox_i.h"
 
 #include "compandt.h"
-#include <string.h>
 
 #define LOG_TO_LOG10(x) ((x) * 20 / M_LN10)
 

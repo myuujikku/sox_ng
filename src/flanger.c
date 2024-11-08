@@ -18,7 +18,6 @@
 /* TODO: Slide in the delay at the start? */
 
 #include "sox_i.h"
-#include <string.h>
 
 typedef enum {INTERP_LINEAR, INTERP_QUADRATIC} interp_t;
 

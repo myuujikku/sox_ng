@@ -16,8 +16,6 @@
  */
 
 #include "win32-ltdl.h"
-#include <stdio.h>
-#include <stdlib.h>
 #define WIN32_LEAN_AND_MEAN 1
 #include <windows.h>
 
