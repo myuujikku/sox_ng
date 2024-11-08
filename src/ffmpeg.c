@@ -25,7 +25,7 @@
 #include <string.h>
 #include <ctype.h>
 
-extern sox_format_handler_t const * lsx_sox_format_fn(void); /* used by ffmpeg */
+extern sox_format_handler_t const * lsx_au_format_fn(void);
 
 /*
  * Open file with ffmpeg
@@ -34,7 +34,7 @@ static int startread(sox_format_t * ft)
 {
   char *quoted_filename;
   char *p, *q;
-  char const * const command_fmt = "ffmpeg -loglevel quiet -i \"%s\" -f sox -";
+  char const * const command_fmt = "ffmpeg -loglevel quiet -i \"%s\" -f au -";
   char *command;
 
   /* Quote special characters in the filename */
@@ -60,7 +60,7 @@ static int startread(sox_format_t * ft)
   free(command);
   free(quoted_filename);
 
-  return lsx_sox_format_fn()->startread(ft);
+  return lsx_au_format_fn()->startread(ft);
 }
 
 LSX_FORMAT_HANDLER(ffmpeg)
@@ -71,7 +71,7 @@ LSX_FORMAT_HANDLER(ffmpeg)
   };
   static sox_format_handler_t handler;
 
-  handler = *lsx_sox_format_fn();
+  handler = *lsx_au_format_fn();
   handler.description = "Pseudo format to use ffmpeg";
   handler.names = names;
   handler.startread = startread;
