@@ -112,20 +112,72 @@ static char const * auto_detect_format(sox_format_t * ft, char const * ext)
   CHECK(sox   , 0, 0, ""     , 0,  4, "XoS.")
   CHECK(mp3   , 0, 0, ""     , 0,  3, "ID3")
   CHECK(mp3   , 0, 0, ""     , 0,  2, "\xFF\xFB")
+
   /* ffmpeg formats */
   CHECK(3gp   , 0, 0, ""     , 4,  6, "ftyp3g") /* or "ftyp3gp" */
   CHECK(aac   , 0, 0, ""     , 0,  2, "\xFF\xF1")
   CHECK(aac   , 0, 0, ""     , 0,  2, "\xFF\xF9")
   CHECK(ac3   , 0, 0, ""     , 0,  2, "\x0B\x77")
-  /* Haven't found the signature for DTS files yet */
+  CHECK(adx   , 0, 0, ""     , 0,  2, "\x80\x00") /* libavformat/adxdec.c */
+  CHECK(ape   , 0, 0, ""     , 0,  4, "MAC ")     /* libavformat/ape.c */
+  CHECK(apm   ,20, 4, "vs12" , 0,  2, "\x00\x02") /* libavformat/apm.c */
+  /* aptx is headerless and can only be autodetected by the filename extension */
+  CHECK(argo_asf,0,4,"ASF\0", 4,  2, "\x01\x01") /* libavformat/argo_asf.[ch] */
+  CHECK(argo_asf,0,4,"ASF\0", 4,  2, "\x01\x02")
+  CHECK(argo_asf,0,4,"ASF\0", 4,  2, "\x02\x01")
+  CHECK(asf   , 0, 0, ""     , 0, 16, "\x30\x26\xB2\x75\x8E\x66\xCF\x11\xA6\xD9\x00\xAA\x00\x62\xCE\x6C") /* libavformat/asfdec_*.c */
+  CHECK(ast   , 0, 0, ""     , 0,  4, "STRM")    /* libavformat/astdec.c */
+  CHECK(avi   , 0, 4, "RIFF" , 8,  4, "AVI ")    /* libavformat/avidec.c */
+  CHECK(avi   , 0, 4, "RIFF" , 8,  4, "AVIX")
+  CHECK(avi   , 0, 4, "RIFF" , 8,  4, "AVI\x19")
+  CHECK(avi   , 0, 4, "ON2 " , 8,  4, "ON2f")
+  CHECK(avi   , 0, 4, "RIFF" , 8,  4, "AMV ")
+  /* dfpwm is headerless and can only be autodetected by the filename extension */
+  /* dts is autodetected by ffmpeg but not by fixed bytes at fixed offsets */
+  CHECK(eac3  , 0, 0, ""     , 0,  2, "\x04\x00") /* libavformat/eacdata.c */
+  CHECK(eac3  , 0, 0, ""     , 0,  2, "\x04\x04")
+  CHECK(eac3  , 0, 0, ""     , 0,  2, "\x04\x0C")
+  CHECK(eac3  , 0, 0, ""     , 0,  2, "\x04\x14")
+  CHECK(flv   , 5, 1, "\x00" , 0,  4, "FLV\x00") /* libavformat/flvdec.c */
+  CHECK(flv   , 5, 1, "\x00" , 0,  4, "FLV\x01")
+  CHECK(flv   , 5, 1, "\x00" , 0,  4, "FLV\x02")
+  CHECK(flv   , 5, 1, "\x00" , 0,  4, "FLV\x03")
+  CHECK(flv   , 5, 1, "\x00" , 0,  4, "FLV\x04")
+  CHECK(gxf   ,10, 6, "\x00\x00\x00\x00\xE1\xE2", 0, 6, "\x00\x00\x00\x00\x01\xBC") /* libavformat/gxf.c */
+  CHECK(kvag  , 0, 0, ""     , 0,  4, "KVAG")	 /* libavformat/kvag.c */
+  /* loas is autodetected by ffmpeg but not by fixed bytes at fixed offsets */
   CHECK(m4a   , 0, 0, ""     , 4,  8, "ftypM4A ")
   CHECK(m4v   , 0, 0, ""     , 4,  8, "ftypM4V ")
   CHECK(m4v   , 0, 0, ""     , 4,  8, "ftypMSNV")
+  CHECK(mlp   , 0, 0, ""     , 4,  4, "\xF8\x72\x6F\xBB")
+  /* mpeg is autodetected by ffmpeg but not by fixed bytes at fixed positions */
+  /* mpegts is autodetected by ffmpeg but not by fixed bytes at fixed positions */
+  CHECK(nut   , 0, 0, ""     , 0, 25, "nut/multimedia container\0")
   CHECK(oga   , 0, 0, ""     , 0, 14, "OggS\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00")
+  CHECK(rm    , 0, 0, ""     , 0,  6, ".RMF\0\0") /* libavformat/rmdec.c */
+  CHECK(rm    , 0, 0, ""     , 0,  4, ".ra\xFD")
+  /* rso can't be autodetected by ffmpeg */
+  /* sbc can't be autodetected by ffmpeg */
+  CHECK(smjpeg,0, 0, ""     , 0,  8, "\x0\xaSMJPEG") /* libavformat/smjpeg.h */
+  /* spdif is autodetected by ffmpeg but not by fixed bytes at fixed offsets */
   CHECK(ra    , 0, 0, ""     , 0,  9, "\x2E\x52\x4D\x46\x00\x00\x00\x12\x00")
+  CHECK(rm    , 0, 0, ""     , 0,  6, ".RMF\0\0") /* libavformat/rmdec.c */
+  CHECK(rm    , 0, 0, ""     , 0,  4, ".ra\xFD")
+  /* rso can't be autodetected by ffmpeg */
+  /* sbc can't be autodetected by ffmpeg */
+  CHECK(smjpeg,0, 0, ""     , 0,  8, "\x0\xaSMJPEG") /* libavformat/smjpeg.h */
+  /* spdif is autodetected by ffmpeg but not by fixed bytes at fixed offsets */
   CHECK(spx   , 0, 4, "OggS" , 28, 5, "Speex")
-  /* Haven't found the signature for TTA True Audio files yet */
+  CHECK(tta   , 4, 2, "\1\0" , 0,  4, "TTA1") /* libavformat/tta.c */
+  CHECK(tta   , 4, 2, "\2\0" , 0,  4, "TTA1")
+  CHECK(vag   , 0, 0, ""     , 0,  7, "VAGp\0\0\0")
   CHECK(wma   , 0, 0, ""     , 0, 16, "\x30\x26\xB2\x75\x8E\x66\xCF\x11\xA6\xD9\x00\xAA\x00\x62\xCE\x6C")
+  /* wsaud has no file signature but there are header sanity checks
+   * and the header signature of the first audio chunk.
+   * libavformat/westwood_aud.c */
+  CHECK(wsaud ,11, 1, "\1"   ,16,  4, "1xAF\xDE\x00\x00")
+  CHECK(wsaud ,11, 1, "\x63" ,16,  4, "1xAF\xDE\x00\x00")
+  CHECK(wtv   , 0, 0, ""     , 0, 16, "\xB7\xD8\x00\x20\x37\x49\xDA\x11\xA6\x4E\x00\x07\xE9\x5E\xAD\x8D") /* libavformat/wtv_common.c */
 
   if (ext && !strcasecmp(ext, "snd"))
   CHECK(sndr  , 7, 1, ""     , 0,  2, "\0")

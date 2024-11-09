@@ -13,9 +13,9 @@ New features:
   o Add effect speexdsp with automatic gain control and noise reduction
   o Auto-detect MP3 files
   o If ffmpeg is installed, automatically read formats
-    3gp, aac, ac3, adx, apm, aptx, asf, ast, avi, dfpwm, dts, eac3,
-    flv, gxf, kvag, m4a, m4v, mpeg, mpegts, nut, oga (Ogg with FLAC data),
-    ra, rm, rso, sbc, smjpeg, spdif, speex, tta, wma, wsaud and wtv
+    3gp, aac, ac3, adx, ape, apm, aptx, asf, ast, avi, dfpwm, dts, eac3, flv,
+    gxf, kvag, loas, m4a, m4v, mlp, mpeg, mpegts, nut, oga (Ogg with FLAC data),
+    ra, rm, rso, sbc, smjpeg, spdif, speex, tta, vag, wma, wsaud and wtv
     and yet more with -t ffmpeg
   o Add "stat -a" to give the average power spectrum
   o stats: Print the peak RMS location in seconds

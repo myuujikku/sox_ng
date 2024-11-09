@@ -224,6 +224,9 @@ and
 .BR sox_ng (1)
 .BR \-d .
 .TP
+\&\fB.ape\fR (with ffmpeg)
+Monkey's Audio format.
+.TP
 \&\fB.apm\fR (with ffmpeg)
 Ubisoft Rayman 2 APM format.
 .TP
@@ -351,7 +354,7 @@ A self-describing variant of
 .BR cvsd .
 .TP
 \&\fB.eac3\fR (with ffmpeg)
-E-AC-3 format.
+Enhanced AC-3 Audio.
 .TP
 \&\fB.fap\fR (optional)
 See
@@ -429,6 +432,9 @@ packed into only 4 bits, but in fact sounds no better than
 \&\fB.kvag\fR (with ffmpeg)
 Simon & Schuster Interactive VAG format.
 .TP
+\&\fB.loas\fR (with ffmpeg)
+LOAS AudioSyncStream format.
+.TP
 \&\fB.lpc\fR, \fB.lpc10\fR
 LPC-10 is a compression scheme for speech developed in the United
 States. See http://www.arl.wustl.edu/~jaf/lpc/ for details. There is
@@ -456,6 +462,9 @@ MS MacroSystem Computer GmbH, published along
 with the `Toccata' sound-card on the Amiga.
 Allows 8bit linear, 16bit linear, A-Law, \(*m-law
 in mono and stereo.
+.TP
+\&\fB.mlp\fR (with ffmpeg)
+Meridian Lossless Packing format.
 .TP
 \&\fB.mp3\fR, \fB.mp2\fR (optional read with mad or mpg123, optional write with liblame, also with \-t sndfile\fR or \fB\-t ffmpeg\fR)
 MP3 compressed audio; MP3 (MPEG Layer 3) is a part of the patent-encumbered
@@ -524,7 +533,8 @@ MPEG-TS (MPEG-2 Transport Stream) format.
 See \fB.sph\fR.
 .TP
 \&\fB.nut\fR (with ffmpeg)
-NUT format.
+NUT is a low overhead generic container format that stores audio, video,
+subtitle and user-defined streams in a simple yet efficient way.
 .TP
 \&\fB.oga\fR (with ffmpeg)
 Ogg Audio format.
@@ -746,6 +756,9 @@ and
 .TP
 \&\fB.tta\fR (with ffmpeg)
 True Audio format.
+.TP
+\&\fB.vag\fR (with ffmpeg)
+Sony PS2 VAG format.
 .TP
 .B .txw
 Yamaha TX-16W sampler.

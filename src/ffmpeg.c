@@ -32,7 +32,7 @@ static int startread(sox_format_t * ft)
 {
   char *quoted_filename;
   char *p, *q;
-  char const * const command_fmt = "ffmpeg -loglevel quiet -i \"%s\" -f au -";
+  char const * const command_fmt = "ffmpeg -loglevel quiet -strict -2 -i \"%s\" -f au -";
   char *command;
 
   /* Quote special characters in the filename */
@@ -129,11 +129,15 @@ FFMPEG_FORMAT(adx) "adx"
 FFMPEG_DESCRIPTION "CRI ADX"
 FFMPEG_ENDFORMAT
 
+FFMPEG_FORMAT(ape) "ape"
+FFMPEG_DESCRIPTION "Monkey's Audio"
+FFMPEG_ENDFORMAT
+
 FFMPEG_FORMAT(apm) "apm"
 FFMPEG_DESCRIPTION "Ubisoft Rayman 2 APM"
 FFMPEG_ENDFORMAT
 
-FFMPEG_FORMAT(aptx) "aptx"
+FFMPEG_FORMAT(aptx) "aptx", "aptxhd"
 FFMPEG_DESCRIPTION "Audio Processing Technology for Bluetooth"
 FFMPEG_ENDFORMAT
 
@@ -162,7 +166,7 @@ FFMPEG_DESCRIPTION "Digital Theatre Systems"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(eac3) "eac3"
-FFMPEG_DESCRIPTION "E-AC-3"
+FFMPEG_DESCRIPTION "Enhanced AC-3 Audio"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(flv) "flv"
@@ -177,12 +181,20 @@ FFMPEG_FORMAT(kvag) "kvag"
 FFMPEG_DESCRIPTION "Simon & Schuster Interactive VAG"
 FFMPEG_ENDFORMAT
 
+FFMPEG_FORMAT(loas) "loas"
+FFMPEG_DESCRIPTION "LOAS AudioSyncStream"
+FFMPEG_ENDFORMAT
+
 FFMPEG_FORMAT(m4a) "m4a"
 FFMPEG_DESCRIPTION "MPEG-4 Audio"
 FFMPEG_ENDFORMAT
 
-FFMPEG_FORMAT(m4v) "m4v" "mp4"
+FFMPEG_FORMAT(m4v) "m4v", "mp4"
 FFMPEG_DESCRIPTION "MPEG-4 Video"
+FFMPEG_ENDFORMAT
+
+FFMPEG_FORMAT(mlp) "mlp"
+FFMPEG_DESCRIPTION "Meridian Lossless Packing"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(mpeg) "mpg", "mpeg"
@@ -231,6 +243,10 @@ FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(tta) "tta"
 FFMPEG_DESCRIPTION "True Audio"
+FFMPEG_ENDFORMAT
+
+FFMPEG_FORMAT(vag) "vag"
+FFMPEG_DESCRIPTION "Sony PS2 VAG"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(wma) "wma"

@@ -55,23 +55,27 @@ and if the `ffmpeg' program is installed it automatically reads:
 * AVI Audio Video Interleaved files
 * DFPWM1a files
 * DTS Digital Theatre System files
-* E-AC-3 files
+* Enhanced AC-3 Audio files
 * GXF General eXchange Format files
 * Lego Mindstorms RSO files
+* LOAS AudioSyncStream files
 * Loki SDL MJPEG files
 * M4A MPEG-4 Audio files
 * M4V/MP4 MPEG-4 Video files
 * Macromedia Flash Video files
+* Meridian Lossless Packing
+* Monkey's Audio (APE) files
 * MPEG-1 Program Stream files
 * MPEG-2 Transport Stream files
 * NUT audio files
+* Ogg Speex files
+* Ogg FLAC files
 * RealAudio files
 * RealMedia files
 * SBC files
-* S/PDIF (IEC 61937) files
-* Ogg Speex files
-* Ogg FLAC files
 * Simon & Schuster Interactive KVAG files
+* Sony PS2 VAG files
+* S/PDIF (IEC 61937) files
 * True Audio TTA files
 * Unisoft Rayman 2 APM files
 * Westwood Studios Audio files
