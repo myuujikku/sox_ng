@@ -414,6 +414,19 @@ if test "$with_curl" = "yes"; then
     AC_DEFINE(USING_CURL, 1, [1 if should use curl instead of wget])
 fi
 
+dnl Test for using ffmpeg
+AC_ARG_WITH(ffmpeg,
+    AS_HELP_STRING([--with-ffmpeg], [Use ffmpeg to decode otherwise unsupported formats]))
+using_ffmpeg=no
+if test "$with_ffmpeg" = "yes"; then
+    # We've already checked for popen() but AC_CHECK_FUNCS() doesn't leave
+    # anything that we can use here, so check again.
+    AC_CHECK_FUNC(popen, [],
+      [AC_MSG_FAILURE([--with-ffmpeg requires the presence of popen()])])
+    using_ffmpeg=yes
+    AC_DEFINE(USING_FFMPEG, 1, [1 if should use ffmpeg to decode otherwise unsupported formats])
+fi
+
 
 
 dnl Check for MP3-reading libraries
@@ -907,6 +920,7 @@ echo "wavpack....................$using_wavpack"
 echo
 echo "OTHER OPTIONS"
 echo "curl support...............$using_curl"
+echo "ffmpeg support.............$using_ffmpeg"
 echo "ladspa effects.............$using_ladspa"
 echo "magic support..............$using_magic"
 echo "png support................$using_png"

@@ -19,7 +19,8 @@
 
 #include "sox_i.h"
 
-#ifdef HAVE_POPEN
+#if USING_FFMPEG
+/* "configure" checks that we HAVE_POPEN */
 
 #include <ctype.h>
 

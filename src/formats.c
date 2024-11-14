@@ -113,7 +113,7 @@ static char const * auto_detect_format(sox_format_t * ft, char const * ext)
   CHECK(mp3   , 0, 0, ""     , 0,  3, "ID3")
   CHECK(mp3   , 0, 0, ""     , 0,  2, "\xFF\xFB")
 
-  /* ffmpeg formats */
+#if USING_FFMPEG
   CHECK(3gp   , 0, 0, ""     , 4,  6, "ftyp3g") /* or "ftyp3gp" */
   CHECK(aac   , 0, 0, ""     , 0,  2, "\xFF\xF1")
   CHECK(aac   , 0, 0, ""     , 0,  2, "\xFF\xF9")
@@ -178,6 +178,7 @@ static char const * auto_detect_format(sox_format_t * ft, char const * ext)
   CHECK(wsaud ,11, 1, "\1"   ,16,  4, "1xAF\xDE\x00\x00")
   CHECK(wsaud ,11, 1, "\x63" ,16,  4, "1xAF\xDE\x00\x00")
   CHECK(wtv   , 0, 0, ""     , 0, 16, "\xB7\xD8\x00\x20\x37\x49\xDA\x11\xA6\x4E\x00\x07\xE9\x5E\xAD\x8D") /* libavformat/wtv_common.c */
+#endif /* USING_FFMPEG */
 
   if (ext && !strcasecmp(ext, "snd"))
   CHECK(sndr  , 7, 1, ""     , 0,  2, "\0")

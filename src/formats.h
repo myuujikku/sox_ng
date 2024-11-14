@@ -131,9 +131,7 @@
 
 /*--------------------- Handlers using an external program -------------------*/
 
-#if HAVE_POPEN
-
-/* ffmpeg */
+#if USING_FFMPEG
 FORMAT(ffmpeg)
 FORMAT(3gp)
 FORMAT(aac)
@@ -184,5 +182,4 @@ voc
 w64
 wv
 */
-
-#endif /* HAVE_POPEN */
+#endif /* USING_FFMPEG */
