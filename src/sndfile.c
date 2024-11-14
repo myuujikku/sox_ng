@@ -348,7 +348,7 @@ static int startread(sox_format_t * ft)
   unsigned bits_per_sample;
   sox_encoding_t encoding;
   sox_rate_t rate;
-  char *extension = lsx_find_file_extension(ft->filename);
+  const char *extension = lsx_find_file_extension(ft->filename);
 
   if (start(ft) == SOX_EOF)
       return SOX_EOF;
