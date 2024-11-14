@@ -757,10 +757,12 @@ AC_OPTIONAL_FORMAT(sndfile, SNDFILE, [if test "x$tmp_using_sndfile" = "xno"; the
 
 
 
-AC_OPTIONAL_FORMAT(oss, OSS, [AC_CHECK_HEADERS(sys/soundcard.h,,
+AC_OPTIONAL_FORMAT(oss, OSS, [AC_CHECK_HEADERS(sys/soundcard.h,
+	  [AC_CHECK_LIB(ossaudio, _oss_ioctl, OSS_LIBS="$OSS_LIBS -lossaudio")],
       [AC_CHECK_HEADERS(machine/soundcard.h,
 	  [AC_CHECK_LIB(ossaudio, _oss_ioctl, OSS_LIBS="$OSS_LIBS -lossaudio")],
 	  using_oss=no)])])
+dnl AC_SUBST(OSS_LIBS)
 
 
 

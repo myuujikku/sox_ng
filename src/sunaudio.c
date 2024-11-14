@@ -23,6 +23,8 @@
 #ifdef HAVE_SUN_AUDIOIO_H
   #include <sun/audioio.h>
 #else
+  typedef unsigned int u_int;
+  typedef unsigned char u_char;
   #include <sys/audioio.h>
 #endif
 #include <errno.h>

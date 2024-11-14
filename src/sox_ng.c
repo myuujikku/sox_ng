@@ -51,6 +51,8 @@
   #define HAVE_AUDIOIO_H 1
 #else
 #ifdef HAVE_SYS_AUDIOIO_H
+  typedef unsigned int u_int;
+  typedef unsigned char u_char;
   #include <sys/audioio.h>
   #define HAVE_AUDIOIO_H 1
 #endif
