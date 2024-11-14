@@ -12,7 +12,7 @@ New features:
 
   o Add effect speexdsp with automatic gain control and noise reduction
   o Auto-detect MP3 files
-  o If ffmpeg is installed, automatically read formats
+  o If ffmpeg is installed and ./configured --with-ffmpeg, autoread formats:
     3gp, aac, ac3, adx, ape, apm, aptx, asf, ast, avi, dfpwm, dts, eac3, flv,
     gxf, kvag, loas, m4a, m4v, mlp, mpeg, mpegts, nut, oga (Ogg with FLAC data),
     ra, rm, rso, sbc, smjpeg, spdif, speex, tta, vag, wma, wsaud and wtv
@@ -39,17 +39,22 @@ New features:
   o Enable building to fetch URLs with curl instead of wget
   o Make "make check" run the regression test suite
   o Drop sox_version_info_t's "time" element to get reproducible builds
+  o Remove the undocumented and useless "divide" effect
+  o Be able to read files that are still being written by another process
 
 Bug fixes:
 
   o Fix coreaudio device name truncation on MacOS X
   o Make it compile on Haiku and NetBSD and with gcc-2.95
-  o Make it work with the ucrt and Sun C libraries
   o Americanize spelling in the manual
   o Make "make installcheck" work again
   o Fix the delay buffer full flag assigned during drain
   o ./configure --with-{amrnb,amrwb,sndfile}=dyn --without-dyn-default
-    used to link them statically
+    linked them statically instead
+  o Drop the unreliable pipe-rewinding libc hacks and do it in-house
+  o Fix bug introduced in sox_ng-14.4.3: au files with -t ao play short
+  o Fix segfault when --norm is passed with no parameter
+  o Fix compilation on NetBSD
 
 $ox_ng-14.4.3.1	2024-09-14
 ---------------
