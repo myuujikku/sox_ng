@@ -395,7 +395,7 @@ static int start(sox_effect_t * effp)
   /* Now that dft_size is set, allocate variable-sized elements of priv_t */
   p->buf        = lsx_calloc(p->dft_size, sizeof(*p->buf));
   p->dft_buf    = lsx_calloc(p->dft_size, sizeof(*p->dft_buf));
-  p->window     = lsx_calloc(p->dft_size, sizeof(*p->window));
+  p->window     = lsx_calloc(p->dft_size + 1, sizeof(*p->window));
   p->magnitudes = lsx_calloc(p->dft_size / 2 + 1, sizeof(*p->magnitudes));
 
   /* Initialize the FFT routine */
