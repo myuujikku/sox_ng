@@ -11,7 +11,7 @@
 #include "gsm.h"
 #include "private.h"
 
-gsm gsm_create ()
+gsm gsm_create (void)
 {
 	gsm  r;
 
