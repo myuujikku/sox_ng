@@ -375,7 +375,8 @@ AC_ARG_WITH(speexdsp,
         [Don't try to use libspeexdsp]))
 using_speexdsp=no
 AS_IF([test "x$with_speexdsp" != xno], [
-    AC_CHECK_HEADERS([speex/speex_preprocess.h], [using_speexdsp=yes])
+    AC_CHECK_HEADERS(speex/speex_types.h speex/speex_preprocess.h,
+	[using_speexdsp=yes])
     AS_IF([test "x$using_speexdsp" = xyes],
         [ AC_CHECK_LIB([speexdsp], [speex_preprocess_run],
 			[SPEEXDSP_LIBS="$SPEEXDSP_LIBS -lspeexdsp"], [using_speexdsp=no]) ])
