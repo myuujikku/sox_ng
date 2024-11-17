@@ -12,7 +12,7 @@ New features:
 
   o Add effect speexdsp with automatic gain control and noise reduction
   o Auto-detect MP3 files
-  o If ffmpeg is installed and ./configured --with-ffmpeg, autoread formats:
+  o If ./configured --with-ffmpeg and ffmpeg is installed, autoread formats:
     3gp, aac, ac3, adx, ape, apm, aptx, asf, ast, avi, dfpwm, dts, eac3, flv,
     gxf, kvag, loas, m4a, m4v, mlp, mpeg, mpegts, nut, oga (Ogg with FLAC data),
     ra, rm, rso, sbc, smjpeg, spdif, speex, tta, vag, wma, wsaud and wtv
@@ -37,10 +37,10 @@ New features:
   o Read files that are still being written to by another process
   o Enable building with libmpg123 instead of libmad (no seek support yet)
   o Enable building to fetch URLs with curl instead of wget
+  o Be able to read files that are still being written by another process
   o Make "make check" run the regression test suite
   o Drop sox_version_info_t's "time" element to get reproducible builds
   o Remove the undocumented and useless "divide" effect
-  o Be able to read files that are still being written by another process
 
 Bug fixes:
 
