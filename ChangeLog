@@ -41,6 +41,7 @@ New features:
   o Make "make check" run the regression test suite
   o Drop sox_version_info_t's "time" element to get reproducible builds
   o Remove the undocumented and useless "divide" effect
+  o Remove obsolete ./configure --disable-stack-protector
 
 Bug fixes:
 
