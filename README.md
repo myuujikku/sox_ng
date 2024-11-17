@@ -103,7 +103,12 @@ To enable all of SoX's optional modules you can install
 
 ### Debian, Ubuntu etc.
 ```
-apt-get install gcc make libtool ladspa-sdk libao-dev libasound2-dev libgsm1-dev libid3tag0-dev libltdl-dev libmad0-dev libmagic-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev libopusfile-dev libpng-dev libpulse-dev libsamplerate0-dev libsndfile1-dev libtwolame-dev libvorbis-dev libwavpack-dev
+apt install gcc make libtool ladspa-sdk libao-dev libasound2-dev \
+	libgsm1-dev libid3tag0-dev libltdl-dev libmad0-dev libmagic-dev \
+	libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev \
+	libopusfile-dev libpng-dev libpulse-dev libsamplerate0-dev \
+	libsndfile1-dev libspeex-dev libspeexdsp-dev libtwolame-dev \
+	libvorbis-dev libwavpack-dev
 ```
 and to run `issues/getissues.sh` and the `makehtml.sh` scripts you will need
 ```
@@ -112,7 +117,12 @@ apt-get install jq libtext-multimarkdown-perl
 
 ### Fedora, Red Hat, CentOS etc.
 ```
-yum install gcc make libtool libvorbis-devel alsa-lib-devel libtool-ltdl-devel libsamplerate-devel gsm-devel wavpack-devel ladspa-devel libpng-devel flac-devel libao-devel libsndfile-devel libid3tag-devel pulseaudio-libs-devel opusfile-devel libtool libmad-devel lame-devel twolame-devel opencore-amr-devel file-devel libcaca-devel
+yum install gcc make libtool alsa-lib-devel file-devel flac-devel gsm-devel \
+	ladspa-devel lame-devel libao-devel libcaca-devel libid3tag-devel \
+	libmad-devel libpng-devel libsamplerate-devel libsndfile-devel \
+	libtool-ltdl-devel libvorbis-devel opencore-amr-devel \
+	opusfile-devel pulseaudio-libs-devel speex-devel speexdsp-devel \
+	twolame-devel wavpack-devel
 ```
 and to run `issues/getissues.sh` and the `makehtml.sh` scripts you will need
 ```
