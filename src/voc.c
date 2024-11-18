@@ -658,7 +658,9 @@ static int getblock(sox_format_t * ft)
         lsx_readb(ft, &uc);
         lsx_readb(ft, &uc);
         /* Falling! Falling! */
+	goto voc_text;
       case VOC_TEXT:
+voc_text:
         {
           uint32_t i = sblen;
           int8_t c                /*, line_buf[80];

@@ -117,7 +117,6 @@ if test "$GCC" = "yes"; then
     AC_MSG_RESULT($gccver)
 
     CFLAGS="$CFLAGS -Wall -W -Wstrict-prototypes -pedantic"
-    CFLAGS="$CFLAGS -Wno-implicit-fallthrough"
 
     dnl Define stricter policy on GNU/Linux, all symbols must be resolved
     case $target in
