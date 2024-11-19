@@ -312,7 +312,7 @@ static int start(sox_format_t* ft)
     return SOX_EOF;
   }
 
-  priv->block_finished_event = CreateEventA(NULL, 0, 0, NULL);
+  priv->block_finished_event = CreateEventA(NULL, sox_false, sox_false, NULL);
   if (!priv->block_finished_event)
   {
     error = GetLastError();
