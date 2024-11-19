@@ -400,15 +400,18 @@ static void RPE_grid_positioning (
 
 	assert(0 <= Mc && Mc <= 3);
 
-        switch (Mc) {
-                case 3: *ep++ = 0;
-                case 2:  do {
-                                *ep++ = 0;
-                case 1:         *ep++ = 0;
-                case 0:         *ep++ = *xMp++;
-                         } while (--i);
-        }
-        while (++Mc < 4) *ep++ = 0;
+	switch (Mc) {
+		case 3: *ep++ = 0; goto two;
+		case 2:
+two:			do {
+				*ep++ = 0; goto one;
+		case 1:
+one:				*ep++ = 0; goto zero;
+		case 0:
+zero:				*ep++ = *xMp++;
+			 } while (--i);
+	}
+	while (++Mc < 4) *ep++ = 0;
 
 	/*
 
