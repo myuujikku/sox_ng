@@ -19,8 +19,8 @@
  */
 
 #include "sox_i.h"
+#include "util.h"
 #include <limits.h>
-#include <sys/stat.h>
 #include <stdarg.h>
 
 void lsx_fail_errno(sox_format_t * ft, int sox_errno, const char *fmt, ...)
