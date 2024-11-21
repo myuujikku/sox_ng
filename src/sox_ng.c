@@ -42,6 +42,10 @@
   #include <glob.h>
 #endif
 
+#ifdef HAVE_STROPTS_H
+#  include <stropts.h>
+#endif
+
 #ifdef HAVE_IO_H
   #include <io.h>
 #endif

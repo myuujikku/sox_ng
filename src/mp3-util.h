@@ -98,7 +98,9 @@ static unsigned short * utf8_to_utf16 (const char * utf8) {
 static void set_id3_field (priv_t * p, const char * field, const char * value)
 {
   char* buf = lsx_malloc(strlen(field) + strlen(value) + 2);
+#if defined(UTF16_ID3)
   unsigned short * utf16;
+#endif
 
   if (!buf) return;
   sprintf(buf, "%s=%s", field, value);
