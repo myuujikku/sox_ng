@@ -23,6 +23,7 @@
 /* "configure" checks that we HAVE_POPEN */
 
 #include <ctype.h>
+#include <unistd.h>
 
 extern sox_format_handler_t const * lsx_au_format_fn(void);
 
@@ -54,6 +55,52 @@ static int startread(sox_format_t * ft)
 
   command = malloc(strlen(quoted_filename) + strlen(command_fmt) + 1);
   sprintf(command, command_fmt, quoted_filename);
+
+  /* If the input is stdin, sox may already have read 256 bytes from it
+   * for autodetection so we have to lauch something that feeds ffmpeg
+   * the data we've read and then all the rest.
+   */
+  if (strcmp(ft->filename, "-") == 0) {
+    int pipefd[2]; /* [0] is the read end, [1] the write end */
+
+    if (pipe(pipefd) != 0) {
+      lsx_fail_errno(ft, errno, "Cannot make a pipe\n");
+      return SOX_EOF;
+    }
+    switch (fork()) {
+    case -1:
+      lsx_fail_errno(ft, errno, "Cannot fork to copy '-' to ffmpeg\n");
+      return SOX_EOF;
+    case 0:
+      /* Child: Regurgitate the already-read data into the pipe
+       * then copy the rest. lsx_rewind() will already have been called.
+       */
+      close(pipefd[0]);
+      {
+	char buf[4096];
+	int nread;
+
+	while ((nread = lsx_readbuf(ft, buf, sizeof(buf))) > 0) {
+	  int nwritten = 0;
+	  while (nwritten < nread) {
+	      int n = write(pipefd[1], buf + nwritten, nread - nwritten);
+	      if (n <= 0) exit(EIO);
+	      nwritten += n;
+	  }
+	}
+	exit(nread == 0 ? 0 : EIO);
+      }
+      break;
+    default: /* Parent */
+      /* Make ffmpeg's stdin read the pipe; ft->fp will read from ffmpeg */
+      close(pipefd[1]);
+      if (dup2(pipefd[0], 0) != 0) {
+	  lsx_fail_errno(ft, errno, "Cannot redirect stdin to ffmpeg's pipe\n");
+	  return SOX_EOF;
+      }
+      close(pipefd[0]);
+    }
+  }
 
   ft->fp = popen(command, "r");
   free(command);
