@@ -161,6 +161,10 @@ LSX_FORMAT_HANDLER(name) \
   return &handler; \
 }
 
+FFMPEG_FORMAT(3g2) "3g2", "3gp2", "3gpp2"
+FFMPEG_DESCRIPTION "Third Generation Partnership Project 2"
+FFMPEG_ENDFORMAT
+
 FFMPEG_FORMAT(3gp) "3gp", "3gpp"
 FFMPEG_DESCRIPTION "Third Generation Partnership Project"
 FFMPEG_ENDFORMAT
@@ -171,6 +175,10 @@ FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(ac3) "ac3"
 FFMPEG_DESCRIPTION "Audio Codec 3 (Dolby Digital)"
+FFMPEG_ENDFORMAT
+
+FFMPEG_FORMAT(adts) "adts"
+FFMPEG_DESCRIPTION "Audio Data Transport Stream"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(adx) "adx"
@@ -217,12 +225,20 @@ FFMPEG_FORMAT(eac3) "eac3"
 FFMPEG_DESCRIPTION "Enhanced AC-3 Audio"
 FFMPEG_ENDFORMAT
 
+FFMPEG_FORMAT(f4v) "f4v"
+FFMPEG_DESCRIPTION "F4V MOV file"
+FFMPEG_ENDFORMAT
+
 FFMPEG_FORMAT(flv) "flv"
 FFMPEG_DESCRIPTION "Macromedia Flash Video"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(gxf) "gxf"
 FFMPEG_DESCRIPTION "General eXchange Format"
+FFMPEG_ENDFORMAT
+
+FFMPEG_FORMAT(ism) "ism"
+FFMPEG_DESCRIPTION "ISM streaming video format"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(kvag) "kvag"
@@ -245,16 +261,26 @@ FFMPEG_FORMAT(mlp) "mlp"
 FFMPEG_DESCRIPTION "Meridian Lossless Packing"
 FFMPEG_ENDFORMAT
 
-FFMPEG_FORMAT(mpeg) "mpg", "mpeg"
-FFMPEG_DESCRIPTION "MPEG-1 Systems / MPEG program stream"
+/* "Registered extensions" according to ffmpeg-formats(1) are these plus
+ *  mp4, m4a, 3gp, 3g2, f4v which we handle separately to give them names */
+FFMPEG_FORMAT(mov) "mov", "mj2", "m4b", "ism", "isma", "ismv", "psp"
+FFMPEG_DESCRIPTION "Quicktime / ISO/IEC Base Media File"
+FFMPEG_ENDFORMAT
+
+FFMPEG_FORMAT(mp4) "mp4"
+FFMPEG_DESCRIPTION "MPEG-4 video"
+FFMPEG_ENDFORMAT
+
+FFMPEG_FORMAT(mpeg) "mpg", "mpeg", "vcd", "svcd", "vob", "dvd"
+FFMPEG_DESCRIPTION "MPEG program stream"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(mpegts) "mpegts"
-FFMPEG_DESCRIPTION "MPEG-TS (MPEG-2 Transport Stream)"
+FFMPEG_DESCRIPTION "MPEG Transport Stream"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(nut) "nut"
-FFMPEG_DESCRIPTION "NUT"
+FFMPEG_DESCRIPTION "NUT Container Format"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(oga) "oga"
@@ -274,7 +300,7 @@ FFMPEG_DESCRIPTION "Lego Mindstorms RSO"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(sbc) "sbc"
-FFMPEG_DESCRIPTION "SBC"
+FFMPEG_DESCRIPTION "Bluetooth SIG low-complexity subband codec audio"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(smjpeg) "smjpeg"
