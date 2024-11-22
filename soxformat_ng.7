@@ -50,10 +50,11 @@ useful if you have a file that doesn't work with SoX's default format
 readers and writers, and there's an external reader or writer for that
 format.
 .SP
-Format types that can only be handled by the external program \fBffmpeg\fR
+Format types that can only be read using the external program \fBffmpeg\fR
 are marked `(with ffmpeg)' and formats that \fBffmpeg\fR can read
 that are usually handled in other ways are marked
 `(also with \fB\-t ffmpeg\fR)'.
+SoX can only read `(with ffmpeg)' formats, not write them.
 .SP
 To see if SoX has support for an optional format or device, enter
 .B sox_ng \-h
@@ -238,6 +239,10 @@ Ubisoft Rayman 2 APM format.
 .TP
 \&\fB.aptx\fR (with ffmpeg)
 Audio Processing Technology for Bluetooth format.
+.SP
+SoX can only autodetect this type of file from its filename extension;
+if it is read from `standard input' (stdin) or from a file whose name
+does not end in `.aptx', you will need to prefix it with `-t ffmpeg'.
 .TP
 \&\fB.argo_asf\fR (with ffmpeg)
 Argonaut Games ASF format.
@@ -350,9 +355,17 @@ Example containing only 2 stereo samples of silence:
 .TP
 \&\fB.dfpwm\fR (with ffmpeg)
 DFPWM1a format.
+.SP
+SoX can only autodetect this type of file from its filename extension;
+if it is read from `standard input' (stdin) or from a file whose name
+does not end in `.dfpwm', you will need to prefix it with `-t ffmpeg'.
 .TP
 \&\fB.dts\fR (with ffmpeg)
 Digital Theatre Systems format.
+.SP
+SoX can only autodetect this type of file from its filename extension;
+if it is read from `standard input' (stdin) or from a file whose name
+does not end in `.dts', you will need to prefix it with `-t ffmpeg'.
 .TP
 \&\fB.dvms\fR, \fB.vms\fR
 Used in Germany to compress speech audio for voice mail.
@@ -543,6 +556,10 @@ Compression value of 0 is always treated as a high quality vbr, as a
 result both -0.2 and 0.2 are treated as highest quality VBR (size) and
 high quality (speed).
 .SP
+SoX can only autodetect mp2 files from their filename extension;
+if they are read from `standard input' (stdin) or from a file whose name
+does not end in `.mp2', you will need to prefix them with `-t mp2'.
+.SP
 See also
 .B Ogg Vorbis
 for a similar format.
@@ -666,9 +683,17 @@ RealMedia format.
 .TP
 \&\fB.rso\fR (with ffmpeg)
 Lego Mindstorms RSO format.
+.SP
+SoX can only autodetect this type of file from its filename extension;
+if it is read from `standard input' (stdin) or from a file whose name
+does not end in `.rso', you will need to prefix it with `-t ffmpeg'.
 .TP
 \&\fB.sbc\fR (with ffmpeg)
 Bluetooth SIG low-complexity subband audio format.
+.SP
+SoX can only autodetect this type of file from its filename extension;
+if it is read from `standard input' (stdin) or from a file whose name
+does not end in `.sbc', you will need to prefix it with `-t ffmpeg'.
 .TP
 \&\fB.sd2\fR (optional)
 Sound Designer 2 format.
@@ -751,6 +776,10 @@ format with `pipes'.
 .TP
 \&\fB.spdif\fR (with ffmpeg)
 IEC 61937 S/PDIF format.
+.SP
+SoX can only autodetect this type of file from its filename extension;
+if it is read from `standard input' (stdin) or from a file whose name
+does not end in `.spdif', you will need to prefix it with `-t ffmpeg'.
 .TP
 \&\fB.sph\fR, \fB.nist\fR (also with \fB\-t sndfile\fR)
 SPHERE (SPeech HEader Resources) is a file format defined by NIST
@@ -844,6 +873,10 @@ passing the decoded audio through a high-pass filter, e.g.:
 .TP
 \&\fB.w64\fR (optional, also with \fB\-t ffmpeg\fR)
 Sonic Foundry's 64-bit RIFF/WAV format.
+.SP
+SoX can only autodetect this type of file from its filename extension;
+if it is read from `standard input' (stdin) or from a file whose name
+does not end in `.w64', you will need to prefix it with `-t w64'.
 .TP
 \&\fB.wav\fR (also with \fB\-t sndfile\fR or \fB\-t ffmpeg\fR)
 Microsoft .WAV RIFF files.
