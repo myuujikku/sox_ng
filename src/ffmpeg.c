@@ -34,7 +34,7 @@ static int startread(sox_format_t * ft)
 {
   char *quoted_filename;
   char *p, *q;
-  char const * const command_fmt = "ffmpeg -loglevel quiet -strict -2 -i \"%s\" -f au -";
+  char const * const command_fmt = "ffmpeg -loglevel quiet -nostdin -strict -2 -i \"%s\" -f au -";
   char *command;
 
   /* Quote special characters in the filename */
