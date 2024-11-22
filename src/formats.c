@@ -116,7 +116,7 @@ static char const * auto_detect_format(sox_format_t * ft, char const * ext)
                              ,  6,18, "\xFC\xDE\x02\x00\x4C\x61\x76\x63\x35\x39\x2E\x33\x37\x2E\x31\x30\x30\x00")
   CHECK(adx   , 0, 0, ""     , 0,  2, "\x80\x00") /* libavformat/adxdec.c */
   CHECK(ape   , 0, 0, ""     , 0,  4, "MAC ")     /* libavformat/ape.c */
-  CHECK(apm   ,20, 4, "vs12" , 0,  2, "\x00\x02") /* libavformat/apm.c */
+  CHECK(apm   ,20, 4, "vs12" , 0,  2, "\x00\x20") /* libavformat/apm.c */
   /* aptx is headerless and can only be autodetected by the filename extension */
   CHECK(argo_asf,0,4,"ASF\0", 4,  2, "\x01\x01") /* libavformat/argo_asf.[ch] */
   CHECK(argo_asf,0,4,"ASF\0", 4,  2, "\x01\x02")
@@ -143,9 +143,9 @@ static char const * auto_detect_format(sox_format_t * ft, char const * ext)
   CHECK(gxf   ,10, 6, "\x00\x00\x00\x00\xE1\xE2", 0, 6, "\x00\x00\x00\x00\x01\xBC") /* libavformat/gxf.c */
   CHECK(ism   , 0, 0, ""     , 4,  8, "ftypisml")
   CHECK(kvag  , 0, 0, ""     , 0,  4, "KVAG")	 /* libavformat/kvag.c */
-  /* loas is autodetected by ffmpeg but not by fixed bytes at fixed offsets */
   CHECK(m4a   , 0, 0, ""     , 4,  8, "ftypM4A ") /* iPod format */
   CHECK(m4v   , 0, 0, ""     , 4,  8, "ftypM4V ") /* iPod format */
+  CHECK(mkv   , 0, 0, ""     , 0,  4, "\x1A\x45\xDF\xA3")
   CHECK(mlp   , 0, 0, ""     , 4,  4, "\xF8\x72\x6F\xBB")
   CHECK(mov   , 0, 0, ""     , 4,  8, "ftypavif")
   CHECK(mov   , 0, 0, ""     , 4,  8, "ftypavis") /* Animated AVIF */
@@ -159,6 +159,7 @@ static char const * auto_detect_format(sox_format_t * ft, char const * ext)
   CHECK(mpeg  , 0, 0, ""     , 0,  4, "\x00\x00\x01\xBA")
   /* MPEG Transport Streams have a sync byte every 188 bytes */
   CHECK(mpegts, 0, 1, "\x47" ,188, 1, "\x47")
+  CHECK(mxf_opatom,0,0,""    , 0,  4, "\x06\x0E\x2B\x34")
   CHECK(nut   , 0, 0, ""     , 0, 25, "nut/multimedia container\0")
   CHECK(oga   , 0, 0, ""     , 0, 14, "OggS\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00")
   CHECK(ra    , 0, 0, ""     , 0,  9, "\x2E\x52\x4D\x46\x00\x00\x00\x12\x00")

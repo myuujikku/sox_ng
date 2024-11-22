@@ -445,9 +445,6 @@ ISM streaming video format.
 \&\fB.kvag\fR (with ffmpeg)
 Simon & Schuster Interactive VAG format.
 .TP
-\&\fB.loas\fR (with ffmpeg)
-LOAS AudioSyncStream format.
-.TP
 \&\fB.lpc\fR, \fB.lpc10\fR
 LPC-10 is a compression scheme for speech developed in the United
 States. See http://www.arl.wustl.edu/~jaf/lpc/ for details. There is
@@ -483,6 +480,9 @@ in mono and stereo.
 \&\fB.mj2\fR (with ffmpeg)
 Another name for
 .BR .mov .
+.TP
+\&\fB.mkv\fR, \fB.webm\fR (with ffmpeg)
+Matroska video format.
 .TP
 \&\fB.mlp\fR (with ffmpeg)
 Meridian Lossless Packing format.
@@ -555,6 +555,9 @@ MPEG-1 Systems / MPEG program stream format.
 .TP
 \&\fB.mpegts\fR (with ffmpeg)
 MPEG-TS (MPEG-2 Transport Stream) format.
+.TP
+\&\fB.mxf\fR, \fB.mxf_opatom\fR (with ffmpeg)
+Material eXchange Format Operational Pattern OP1A "OP-Atom" format (SMPTE 390M).
 .TP
 \&\fB.nist\fR (also with \fB\-t sndfile\fR)
 See \fB.sph\fR.
@@ -913,6 +916,9 @@ lines:
 .EX
 	sox_ng infile.any \-t wavpcm \-e signed-integer outfile.wav
 .EE
+.TP
+\&\fB.webm\fR (with ffmpeg)
+See \fB.mkv\fR.
 .TP
 \&\fB.wma\fR (with ffmpeg)
 Windows Media Audio format.

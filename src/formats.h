@@ -154,14 +154,15 @@ FORMAT(flv)
 FORMAT(gxf)
 FORMAT(ism)
 FORMAT(kvag)
-FORMAT(loas)
 FORMAT(m4a)
 FORMAT(m4v)
+FORMAT(mkv)
 FORMAT(mlp)
 FORMAT(mov)
 FORMAT(mp4)
 FORMAT(mpeg)
 FORMAT(mpegts)
+FORMAT(mxf_opatom)
 FORMAT(nut)
 FORMAT(oga)
 FORMAT(ra)
@@ -181,6 +182,7 @@ FORMAT(wtv)
 caf
 flac
 ircam
+mp2
 mp3
 ogg
 sox
