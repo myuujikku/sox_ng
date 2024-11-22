@@ -54,7 +54,7 @@ Bug fixes:
   o Drop the unreliable pipe-rewinding libc hacks and do it in-house
   o Fix bug introduced in sox_ng-14.4.3: au files with -t ao play short
   o Fix segfault when --norm is passed with no parameter
-  o Fix compilation on NetBSD
+  o Fix compilation on AIX 7.1, Haiku, NetBSD, OpenBSD and with gcc-2.95
 
 $ox_ng-14.4.3.1	2024-09-14
 ---------------
