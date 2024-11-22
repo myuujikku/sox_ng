@@ -17,7 +17,7 @@
 
 #include <sys/stat.h>
 
-#if (defined(USING_ID3TAG) && (defined(HAVE_MAD_H) || defined(HAVE_MPG123_H))) || defined(HAVE_LAME_ID3TAG)
+#if defined(USING_ID3TAG) && defined(HAVE_MAD_H)
 
 static char const * id3tagmap[][2] =
 {
@@ -140,7 +140,7 @@ static void write_comments(sox_format_t * ft)
 
 #ifdef USING_ID3TAG
 
-#if defined(HAVE_MAD_H) || defined(HAVE_MPG123_H)
+#if defined(HAVE_MAD_H)
 static id3_utf8_t * utf8_id3tag_findframe(
     struct id3_tag * tag, const char * const frameid, unsigned index)
 {
@@ -409,75 +409,3 @@ static size_t mp3_duration_ms(sox_format_t * ft)
 }
 
 #endif /* HAVE_MAD_H */
-
-#ifdef HAVE_MPG123_H
-
-static size_t mp3_duration(sox_format_t * ft)
-{
-  priv_t * p = (priv_t *) ft->priv;
-  FILE * fp = ft->fp;
-  mpg123_handle * handle;
-  int error;
-  off_t samples;
-  int channels;
-  int encoding;
-  long sample_rate;
-
-  if (!fp || !ft->seekable) {
-    lsx_fail_errno(ft, SOX_EOF, "File pointer is undefined or not seekable in mp3_duration_ms");
-    return SOX_UNSPEC;
-  }
-  handle = p->mpg123_new(NULL, &error);
-  if (!handle) {
-    lsx_fail_errno(ft, SOX_EOF, "Could not get mpg123 handle: %s", mpg123_plain_strerror(error));
-    return SOX_UNSPEC;
-  }
-
-  p->mpg123_open_fd(handle, fileno(fp));
-
-  /* We may need to call mpg123_scan() to determine the track length
-   * accurately, but that takes ten seconds for an hour-long track
-   * due to disk I/O time. However,
-   *
-   > On 23/08/2020, Thomas Orgis <thomas-forum@orgis.org> wrote:
-   > 1. Call mpg123_info() and check for the vbr mode.
-   > If it's not MPG123_CBR, you had some Xing/Lame/Info frame
-   > to tell the decoder that. Track length is a common feature
-   > that all these frames have.
-   >
-   > 2. Call mpg123_getstate() for MPG123_ENC_DELAY and/or
-   > MPG123_ENC_PADDING. If one of them is != -1, you got a
-   > Lame info tag that contained such a value, also implying
-   > that there is proper length info.
-   *
-   * So we do that.
-   */
-  {
-    struct mpg123_frameinfo fi;
-#if MPG123_API_VERSION >= 45
-    long val;
-#endif
-
-    if (!((p->mpg123_info(handle, &fi) == MPG123_OK && fi.vbr != MPG123_CBR)
-/* These are only present from libmpg123 1.26 */
-#if MPG123_API_VERSION >= 45
-	   ||
-	  (p->mpg123_getstate(handle, MPG123_ENC_DELAY, &val, NULL)
-	   == MPG123_OK && val != -1)
-	   ||
-	  (p->mpg123_getstate(handle, MPG123_ENC_PADDING, &val, NULL)
-	   == MPG123_OK && val != -1)
-#endif
-	   )) p->mpg123_scan(handle);
-  }
-  samples = p->mpg123_length(handle);
-  mpg123_getformat(handle, &sample_rate, &channels, &encoding);
-  p->mpg123_close(handle);
-  p->mpg123_delete(handle);
-
-  lsx_rewind(ft);
-
-  return (size_t) (samples * channels);
-}
-
-#endif /* HAVE_MPG123_H */

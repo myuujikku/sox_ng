@@ -35,7 +35,6 @@ New features:
   o Resize Linux pipe buffers to make multi-threaded effects 10-80% faster
   o Reduce sox -t pulseaudio --[input-]buffer latency from up to 2 secs to low
   o Read files that are still being written to by another process
-  o Enable building with libmpg123 instead of libmad (no seek support yet)
   o Enable building to fetch URLs with curl instead of wget
   o Be able to read files that are still being written by another process
   o Make "make check" run the regression test suite
