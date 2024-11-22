@@ -664,7 +664,7 @@ The API version of the sox_ng.h file. It is not meant to follow the version
 number of SoX but it has historically. Please do not count on
 SOX_LIB_VERSION_CODE staying in sync with the libSoX version.
 */
-#define SOX_LIB_VERSION_CODE   SOX_LIB_VERSION(14, 4, 3)
+#define SOX_LIB_VERSION_CODE   SOX_LIB_VERSION(14, 5, 0)
 
 /**
 Client API:
