@@ -59,7 +59,6 @@
 
 
 #include "biquad.h"
-#include <assert.h>
 
 typedef biquad_t priv_t;
 

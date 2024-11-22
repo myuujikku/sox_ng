@@ -27,7 +27,6 @@
 #include "sox_i.h"
 #include "fft4g.h"
 #include "dft_filter.h"
-#include <assert.h>
 
 #define calloc     lsx_calloc
 #define malloc     lsx_malloc

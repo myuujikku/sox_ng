@@ -19,7 +19,6 @@
 #include "g711.h"
 
 #include <sys/ioctl.h>
-#include <sys/types.h>
 #ifdef HAVE_SUN_AUDIOIO_H
   #include <sun/audioio.h>
 #else
@@ -27,8 +26,7 @@
   typedef unsigned char u_char;
   #include <sys/audioio.h>
 #endif
-#include <errno.h>
-#if !defined(__NetBSD__) && !defined(__OpenBSD__)
+#if HAVE_STROPTS_H
 #include <stropts.h>
 #endif
 #include <fcntl.h>

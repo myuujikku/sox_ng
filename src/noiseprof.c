@@ -18,10 +18,8 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include "sox_i.h"
 #include "noisered.h"
-
-#include <assert.h>
-#include <errno.h>
 
 typedef struct {
     float *sum;

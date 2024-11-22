@@ -35,8 +35,6 @@
 
 #include "sox_i.h"
 
-#include <errno.h>
-
 #include <opus/opusfile.h>
 
 #define DEF_BUF_LEN 4096

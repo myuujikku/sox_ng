@@ -15,11 +15,6 @@
 
 #include "soxomp.h"  /* Note: soxomp.h includes soxconfig.h */
 
-/* Necessary for S_IFMT S_IFREG and strdup */
-#ifndef _XOPEN_SOURCE
-# define _XOPEN_SOURCE 500
-#endif
-
 #if defined HAVE_FMEMOPEN
 #define _GNU_SOURCE
 #endif
@@ -27,6 +22,7 @@
 #include "sox_ng.h"
 #include "util.h"
 
+#include <assert.h>
 #include <errno.h>
 
 #if defined(LSX_EFF_ALIAS)

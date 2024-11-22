@@ -17,7 +17,6 @@
 
 #define LSX_EFF_ALIAS
 #include "sox_i.h"
-#include <assert.h>
 
 #define DEBUG_EFFECTS_CHAIN 0
 

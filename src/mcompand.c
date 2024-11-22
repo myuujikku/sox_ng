@@ -43,7 +43,6 @@
 #endif
 
 #include "sox_i.h"
-#include <assert.h>
 #include "compandt.h"
 #include "mcompand_xover.h"
 

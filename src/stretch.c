@@ -17,8 +17,6 @@
  */
 #include "sox_i.h"
 
-#include <assert.h>
-
 #define DEFAULT_SLOW_SHIFT_RATIO        0.8
 #define DEFAULT_FAST_SHIFT_RATIO        1.0
 

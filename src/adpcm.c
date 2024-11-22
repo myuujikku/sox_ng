@@ -34,8 +34,6 @@
 #include "sox_i.h"
 #include "adpcm.h"
 
-#include <sys/types.h>
-
 typedef struct {
         sox_sample_t  step;      /* step size */
         short coef[2];

@@ -29,8 +29,7 @@
 
 #include "sox_i.h"
 #include "fft4g.h"
-#include <assert.h>
-#include <math.h>
+
 #ifdef HAVE_LIBPNG_PNG_H
 #include <libpng/png.h>
 #else

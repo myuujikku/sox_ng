@@ -18,9 +18,6 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include "sox_i.h"
-#include <math.h>
-
 #define WINDOWSIZE 2048
 #define HALFWINDOW (WINDOWSIZE / 2)
 #define FREQCOUNT  (HALFWINDOW + 1)

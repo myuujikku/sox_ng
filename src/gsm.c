@@ -39,8 +39,6 @@
 #include "../libgsm/gsm.h"
 #endif
 
-#include <errno.h>
-
 #define MAXCHANS 16
 
 /* sizeof(gsm_frame) */

@@ -20,7 +20,6 @@
 #endif
 
 #include "sox_i.h"
-#include <assert.h>
 
 #undef RANQD1
 #define RANQD1 ranqd1(p->ranqd1)

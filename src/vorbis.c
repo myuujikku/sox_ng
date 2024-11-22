@@ -18,8 +18,6 @@
 
 #include "sox_i.h"
 
-#include <errno.h>
-
 #include <ogg/ogg.h>
 #include <vorbis/codec.h>
 #include <vorbis/vorbisfile.h>

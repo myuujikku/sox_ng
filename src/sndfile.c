@@ -22,7 +22,6 @@
 
 #ifdef HAVE_SNDFILE
 
-#include <assert.h>
 #include <ctype.h>
 #include <sndfile.h>
 

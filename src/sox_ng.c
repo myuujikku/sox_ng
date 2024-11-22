@@ -21,18 +21,14 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#define _XOPEN_SOURCE 500	/* for S_IFMT S_IFREG */
-
 #include "sox_ng.h"
+#include "soxconfig.h"
 #include "util.h"
 
 #include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <math.h>
 #include <signal.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <time.h>
 
 #if defined(HAVE_WIN32_GLOB_H)

@@ -37,8 +37,6 @@
 
 #ifndef HAVE_MKSTEMP
   #include <fcntl.h>
-  #include <sys/types.h>
-  #include <sys/stat.h>
   #define mkstemp(t) open(mktemp(t), MKTEMP_X|O_RDWR|O_TRUNC|O_CREAT, S_IREAD|S_IWRITE)
   #define FAKE_MKSTEMP "fake "
 #else

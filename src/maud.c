@@ -12,7 +12,6 @@
  */
 
 #include "sox_i.h"
-#include <errno.h>
 
 /* Private data for MAUD file */
 typedef struct {

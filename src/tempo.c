@@ -19,7 +19,6 @@
 
 #include "sox_i.h"
 #include "fifo.h"
-#include <math.h>
 
 typedef struct {
   /* Configuration parameters: */

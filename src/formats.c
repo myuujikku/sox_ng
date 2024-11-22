@@ -23,25 +23,10 @@
  * https://en.wikipedia.org/wiki/List_of_file_signatures
  */
 
-
-/* This is necessary for fmemopen() and open_mem_stream()
- * and must happen before system headers are included
- * by sox_i.h and util.h
- */
-#include "soxconfig.h"
-#if defined HAVE_FMEMOPEN
-# define _GNU_SOURCE
-# define _POSIX_C_SOURCE 200809L
-#endif
-
 #include "sox_i.h"
 
-#include <assert.h>
 #include <ctype.h>
-#include <errno.h>
 #include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 
 #ifdef __ANDROID__
   #include <bits/struct_file.h>

@@ -19,8 +19,6 @@
 
 #include "sox_i.h"
 
-#include <errno.h>
-
 #define BUFLEN 512
 
 /* Private data used by writer */

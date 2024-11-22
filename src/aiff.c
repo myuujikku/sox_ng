@@ -18,8 +18,6 @@
 #include "aiff.h"
 
 #include <time.h>      /* for time stamping comments */
-#include <errno.h>
-#include <limits.h>
 
 /* forward declarations */
 static double read_ieee_extended(sox_format_t *);

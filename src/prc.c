@@ -52,10 +52,6 @@
 
 #include "adpcms.h"
 
-#include <assert.h>
-#include <errno.h>
-#include <limits.h>
-
 typedef struct {
   uint32_t nsamp, nbytes;
   short padding;

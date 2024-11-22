@@ -8,10 +8,8 @@
  * Authors are not responsible for the consequences of using this software.
  */
 
+#include "sox_i.h"
 #include "noisered.h"
-
-#include <errno.h>
-#include <assert.h>
 
 typedef struct {
     float *window;
