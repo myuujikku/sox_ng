@@ -118,9 +118,10 @@ static char const * auto_detect_format(sox_format_t * ft, char const * ext)
   CHECK(ape   , 0, 0, ""     , 0,  4, "MAC ")     /* libavformat/ape.c */
   CHECK(apm   ,20, 4, "vs12" , 0,  2, "\x00\x20") /* libavformat/apm.c */
   /* aptx is headerless and can only be autodetected by the filename extension */
-  CHECK(argo_asf,0,4,"ASF\0", 4,  2, "\x01\x01") /* libavformat/argo_asf.[ch] */
-  CHECK(argo_asf,0,4,"ASF\0", 4,  2, "\x01\x02")
-  CHECK(argo_asf,0,4,"ASF\0", 4,  2, "\x02\x01")
+  /* libavformat/argo_asf.[ch] */
+  CHECK(argo_asf,0,0, ""     , 0,  8, "ASF\x00\x01\x00\x01\x00")
+  CHECK(argo_asf,0,0, ""     , 0,  8, "ASF\x00\x01\x00\x02\x00")
+  CHECK(argo_asf,0,0, ""     , 0,  8, "ASF\x00\x02\x00\x01\x00")
   CHECK(asf   , 0, 0, ""     , 0, 16, "\x30\x26\xB2\x75\x8E\x66\xCF\x11\xA6\xD9\x00\xAA\x00\x62\xCE\x6C") /* libavformat/asfdec_*.c */
   CHECK(ast   , 0, 0, ""     , 0,  4, "STRM")    /* libavformat/astdec.c */
   CHECK(avi   , 0, 4, "RIFF" , 8,  4, "AVI ")    /* libavformat/avidec.c */
@@ -177,8 +178,8 @@ static char const * auto_detect_format(sox_format_t * ft, char const * ext)
   /* wsaud has no file signature but there are header sanity checks
    * and the header signature of the first audio chunk.
    * libavformat/westwood_aud.c */
-  CHECK(wsaud ,11, 1, "\1"   ,16,  4, "1xAF\xDE\x00\x00")
-  CHECK(wsaud ,11, 1, "\x63" ,16,  4, "1xAF\xDE\x00\x00")
+  CHECK(wsaud ,11, 1, "\1"   ,16,  4, "\xAF\xDE\x00\x00")
+  CHECK(wsaud ,11, 1, "\x63" ,16,  4, "\xAF\xDE\x00\x00")
   CHECK(wtv   , 0, 0, ""     , 0, 16, "\xB7\xD8\x00\x20\x37\x49\xDA\x11\xA6\x4E\x00\x07\xE9\x5E\xAD\x8D") /* libavformat/wtv_common.c */
 #endif /* USING_FFMPEG */
 
