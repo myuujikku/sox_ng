@@ -111,7 +111,6 @@ fi
 
 dnl Extra CFLAGS if we have gcc
 if test "$GCC" = "yes"; then
-
     AC_MSG_CHECKING([gcc version])
     gccver=$($CC -dumpversion)
     AC_MSG_RESULT($gccver)
@@ -127,9 +126,103 @@ if test "$GCC" = "yes"; then
         APP_LDFLAGS="-no-undefined"
         ;;
     esac
+elif test x"$enable_ssp" != x"no"; then
+    AC_MSG_NOTICE([Disabling stack-smashing protection because compiler is not GCC])
+    enable_ssp=no
 fi
+
+
+dnl Stack protector
+dnl
+dnl -fenable-stack-protector and -fenable-stack-protector-all came in gcc-4.1
+dnl -fenable-stack-protector-strong is available from gcc-4.9
+dnl
+dnl They can say --enable-stack-protector= one of yes, no, all or strong
+dnl Plain --enable-stack-protector is equivalent to =yes
+dnl That sets $enable_ssp to one of four options:
+dnl "no" disables -fstack-protector of any kind.
+dnl "yes" enables -fstack-protector or fails if it's not available.
+dnl "all" or "strong" require that flag to be available in the gcc you have.
+dnl "auto" chooses -fstack-protector-strong if it's available or
+dnl                -fstack-protector if only that is available or
+dnl                no starck protection if none is available.
+dnl "auto" is the default if no --enable-stack-protector option is given.
+
+AC_ARG_ENABLE(stack-protector,
+    [AS_HELP_STRING([--disable-stack-protector|--enable-stack-protector[[=strong|all]]],
+	[Disable GCC's/libc's stack-smashing protection or select the given level. With no such option it enables the best available of plain and strong])],
+    [enable_ssp=$enableval],
+    [enable_ssp=auto])
+
+case "$enable_ssp" in # (( for editors' bracket-matching
+    yes|no|all|strong|auto) echo enable_ssp=$enable_ssp;;
+    *) AC_MSG_ERROR([invalid value $enable_ssp for --enable-stack-protector]) ;;
+esac
+
+have_ssp=no
+have_ssp_strong=no
+case "$gccver" in
+""|1.*) ;;	# For safety.
+2|2.*)	;;
+3|3.*)	;;
+4|4.[[12345678]]*)	# 4.9 is the last of the 4.X series
+	have_ssp=yes ;;
+4.9*|[[567891234]]*)	# OK up to gcc-999 :)
+	have_ssp=yes
+	have_ssp_strong=yes ;;
+*)	# It's not GCC or we are confused, so assume "no"
+	;;
+esac
+
+dnl If they asked for protection and there is none, stop.
+if test x"$enable_ssp" != x"no" && test x"$enable_ssp" != x"auto"
+then
+    if test x"$GCC" != x"yes"
+    then
+	AC_MSG_ERROR([Only GCC has stack-smashing protection and your compiler is not GCC])
+    fi
+    if test x"$have_ssp" = x"no"
+    then
+	AC_MSG_ERROR([gcc-$gccver does not have -fstack-protector])
+    fi
+fi
+
+case "$enable_ssp" in
+yes)
+    if test x"$have_ssp" = x"yes"
+    then
+	AX_APPEND_COMPILE_FLAGS([-fstack-protector])
+    else
+	AC_MSG_ERROR([gcc-$gccver does not have -fstack-protector])
+    fi ;;
+all) # When you have -fstack-protector you also have -fstack-protector-all
+    if test x"$have_ssp" = x"yes"
+    then
+	AX_APPEND_COMPILE_FLAGS([-fstack-protector-all])
+    else
+	AC_MSG_ERROR([gcc-$gccver does not have -fstack-protector-all])
+    fi ;;
+strong)
+    if test x"$have_ssp_strong" = x"yes"
+    then
+	AX_APPEND_COMPILE_FLAGS([-fstack-protector-strong])
+    else
+	AC_MSG_ERROR([gcc-$gccver does not have -fstack-protector-strong])
+    fi ;;
+auto)
+    if test x"$have_ssp_strong" = x"yes"
+    then
+	AX_APPEND_COMPILE_FLAGS([-fstack-protector-strong])
+	enable_ssp=strong	# For the final report
+    else
+	AX_APPEND_COMPILE_FLAGS([-fstack-protector])
+	enable_ssp=yes		# For the final report
+    fi ;;
+esac
+
 AC_SUBST(APP_LDFLAGS)
 AC_SUBST(WARN_CFLAGS)
+
 
 AC_ARG_WITH(distro, AS_HELP_STRING([--with-distro=distro], [Provide distribution name]))
 if test "x$with_distro" != "x"; then
@@ -762,6 +855,7 @@ echo "Debugging build............$enable_debug"
 echo "Distro name ...............$DISTRO"
 echo "Dynamic loading support....$using_libltdl"
 echo "Pkg-config location........$pkgconfig_option"
+echo "Stack smashing protection..$enable_ssp"
 echo "Play and rec symlinks......$enable_playrec_symlinks"
 echo "Symlinks enabled...........$enable_symlinks"
 echo "Replace sox................$enable_replace"
