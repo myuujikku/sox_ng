@@ -505,16 +505,10 @@ MPEG-1 Systems / MPEG program stream format.
 .TP
 \&\fB.mp3\fR, \fB.mp2\fR (optional read with mad,
 optional write with liblame, also with \-t sndfile\fR or \fB\-t ffmpeg\fR)
-MP3 compressed audio; MP3 (MPEG Layer 3) is a part of the patent-encumbered
-MPEG standards for audio and video compression.  It is a lossy
-compression format that achieves good compression rates with little
-quality loss.
-.SP
-Because MP3 is patented, SoX cannot be distributed with MP3 support without
-incurring the patent holder's fees.  Users who require SoX with MP3 support
-must currently compile and build SoX with the MP3 libraries (LAME & MAD)
-from source code, or, in some cases, obtain pre-built dynamically loadable
-libraries.
+MP3 compressed audio (MPEG Layer 3) is a part of the
+MPEG standards for audio and video compression whose patents have expired.
+It is a lossy compression format that achieves good compression rates
+with little quality loss.
 .SP
 When reading MP3 files, up to 28 bits of precision is stored although
 only 16 bits is reported to user.  This is to allow default behavior
