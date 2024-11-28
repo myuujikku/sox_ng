@@ -18,6 +18,11 @@
 
 #include "sox_i.h"
 
+/* Avoid compiler warnings about unused OV_CALLBACKS_* in vorbisfile.h */
+#if !defined(__MINGW32__) && !defined(_WIN32)
+# define OV_EXCLUDE_STATIC_CALLBACKS 1
+#endif
+
 #include <ogg/ogg.h>
 #include <vorbis/codec.h>
 #include <vorbis/vorbisfile.h>
