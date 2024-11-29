@@ -12,8 +12,8 @@
 # - milestone     The milestone name, if any
 # - labels        The labels, if any, one per line
 # - assets/       A directory containing its attachments
-#                 Files whose names end in ".patch" are downloaded with
-#                 CR characters stripped out, so their size and content
+#                 Files whose names end in ".patch" or ".diff" are downloaded
+#                 with CR characters stripped out, so their size and content
 #                 may not correspond exactly with the remote content.
 # Files recording values assigned by Forgejo
 # - number        From 1 upward monotonically
@@ -71,21 +71,28 @@
 # - If a URL transfer failed due to bad network connectivity, retry it.
 # - When creating new issues from local, fill in creation date and username
 
-# For function-local variables, bash and dash have "local"; ksh has "typeset"
+# For function-local variables, bash, dash and ksh have "local";
+# ksh has "typeset"
 test -n "$KSH_VERSION" && alias local=typeset
 
 # dash's built-in "echo" always interprets backslash sequences
 # so replace it with the more portable "printf".
-# For issue titles we don't want a trailing newline.
-# For bodies (-n) don't call an external command because
-# that limits the size of the argument to 128K or whatver.
+# For issue bodies or json, don't call printf which may be an external command
+# because that limits the size of the argument to 128K or whatver.
+# If you know you don't want a trailing newline, use echo_n
+
 echo() {
     case "$1" in
     -n) shift; printf %s "$*" ;;
     *)  cat << EOF
 $*
 EOF
+	;;
     esac
+}
+
+echo_n() {
+    printf %s "$*"
 }
 
 usage() {
@@ -117,7 +124,7 @@ get|put)	action="$1"; shift ;;
 *)		usage; exit 1 ;;
 esac
 
-site= owner= repo=
+site=; owner=; repo=
 
 # The second argument may be site/owner/repo
 case "$1" in
@@ -145,7 +152,7 @@ case "$1" in
     then
 
 	remotes="$(git remote -v | grep '^origin')"
-	case $action in
+	case "$action" in
 	get) remote="$(echo "$remotes" | grep ' (fetch)$' | awk '{print $2}')" ;;
 	put) remote="$(echo "$remotes" | grep ' (push)$'  | awk '{print $2}')" ;;
 	esac
@@ -162,7 +169,7 @@ case "$1" in
 	    then
 		echo "I can't decode the git origin '$remote'" 1>&2
 		echo "Use site/owner/repo" 1>&2
-		site= owner= repo=
+		site=; owner=; repo=
 	    fi
 	    ;;
 	*)
@@ -255,29 +262,29 @@ then
    exit 1
 fi
 
-if $dryrun && [ $action != put ]
+if $dryrun && [ "$action" != put ]
 then
     echo "-n only works with $0 put" 1>&2
     exit 1
 fi
 
-if $open_only && [ $action != get ]
+if $open_only && [ "$action" != get ]
 then
     echo "-O is only valid for $0 get" 1>&2
     exit 1
 fi
 
-if $debug_URLs && [ $action != put ]
+if $debug_URLs && [ "$action" != put ]
 then
     echo "-U only works with $0 put" 1>&2
     exit 1
 fi
 
 # Authentication is compulsory when putting
-case $action in
+$dryrun || case "$action" in
 put) if [ -z "$username" ]
-     then echo -n "Username for $site: "
-          read username
+     then echo_n "Username for $site: "
+          read -r username
      fi ;;
 esac
 
@@ -291,7 +298,7 @@ if [ -n "$username" ] && [ -z "$password" ]
 then
     stty -echo
     printf "Password: "
-    read password
+    read -r password
     printf "\n"
     stty echo
     case "$password" in
@@ -307,13 +314,19 @@ esac
 # Let them run it in the "issues" directory or from the top-level directory
 if [ -d "$issuesdir" ]
 then
-    cd "$issuesdir"
+    cd "$issuesdir" || {
+	echo "Can't cd into $issuesdir" 1>&2
+	exit 1
+    }
 fi
 # Make sure they are in an "issues" directory
 if [ "$(basename "$(pwd)")" != "$issuesdir" ]
 then
     mkdir "$issuesdir"
-    cd "$issuesdir"
+    cd "$issuesdir" || {
+	echo "Can't cd into $issuesdir" 1>&2
+	exit 1
+    }
 fi
 
 # Pick the program to use for URL transfers.
@@ -322,11 +335,12 @@ fi
 # prefer curl for putting as it's the only one that works at present.
 select_transfer()
 {
-    local have_wget have_curl
+    local have_wget
+    local have_curl
 
     # curl works for getting and putting issues.
     # wget only works for getting and uses less CPU.
-    if [ "$transfer" = wget ] && [ $action = put ]
+    if [ "$transfer" = wget ] && [ "$action" = put ]
     then
 	echo "wget only works when getting issues. Use curl." 1>&2
 	exit 1
@@ -347,7 +361,7 @@ select_transfer()
     wget) $have_wget && return
 	  echo "wget is not installed" 1>&2; exit 1
 	  ;;
-    *)    case $action in
+    *)    case "$action" in
 	  get) $have_wget && { transfer=wget; return; }
 	       $have_curl && { transfer=curl; return; }
 	       echo "You need wget or curl to be able to get issues" 1>&2
@@ -397,7 +411,14 @@ apirepo="$api/repos/$owner/$repo"
 #             and don't ensure it is newline-terminated.
 #	      Used when downloading binary files (attachments)
 geturl() {
-    local errs raw a url command result status message
+    local errs
+    local raw
+    local a
+    local url
+    local command
+    local result
+    local status
+    local message
 
     errs=/tmp/issues-geturl-errs$$
 
@@ -486,8 +507,16 @@ geturl() {
 #	      and the name of the file to attach is in $data
 # method: POST or PATCH
 puturl() {
-    local method url data message attachment
-    local errs a command result status
+    local method
+    local url
+    local data
+    local message
+    local attachment
+    local errs
+    local a
+    local command
+    local result
+    local status
 
     errs=/tmp/issues-puturl-errs$$
 
@@ -547,16 +576,15 @@ puturl() {
 	if $attachment
 	then
 	    $debug_URLs && \
-		 echo $command -F "attachment=@-;filename=\"$(echo "$data" | \
+		 echo "$command -F attachment=@-;filename=\"$(echo "$data" | \
 				sed 's/[\"]/\\&/g')\"" "$url" 1>&2
 	    # Read data from stdin because @$data messes with {} and []
-	    result="$(cat "$data" | $command -F \
-		      "attachment=@-;filename=\"$(echo "$data" | \
-				sed 's/[\"]/\\&/g')\"" "$url" 2> $errs)"
+	    result="$($command -F "attachment=@-;filename=\"$(echo "$data" | \
+				sed 's/[\"]/\\&/g')\"" "$url" < "$data" 2> $errs)"
 	    status=$?
 	else
 	    $debug_URLs && \
-		 echo $command --data-binary "$data" "$url" 1>&2
+		 echo "$command --data-binary \"$data\" \"$url\"" 1>&2
 	    result="$($command --data-binary "$data" "$url" 2> $errs)"
 	    status=$?
 	fi
@@ -583,6 +611,12 @@ puturl() {
 settings="$(geturl GET "$api/settings/api" "Failed to fetch API settings")" \
 	    || exit 1
 test -z "$settings" && exit 1
+
+# Encode the value of a shell variable so that jq gets that as the same string
+# so if we're handed a"\b it return "a\"\\b"
+js_quote() {
+    echo "$1" | sed 's|\\|\\\\|g;s|"|\\"|g;s|.*|"&"|'
+}
 
 # filename_quote: Make a local filename out of an issue's title:
 # Unix: replace / with \
@@ -640,7 +674,10 @@ url_quote() {
 
 # Download all the remote issues into global variable $rissues_json
 fetchissues() {
-    local limit page issue_page state
+    local limit
+    local page
+    local issue_page
+    local state
 
     # The API can only return a maximum of 50 items per request so
     # fetch each page until it returns [].
@@ -663,7 +700,7 @@ fetchissues() {
     issue_page=""
     until [ "$issue_page" = "[]" ]
     do
-	page=$(($page + 1))
+	page=$((page + 1))
 	issue_page="$(geturl GET \
 			     "$apirepo/issues?limit=$limit&page=$page&state=$state" \
 			     "Failed to fetch page $page of $limit issues")"
@@ -673,7 +710,7 @@ fetchissues() {
 	test "[]" = "$issue_page" && continue
 
 	# Append the new page of issues to our list
-	rissues_json="$(echo "$rissues_json" | $jq --argjson new "$issue_page" '. + $new')"
+	rissues_json="$(echo "$rissues_json" | $jq --argjson new "$issue_page" ". + \$new")"
     done
 
     # Forgejo includes pull requests in the issues. Ignore them.
@@ -685,9 +722,22 @@ fetchissues() {
 # - delete all local issues
 # - for each remote issues, save interesting fields and fetch attachments
 getissues() {
-    local a dirname limit page number issue
-    local title ftitle id milestone labels merged_at
-    local assets nassets i name url
+    local a
+    local dirname
+    local limit
+    local page
+    local number
+    local issue
+    local title
+    local ftitle
+    local id
+    local milestone
+    local labels
+    local assets
+    local nassets
+    local i
+    local name
+    local url
 
     # Remove any previously produced output
     for a in *.md
@@ -712,7 +762,7 @@ getissues() {
 	# we can get that by fetching a single issue by its issue number.
 	issue="$(geturl GET -r "$apirepo/issues/$number" \
 			"#$number Failed to fetch list of assets")" || break
-	if [ $? -ne 0 ] || test -z "$issue"
+	if [ -z "$issue" ]
 	then
 	    continue
 	fi
@@ -731,13 +781,15 @@ getissues() {
 
 	# Save metadata: number, id, milestone and labels
 	mkdir "$ftitle"
-	(
-	    cd "$ftitle"
-
+	if cd "$ftitle"
+	then
 	    # Forgejo includes pull requests as issues with a non-null
 	    # .pull_request field. We don't want them in the issues.
-	    test null != "$(echo "$issue" | $jq -r .pull_request)"  && \
+	    if [ "$(echo "$issue" | $jq -r .pull_request)" != null ]
+	    then
+		cd ..
 		continue
+	    fi
 
 	    # Items that are always present
 	    echo "$title" > title
@@ -749,7 +801,7 @@ getissues() {
 
 	    # Items that may be present
 	    milestone="$(echo "$issue" | $jq -r .milestone.title)"
-	    if [ -n "$milestone" -a null != "$milestone" ]
+	    if [ -n "$milestone" ] && [ null != "$milestone" ]
 	    then echo "$milestone" > milestone
 	    fi
 	    labels="$(echo "$issue" | $jq -r ".labels|.[].name")"
@@ -757,12 +809,12 @@ getissues() {
 
 	    assets="$(echo "$issue" | $jq '.assets')"  # json
 	    nassets="$(echo "$assets" | $jq -r length)"
-	    test $nassets -gt 0 && mkdir assets
-	    for i in $(seq 0 $(($nassets - 1))); do
+	    test "$nassets" -gt 0 && mkdir assets
+	    for i in $(seq 0 $((nassets - 1))); do
 		name="$(echo "$assets" | $jq -r ".[$i].name")"
 		url="$(echo "$assets" | $jq -r ".[$i].browser_download_url")"
 		case "$name" in
-		*.patch)
+		*.patch|*.diff)
 		    geturl GET "$url" \
 			   "Failed to fetch patch '$name' of '$title'" ;;
 		*)
@@ -770,7 +822,10 @@ getissues() {
 			   "Failed to fetch attachment '$name' of '$title'" ;;
 		esac > assets/"$name"
 	    done
-	)
+	    cd ..
+	else
+	    echo "Can't cd to \"$ftitle\""
+	fi
     done
 }
 
@@ -779,10 +834,29 @@ getissues() {
 #   If the remote one doesn't exist, create a new one and store the new
 #   number and id locally
 putissues() {
-    local ftitle title number id state milestone labels
-    local milestone_list label_list
-    local asset rasset rasset_json rassets_json rtitle rissues_json
-    local a ok id label name tmp result url updating_body
+    local ftitle
+    local title
+    local number
+    local id
+    local state
+    local milestone
+    local labels
+    local milestone_list
+    local label_list
+    local rasset
+    local rasset_json
+    local rassets_json
+    local rtitle
+    local rissues_json
+    local a
+    local ok
+    local id
+    local label
+    local name
+    local tmp
+    local result
+    local url
+    local updating_body
     local new_issue_nums	# A list of issue numbers that need creating
     local newnumber		# The new issue number we actually got
 
@@ -927,7 +1001,7 @@ putissues() {
 	    done
 	    $ok || {
 		echo "Invalid label '$label' in '$ftitle'"
-		echo "Valid labels are: $(echo $(echo "$label_list" | sed 's/ .*//'))"
+		echo "Valid labels are: $(echo "$label_list" | sed 's/ .*//')"
 		any_bad_labels=true
 	    }
 	done
@@ -957,7 +1031,7 @@ putissues() {
 
 	    # Make sure it doesn't have the same title as an existing issue
 	    if [ "" != "$(echo "$rissues_json" | \
-			    $jq ".[] | select(.title == \"$title\")")" ]
+		$jq ".[] | select(.title == $(js_quote "$title"))")" ]
 	    then
 		echo "An issue with title '$title' already exists"
 		continue
@@ -1010,16 +1084,19 @@ putissues() {
 
 	    # Store new metadata locally
 	    number="$(echo "$result" | $jq -r .number)"
-		echo "$number" > $ftitle/number
+		echo "$number" > "$ftitle"/number
 	    id="$(echo "$result" | $jq -r .id)"
-		echo "$id" > $ftitle/id
-	    echo "$result" | $jq -r .user.login > $ftitle/username
-	    echo "$result" | $jq -r .created_at > $ftitle/created_at
+		echo "$id" > "$ftitle"/id
+	    echo "$result" | $jq -r .user.login > "$ftitle"/username
+	    echo "$result" | $jq -r .created_at > "$ftitle"/created_at
 
 	    # You have to create the issue and then add attachments to it
 	    if [ -d "$ftitle"/assets ]
 	    then
-		ls "$ftitle"/assets 2> /dev/null | while read name
+		test -d "$ftitle"/assets && \
+		(cd "$ftitle"/assets && find . -maxdepth 1 -type f | \
+					sed 's|^\./||') | \
+		while read -r name
 		do
 		    result="$(puturl POST -a \
 		              "$apirepo/issues/$number/assets" \
@@ -1113,20 +1190,22 @@ putissues() {
 	    a="$(echo "$data" | $jq "del(.body)")"
 	    if [ -n "$data" ] && [ "{}" != "$data" ]
 	    then
-		echo -n "#$number '$title': Updating"
+		echo_n "#$number '$title': Updating"
 		if [ "{}" != "$a" ]
-		then if $updating_body
-		     then	# both
+		then
+		    if $updating_body
+		    then	# both
 			echo " body and '$a'"
-		     else	# metadata but not body
+		    else	# metadata but not body
 			echo " '$a'"
-		     fi
-		else if $updating_body
-		     then	# just the body
+		    fi
+		else
+		    if $updating_body
+		    then	# just the body
 			echo " body"
-		     else	# Not updating anything. Shouldn't happen.
+		    else	# Not updating anything. Shouldn't happen.
 		        echo " nothing: Internal error"
-		     fi
+		    fi
 		fi
 		$dryrun || \
 		result="$(puturl PATCH "$url" "$data" \
@@ -1166,9 +1245,8 @@ putissues() {
 	# Compare local and remote assets
 
 	# Fetch a list of the remote issue's assets into $rassets_json
-	issue="$(geturl GET "$apirepo/issues/$number" \
+	if issue="$(geturl GET "$apirepo/issues/$number" \
 		"#$number '$title': Failed to fetch list of assets")"
-	if [ $? -eq 0 ]
 	then
 	    rassets_json="$(echo "$issue" | $jq .assets)"
 	else
@@ -1184,12 +1262,15 @@ putissues() {
 	    # to get a modified "$rassets_json" out of it
 	    # we dump it in a temp file.
 	    tmp=/tmp/putissues-"$number"-rassets_json$$
-	    echo "$rassets_json" > $tmp
+	    echo "$rassets_json" > "$tmp"
 
-	    ls "$ftitle"/assets 2> /dev/null | while read name
+	    test -d "$ftitle"/assets && \
+	    (cd "$ftitle"/assets && find . -maxdepth 1 -type f | \
+				    sed 's|^\./||') | \
+	    while read -r name
 	    do
 		rasset_json="$(echo "$rassets_json" | \
-			       $jq ".[] | select(.name == \"$name\")")"
+			       $jq ".[] | select(.name == $(js_quote "$name"))")"
 		if [ -z "$rasset_json" ]
 		then
 		    # There is no remote asset with the same filename
@@ -1214,15 +1295,15 @@ putissues() {
 		    # Binary files may contain nuls so dump it in a file
 		    rasset=/tmp/putissues_rasset$$
 		    case "$name" in
-		    *.patch)
+		    *.patch|*.diff)
 			geturl GET "$url" \
 			       "#$number '$title': Failed to fetch asset '$name'" > $rasset ;;
 		    *)
 			geturl GET -r "$url" \
 			       "#$number '$title': Failed to fetch asset '$name'" > $rasset ;;
-		    esac
-		    if [ $? -eq 0 ] && ! cmp -s "$ftitle/assets/$name" "$rasset"
-		    then
+		    esac && cmp -s "$ftitle/assets/$name" "$rasset" || {
+			# geturl succeeded and the files are different
+
 			echo "#$number '$title': Updating asset '$name'"
 			# We can only update assets by their id and
 			# can't change the contents so we delete it
@@ -1238,17 +1319,17 @@ putissues() {
 				  "$ftitle/assets/$name" \
 				  "#$number '$title': Failed to replace asset '$name'")"
 			}
-		    fi
+		    }
 		    rm $rasset
 		    # Remove the asset from the list of remote assets that
 		    # do not have a local equivalent
 		    rassets_json="$(echo "$rassets_json" | \
-			       $jq "del(.[] | select(.name == \"$name\"))")"
-		    echo "$rassets_json" > $tmp
+			       $jq "del(.[] | select(.name == $(js_quote "$name")))")"
+		    echo "$rassets_json" > "$tmp"
 		fi
 	    done
-	    rassets_json="$(cat $tmp)"
-	    rm $tmp
+	    rassets_json="$(cat "$tmp")"
+	    rm "$tmp"
 
 	    # If there is anything left in $rassets_json, they are
 	    # remote assets that do not have a local equivalent
@@ -1256,7 +1337,7 @@ putissues() {
 	    # Alternative strategy: use [0] like for labels above,
 	    echo "$rassets_json" | \
 	    $jq -r '.[] | (.id | tostring) + " " + .name' | \
-	    while read id name
+	    while read -r id name
 	    do
 		echo "#$number '$title': Removing asset '$name'"
 
@@ -1339,12 +1420,12 @@ putissues() {
 	result="$(puturl POST "$apirepo/issues" "{\"title\":\"dummy\"}" "#$number: Failed to create a new remote issue")"
 	test $? -ne 0 && break
 	newnumber="$(echo "$result" | $jq .number)"
-	if [ "$newnumber" -lt $number ]
+	if [ "$newnumber" -lt "$number" ]
 	then
 	    # There was a gap between the last remote issue number
 	    # and the first one we have to create, so keep creating dummies
 	    # until we get the number we wanted.
-	    while [ "$newnumber" -lt $number ]
+	    while [ "$newnumber" -lt "$number" ]
 	    do
 		geturl DELETE "$apirepo/issues/$newnumber" \
 			      "#$number: Failed to delete dummy issue" > /dev/null
@@ -1352,7 +1433,7 @@ putissues() {
 		test $? -ne 0 && break
 		newnumber="$(echo "$result" | $jq .number)"
 	    done
-	elif [ "$newnumber" -gt $number ]
+	elif [ "$newnumber" -gt "$number" ]
 	then
 	    # The new issue number is higher than we expected.
 	    echo "#${number}: Tried to create dummy issue but got #$newnumber instead"
@@ -1396,7 +1477,7 @@ putissues() {
 	    # You can't set the created_at field or username when PATCHING
 	    # an issue, nor when creating it.
 
-	    milestone="$(echo "$(cat "$ftitle"/milestone 2> /dev/null)")"
+	    milestone="$(cat "$ftitle"/milestone 2> /dev/null)"
 	    if [ -n "$milestone" ]
 	    then
 		# Find the milestone id from its name
@@ -1407,8 +1488,6 @@ putissues() {
 		    continue
 		fi
 		data="$data,\"milestone\":$id"
-	    else
-		echo "#$number '$title': Warning: No milestone"
 	    fi
 
 	    # Check that every label is valid
@@ -1421,7 +1500,7 @@ putissues() {
 		done
 		$ok || {
 		    echo "Invalid label \"$label\" in '$ftitle'"
-		    echo "Valid labels are: $(echo $(echo "$label_list" | sed 's/ .*//'))"
+		    echo "Valid labels are: $(echo "$label_list" | sed 's/ .*//')"
 		}
 	    done
 	    # Is a label repeated?
@@ -1460,7 +1539,10 @@ putissues() {
 	    $dryrun || \
 	    if [ -d "$ftitle"/assets ]
 	    then
-		ls "$ftitle"/assets 2> /dev/null | while read name
+		test -d "$ftitle"/assets && \
+		(cd "$ftitle"/assets && find . -maxdepth 1 -type f | \
+					sed 's|^\./||') | \
+		while read -r name
 		do
 		    result="$(puturl POST -a \
 		              "$apirepo/issues/$number/assets" \
@@ -1490,7 +1572,7 @@ putissues() {
 
 fetchissues
 
-case $action in
+case "$action" in
 get)	getissues ;;
 put)	putissues ;;
 esac
