@@ -20,6 +20,14 @@ The command-line interface is the only way to add images and attachments.
 In the `wiki` directory there is a script `makehtml.sh`. If you run it,
 it creates `index.html` (=`Home.md`) and an HTML page for each page of the wiki.
 
+## Content
+
+Commit hashes should be cited as their first seven digits because
+that makes it easier to search for them with precision.
+
+[Semantic line breaks](https://sembr.org) and less-than-80-column lines
+are preferred to long lines so that the `.md` version is more readable.
+
 ## Markdown style
 
 In theory, we should use standard
