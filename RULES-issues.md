@@ -50,12 +50,19 @@ The second-level headings are usually some of
 `## Links`, `## Description`, `## Repeat by`, `## Results`,
 `## Analysis` and `## Conclusion`.
 
+Commit hashes should be cited as their first seven digits because
+that makes it easier to search for them with precision.
+
 In the content, [semantic line breaks](https://sembr.org)
 and less-than-80-column lines are preferred to long lines
-so that the `.md` version is more readable.
+so that the `.md` version is more readable. 
+Unfortunately, `forgejo` renders the line breaks in its pages
+for the issues even though it doesn't do this to the wiki.
+Usually you have to end a line with a space or use
+an inline <BR> to get an explicit line break.
 
 For further info on the Markdown used in issues and the wiki
-see RULES-Markdown.md
+see RULES-issues.md
 
 ### Attachments
 
