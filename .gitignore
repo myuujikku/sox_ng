@@ -1,4 +1,9 @@
-Makefile
+/Makefile
+/src/Makefile
+/libgsm/Makefile
+/lpc10/Makefile
+/msvc9/Makefile
+/msvc10/Makefile
 Makefile.in
 /autom4te.cache
 /mingw32-config.cache
@@ -19,7 +24,11 @@ Makefile.in
 /libtool
 /ltmain.sh
 /sox_ng-*.tar.gz
-*.txt
+CMakeLists.txt
+/libsox_ng.txt
+/soxformat_ng.txt
+/soxi_ng.txt
+/sox_ng.txt
 *.pdf
 *.html
 /sox_ng.pc
