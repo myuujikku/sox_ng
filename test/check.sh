@@ -18,6 +18,8 @@ usage() {
     } 1>&2
 }
 
+# Process command line arguments
+
 legend=true
 while [ $# -gt 0 ]
 do
@@ -33,6 +35,10 @@ if [ -z "$args" ]
 then
     args="$(ls)"
 fi
+
+# By default, check the sox in the source tree
+sox=${sox:-../../src/sox_ng}
+export sox
 
 # We don't want memory leaks to report a failure.
 ASAN_OPTIONS=detect_leaks=0
