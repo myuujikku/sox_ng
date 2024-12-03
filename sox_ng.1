@@ -3737,11 +3737,18 @@ its peak levels (i.e. either
 .IR Min\ level ,
 or
 .IR Max\ level ).
+.SP
 .I Pk\ count
 is the number of occasions (not the number of samples) that the signal attained either
 .IR Min\ level ,
 or
 .IR Max\ level .
+.SP
+The primary goal of the Peak Count value is to answer the question
+"has this audio been clipped?", quite possibly as a result of the
+frowned-upon-by-some but common practice of 'brick wall limiting'
+in modern mastering. The closer the "Peak Count" is to 1,
+the higher the confidence that the audio has not been clipped.
 .SP
 The right-hand
 .I Bit-depth
