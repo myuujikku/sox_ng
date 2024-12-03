@@ -56,11 +56,14 @@ that makes it easier to search for them with precision.
 In the content, [semantic line breaks](https://sembr.org)
 and less-than-80-column lines are preferred to long lines
 so that the `.md` version is more readable.  
-Unfortunately, `forgejo` renders the line breaks in its pages
+Unfortunately, `forgejo` renders all line breaks in its pages
 for the issues even though it doesn't do this to the wiki.
-You usually end a line with two spaces or <BR>
-to get an explicit line break though
-neither the `forgejo` wiki nor `makehtml.sh` do this.
+
+[THe markdown guide](https://www.markdownguide.org/basic-syntax/#line-breaks)
+recommends ending a line with two spaces or <BR>
+to get an explicit line break. `forgejo` viewing an
+`.md` file in the source tree doesn't honour double spaces,
+but the `forgejo` wiki and `makehtml.sh` (i.e. `multimarkdown`) do.
 
 For further info on the Markdown used in issues and the wiki
 see RULES-issues.md
