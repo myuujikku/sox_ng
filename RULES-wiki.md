@@ -9,9 +9,11 @@ git clone https://codeberg.org/sox_ng/sox_ng.wiki wiki
 ```
 One usually clones it into the `wiki` subdirectory of a clone of `sox_ng`.
 
-Editing the clone's -md files and pushing the changes to codeberg
-is preferred to using the web interface to ensure the `.md` files
-are as comprehensible as possible.
+The preferred way to edit the wiki pages is to
+edit your  clone's `.md` files and push the changes to codeberg.org
+to ensure that the `.md` files are as comprehensible as possible
+and avoid `forgejo` adding CRLF to the end of every line which makes
+every commit seem like every line of the file was modified.
 
 The command-line interface is the only way to add images and attachments.
 
@@ -56,8 +58,8 @@ instead of just `[Accounting]`, otherwise `makehtml.sh` gets them wrong.
 
 Indent second-level lists and continuation lines by two spaces,
 not four like the standard says
-not only because that's how 120 issues are already formatted
-but also because the typography of `.md` files is better.
+not only because that's how 256 issues are already formatted
+but also because it improves the typography of the `.md` files.
 
 `makehtml.sh` converts each pair of spaces in `.md` files to four
 before feeding it to `multimarkdown` so that lists format correctly.
@@ -96,4 +98,4 @@ before and after them.
 
 Markdown also allows code blocks indented with spaces
 but the two-space-to-four-space conversion for lists
-may mess up the indentation.
+may messes the indentation up.

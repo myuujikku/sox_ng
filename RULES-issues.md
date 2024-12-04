@@ -7,8 +7,7 @@ The master copy of the issues lives on Codeberg.
 You can make a local copy of them into the `issues` subdirectory
 by going
 ```
-git clone https://codeberg.org/sox_ng/issues
-issues/getissues.sh
+sh issues/getissues.sh
 ```
 which fetches each issue into an `.md` file named according
 to the issue's title, and its metadata and attachments into
@@ -20,14 +19,23 @@ attachments to issues do not make it
 but if `pincopallino` has made a migration on codeberg.org,
 they can be restored from the copy made above by going:
 ```
-ssues/putissues.sh codeberg.org/pincopallino/sox_ng -f
+issues/putissues.sh codeberg.org/pincopallino/sox_ng -f
 ```
 where `-f` means "don't worry if the issue `id`s don't match."
 
 Like the wiki, it has a script `makehtml.sh` to make HTML pages of the issues.
 
 In future, the master copy of the issue database will live in the
-source repository and the web version will be a copy of it. #80
+source repository and the web version will be a copy of it (#80)
+but for the moment the preferred way to edit the issues is via the
+web interface.
+
+It is possible to make a new issue from the command line by creating
+`issues/"Don't worry, be happy".md` and in a directory
+`issues/"Don't worry, be happy" placing files `milestone`
+and maybe `labels` and then saying
+`issues/putissues.sh` using your Codeberg username and password.
+It will fill in the `number` file with whatever forgejo assigns to it.
 
 ## Format of an issue
 
@@ -46,7 +54,7 @@ so that the summary of issues says where to go for the best info.
 
 The first line of every issue is `# Title`, the same as the Title.
 
-The second-level headings are usually some of
+The second-level headings are usually
 `## Links`, `## Description`, `## Repeat by`, `## Results`,
 `## Analysis` and `## Conclusion`.
 
@@ -59,7 +67,7 @@ so that the `.md` version is more readable.
 Unfortunately, `forgejo` renders all line breaks in its pages
 for the issues even though it doesn't do this to the wiki.
 
-[THe markdown guide](https://www.markdownguide.org/basic-syntax/#line-breaks)
+[The Markdown Guide](https://www.markdownguide.org/basic-syntax/#line-breaks)
 recommends ending a line with two spaces or <BR>
 to get an explicit line break. `forgejo` viewing an
 `.md` file in the source tree doesn't honour double spaces,
@@ -70,7 +78,8 @@ see RULES-issues.md
 
 ### Attachments
 
-Test files and patches need to be attached to the main description.
+Test files (small ones only please!) and patches
+need to be attached to the main description.
 
 ### Comments
 
