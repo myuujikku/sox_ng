@@ -50,7 +50,7 @@ static float difference(const float * a, const float * b, size_t length)
   size_t i = 0;
 
   #define _ diff += sqr(a[i] - b[i]), ++i; /* Loop optimisation */
-  do {_ _ _ _ _ _ _ _} while (i < length); /* N.B. length ≡ 0 (mod 8) */
+  do {_ _ _ _ _ _ _ _} while (i < length); /* N.B. length == 0 (mod 8) */
   #undef _
   return diff;
 }
