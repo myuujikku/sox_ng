@@ -377,7 +377,13 @@ select_transfer()
 select_transfer
 
 # Make sure jq is present
-echo '' | jq > /dev/null || {
+if echo '' | jaq > /dev/null
+then
+    jq="jaq -c"
+elif echo '' | jq > /dev/null
+then
+    jq="jq -c"
+else
     {
 	echo "issues.sh needs jq"
 	echo "Debian: apt install jq; Fedora: yum install jq"
@@ -389,10 +395,10 @@ echo '' | jq > /dev/null || {
 	echo "    make && sudo make install"
 	echo "if that doesn't work, try"
 	echo "    make clean; make LDFLAGS=-all-static && make install"
+	echo "Or jaq from https://github.com/01mf02/jaq -> Releases is twice as fast".
     } 1>&2
     exit 1
-}
-jq='jq -c'	# Always use compact output format
+fi
 
 # Turn an X.Y.Z version into something numerically comparable
 # From https://stackoverflow.com/questions/4023830
@@ -710,7 +716,7 @@ fetchissues() {
 	test "[]" = "$issue_page" && continue
 
 	# Append the new page of issues to our list
-	rissues_json="$(echo "$rissues_json" | $jq --argjson new "$issue_page" ". + \$new")"
+	rissues_json="$(echo "$rissues_json" | $jq --arg new "$issue_page" '. + ($new | fromjson)')"
     done
 
     # Forgejo includes pull requests in the issues. Ignore them.
@@ -800,7 +806,10 @@ getissues() {
 	    echo "$issue" | $jq -r .user.username > username
 
 	    # Items that may be present
-	    milestone="$(echo "$issue" | $jq -r .milestone.title)"
+	    milestone="$(echo "$issue" | $jq -r .milestone)"
+	    if [ -n "$milestone" ] && [ null != "$milestone" ]
+	    then milestone="$(echo "$milestone" | jq -r .title)"
+	    fi
 	    if [ -n "$milestone" ] && [ null != "$milestone" ]
 	    then echo "$milestone" > milestone
 	    fi

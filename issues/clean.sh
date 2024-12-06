@@ -49,7 +49,7 @@ if [ -d "$issuesdir" ]
 then
     cd "$issuesdir"
 fi
-# Make sure they are in an "issues" directory
+# Make sure they are in the issues directory
 if [ "$(basename "$(pwd)")" != "$issuesdir" ]
 then
     mkdir "$issuesdir"

@@ -17,6 +17,51 @@
 
 # TODO: Render images inline in the web pages.
 
+usage() {
+    echo 'Usage: $0 [-d dir]'
+    echo '-d:  Work in directory dir instead of the current working directory'
+}
+
+# Process command-line arguments
+
+issuesdir=issues
+while [ $# -gt 0 ]
+do
+    case "$1" in
+    -d) if [ $# -lt 2 ]
+	then echo "-d what?" 1>&2; exit 1
+	else issuesdir="$2"; shift 2
+	fi
+	;;
+    -d*) issuesdir="$(echo "$1" | sed 's/-d//')"; shift
+	;;
+
+    *)  {
+	    echo "Unknown option $1"
+	    usage
+	} 1>&2
+	exit 1
+	;;
+    esac
+done
+
+# Remove trailing /'s from the issuesdir
+case "$issuesdir" in
+*/)	issuesdir="$(echo "$issuesdir" | sed 's://*$::')"
+esac
+
+# Let them run it in the "issues" directory or from the top-level directory
+if [ -d "$issuesdir" ]
+then
+    cd "$issuesdir"
+fi
+# Make sure they are in the issues directory
+if [ "$(basename "$(pwd)")" != "$issuesdir" ]
+then
+    mkdir "$issuesdir"
+    cd "$issuesdir"
+fi
+
 # Use printf instead of echo as it is more portable.
 echo() {
     local nflag
@@ -44,16 +89,15 @@ echo '' | multimarkdown > /dev/null || {
 
 # Let them run it in the "issues" directory or from the top-level directory
 # or in the issues directory with an issues/ subdirectory
-if [ -d issues ]
+if [ -d "$issuesdir" ]
 then
-    cd issues
+    cd "$issuesdir"
 fi
-# Make sure they are in an "issues" directory
-if [ "$(basename "$(pwd)")" != issues ]
+# Make sure they are in the issues directory
+if [ "$(basename "$(pwd)")" != "$issuesdir" ]
 then
-    echo 'makehtml.sh needs to run in an "issues" directory'
-    echo 'or where there is an "issues" directory.'
-    exit 1
+    mkdir "$issuesdir"
+    cd "$issuesdir"
 fi
 
 if [ -z "$(ls *.md 2> /dev/null)" ]
