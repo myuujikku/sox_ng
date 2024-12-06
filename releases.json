@@ -7,17 +7,80 @@
    "tags": "audio, audio-editing, audio-processing, c, commandline-tool, digital-audio-editor, opensource, sound",
    "releases": [
       {
+         "version": "14.5.0",
+         "state": "stable",
+         "scope": "minor feature",
+         "changes": "New features:
+
+  o Add effect speexdsp with automatic gain control and noise reduction
+  o Auto-detect MP3 files
+  o If ./configured --with-ffmpeg and ffmpeg is installed, autoread formats:
+    3g2, 3gp, aac, ac3, adts, adx, ape, apm, aptx, argo_asf, asf, ast, avi,
+    dfpwm, dts, dvd, eac3, f4v, flv, gxf, ism, kvag, m4a, m4v, mkv, mlp,
+    mp4, mpeg, mpegts, mxf, nut, oga (Ogg with FLAC data), ra, rm, rso, sbc,
+    smjpeg, spdif, speex, svcd, tta, vag, vcd, vob, webm, wma, wsaud, wtv
+    and yet more with -t ffmpeg
+  o Add 'stat -a' to give the average power spectrum
+  o Add 'spectrogram -n' flag to normalize its brightness
+  o Add 'spectrogram -L' flag to give a logarithmic frequency axis
+  o Add 'spectrogram -R' flag to specify the frequency range
+  o Raise spectrogram's height limit from 8193 to 200000 pixels
+  o Lower the minimum speed of the flanger effect from 0.1 to 0.01 Hz
+  o Make combine effects work when there's a single file
+  o riaa: Add 192kHz sample rate
+  o sphere format: Support ALAW encoding
+  o SD2 format: Support resource forks
+  o ID3 tags: Support unicode when writing
+  o WAV files: Read when the number of valid bits is less that the sample size
+  o Use posix_fadvise to increase readahead and double its speed
+  o Use FFTW to make non-2^n-size spectrograms a hundred times faster
+  o Resize Linux pipe buffers to make multi-threaded effects 10-80% faster
+  o Reduce sox -t pulseaudio --[input-]buffer latency from up to 2 secs to low
+  o Enable building to fetch URLs with curl instead of wget
+  o Be able to read files that are still being written by another process
+  o Make 'make check' run the regression test suite
+  o Drop sox_version_info_t's 'time' element to get reproducible builds
+  o Remove the undocumented and useless 'divide' effect
+  o Enhance ./configure --enable-stack-protector with =strong and =all and,
+    with no --(en|dis)able-stack-protector option, pick the best available
+
+Bug fixes:
+
+  o Fix coreaudio device name truncation on MacOS X
+  o Make it compile on Haiku and NetBSD and with gcc-2.95
+  o Americanize spelling in the manual
+  o Make 'make installcheck' work again
+  o Fix the delay buffer full flag assigned during drain
+  o ./configure --with-{amrnb,amrwb,sndfile}=dyn --without-dyn-default
+    linked them statically instead
+  o Drop the unreliable pipe-rewinding libc hacks and do it in-house
+  o Fix bug introduced in sox_ng-14.4.3: au files with -t ao play short
+  o Fix segfault when --norm is passed with no parameter
+  o Fix compilation on AIX 7.1, Haiku, NetBSD, OpenBSD and with gcc-2.95
+
+  o Document the 'sinc -r' flag
+  o Added releases.json for freshcode.club's benefit
+
+Bug fixes:
+
+  o Fix detection of opus. The AIX 'fix' in 14.4.3-rc1 broke it elsewhere
+  o Don't call sox_write from output effect if input buffer is empty
+  o Correct the mailing list's address",
+         "download": "https://codeberg.org/sox_ng/sox_ng/releases/download/sox_ng-14.5.0/sox_ng-14.5.0.tar.gz",
+         "published": "2024-12-06T22:00:00+00:00"
+      },
+      {
          "version": "14.4.3.1",
          "state": "stable",
          "scope": "minor bugfix",
          "changes": "New features:
 
-  o Document the "sinc -r" flag
+  o Document the 'sinc -r' flag
   o Added releases.json for freshcode.club's benefit
 
 Bug fixes:
 
-  o Fix detection of opus. The AIX "fix" in 14.4.3-rc1 broke it elsewhere
+  o Fix detection of opus. The AIX 'fix' in 14.4.3-rc1 broke it elsewhere
   o Don't call sox_write from output effect if input buffer is empty
   o Correct the mailing list's address",
          "download": "https://codeberg.org/sox_ng/sox_ng/releases/download/sox_ng-14.4.3.1/sox_ng-14.4.3.1.tar.gz",
