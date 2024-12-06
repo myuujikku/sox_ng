@@ -5,7 +5,7 @@ This file contains a list of all changes starting after the release of
 sox-11gamma, followed by a list of prior authors and features.
 
 
-$ox_ng-14.5.0	2024-11-18
+sox_ng-14.5.0	2024-12-06
 -------------
 
 New features:
@@ -56,7 +56,7 @@ Bug fixes:
   o Fix segfault when --norm is passed with no parameter
   o Fix compilation on AIX 7.1, Haiku, NetBSD, OpenBSD and with gcc-2.95
 
-$ox_ng-14.4.3.1	2024-09-14
+sox_ng-14.4.3.1	2024-09-14
 ---------------
 
 New features:
@@ -71,7 +71,7 @@ Bug fixes:
   o Correct the mailing list's address
 
 
-$ox_ng-14.4.3	2024-09-01
+sox_ng-14.4.3	2024-09-01
 -------------
 
 New features:
@@ -112,7 +112,7 @@ Copyright:
   o Therefore the overall copyright of sox_ng and libsox_ng is GPLv2
 
 
-$ox-14.4.2	2015-02-22
+sox-14.4.2	2015-02-22
 ----------
 
 Previously deprecated features that have been removed in this release:
