@@ -173,7 +173,7 @@ static int parse_num_with_suffix (const char *s, int *a) {
  */
 static int parse_range (const char *s, int *a, int *b) {
   int a_status, b_status;
-  char *colon = index(s,':');
+  char *colon = strchr(s,':');
   if (colon) {
     /* Colon found, so have a number range */
     *colon = 0; /* Temporarily put string terminator where colon is */
