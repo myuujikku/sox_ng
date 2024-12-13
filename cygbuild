@@ -9,7 +9,7 @@
 #
 # And last, it will optional package a wget compiled with VC++ instead
 # of cygwin version (which has no DLL's to distribute) if found
-# in wget-1.11.4 directory.  If not found, it will distribute the
+# in wget-1.25.0 directory.  If not found, it will distribute the
 # cygwin version and various DLL's it requires.
 #
 # Various notes:
@@ -35,25 +35,25 @@
 # libpng.la will have libtool issue because depends on libz
 # which has a libz.la file.  Must edit libpng.la to
 # prevent needing to distribute cygzlib1.dll.
-# cd libpng-1.2.41
+# cd libpng-1.6.44
 # ./configure --disable-shared --enable-static;make;sudo make install
 #
-# cd ../wavpack-4.60.1
+# cd ../wavpack-5.7.0
 # ./configure --disable-shared --enable-static;make;sudo make install
 #
-# cd ../flac-1.2.1
+# cd ../flac-1.3.2
 # ./configure --disable-shared --enable-static;make;sudo make install
 #
-# cd ../libogg-1.1.3
+# cd ../libogg-1.3.5
 # ./configure --disable-shared --enable-static;make;sudo make install
 #
-# cd ../libvorbis-1.2.0
+# cd ../libvorbis-1.3.7
 # ./configure --disable-shared --enable-static;make;sudo make install
 #
-# cd ../libsndfile-1.0.20
+# cd ../libsndfile-1.2.2
 # ./configure --disable-shared --enable-static;make;sudo make install
 #
-# cd ../libid3tag-0.15.1b
+# cd ../libid3tag-0.15.2b
 # ./configure --disable-shared --enable-static;make;sudo make install
 #
 # To get MP3 header files used to enable MP3 support (no libraries used):
@@ -94,7 +94,7 @@ done
 
 binaries=src/sox_ng
 
-[ ! -r "../wget-1.11.4/wget.exe" -a -r /usr/bin/wget ] && binaries+=" /usr/bin/wget"
+[ ! -r "../wget-1.25.0/wget.exe" -a -r /usr/bin/wget ] && binaries+=" /usr/bin/wget"
 
 binaries=$(for f in `cygcheck $binaries|dos2unix`
     do cygpath -u $f; done|sort|uniq|grep -v ^/cygdrive/)
@@ -109,9 +109,9 @@ cp -p \
 
 unix2dos $dir/batch-example.bat
 
-if test -r "../wget-1.11.4/wget.exe"; then
-  cp ../wget-1.11.4/wget.exe $dir
-  cp ../wget-1.11.4/wget.ini $dir
+if test -r "../wget-1.25.0/wget.exe"; then
+  cp ../wget-1.25.0/wget.exe $dir
+  cp ../wget-1.25.0/wget.ini $dir
 else
   if test -r /usr/bin/wget -a -r /etc/wgetrc; then
     cp -p /etc/wgetrc $dir/wget.ini
