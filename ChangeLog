@@ -92,11 +92,11 @@ Bug fixes:
   o floating point exception in startwrite()
   o wavpack check errors
   o writing hcom files on bigendian systems
-  O Fixes for memory leaks and a double free()s
+  o Fixes for memory leaks and a double free()s
   o It now compiles under C99 and on AIX
   o Support for uClibc and builds with other non-glibc C libraries
   o Various build system fixes from the software distributions
-j o Spelling errors are fixed
+  o Spelling errors are fixed
   o It now builds on AIX, FreeBSD, OpenBSD and Solaris
   o Almost all compiler warnings are fixed
 
