@@ -451,6 +451,8 @@ if test "$with_ffmpeg" = "yes"; then
       [AC_MSG_FAILURE([--with-ffmpeg requires the presence of popen()])])
     using_ffmpeg=yes
     AC_DEFINE(USING_FFMPEG, 1, [1 if should use ffmpeg to decode otherwise unsupported formats])
+    # ffmpeg.c can use these to improve autodetection when stdin is a pipe
+    AC_CHECK_FUNCS(pipe fork)
 fi
 
 

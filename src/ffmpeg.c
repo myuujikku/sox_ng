@@ -37,7 +37,8 @@ static int startread(sox_format_t * ft)
   char const * const command_fmt = "ffmpeg -loglevel quiet -nostdin -strict -2 -i \"%s\" -f au -";
   char *command;
 
-  /* Quote special characters in the filename */
+  /* Quote special characters in the filename. */
+  /* This is for the Unix shell. I dunno about Windows. */
   quoted_filename = lsx_malloc(strlen(ft->filename) * 2 + 1);
   for (p=ft->filename, q=quoted_filename; *p; p++, q++) {
     switch (*p) {
@@ -59,8 +60,11 @@ static int startread(sox_format_t * ft)
   /* If the input is stdin, sox may already have read 256 bytes from it
    * for autodetection so we have to lauch something that feeds ffmpeg
    * the data we've read and then all the rest.
+   * Empirically, if stdin comes from a file, ffmpeg rewinds it anyway
+   * so the pipe/fork trick is only needed when reading from a pipe.
    */
-  if (strcmp(ft->filename, "-") == 0) {
+  if (strcmp(ft->filename, "-") == 0 && !ft->seekable) {
+#if defined(HAVE_PIPE) && defined(HAVE_FORK)
     int pipefd[2]; /* [0] is the read end, [1] the write end */
 
     if (pipe(pipefd) != 0) {
@@ -100,6 +104,9 @@ static int startread(sox_format_t * ft)
       }
       close(pipefd[0]);
     }
+#else
+    lsx_warn("When stdin is a pipe, bypass filetype autodetection using -t ffmpeg -");
+#endif
   }
 
   ft->fp = popen(command, "r");
