@@ -5,6 +5,17 @@ This file contains a list of all changes starting after the release of
 sox-11gamma, followed by a list of prior authors and features.
 
 
+sox_ng-14.5.0.1-rc1	2024-12-06
+-------------------
+
+New features:
+
+  o Add Unicode support on Windows for filenames and command-line arguments
+
+Bug fixes:
+
+  o Make it build for Windows using MXE
+
 sox_ng-14.5.0	2024-12-06
 -------------
 

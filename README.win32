@@ -4,15 +4,11 @@ SoX
 This file contains information specific to the Win32 version of SoX.
 Please refer to the README file for general information.
 
-The binary SOX_NG.EXE can be installed anywhere you desire.  The only
-restriction is that the included ZLIB1..DLL and LIBGOMP-1.DLL must be
-located in the same directory as SOX_NG.EXE or somewhere within your PATH.
-
 SoX Helper Applications
 -----------------------
 
 SoX also includes support for SOXI_NG.EXE, PLAY_NG.EXE and REC_NG.EXE and
-their behaviors are documented in included PDF's.  They have the same
+their behaviors are documented in the included PDF's.  They have the same
 install restrictions as SOX_NG.EXE.
 
 SOXI_NG.EXE, PLAY_NG.EXE, and REC_NG.EXE are not distributed with this package
@@ -36,6 +32,38 @@ play_ng: sox_ng [input files and options] -d [effects]
 rec_ng: sox_ng -d [output file and options] [effects]
 soxi_ng: sox_ng --info [input files and options]
 
+Building SoX_NG.EXE yourself
+----------------------------
+
+The sox_ng Windows executable is cross-compiled using MXE (http://mxe.cc)
+and it's dead easy.
+
+# Install the things it needs
+sudo apt-get install \
+    autoconf automake autopoint bash bison bzip2 flex g++ g++-multilib \
+    gettext git gperf intltool libc6-dev-i386 libgdk-pixbuf2.0-dev \
+    libltdl-dev libgl-dev libpcre3-dev libssl-dev libtool-bin \
+    libxml-parser-perl lzip make openssl p7zip-full patch perl python3 \
+    python3-distutils python3-mako python3-packaging python3-pkg-resources \
+    python3-setuptools python-is-python3 ruby sed sqlite3 unzip wget xz-utils
+# For other Unix distros, see https://mxe.cc#Requirements
+
+# Get a copy of MXE
+git clone https://github.com/mxe/mxe.git
+cd mxe
+
+# Fetch the configuration file for sox_ng
+wget -P src https://codeberg.org/sox_ng/sox_ng/releases/download/sox_ng-14.5.0.1-rc1/sox_ng{.mk,-test.c}
+
+# Build it
+make sox_ng
+
+# Build the additional packages it can use
+make wget ffmpeg
+
+# Make the distribution zip file
+zip -j sox_ng-win32.zip usr/i686-w64-mingw32.static/bin/{sox_ng,wget,ffmpeg}.exe
+
 Acknowledgements
 ----------------
 
@@ -47,6 +75,10 @@ further information on how it was compiled and packaged.
 
   FLAC - http://flac.sourceforge.net
 
+  FFMPEG - http://ffmpeg.org
+
+  FFTW - http://fftw.org
+
   LADSPA - http://www.ladspa.org
 
   libid3tag - http://www.underbit.com/products/mad
@@ -57,6 +89,8 @@ further information on how it was compiled and packaged.
 
   PNG - http://www.libpng.org/pub/png
 
+  speexdsp - https://github.com/xiph/speexdsp
+
   WavPack - http://www.wavpack.com
 
   wget - http://www.gnu.org/software/wget
@@ -64,100 +98,38 @@ further information on how it was compiled and packaged.
 Enjoy,
 The SoX and SoX Development Teams
 
-Appendix - wget Support
------------------------
+Appendix - wget and ffmpeg Support
+----------------------------------
 
-SoX can make use of the wget or curl command line utilities to load files
-over the internet.  A binary copy of wget has been included with this
-package of SoX for your convience.
+The SoX Windows binary can make use of the wget command line utility
+to load files over the internet and of the ffmpeg utility to read
+an extra four dozen audio and video formats.
 
-For SoX to make use of wget, it must be located either in your PATH or
-within the same directory that SoX is ran from.
+Binary copies of wget and ffmpeg have been included with this package
+for your convenience.
+
+For SoX to make use of wget or ffmpeg, they must be located either
+in your PATH or within the same directory that SoX is run from.
 
 Custom configuration of wget can be made by editing the file wget.ini
 contained in the same directory as wget.exe.
 
-Please consult wget's homepage for access to source code as well as
-further instructions on configuring.
+Please consult wget and ffmpeg's homepages for access to source code
+as well as further instructions on configuring them.
 
 http://www.gnu.org/software/wget
+http://ffmpeg.org
 
-Appendix - MP3 Support
-----------------------
+Appendix - MP3 and AMR-NB/AMR-WB Support
+----------------------------------------
 
-SoX contains support for reading and writing MP3 files but does not ship
-with the DLL's that perform decoding and encoding of MP3 data.
-
-MP3 support can be enabled by placing Lame encoding DLL and/or
-MAD decoding DLL into the same directory as SOX_NG.EXE.  These
-can be compiled yourself, they may turn up on searches of the internet
-or may be included with other MP3 applications already installed
-on your system. For encoding/writing, try searching for lame-enc.dll,
-libmp3lame-0.dll, libmp3lame.dll, or cygmp3lame-0.dll.  For
-decoding/reading, try searching for libmad-0.dll, libmad.dll or cygmad-0.dll.
-
-Instructions are included here for using MSYS to create the DLL's.
-It is assumed you already have MSYS installed on your system
-with a working gcc compiler.  The commands are ran from MSYS
-bash shell.
-
-Obtain the latest Lame and MAD source code from approprate locations.
-
-Lame MP3 encoder  http://lame.sourceforge.net
-MAD MP3 decoder   http://www.underbit.com/products/mad
-
-cd lame-3.100
-./configure --disabled-static --enable-shared
-make
-cp libmp3lame/.libs/libmp3lame-0.dll /path/to/sox_ng
-
-MAD libraries up to 0.15.1b have a bug in configure that will not allow
-building DLL under mingw.  This can be resolved by adding LDFLAGS
-to configure and editing the generated Makefile to remove an invalid
-option.
-
-cd libmad-0.15.1b
-./configure --enable-shared --disable-static LDFLAGS="-no-undefined"
-[edit Makefile, search for "-fforce-mem" and delete it.]
-make
-cp libmad-0.dll /path/to/sox_ng/
-
-Appendix - AMR-NB/AMR-WB Support
---------------------------------
-
-SoX contains support for reading and writing AMR-NB and AMR-WB files but
-does not ship with the DLL's that perform decoding and encoding of AMR data.
-
-AMR-NB/AMR-WB support can be enabled by placing required DLL's
-into the same directory as SOX_NG.EXE.  These can be compiled yourself,
-they may turn up on searches of the internet or may be included with other
-MP3 applications already installed on your system. For AMR-NB support,
-try searching for libamrnb-3.dll, libopencore-amrnb-0.dll, or
-libopencore-amrnb.dll. For AMR-WB support, try searching for libamrwb-3.dll,
-libopencore-amrwb-0.dll, or libopencore-amrwb.dll.
-
-Instructions are included here for using MSYS to create the DLL's.
-It is assumed you already have MSYS installed on your system with
-working gcc compiler.  These commands are run from MSYS bash shell.
-
-Obtain the latest amrnb and amrwb source code from
-http://sourceforge.net/projects/opencore-amr
-
-cd opencore-amr-0.1.6
-./configure --enable-shared --disable-static LDFLAGS="-no-undefined"
-make
-cp amrnb/.libs/libopencore-amrnb-0.dll /path/to/sox_ng
-cp amrwb/.libs/libopencore-amrwb-0.dll /path/to/sox_ng
+Now that the MP3 patents have expired and the opencore AMR libraries
+are free, SoX contains support for reading and writing these files.
 
 Appendix - LADSPA Plugins
 -------------------------
 
-SoX has built in support for LADSPA Plugins.  These plugins are
-mostly built for Linux but some are available for Windows.
-The Audacity GUI application has a page that points to a collection
-of Windows LADSPA plugins.
+SoX has built-in support for LADSPA Plugins; see http://www.ladspa.org
 
-http://audacity.sourceforge.net/download/plugins
-
-SoX will search for these plugins based on LADSPA_PATH
-enviornment variable.  See sox_ng.txt for further information.
+SoX will search for these plugins based on the LADSPA_PATH
+environment variable.  See sox_ng.txt for further information.
