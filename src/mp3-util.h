@@ -36,7 +36,7 @@ static char const * id3tagmap[][2] =
 
 #if defined(HAVE_LAME_ID3TAG)
 
-#if defined _WIN32 || defined _WIN64
+#if defined _WIN32
 
 #include <wchar.h>
 #include <windows.h>

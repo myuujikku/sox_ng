@@ -21,6 +21,7 @@
 
 #include "sox_ng.h"
 #include "util.h"
+#include "win32-unicode.h"
 
 #include <assert.h>
 #include <errno.h>

@@ -27,6 +27,7 @@
 #include "sox_ng.h"
 #include "soxconfig.h"
 #include "util.h"
+#include "win32-unicode.h"
 
 #include <ctype.h>
 #include <errno.h>
@@ -246,9 +247,9 @@ static void cleanup(void)
     if (ofile->ft) {
       if (!success && ofile->ft->io_type == lsx_io_file) {   /* If we failed part way through */
         struct stat st;                  /* writing a normal file, remove it. */
-        if (!stat(ofile->ft->filename, &st) &&
+        if (!lsx_stat(ofile->ft->filename, &st) &&
             (st.st_mode & S_IFMT) == S_IFREG)
-          unlink(ofile->ft->filename);
+          lsx_unlink(ofile->ft->filename);
       }
       sox_close(ofile->ft); /* Assume we can unlink a file before closing it. */
     }
@@ -914,7 +915,7 @@ static char * * strtoargv(char * s, int * argc)
 
 static void read_user_effects(char const *filename)
 {
-    FILE *file = fopen(filename, "r");
+    FILE *file = lsx_fopen(filename, "r");
     const size_t buffer_size_step = 1024;
     size_t buffer_size = buffer_size_step;
     char *s = lsx_malloc(buffer_size); /* buffer for one input line */
@@ -1276,6 +1277,7 @@ static void display_status(sox_bool all_done)
   }
   if (all_done)
     fputc('\n', stderr);
+  fflush(stderr);
 }
 
 #ifdef HAVE_TERMIOS_H
@@ -2142,7 +2144,7 @@ static void read_comment_file(sox_comments_t * comments, char const * const file
   int c;
   size_t text_length = 100;
   char * text = lsx_malloc(text_length + 1);
-  FILE * file = fopen(filename, "r");
+  FILE * file = lsx_fopen(filename, "r");
 
   if (file == NULL) {
     lsx_fail("Cannot open comment file `%s'", filename);
@@ -2552,7 +2554,7 @@ static char const * device_name(char const * const type)
       || !strcmp(type, "waveaudio")
       )
     name = "default";
-  
+
   return name? from_env? from_env : name : NULL;
 }
 
@@ -2869,7 +2871,11 @@ static sox_bool cmp_comment_text(char const * c1, char const * c2)
   return c1 && c2 && !strcasecmp(c1, c2);
 }
 
+#ifdef WIN32
+static int sox_main(int argc, char **argv)
+#else
 int main(int argc, char **argv)
+#endif
 {
   size_t i;
   char mybase[8];
@@ -3072,3 +3078,78 @@ int main(int argc, char **argv)
 
   return 0;
 }
+
+#ifdef WIN32
+
+#include <windows.h>
+
+static UINT g_old_output_cp = ((UINT)-1);
+
+static void lsx_init_console(void)
+{
+  g_old_output_cp = GetConsoleOutputCP();
+  SetConsoleOutputCP(CP_UTF8);
+}
+
+static void lsx_uninit_console(void)
+{
+  if(g_old_output_cp != ((UINT)-1)) {
+    SetConsoleOutputCP(g_old_output_cp);
+  }
+}
+
+static void lsx_init_commandline_arguments(int *argc, char ***argv)
+{
+  int i, nArgs;
+  LPWSTR *szArglist;
+
+  szArglist = CommandLineToArgvW(GetCommandLineW(), &nArgs);
+
+  if(NULL == szArglist) {
+    fprintf(stderr, "\nFATAL: CommandLineToArgvW failed\n\n");
+    exit(-1);
+  }
+
+  *argv = (char**) lsx_malloc(sizeof(char*) * nArgs);
+  *argc = nArgs;
+
+  for(i = 0; i < nArgs; i++)
+    (*argv)[i] = win32_utf16_to_utf8(szArglist[i]);
+
+  LocalFree(szArglist);
+}
+
+static void lsx_free_commandline_arguments(int *argc, char ***argv)
+{
+  int i = 0;
+
+  if(*argv != NULL) {
+    for(i = 0; i < *argc; i++) {
+      if((*argv)[i] != NULL) {
+        free((*argv)[i]);
+        (*argv)[i] = NULL;
+      }
+    }
+    free(*argv);
+    *argv = NULL;
+  }
+}
+
+int main(void)
+{
+  int sox_argc;
+  char **sox_argv;
+  int exit_code;
+
+  lsx_init_console();
+  lsx_init_commandline_arguments(&sox_argc, &sox_argv);
+
+  exit_code = sox_main(sox_argc, sox_argv);
+
+  lsx_uninit_console();
+  lsx_free_commandline_arguments(&sox_argc, &sox_argv);
+
+  return exit_code;
+}
+
+#endif /* _WIN32 */

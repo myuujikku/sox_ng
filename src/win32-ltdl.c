@@ -364,6 +364,13 @@ lt_dlsym(
     return func.ptr;
 }
 
+extern int _snprintf(
+   char *buffer,
+   size_t count,
+   const char *format,
+   ...
+);
+
 const char *
 lt_dlerror(void)
 {
