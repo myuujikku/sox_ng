@@ -19,12 +19,20 @@
 #include <errno.h>
 #define WIN32_LEAN_AND_MEAN 1
 #include <windows.h>
+#include <stdlib.h>	/* for malloc() */
 
 typedef struct file_entry
 {
     char name[MAX_PATH];
     struct file_entry *next;
 } file_entry;
+
+extern int _snprintf(
+   char *buffer,
+   size_t count,
+   const char *format,
+   ...
+);
 
 static int
 insert(
