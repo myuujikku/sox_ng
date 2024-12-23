@@ -1,8 +1,25 @@
 SoX
-------
+---
 
 This file contains information specific to the Win32 version of SoX.
-Please refer to the README file for general information.
+Please refer to the README files for general information.
+
+sox_ng.exe -- main EXE of SOX
+
+wget.exe -- optional external program from "https://www.gnu.org/software/wget"
+            used to fetch input files from the internet
+	    instead of from local storage
+
+ffmpeg.exe -- optional external program from "ffmpeg.org" used to decode
+              some obscure audio file formats not supported natively
+
+All were compiled using the M cross environment MXE
+See http://codeberg.org/sox_ng/sox_ng/wiki/Distro-MXE.md
+and http://mxe.cc
+
+sox_ng.1.txt/pdf -- manual for sox_ng
+soxi_ng.1.txt/pdf -- manual for soxi or sox_ng --info
+soxformat_ng.txt/pdf -- list of supported file formats
 
 SoX Helper Applications
 -----------------------
@@ -24,9 +41,9 @@ copy sox_ng.exe play_ng.exe
 copy sox_ng.exe rec_ng.exe
 
 If you are concerned with disk space, the play and record
-functionality can be equated using the "-d" option with SOX_NG.EXE.  soxi_ng
-functionality can be equated using the "--info" option with SOX_NG.EXE. The
-rough syntax is:
+functionality can be equated using the "-d" option with SOX_NG.EXE.
+soxi_ng functionality can be equated using the "--info" option.
+The rough syntax is:
 
 play_ng: sox_ng [input files and options] -d [effects]
 rec_ng: sox_ng -d [output file and options] [effects]
@@ -53,7 +70,7 @@ git clone https://github.com/mxe/mxe.git
 cd mxe
 
 # Fetch the configuration file for sox_ng
-wget -P src https://codeberg.org/sox_ng/sox_ng/releases/download/sox_ng-14.5.0.1-rc1/sox_ng{.mk,-test.c}
+wget -P src https://codeberg.org/sox_ng/sox_ng/releases/download/sox_ng-14.5.0.1/sox_ng{.mk,-test.c}
 
 # Build it
 make sox_ng
@@ -68,8 +85,6 @@ Acknowledgements
 ----------------
 
 SOX_NG.EXE included in this package makes use of the following projects.
-See the cygbuild script included with the source code package for
-further information on how it was compiled and packaged.
 
   SoX - https://codeberg.org/sox_ng/sox_ng
 
