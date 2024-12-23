@@ -109,7 +109,7 @@ static int startread(sox_format_t * ft)
 #endif
   }
 
-  ft->fp = popen(command, "r");
+  ft->fp = popen(command, "rb");
   free(command);
   free(quoted_filename);
 
