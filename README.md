@@ -1,11 +1,11 @@
 # README.md
 
-The `SoX_ng` project imports, compares and refines bug fixes and new work 
-from the 50-odd software distributions that package SoX
+The `SoX_ng` project imports, compares and refines bug fixes and
+new work from the 50-odd software distributions that package SoX
 and from the plethora of forks on github and elsewhere
 and makes regular releases with a six-monthly cadence
 for each of the micro (bug fixes) and minor (new features) releases.
-A major release (non-backwards-compatible changes) is being considered.
+A major release (non-backwards-compatible changes) is not planned.
 
 The next micro release is scheduled for the 18th February 2025.<BR>
 The next minor release is scheduled for the 18th May 2025.
@@ -46,7 +46,8 @@ make install
 It installs as `sox_ng`, `sox_ng.h`, `libsox_ng.so` and so on
 so that `sox` and `sox_ng` can coexist on the same system.
 To make it work the same as the original `sox`, use
-`./configure --enable-replace` instead.
+`./configure --enable-replace` instead, and if `ffmpeg` is installed
+add `--with-ffmpeg` to decode 48 more audio and video formats.
 
 ### Development branches
 
@@ -60,7 +61,6 @@ cd sox_ng
 and to make local copies of the wiki and the issues:
 ```
 git clone https://codeberg.org/sox_ng/sox_ng.wiki wiki
-git clone https://codeberg.org/sox_ng/issues
 issues/getissues.sh
 ```
 
@@ -74,9 +74,11 @@ and to install it:
 ```
 sudo make install
 ```
-This installs it as `sox_ng`, `sox_ng.h`, `libsox_ng` and so on, so as
-not to conflict with traditional `sox`. If you want it also to work
-with the same names as the original `sox`, use `./configure --enable-replace`
+This installs it as `sox_ng`, `sox_ng.h`, `libsox_ng` and so on,
+so that it can coexist with traditional `sox`. If you want it to work
+the same as the original `sox`, use `./configure --enable-replace`
+and if `ffmpeg` is installed add `--with-ffmpeg` to decode 48 more
+audio and video formats.
 
 ## Build dependencies
 
@@ -93,15 +95,18 @@ To enable all of SoX's optional modules you can install
 `libid3tag`,
 `libmad`
 `libogg`,
+`libopus`,
 `libopusfile`,
 `libpng`,
 `libsndfile`,
+`libspeex`,
+`libspeexdsp`,
 `libvorbis`,
 `opencore-amr`,
 `twolame`,
 `wavpack`.
 
-### Debian, Ubuntu etc.
+### Debian, Ubuntu, Mint etc.
 ```
 apt install gcc make libtool ladspa-sdk libao-dev libasound2-dev \
 	libgsm1-dev libid3tag0-dev libltdl-dev libmad0-dev libmagic-dev \
@@ -135,8 +140,9 @@ You can edit and commit to the code and the wiki using Codeberg's web interface
 or from the command-line.
 The command-line is the only way to add images and attachments to the wiki.
 
-The issues are currently read-only to the command line
-and editable only on the Codeberg web site. This will change.
+The issues can be downloaded as well as uploaded replacing all remote content
+but this risks overwriting changes made via the web interface so for now
+it is recommended to edit them on the Codeberg web site.
 
 ## Community
 
@@ -157,6 +163,6 @@ and editable only on the Codeberg web site. This will change.
 
 ## README and PDFs
 
-To generate SoX's original README, run `./README.sh`
+To generate SoX's original README, run `./README.sh` or `make README`
 
 To generate the PDF version of the documentation, `make pdf`
