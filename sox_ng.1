@@ -3725,12 +3725,30 @@ the higher the confidence that the audio has not been clipped.
 .SP
 The right-hand
 .I Bit-depth
-figure is the standard definition of bit-depth i.e. bits less
-significant than the given number are fixed at zero.  The left-hand
-figure is the number of most significant bits that are fixed at zero (or
-one for negative numbers) subtracted from the right-hand figure (the
-number subtracted is directly related to
-.IR Pk\ lev\ dB ).
+figure is the standard definition of bit-depth, i.e. that all bits other than
+this number of the most significant bits are always zero.
+The left-hand figure is the number of bits at the least significant end
+of those most significant bits that would be sufficient
+to represent all sample values accurately (including the sign bit)
+and is directly related to
+.IR Pk\ lev\ dB .
+.SP
+In mathematical terms, the right hand figure is the ordinal,
+counting from the most-significant bit,
+of the least significant bit that is set to one in at least one sample.
+The left hand figure is the ordinal,
+counting from the least-significant repeated sign bit across all samples,
+of the least significant bit that is set to one in at least one sample.
+.SP
+Bit-depths are not intended to be properties of the signal per se
+but properties of its 2's-complement PCM encoding.
+.SP
+The primary use case of bit-depth measurement concerns manipulation of
+PCM audio by simple bit shifting, to answer questions such as:
+"Is it likely that this 24-bit PCM file was created
+by simply converting a 16-bit PCM file to 24-bit?" or
+"Can I losslessly shift all the samples in this PCM audio file
+m-bits left or n-bits right?"
 .SP
 For multichannel audio, an overall figure for each of the above
 measurements is given and derived from the channel figures as follows:
