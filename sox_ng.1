@@ -3979,7 +3979,8 @@ ends; default=60, or tone-2 (pluck); default=90.
 .TP
 \fBtempo \fR[\fB\-q\fR] [\fB\-m\fR\^|\^\fB\-s\fR\^|\^\fB\-l\fR] \fIfactor\fR [\fIsegment\fR [\fIsearch\fR [\fIoverlap\fR]]]
 Change the audio playback speed but not its pitch. This effect uses the
-WSOLA algorithm. The audio is chopped up into segments which are then
+WSOLA (Waveform Similarity OverLap and Add) algorithm.
+The audio is chopped up into segments which are then
 shifted in the time domain and overlapped (cross-faded) at points where
 their waveforms are most similar as determined by measurement of `least
 squares'.
