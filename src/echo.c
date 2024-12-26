@@ -82,7 +82,7 @@ static int sox_echo_getopts(sox_effect_t * effp, int argc, char **argv)
         sscanf(argv[i++], "%f", &echo->out_gain);
         while (i < argc) {
                 if ( echo->num_delays >= MAX_ECHOS )
-                        lsx_fail("echo: to many delays, use less than %i delays",
+                        lsx_fail("echo: too many delays; use less than %i delays",
                                 MAX_ECHOS);
                 /* Linux bug and it's cleaner. */
                 sscanf(argv[i++], "%f", &echo->delay[echo->num_delays]);
@@ -115,7 +115,7 @@ static int sox_echo_start(sox_effect_t * effp)
         }
         if ( echo->out_gain < 0.0 )
         {
-                lsx_fail("echo: gain-in must be positive!");
+                lsx_fail("echo: gain-out must be positive!");
                 return (SOX_EOF);
         }
         for ( i = 0; i < echo->num_delays; i++ ) {
