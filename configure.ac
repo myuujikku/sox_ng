@@ -155,7 +155,7 @@ AC_ARG_ENABLE(stack-protector,
     [enable_ssp=auto])
 
 case "$enable_ssp" in # (( for editors' bracket-matching
-    yes|no|all|strong|auto) echo enable_ssp=$enable_ssp;;
+    yes|no|all|strong|auto) ;;
     *) AC_MSG_ERROR([invalid value $enable_ssp for --enable-stack-protector]) ;;
 esac
 
@@ -191,31 +191,31 @@ case "$enable_ssp" in
 yes)
     if test x"$have_ssp" = x"yes"
     then
-	AX_APPEND_COMPILE_FLAGS([-fstack-protector])
+	CFLAGS="$CFLAGS -fstack-protector"
     else
 	AC_MSG_ERROR([gcc-$gccver does not have -fstack-protector])
     fi ;;
 all) # When you have -fstack-protector you also have -fstack-protector-all
     if test x"$have_ssp" = x"yes"
     then
-	AX_APPEND_COMPILE_FLAGS([-fstack-protector-all])
+	CFLAGS="$CFLAGS -fstack-protector-all"
     else
 	AC_MSG_ERROR([gcc-$gccver does not have -fstack-protector-all])
     fi ;;
 strong)
     if test x"$have_ssp_strong" = x"yes"
     then
-	AX_APPEND_COMPILE_FLAGS([-fstack-protector-strong])
+	CFLAGS="$CFLAGS -fstack-protector-strong"
     else
 	AC_MSG_ERROR([gcc-$gccver does not have -fstack-protector-strong])
     fi ;;
 auto)
     if test x"$have_ssp_strong" = x"yes"
     then
-	AX_APPEND_COMPILE_FLAGS([-fstack-protector-strong])
+	CFLAGS="$CFLAGS -fstack-protector-strong"
 	enable_ssp=strong	# For the final report
     else
-	AX_APPEND_COMPILE_FLAGS([-fstack-protector])
+	CFLAGS="$CFLAGS -fstack-protector"
 	enable_ssp=yes		# For the final report
     fi ;;
 esac
