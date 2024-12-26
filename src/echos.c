@@ -34,7 +34,7 @@
  *   can saturate!
  *
  * Hint:
- *   1 / out-gain > gain-in ( 1 + decay-1 + ... + decay-n )
+ *   1 / gain-out > gain-in ( 1 + decay-1 + ... + decay-n )
  *
  */
 
@@ -82,7 +82,7 @@ static int sox_echos_getopts(sox_effect_t * effp, int argc, char **argv)
                 echos->num_delays++;
                 if ( echos->num_delays > MAX_ECHOS )
                 {
-                        lsx_fail("echos: to many delays, use less than %i delays",
+                        lsx_fail("echos: too many delays; use less than %i delays",
                                 MAX_ECHOS);
                         return (SOX_EOF);
                 }
@@ -113,7 +113,7 @@ static int sox_echos_start(sox_effect_t * effp)
         }
         if ( echos->out_gain < 0.0 )
         {
-                lsx_fail("echos: gain-in must be positive!");
+                lsx_fail("echos: gain-out must be positive!");
                 return (SOX_EOF);
         }
         for ( i = 0; i < echos->num_delays; i++ ) {
