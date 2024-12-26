@@ -271,11 +271,11 @@ static int stop(sox_effect_t * effp)
     }
 
     b1 = bit_depth(mask, min, max, &b2);
-    fprintf(stderr, "\nBit-depth      %2u/%-2u", b1, b2);
+    fprintf(stderr, "\nBit-depth      %*u/%u", b2 < 10 ? 3 : 2, b1, b2);
     for (i = 0; i < n; ++i) {
       priv_t * q = (priv_t *)(effp - effp->flow + i)->priv;
       b1 = bit_depth(q->mask, q->min, q->max, &b2);
-      fprintf(stderr, "     %2u/%-2u", b1, b2);
+      fprintf(stderr, "     %*u/%u", b2 < 10 ? 3 : 2, b1, b2);
     }
 
     fprintf(stderr, "\nNum samples%9s", lsx_sigfigs3((double)p->num_samples));
