@@ -29,6 +29,12 @@
 #include <fcntl.h>
 
 #ifdef __ANDROID__
+  /* From Termux to "Get rid of references to leaked builtins"
+   * https://github.com/termux/termux-packages/tree/858771625/packages/sox */
+  #include <bits/struct_file.h>
+#endif
+
+#ifdef __ANDROID__
   #include <bits/struct_file.h>
 #endif
 
