@@ -3760,6 +3760,13 @@ to represent all sample values accurately (including the sign bit)
 and is directly related to
 .IR Pk\ lev\ dB .
 .SP
+In mathematical terms, the right hand figure is the ordinal,
+counting from the most-significant bit,
+of the least significant bit that is set to one in at least one sample.
+The left hand figure is the ordinal,
+counting from the least-significant repeated sign bit across all samples,
+of the least significant bit that is set to one in at least one sample.
+.SP
 Bit-depths are not intended to be properties of the signal per se
 but properties of its 2's-complement PCM encoding.
 .SP
