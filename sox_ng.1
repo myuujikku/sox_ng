@@ -604,6 +604,7 @@ The following is an example of splitting the first 60 seconds of an input
 file into two 30 second files and ignoring the rest.
 .EX
    sox_ng song.wav ringtone%1n.wav trim 0 30 : newfile : trim 0 30
+.EE
 .SS Stopping SoX
 Usually SoX will complete its processing and exit automatically once
 it has read all available audio data from the input files.
