@@ -101,7 +101,7 @@ static int start_read(sox_format_t * ft)
 
   lsx_readchars(ft, read_id, sizeof(read_id));
   if (memcmp(read_id, id, strlen(id))) {
-    lsx_fail_errno(ft, SOX_EHDR, "gsrt: invalid file name in header");
+    lsx_fail_errno(ft, SOX_EHDR, "invalid file name in header");
     return SOX_EOF;
   }
 

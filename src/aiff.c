@@ -68,13 +68,13 @@ int lsx_aiffstartread(sox_format_t * ft)
 
   /* FORM chunk */
   if (lsx_reads(ft, buf, (size_t)4) == SOX_EOF || strncmp(buf, "FORM", (size_t)4) != 0) {
-    lsx_fail_errno(ft,SOX_EHDR,"AIFF header does not begin with magic word `FORM'");
+    lsx_fail_errno(ft,SOX_EHDR,"header does not begin with magic word `FORM'");
     return(SOX_EOF);
   }
   lsx_readdw(ft, &totalsize);
   if (lsx_reads(ft, buf, (size_t)4) == SOX_EOF || (strncmp(buf, "AIFF", (size_t)4) != 0 &&
         strncmp(buf, "AIFC", (size_t)4) != 0)) {
-    lsx_fail_errno(ft,SOX_EHDR,"AIFF `FORM' chunk does not specify `AIFF' or `AIFC' as type");
+    lsx_fail_errno(ft,SOX_EHDR,"`FORM' chunk does not specify `AIFF' or `AIFC' as type");
     return(SOX_EOF);
   }
 
@@ -86,7 +86,7 @@ int lsx_aiffstartread(sox_format_t * ft)
       if (ssndsize > 0)
         break;
       else {
-        lsx_fail_errno(ft,SOX_EHDR,"Missing SSND chunk in AIFF file");
+        lsx_fail_errno(ft,SOX_EHDR,"Missing SSND chunk");
         return(SOX_EOF);
       }
     }
@@ -328,7 +328,7 @@ int lsx_aiffstartread(sox_format_t * ft)
     if (seekto > 0)
       lsx_seeki(ft, seekto, SEEK_SET);
     else {
-      lsx_fail_errno(ft,SOX_EOF,"AIFF: no sound data on input file");
+      lsx_fail_errno(ft,SOX_EOF,"no sound data on input file");
       return(SOX_EOF);
     }
   }
@@ -339,7 +339,7 @@ int lsx_aiffstartread(sox_format_t * ft)
   ssndsize -= offset;
   while (offset-- > 0) {
     if (lsx_readb(ft, &trash8) == SOX_EOF) {
-      lsx_fail_errno(ft,errno,"unexpected EOF while skipping AIFF offset");
+      lsx_fail_errno(ft,errno,"unexpected EOF while skipping offset");
       return(SOX_EOF);
     }
   }
@@ -351,7 +351,7 @@ int lsx_aiffstartread(sox_format_t * ft)
     else if (bits <= 32) bits = 32;
     else if (bits == 64 && enc == SOX_ENCODING_FLOAT) /* no-op */;
     else {
-      lsx_fail_errno(ft,SOX_EFMT,"unsupported sample size in AIFF header: %d", bits);
+      lsx_fail_errno(ft,SOX_EFMT,"unsupported sample size in header: %d", bits);
       return(SOX_EOF);
     }
   } else  {
@@ -361,7 +361,7 @@ int lsx_aiffstartread(sox_format_t * ft)
         || (ft->encoding.bits_per_sample == 0)) {
       lsx_report("You must specify # channels, sample rate, signed/unsigned,");
       lsx_report("and 8/16 on the command line.");
-      lsx_fail_errno(ft,SOX_EFMT,"Bogus AIFF file: no COMM section.");
+      lsx_fail_errno(ft,SOX_EFMT,"Bogus file: no COMM section");
       return(SOX_EOF);
     }
 
@@ -465,7 +465,7 @@ static int textChunk(char **text, char *chunkDescription, sox_format_t * ft)
 
   if (lsx_readbuf(ft, *text, (size_t) chunksize) != chunksize)
   {
-    lsx_fail_errno(ft,SOX_EOF,"AIFF: Unexpected EOF in %s header", chunkDescription);
+    lsx_fail_errno(ft,SOX_EOF,"Unexpected EOF in %s header", chunkDescription);
     return(SOX_EOF);
   }
   if (chunksize != SOX_SIZE_MAX)
@@ -478,7 +478,7 @@ static int textChunk(char **text, char *chunkDescription, sox_format_t * ft)
     char c;
     if (lsx_readbuf(ft, &c, (size_t)1) != 1)
     {
-      lsx_fail_errno(ft,SOX_EOF,"AIFF: Unexpected EOF in %s header", chunkDescription);
+      lsx_fail_errno(ft,SOX_EOF,"Unexpected EOF in %s header", chunkDescription);
       return(SOX_EOF);
     }
   }
@@ -509,7 +509,7 @@ static int commentChunk(char **text, char *chunkDescription, sox_format_t * ft)
     lsx_readw(ft, &markerId);
     lsx_readw(ft, &commentLength);
     if (((size_t)totalCommentLength) + commentLength > USHRT_MAX) {
-        lsx_fail_errno(ft,SOX_EOF,"AIFF: Comment too long in %s header", chunkDescription);
+        lsx_fail_errno(ft,SOX_EOF,"Comment too long in %s header", chunkDescription);
         return(SOX_EOF);
     }
     totalCommentLength += commentLength;
@@ -522,7 +522,7 @@ static int commentChunk(char **text, char *chunkDescription, sox_format_t * ft)
     }
 
     if (lsx_readbuf(ft, *text + totalCommentLength - commentLength, (size_t) commentLength) != commentLength) {
-        lsx_fail_errno(ft,SOX_EOF,"AIFF: Unexpected EOF in %s header", chunkDescription);
+        lsx_fail_errno(ft,SOX_EOF,"Unexpected EOF in %s header", chunkDescription);
         return(SOX_EOF);
     }
     *(*text + totalCommentLength) = '\0';
@@ -531,7 +531,7 @@ static int commentChunk(char **text, char *chunkDescription, sox_format_t * ft)
         /* Read past pad byte */
         char c;
         if (lsx_readbuf(ft, &c, (size_t)1) != 1) {
-            lsx_fail_errno(ft,SOX_EOF,"AIFF: Unexpected EOF in %s header", chunkDescription);
+            lsx_fail_errno(ft,SOX_EOF,"Unexpected EOF in %s header", chunkDescription);
             return(SOX_EOF);
         }
         totalReadLength += 1;
@@ -606,7 +606,7 @@ int lsx_aiffstartwrite(sox_format_t * ft)
            number of samples. */
         if (ft->signal.channels >= (0x7f000000 / (ft->encoding.bits_per_sample >> 3)))
         {
-                lsx_fail_errno(ft, SOX_EOF, "too many channels for AIFF header");
+                lsx_fail_errno(ft, SOX_EOF, "too many channels for header");
                 return SOX_EOF;
         }
         return(aiffwriteheader(ft, (uint64_t) 0x7f000000 / ((ft->encoding.bits_per_sample>>3)*ft->signal.channels)));
@@ -624,12 +624,12 @@ int lsx_aiffstopwrite(sox_format_t * ft)
 
         if (!ft->seekable)
         {
-            lsx_fail_errno(ft,SOX_EOF,"Non-seekable file.");
+            lsx_fail_errno(ft,SOX_EOF,"Non-seekable file");
             return(SOX_EOF);
         }
         if (lsx_seeki(ft, (off_t)0, SEEK_SET) != 0)
         {
-                lsx_fail_errno(ft,errno,"can't rewind output file to rewrite AIFF header");
+                lsx_fail_errno(ft,errno,"can't rewind output file to rewrite header");
                 return(SOX_EOF);
         }
         return(aiffwriteheader(ft, ft->olength / ft->signal.channels));
@@ -667,7 +667,7 @@ static int aiffwriteheader(sox_format_t * ft, uint64_t nframes)
                 bits = 32;
         else
         {
-                lsx_fail_errno(ft,SOX_EFMT,"unsupported output encoding/size for AIFF header");
+                lsx_fail_errno(ft,SOX_EFMT,"unsupported output encoding/size");
                 return(SOX_EOF);
         }
 
@@ -821,12 +821,12 @@ int lsx_aifcstopwrite(sox_format_t * ft)
 
         if (!ft->seekable)
         {
-            lsx_fail_errno(ft,SOX_EOF,"Non-seekable file.");
+            lsx_fail_errno(ft,SOX_EOF,"Non-seekable file");
             return(SOX_EOF);
         }
         if (lsx_seeki(ft, (off_t)0, SEEK_SET) != 0)
         {
-                lsx_fail_errno(ft,errno,"can't rewind output file to rewrite AIFC header");
+                lsx_fail_errno(ft,errno,"can't rewind output file to rewrite header");
                 return(SOX_EOF);
         }
         return(aifcwriteheader(ft, ft->olength / ft->signal.channels));
@@ -860,7 +860,7 @@ static int aifcwriteheader(sox_format_t * ft, uint64_t nframes)
                 bits = 64;
         else
         {
-                lsx_fail_errno(ft,SOX_EFMT,"unsupported output encoding/size for AIFC header");
+                lsx_fail_errno(ft,SOX_EFMT,"unsupported output encoding/size");
                 return(SOX_EOF);
         }
 

@@ -218,11 +218,11 @@ static int startread(sox_format_t * ft)
   unsigned char uc;
 
   if (lsx_readbuf(ft, header, (size_t)20) != 20) {
-    lsx_fail_errno(ft, SOX_EHDR, "unexpected EOF in VOC header");
+    lsx_fail_errno(ft, SOX_EHDR, "unexpected EOF in header");
     return (SOX_EOF);
   }
   if (strncmp(header, "Creative Voice File\032", (size_t)19)) {
-    lsx_fail_errno(ft, SOX_EHDR, "VOC file header incorrect");
+    lsx_fail_errno(ft, SOX_EHDR, "file header incorrect");
     return (SOX_EOF);
   }
 
@@ -247,7 +247,7 @@ static int startread(sox_format_t * ft)
 
   /* get rate of data */
   if (v->rate == -1) {
-    lsx_fail_errno(ft, SOX_EOF, "Input .voc file had no sound!");
+    lsx_fail_errno(ft, SOX_EOF, "Input file had no sound!");
     return (SOX_EOF);
   }
 
@@ -288,7 +288,7 @@ static int startread(sox_format_t * ft)
       v->size = 4;
       break;
     default:
-      lsx_fail("Unknown VOC format %d", v->format);
+      lsx_fail("Unknown format %d", v->format);
       break;
   }
   ft->encoding.bits_per_sample = v->size;
@@ -345,7 +345,7 @@ static size_t read_samples(sox_format_t * ft, sox_sample_t * buf,
         if (!v->adpcm.setup.sign) {
           SOX_SAMPLE_LOCALS;
           if (lsx_readb(ft, &uc) == SOX_EOF) {
-            lsx_warn("VOC input: short file");
+            lsx_warn("short input file");
             v->block_remaining = 0;
             return done;
           }
@@ -361,7 +361,7 @@ static size_t read_samples(sox_format_t * ft, sox_sample_t * buf,
           ++done;
         }
         if (lsx_readb(ft, &uc) == SOX_EOF) {
-          lsx_warn("VOC input: short file");
+          lsx_warn("short input file");
           v->block_remaining = 0;
           return done;
         }
@@ -407,7 +407,7 @@ static size_t read_samples(sox_format_t * ft, sox_sample_t * buf,
         switch (v->size) {
           case 8:
             if (lsx_readb(ft, &uc) == SOX_EOF) {
-              lsx_warn("VOC input: short file");
+              lsx_warn("short input file");
               v->block_remaining = 0;
               return done;
             }
@@ -422,7 +422,7 @@ static size_t read_samples(sox_format_t * ft, sox_sample_t * buf,
           case 16:
             lsx_readsw(ft, &sw);
             if (lsx_eof(ft)) {
-              lsx_warn("VOC input: short file");
+              lsx_warn("short input file");
               v->block_remaining = 0;
               return done;
             }
@@ -458,7 +458,7 @@ static int startwrite(sox_format_t * ft)
 
   if (!ft->seekable) {
     lsx_fail_errno(ft, SOX_EOF,
-                   "Output .voc file must be a file, not a pipe");
+                   "Output must be a file, not a pipe");
     return (SOX_EOF);
   }
 

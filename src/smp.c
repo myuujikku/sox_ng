@@ -90,7 +90,7 @@ static int readtrailer(sox_format_t * ft, struct smptrailer *trailer)
         for(i = 0; i < 8; i++) {        /* read the 8 markers */
                 if (lsx_readbuf(ft, trailer->markers[i].name, MARKERLEN) != MARKERLEN)
                 {
-                    lsx_fail_errno(ft,SOX_EHDR,"EOF in SMP");
+                    lsx_fail_errno(ft,SOX_EHDR,"unexpected EOF reading trailer");
                     return(SOX_EOF);
                 }
                 trailer->markers[i].name[MARKERLEN] = 0;
@@ -158,7 +158,7 @@ static int writetrailer(sox_format_t * ft, struct smptrailer *trailer)
         for(i = 0; i < 8; i++) {        /* write the 8 markers */
                 if (lsx_writes(ft, trailer->markers[i].name) == SOX_EOF)
                 {
-                    lsx_fail_errno(ft,SOX_EHDR,"EOF in SMP");
+                    lsx_fail_errno(ft,SOX_EHDR,"unexpected EOF writing trailer");
                     return(SOX_EOF);
                 }
                 lsx_writedw(ft, trailer->markers[i].position);
@@ -215,24 +215,24 @@ static int sox_smpstartread(sox_format_t * ft)
         /* If you need to seek around the input file. */
         if (! ft->seekable)
         {
-                lsx_fail_errno(ft,SOX_EOF,"SMP input file must be a file, not a pipe");
+                lsx_fail_errno(ft,SOX_EOF,"input must be a file, not a pipe");
                 return(SOX_EOF);
         }
 
         /* Read SampleVision header */
         if (lsx_readbuf(ft, &header, HEADERSIZE) != HEADERSIZE)
         {
-                lsx_fail_errno(ft,SOX_EHDR,"unexpected EOF in SMP header");
+                lsx_fail_errno(ft,SOX_EHDR,"unexpected EOF in header");
                 return(SOX_EOF);
         }
         if (strncmp(header.Id, SVmagic, (size_t)17) != 0)
         {
-                lsx_fail_errno(ft,SOX_EHDR,"SMP header does not begin with magic word %s", SVmagic);
+                lsx_fail_errno(ft,SOX_EHDR,"header does not begin with magic word %s", SVmagic);
                 return(SOX_EOF);
         }
         if (strncmp(header.version, SVvers, (size_t)4) != 0)
         {
-                lsx_fail_errno(ft,SOX_EHDR,"SMP header is not version %s", SVvers);
+                lsx_fail_errno(ft,SOX_EHDR,"header is not version %s", SVvers);
                 return(SOX_EOF);
         }
 
@@ -259,19 +259,19 @@ static int sox_smpstartread(sox_format_t * ft)
         /* NoOfSamps * sizeof(int16_t) */
         if (lsx_seeki(ft, (off_t)(smp->NoOfSamps * 2), 1) == -1)
         {
-                lsx_fail_errno(ft,errno,"SMP unable to seek to trailer");
+                lsx_fail_errno(ft,errno,"unable to seek to trailer");
                 return(SOX_EOF);
         }
         if (readtrailer(ft, &trailer))
         {
-                lsx_fail_errno(ft,SOX_EHDR,"unexpected EOF in SMP trailer");
+                lsx_fail_errno(ft,SOX_EHDR,"unexpected EOF in trailer");
                 return(SOX_EOF);
         }
 
         /* seek back to the beginning of the data */
         if (lsx_seeki(ft, (off_t)samplestart, 0) == -1)
         {
-                lsx_fail_errno(ft,errno,"SMP unable to seek back to start of sample data");
+                lsx_fail_errno(ft,errno,"unable to seek back to start of sample data");
                 return(SOX_EOF);
         }
 
@@ -345,7 +345,7 @@ static int sox_smpstartwrite(sox_format_t * ft)
         /* If you have to seek around the output file */
         if (! ft->seekable)
         {
-                lsx_fail_errno(ft,SOX_EOF,"Output .smp file must be a file, not a pipe");
+                lsx_fail_errno(ft,SOX_EOF,"Output must be a file, not a pipe");
                 return(SOX_EOF);
         }
 
@@ -358,7 +358,7 @@ static int sox_smpstartwrite(sox_format_t * ft)
         /* Write file header */
         if(lsx_writebuf(ft, &header, HEADERSIZE) != HEADERSIZE)
         {
-            lsx_fail_errno(ft,errno,"SMP: Can't write header completely");
+            lsx_fail_errno(ft,errno,"Can't write header completely");
             return(SOX_EOF);
         }
         lsx_writedw(ft, 0);      /* write as zero length for now, update later */
@@ -394,7 +394,7 @@ static int sox_smpstopwrite(sox_format_t * ft)
         writetrailer(ft, &trailer);
         if (lsx_seeki(ft, (off_t)112, 0) == -1)
         {
-                lsx_fail_errno(ft,errno,"SMP unable to seek back to save size");
+                lsx_fail_errno(ft,errno,"unable to seek back to save size");
                 return(SOX_EOF);
         }
         lsx_writedw(ft, smp->NoOfSamps > UINT_MAX ? UINT_MAX : (unsigned)smp->NoOfSamps);

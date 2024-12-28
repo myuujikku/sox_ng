@@ -116,14 +116,14 @@ static int sunstartread(sox_format_t * ft)
         if (ft->encoding.encoding != SOX_ENCODING_ULAW &&
             ft->encoding.encoding != SOX_ENCODING_ALAW &&
             ft->encoding.encoding != SOX_ENCODING_SIGN2) {
-            lsx_fail_errno(ft,SOX_EFMT,"Sun audio driver only supports ULAW, ALAW, and signed linear for bytes.");
+            lsx_fail_errno(ft,SOX_EFMT,"Driver only supports ULAW, ALAW, and signed linear for bytes");
                 return (SOX_EOF);
         }
         if ((ft->encoding.encoding == SOX_ENCODING_ULAW ||
              ft->encoding.encoding == SOX_ENCODING_ALAW) &&
             ft->signal.channels == 2)
         {
-            lsx_report("Warning: only support mono for ULAW and ALAW data.  Forcing to mono.");
+            lsx_warn("only support mono for ULAW and ALAW data; forcing to mono");
             ft->signal.channels = 1;
         }
     }
@@ -131,12 +131,12 @@ static int sunstartread(sox_format_t * ft)
         samplesize = 16;
         pPriv->sample_shift = 1;
         if (ft->encoding.encoding != SOX_ENCODING_SIGN2) {
-            lsx_fail_errno(ft,SOX_EFMT,"Sun audio driver only supports signed linear for words.");
+            lsx_fail_errno(ft,SOX_EFMT,"Driver only supports signed linear for words");
             return(SOX_EOF);
         }
     }
     else {
-        lsx_fail_errno(ft,SOX_EFMT,"Sun audio driver only supports bytes and words");
+        lsx_fail_errno(ft,SOX_EFMT,"Driver only supports bytes and words");
         return(SOX_EOF);
     }
 
@@ -225,7 +225,7 @@ static int sunstartwrite(sox_format_t * ft)
 #ifdef __SVR4
     /* Read in old values, change to what we need and then send back */
     if (ioctl(pPriv->device, AUDIO_GETDEV, &audio_dev) < 0) {
-        lsx_fail_errno(ft,errno,"Unable to get device information.");
+        lsx_fail_errno(ft,errno,"Unable to get device information");
         return(SOX_EOF);
     }
     lsx_report("Hardware detected:  %s",audio_dev.name);

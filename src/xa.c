@@ -90,7 +90,7 @@ static int startread(sox_format_t * ft)
          memcmp("XAI\0", xa->header.magic, (size_t)4) != 0 &&
          memcmp("XAJ\0", xa->header.magic, (size_t)4) != 0))
     {
-        lsx_fail_errno(ft, SOX_EHDR, "XA: Header not found");
+        lsx_fail_errno(ft, SOX_EHDR, "Header not found");
         return SOX_EOF;
     }
 
@@ -208,7 +208,7 @@ static size_t read_samples(sox_format_t * ft, sox_sample_t *buf, size_t len)
                     if (done > 0) {
                         return done;
                     }
-                    lsx_fail_errno(ft,SOX_EOF,"Premature EOF on .xa input file");
+                    lsx_fail_errno(ft,SOX_EOF,"Premature EOF on input file");
                     return 0;
                 } else {
                     /* error */

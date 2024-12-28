@@ -78,9 +78,9 @@ static void fail(sox_format_t* ft, unsigned code, const char* context)
     sizeof(message) / sizeof(message[0]),
     NULL);
   if (formatMessageOk)
-    lsx_fail_errno(ft, SOX_EOF, "WaveAudio %s failed with code %d: %s", context, (int)code, message);
+    lsx_fail_errno(ft, SOX_EOF, "%s failed with code %d: %s", context, (int)code, message);
   else
-    lsx_fail_errno(ft, SOX_EOF, "WaveAudio %s failed with unrecognized MMSYSERR code: %d", context, (int)code);
+    lsx_fail_errno(ft, SOX_EOF, "%s failed with unrecognized MMSYSERR code: %d", context, (int)code);
 }
 
 static int stop(sox_format_t* ft)
@@ -211,7 +211,7 @@ static int start(sox_format_t* ft)
 
       if (error)
       {
-        lsx_fail_errno(ft, ENODEV, "WaveAudio device not found.");
+        lsx_fail_errno(ft, ENODEV, "device not found");
         return SOX_EOF;
       }
     }
@@ -251,7 +251,7 @@ static int start(sox_format_t* ft)
 
       if (dev == dev_count)
       {
-        lsx_fail_errno(ft, ENODEV, "The requested WaveAudio device was not found.");
+        lsx_fail_errno(ft, ENODEV, "The requested device was not found");
         return SOX_EOF;
       }
     }
@@ -276,7 +276,7 @@ static int start(sox_format_t* ft)
       priv->sample_shift = 2;
       break;
   default:
-      lsx_fail_errno(ft, E2BIG, "Unexpected value for WaveAudio wBitsPerSample: %u", fmt.Format.wBitsPerSample);
+      lsx_fail_errno(ft, E2BIG, "Unexpected value for wBitsPerSample: %u", fmt.Format.wBitsPerSample);
       return SOX_EOF;
   }
 
@@ -308,7 +308,7 @@ static int start(sox_format_t* ft)
   priv->data = lsx_malloc((priv->buf_len * num_buffers) << priv->sample_shift);
   if (!priv->data)
   {
-    lsx_fail_errno(ft, SOX_ENOMEM, "Out of memory.");
+    lsx_fail_errno(ft, SOX_ENOMEM, "Out of memory");
     return SOX_EOF;
   }
 

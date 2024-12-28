@@ -73,7 +73,7 @@ static int startread(sox_format_t * ft)
     }
     switch (fork()) {
     case -1:
-      lsx_fail_errno(ft, errno, "Cannot fork to copy '-' to ffmpeg\n");
+      lsx_fail_errno(ft, errno, "Cannot fork to copy stdin\n");
       return SOX_EOF;
     case 0:
       /* Child: Regurgitate the already-read data into the pipe
@@ -99,7 +99,7 @@ static int startread(sox_format_t * ft)
       /* Make ffmpeg's stdin read the pipe; ft->fp will read from ffmpeg */
       close(pipefd[1]);
       if (dup2(pipefd[0], 0) != 0) {
-	  lsx_fail_errno(ft, errno, "Cannot redirect stdin to ffmpeg's pipe\n");
+	  lsx_fail_errno(ft, errno, "Cannot redirect stdin into pipe\n");
 	  return SOX_EOF;
       }
       close(pipefd[0]);

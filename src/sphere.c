@@ -35,19 +35,19 @@ static int start_read(sox_format_t * ft)
 
   /* Magic header */
   if (lsx_reads(ft, fldname, (size_t)8) || strncmp(fldname, "NIST_1A", (size_t)7) != 0) {
-    lsx_fail_errno(ft, SOX_EHDR, "Sphere header does not begin with magic word `NIST_1A'");
+    lsx_fail_errno(ft, SOX_EHDR, "Header does not begin with magic word `NIST_1A'");
     return (SOX_EOF);
   }
 
   if (lsx_reads(ft, fldsval, (size_t)8)) {
-    lsx_fail_errno(ft, SOX_EHDR, "Error reading Sphere header");
+    lsx_fail_errno(ft, SOX_EHDR, "Error reading header");
     return (SOX_EOF);
   }
 
   /* Determine header size, and allocate a buffer large enough to hold it. */
   sscanf(fldsval, "%lu", &header_size_ul);
   if (header_size_ul < 16) {
-    lsx_fail_errno(ft, SOX_EHDR, "Error reading Sphere header");
+    lsx_fail_errno(ft, SOX_EHDR, "Error reading header");
     return (SOX_EOF);
   }
 
@@ -57,7 +57,7 @@ static int start_read(sox_format_t * ft)
   header_size -= 16;
 
   if (lsx_reads(ft, buf, header_size) == SOX_EOF) {
-    lsx_fail_errno(ft, SOX_EHDR, "Error reading Sphere header");
+    lsx_fail_errno(ft, SOX_EHDR, "Error reading header");
     free(buf);
     return (SOX_EOF);
   }
@@ -83,7 +83,7 @@ static int start_read(sox_format_t * ft)
       else if (!strcasecmp(fldsval, "alaw"))
         encoding = SOX_ENCODING_ALAW;
       else {
-        lsx_fail_errno(ft, SOX_EFMT, "sph: unsupported coding `%s'", fldsval);
+        lsx_fail_errno(ft, SOX_EFMT, "unsupported coding `%s'", fldsval);
         free(buf);
         return SOX_EOF;
       }
@@ -95,7 +95,7 @@ static int start_read(sox_format_t * ft)
       else if (strcmp(fldsval, "10") == 0)    /* Data is big endian. */
         ft->encoding.reverse_bytes = MACHINE_IS_LITTLEENDIAN;
       else if (strcmp(fldsval, "1")) {
-        lsx_fail_errno(ft, SOX_EFMT, "sph: unsupported coding `%s'", fldsval);
+        lsx_fail_errno(ft, SOX_EFMT, "unsupported coding `%s'", fldsval);
         free(buf);
         return SOX_EOF;
       }
@@ -134,7 +134,7 @@ static int start_read(sox_format_t * ft)
 
     if (!memcmp(shorten_check, "ajkg", sizeof(shorten_check))) {
       lsx_fail_errno(ft, SOX_EFMT,
-                     "File uses shorten compression, cannot handle this.");
+                     "File uses shorten compression, cannot handle this");
       return (SOX_EOF);
     }
   }

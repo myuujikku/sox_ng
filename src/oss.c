@@ -155,7 +155,7 @@ static int ossinit(sox_format_t* ft)
 
     if (ioctl(pPriv->device, (size_t) SNDCTL_DSP_RESET, 0) < 0)
     {
-        lsx_fail_errno(ft,SOX_EOF,"Unable to reset OSS device %s. Possibly accessing an invalid file/device", szDevname);
+        lsx_fail_errno(ft,SOX_EOF,"Unable to reset device %s. Possibly accessing an invalid file/device", szDevname);
         return(SOX_EOF);
     }
 

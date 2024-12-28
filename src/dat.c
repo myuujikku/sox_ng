@@ -108,7 +108,7 @@ static size_t sox_datread(sox_format_t * ft, sox_sample_t *buf, size_t nsamp)
         retc = sscanf(&inpstr[inpPtr]," %lg%n", &sampval, &inpPtrInc);
         inpPtr += inpPtrInc;
         if (retc != 1) {
-          lsx_fail_errno(ft,SOX_EOF,"Unable to read sample.");
+          lsx_fail_errno(ft,SOX_EOF,"Unable to read sample");
           return 0;
         }
         *buf++ = SOX_FLOAT_64BIT_TO_SAMPLE(sampval, ft->clips);

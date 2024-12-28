@@ -113,7 +113,7 @@ static int start_write(sox_format_t * ft)
 
   p->codec = WavpackOpenFileOutput(ft_write_b_buf, ft, NULL);
   if (!p->codec) {
-    lsx_fail_errno(ft, SOX_ENOMEM, "WavPack error creating output instance");
+    lsx_fail_errno(ft, SOX_ENOMEM, "error creating output instance");
     return SOX_EOF;
   }
   memset(&config, 0, sizeof(config));

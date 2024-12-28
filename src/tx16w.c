@@ -83,7 +83,7 @@ static int startread(sox_format_t * ft)
     /* If you need to seek around the input file. */
     if (! ft->seekable)
     {
-        lsx_fail_errno(ft,SOX_EOF,"txw input file must be a file, not a pipe");
+        lsx_fail_errno(ft,SOX_EOF,"input must be a file, not a pipe");
         return(SOX_EOF);
     }
 
@@ -237,7 +237,7 @@ static int startwrite(sox_format_t * ft)
     /* If you have to seek around the output file */
     if (! ft->seekable)
     {
-        lsx_fail_errno(ft,SOX_EOF,"Output .txw file must be a file, not a pipe");
+        lsx_fail_errno(ft,SOX_EOF,"Output must be a file, not a pipe");
         return(SOX_EOF);
     }
 
@@ -315,7 +315,7 @@ static int stopwrite(sox_format_t * ft)
     else                            WH.sample_rate = 2;
 
     if (sk->samples_out >= TXMAXLEN) {
-        lsx_warn("Sound too large for TX16W. Truncating, Loop Off");
+        lsx_warn("Sound too large. Truncating, Loop Off");
         AttackLength       = TXMAXLEN/2;
         LoopLength         = TXMAXLEN/2;
     }

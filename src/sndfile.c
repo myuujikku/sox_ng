@@ -373,7 +373,7 @@ static int startread(sox_format_t * ft)
   }
 
   if (!(encoding = sox_enc(sf->sf_info->format, &bits_per_sample))) {
-    lsx_fail_errno(ft, SOX_EFMT, "unsupported sndfile encoding %#x", sf->sf_info->format);
+    lsx_fail_errno(ft, SOX_EFMT, "unsupported encoding %#x", sf->sf_info->format);
     return SOX_EOF;
   }
 

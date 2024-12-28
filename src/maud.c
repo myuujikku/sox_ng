@@ -52,7 +52,7 @@ static int startread(sox_format_t * ft)
         /* read FORM chunk */
         if (lsx_reads(ft, buf, (size_t)4) == SOX_EOF || strncmp(buf, "FORM", (size_t)4) != 0)
         {
-                lsx_fail_errno(ft,SOX_EHDR,"MAUD: header does not begin with magic word `FORM'");
+                lsx_fail_errno(ft,SOX_EHDR,"header does not begin with magic word `FORM'");
                 return (SOX_EOF);
         }
 
@@ -60,7 +60,7 @@ static int startread(sox_format_t * ft)
 
         if (lsx_reads(ft, buf, (size_t)4) == SOX_EOF || strncmp(buf, "MAUD", (size_t)4) != 0)
         {
-                lsx_fail_errno(ft,SOX_EHDR,"MAUD: `FORM' chunk does not specify `MAUD' as type");
+                lsx_fail_errno(ft,SOX_EHDR,"`FORM' chunk does not specify `MAUD' as type");
                 return(SOX_EOF);
         }
 
@@ -78,7 +78,7 @@ static int startread(sox_format_t * ft)
                         lsx_readdw(ft, &chunksize);
                         if (chunksize != 8*4)
                         {
-                            lsx_fail_errno(ft,SOX_EHDR,"MAUD: MHDR chunk has bad size");
+                            lsx_fail_errno(ft,SOX_EHDR,"MHDR chunk has bad size");
                             return(SOX_EOF);
                         }
 
@@ -95,7 +95,7 @@ static int startread(sox_format_t * ft)
                         lsx_readw(ft, &denom);       /* clock devide           */
                         if (denom == 0)
                         {
-                            lsx_fail_errno(ft,SOX_EHDR,"MAUD: frequency denominator == 0, failed");
+                            lsx_fail_errno(ft,SOX_EHDR,"frequency denominator == 0, failed");
                             return (SOX_EOF);
                         }
 
@@ -110,14 +110,14 @@ static int startread(sox_format_t * ft)
                                 ft->signal.channels = 2;
                                 break;
                         default:
-                                lsx_fail_errno(ft,SOX_EFMT,"MAUD: unsupported number of channels in file");
+                                lsx_fail_errno(ft,SOX_EFMT,"unsupported number of channels in file");
                                 return (SOX_EOF);
                         }
 
                         lsx_readw(ft, &chaninf); /* number of channels (mono: 1, stereo: 2, ...) */
                         if (chaninf != ft->signal.channels)
                         {
-                                lsx_fail_errno(ft,SOX_EFMT,"MAUD: unsupported number of channels in file");
+                                lsx_fail_errno(ft,SOX_EFMT,"unsupported number of channels in file");
                             return(SOX_EOF);
                         }
 
@@ -145,7 +145,7 @@ static int startread(sox_format_t * ft)
                         }
                         else
                         {
-                                lsx_fail_errno(ft,SOX_EFMT,"MAUD: unsupported compression type detected");
+                                lsx_fail_errno(ft,SOX_EFMT,"unsupported compression type detected");
                                 return(SOX_EOF);
                         }
 
@@ -160,7 +160,7 @@ static int startread(sox_format_t * ft)
                         if (lsx_readbuf(ft, chunk_buf, (size_t)chunksize)
                             != chunksize)
                         {
-                                lsx_fail_errno(ft,SOX_EOF,"MAUD: Unexpected EOF in ANNO header");
+                                lsx_fail_errno(ft,SOX_EOF,"Unexpected EOF in ANNO header");
                                 return(SOX_EOF);
                         }
                         chunk_buf[chunksize] = '\0';
@@ -181,7 +181,7 @@ static int startread(sox_format_t * ft)
 
         if (strncmp(buf,"MDAT",(size_t)4) != 0)
         {
-            lsx_fail_errno(ft,SOX_EFMT,"MAUD: MDAT chunk not found");
+            lsx_fail_errno(ft,SOX_EFMT,"MDAT chunk not found");
             return(SOX_EOF);
         }
         lsx_readdw(ft, &(p->nsamples));
@@ -201,7 +201,7 @@ static int startwrite(sox_format_t * ft)
         /* If you have to seek around the output file */
         if (! ft->seekable)
         {
-            lsx_fail_errno(ft,SOX_EOF,"Output .maud file must be a file, not a pipe");
+            lsx_fail_errno(ft,SOX_EOF,"Output must be a file, not a pipe");
             return (SOX_EOF);
         }
         p->nsamples = 0x7f000000;
@@ -230,7 +230,7 @@ static int stopwrite(sox_format_t * ft)
 
         if (lsx_seeki(ft, (off_t)0, 0) != 0)
         {
-            lsx_fail_errno(ft,errno,"can't rewind output file to rewrite MAUD header");
+            lsx_fail_errno(ft,errno,"can't rewind output file to rewrite header");
             return(SOX_EOF);
         }
 

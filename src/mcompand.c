@@ -92,7 +92,7 @@ static int sox_mcompand_getopts_1(comp_band_t * l, size_t n, char **argv)
       if (commas % 2 == 0) /* There must be an even number of
                               attack/decay parameters */
       {
-        lsx_fail("compander: Odd number of attack & decay rate parameters");
+        lsx_fail("there must be an even number of attack/decay parameters");
         return (SOX_EOF);
       }
 
@@ -193,11 +193,11 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
     else {
       c->bands[i].topfreq = lsx_parse_frequency(argv[(i<<1)+1],&cp);
       if (*cp) {
-        lsx_fail("bad frequency in args to mcompand");
+        lsx_fail("bad frequency in arguments");
         return SOX_EOF;
       }
       if ((i>0) && (c->bands[i].topfreq < c->bands[i-1].topfreq)) {
-        lsx_fail("mcompand crossover frequencies must be in ascending order.");
+        lsx_fail("crossover frequencies must be in ascending order");
         return SOX_EOF;
       }
     }
@@ -342,7 +342,7 @@ static int sox_mcompand_flow_1(sox_effect_t * effp, priv_t * c, comp_band_t * l,
        cannot report back to flow() how many samples were consumed/emitted.
        Additionally, flow() doesn't know how to handle diverging
        sub-compander delays. */
-    lsx_fail("Using a compander delay within mcompand is currently not supported");
+    lsx_fail("Using a compander delay is currently not supported");
     exit(1);
     /* FIXME */
   }
