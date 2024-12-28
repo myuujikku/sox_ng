@@ -21,7 +21,7 @@
  *                     | Delay control |<-----| modulation speed |
  *                     +---------------+      +------------------+
  *
- * The delay is controled by a sine or triangle modulation.
+ * The delay is controlled by a sine or triangle modulation.
  *
  * Usage:
  *   phaser gain-in gain-out delay decay speed [ -s | -t ]

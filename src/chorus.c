@@ -33,7 +33,7 @@
  *              +-----------------+   +--------------+         +----->obuff
  *
  *
- * The delay i is controled by a sine or triangle modulation i ( 1 <= i <= n).
+ * The delay i is controlled by a sine or triangle modulation i ( 1 <= i <= n).
  *
  * Usage:
  *   chorus gain-in gain-out delay-1 decay-1 speed-1 depth-1 -s1|t1 [
@@ -104,7 +104,7 @@ static int sox_chorus_getopts(sox_effect_t * effp, int argc, char **argv)
         while ( i < argc ) {
                 if ( chorus->num_chorus > MAX_CHORUS )
                 {
-                        lsx_fail("chorus: to many delays, use less than %i delays", MAX_CHORUS);
+                        lsx_fail("chorus: too many delays, use less than %i delays", MAX_CHORUS);
                         return (SOX_EOF);
                 }
                 sscanf(argv[i++], "%f", &chorus->delay[chorus->num_chorus]);
