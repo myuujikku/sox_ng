@@ -9,25 +9,31 @@
  *
  * Flow diagram scheme for n delays ( 1 <= n <= MAX_ECHOS ):
  *
- *                                                    * gain-in  ___
- * ibuff --+--------------------------------------------------->|   |
- *         |                                          * decay 1 |   |
- *         |               +----------------------------------->|   |
- *         |               |                          * decay 2 | + |
- *         |               |             +--------------------->|   |
- *         |               |             |            * decay n |   |
- *         |    _________  |  _________  |     _________   +--->|___|
- *         |   |         | | |         | |    |         |  |      |
- *         +-->| delay 1 |-+-| delay 2 |-+...-| delay n |--+      | * gain-out
- *             |_________|   |_________|      |_________|         |
- *                                                                +----->obuff
+ *    iBuff
+ *      |                                                   ___
+ *      v                                         x gainIn |   | x gainOut
+ *      +--------+-------------------+-------------------->|   |--------+
+ *      |        |                   |                     |   |        |
+ *  ____v___    _v_     ________    _v_     ________       |   |        |
+ * |        |  |   |   |        |  |   |   |        |      |   |        v
+ * | delay1 |  | + |-->| delay2 |  | + |-->| delayn |      |   |      oBuff
+ * |________|  |___|   |________|  |___|   |________|      |   |
+ *      |        ^          |        ^          |          | + |
+ *      |        |          |        |          | x decayn |   |
+ *      |        |          |        |          +--------->|   |
+ *      |        |          |        |            x decay2 |   |
+ *      |        |          +--------+-------------------->|   |
+ *      |        |                                x decay1 |   |
+ *      +--------+---------------------------------------->|   |
+ *                                                         |___|
+ *
  * Usage:
- *   echos gain-in gain-out delay-1 decay-1 [delay-2 decay-2 ... delay-n decay-n]
+ *   echos gain-in gain-out delay1 decay1 [delay2 decay2 ... delayn decayn]
  *
  * Where:
- *   gain-in, decay-1 ... decay-n :  0.0 ... 1.0      volume
+ *   gain-in, decay1 ... decayn :  0.0 ... 1.0      volume
  *   gain-out :  0.0 ...      volume
- *   delay-1 ... delay-n :  > 0.0 msec
+ *   delay1 ... delayn :  > 0.0 msec
  *
  * Note:
  *   when decay is close to 1.0, the samples can begin clipping and the output
@@ -45,7 +51,18 @@
 #define MAX_ECHOS 7     /* 24 bit x ( 1 + MAX_ECHOS ) = */
                         /* 24 bit x 8 = 32 bit !!!      */
 
-/* Private data for SKEL file */
+/* Private data */
+
+/* Instead of having a separate buffer for each delay, one huge buffer is
+ * allocated and the individual delay lines are in it one after the other.
+ * For delay i:
+ * pointer[i] is the offset in delaybuf[] at which its buffer begins
+ * samples[i] is the size of its buffer, proportional to the delay time
+ * counter[i] is the offset from delay_buf[pointer[i]] of the next sample
+ *            to output, that was written its delay time ago, and is also
+ *            where to write new incoming data to be regurgitated
+ *            <delay> microseconds (== samples[i] samples) in the future.
+ */
 typedef struct {
         int     counter[MAX_ECHOS];
         int     num_delays;
@@ -55,8 +72,6 @@ typedef struct {
         ptrdiff_t samples[MAX_ECHOS], pointer[MAX_ECHOS];
         size_t sumsamples;
 } priv_t;
-
-/* Private data for SKEL file */
 
 /*
  * Process options
@@ -68,7 +83,7 @@ static int sox_echos_getopts(sox_effect_t * effp, int argc, char **argv)
 
         echos->num_delays = 0;
 
-  --argc, ++argv;
+        --argc, ++argv;
         if ((argc < 4) || (argc % 2))
           return lsx_usage(effp);
 
@@ -153,7 +168,7 @@ static int sox_echos_start(sox_effect_t * effp)
         if ( sum_in_volume * echos->in_gain > 1.0 / echos->out_gain )
                 lsx_warn("gain-out can cause saturation of output");
 
-  effp->out_signal.length = SOX_UNKNOWN_LEN; /* TODO: calculate actual length */
+        effp->out_signal.length = SOX_UNKNOWN_LEN; /* TODO: calculate actual length */
 
         return (SOX_SUCCESS);
 }
@@ -185,13 +200,11 @@ static int sox_echos_flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sam
                 out = SOX_24BIT_CLIP_COUNT((sox_sample_t) d_out, effp->clips);
                 *obuf++ = out * 256;
                 /* Mix decay of delays and input */
-                for ( j = 0; j < echos->num_delays; j++ ) {
-                        if ( j == 0 )
-                                echos->delay_buf[echos->counter[j] + echos->pointer[j]] = d_in;
-                        else
-                                echos->delay_buf[echos->counter[j] + echos->pointer[j]] =
-                                   echos->delay_buf[echos->counter[j-1] + echos->pointer[j-1]] + d_in;
+                for ( j = echos->num_delays - 1; j > 0; j-- ) {
+                        echos->delay_buf[echos->counter[j] + echos->pointer[j]] =
+                           echos->delay_buf[echos->counter[j-1] + echos->pointer[j-1]] + d_in;
                 }
+                echos->delay_buf[echos->counter[0] + echos->pointer[0]] = d_in;
                 /* Adjust the counters */
                 for ( j = 0; j < echos->num_delays; j++ )
                         echos->counter[j] =
@@ -207,7 +220,7 @@ static int sox_echos_flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sam
 static int sox_echos_drain(sox_effect_t * effp, sox_sample_t *obuf, size_t *osamp)
 {
         priv_t * echos = (priv_t *) effp->priv;
-        double d_in, d_out;
+        double d_out;
         sox_sample_t out;
         int j;
         size_t done;
@@ -215,7 +228,6 @@ static int sox_echos_drain(sox_effect_t * effp, sox_sample_t *obuf, size_t *osam
         done = 0;
         /* drain out delay samples */
         while ( ( done < *osamp ) && ( done < echos->sumsamples ) ) {
-                d_in = 0;
                 d_out = 0;
                 for ( j = 0; j < echos->num_delays; j++ ) {
                         d_out += echos->delay_buf[echos->counter[j] + echos->pointer[j]] * echos->decay[j];
@@ -225,13 +237,11 @@ static int sox_echos_drain(sox_effect_t * effp, sox_sample_t *obuf, size_t *osam
                 out = SOX_24BIT_CLIP_COUNT((sox_sample_t) d_out, effp->clips);
                 *obuf++ = out * 256;
                 /* Mix decay of delays and input */
-                for ( j = 0; j < echos->num_delays; j++ ) {
-                        if ( j == 0 )
-                                echos->delay_buf[echos->counter[j] + echos->pointer[j]] = d_in;
-                        else
-                                echos->delay_buf[echos->counter[j] + echos->pointer[j]] =
-                                   echos->delay_buf[echos->counter[j-1] + echos->pointer[j-1]];
+                for ( j = echos->num_delays - 1; j > 0; j-- ) {
+                        echos->delay_buf[echos->counter[j] + echos->pointer[j]] =
+                           echos->delay_buf[echos->counter[j-1] + echos->pointer[j-1]];
                 }
+                echos->delay_buf[echos->counter[0] + echos->pointer[0]] = 0;
                 /* Adjust the counters */
                 for ( j = 0; j < echos->num_delays; j++ )
                         echos->counter[j] =
