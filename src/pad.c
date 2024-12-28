@@ -127,7 +127,7 @@ static int start(sox_effect_t * effp)
         p->pads[i-1].start * effp->in_signal.channels
           > effp->in_signal.length)
     {
-      lsx_fail("pad position after end of audio");
+      lsx_fail("position is after end of audio");
       return SOX_EOF;
     }
   }

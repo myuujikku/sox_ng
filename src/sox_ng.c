@@ -2360,7 +2360,7 @@ static char parse_gopts_and_fopts(file_t * f)
 #if defined(HAVE_TERMIOS_H) || defined(HAVE_CONIO_H)
         interactive = sox_true; break;
 #else
-        lsx_fail("Interactive mode has not been enabled at compile time.");
+        lsx_fail("Interactive mode has not been enabled at compile time");
         exit(1); break;
 #endif
       case 8: usage_effect(optstate.arg); break;

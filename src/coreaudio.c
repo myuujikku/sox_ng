@@ -105,7 +105,7 @@ static OSStatus RecIOProc(AudioDeviceID inDevice UNUSED,
         copylen = buf->mDataByteSize / sizeof(float);
         nfree = ac->bufsize - ac->bufrdavail - 1;
         if(nfree == 0)
-            lsx_warn("coreaudio: unhandled buffer overrun.  Data discarded.");
+            lsx_warn("unhandled buffer overrun. Data discarded.");
 
         if(copylen > nfree)
             copylen = nfree;

@@ -42,7 +42,7 @@ static int startread(sox_format_t * ft)
 
   /* If you need to seek around the input file. */
   if (!ft->seekable) {
-    lsx_fail_errno(ft, SOX_EOF, "skel inputfile must be a file");
+    lsx_fail_errno(ft, SOX_EOF, "input must be a file");
     return SOX_EOF;
   }
 
@@ -122,15 +122,15 @@ static int startwrite(sox_format_t * ft)
    * just set the length to max value and not fail.
    */
   if (!ft->seekable) {
-    lsx_fail("Output .skel file must be a file, not a pipe");
+    lsx_fail("Output must be a file, not a pipe");
     return SOX_EOF;
   }
 
   if (ft->signal.rate != 44100)
-    lsx_fail("Output .skel file must have a sample rate of 44100Hz");
+    lsx_fail("Output file must have a sample rate of 44100Hz");
 
   if (ft->encoding.bits_per_sample == 0) {
-    lsx_fail("Did not specify a size for .skel output file");
+    lsx_fail("Did not specify a size for output file");
     return SOX_EOF;
   }
 

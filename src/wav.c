@@ -142,7 +142,7 @@ static unsigned short  ImaAdpcmReadBlock(sox_format_t * ft)
         samplesThisBlock = lsx_ima_samples_in((size_t)0, (size_t)ft->signal.channels, bytesRead, (size_t) 0);
         if (samplesThisBlock == 0 || samplesThisBlock > wav->samplesPerBlock)
         {
-            lsx_warn("Premature EOF on .wav input file");
+            lsx_warn("Premature EOF on input file");
             return 0;
         }
     }
@@ -183,7 +183,7 @@ static unsigned short  AdpcmReadBlock(sox_format_t * ft)
         samplesThisBlock = lsx_ms_adpcm_samples_in((size_t)0, (size_t)ft->signal.channels, bytesRead, (size_t)0);
         if (samplesThisBlock == 0 || samplesThisBlock > wav->samplesPerBlock)
         {
-            lsx_warn("Premature EOF on .wav input file");
+            lsx_warn("Premature EOF on input file");
             return 0;
         }
     }
@@ -289,7 +289,7 @@ static size_t wavgsmread(sox_format_t * ft, sox_sample_t *buf, size_t len)
         if (bytes <=0)
             return done;
         if (bytes<65) {
-            lsx_warn("invalid wav gsm frame size: %d bytes",bytes);
+            lsx_warn("invalid GSM frame size: %d bytes",bytes);
             return done;
         }
         /* decode the long 33 byte half */
@@ -411,7 +411,7 @@ static int sndfile_workaround(uint64_t *len, sox_format_t *ft) {
     /* Seek back to where we were, which won't work if you're piping */
     if (lsx_seeki(ft, here, SEEK_SET)!=SOX_SUCCESS)
     {
-        lsx_fail_errno(ft,SOX_EHDR, "Cannot seek backwards to work around possible broken header.");
+        lsx_fail_errno(ft,SOX_EHDR, "Cannot seek backwards to work around possible broken header");
         return SOX_EOF;
     }
     if (memcmp(magic, "fmt ", (size_t)4)==0)
@@ -485,7 +485,7 @@ static int findChunk(sox_format_t * ft, const char *Label, uint64_t *len)
         if (*len > 0 && lsx_seeki(ft, (off_t)(*len), SEEK_CUR) != SOX_SUCCESS)
         {
             lsx_fail_errno(ft,SOX_EHDR,
-                          "WAV chunk appears to have invalid size %" PRIu64 ".", *len);
+                          "chunk appears to have invalid size %" PRIu64 ".", *len);
             return SOX_EOF;
         }
     }
@@ -495,7 +495,7 @@ static int findChunk(sox_format_t * ft, const char *Label, uint64_t *len)
 
 static int wavfail(sox_format_t * ft, const char *format)
 {
-    lsx_fail_errno(ft, SOX_EHDR, "WAV file encoding `%s' is not supported", format);
+    lsx_fail_errno(ft, SOX_EHDR, "file encoding `%s' is not supported", format);
     return SOX_EOF;
 }
 
@@ -534,7 +534,7 @@ static int startread(sox_format_t * ft)
     if (lsx_reads(ft, magic, (size_t)4) == SOX_EOF || (strncmp("RIFF", magic, (size_t)4) != 0 &&
                                              strncmp("RIFX", magic, (size_t)4) != 0 && strncmp("RF64", magic, (size_t)4)!=0 ))
     {
-        lsx_fail_errno(ft,SOX_EHDR,"WAVE: RIFF header not found");
+        lsx_fail_errno(ft,SOX_EHDR,"RIFF header not found");
         return SOX_EOF;
     }
 
@@ -582,14 +582,14 @@ static int startread(sox_format_t * ft)
     /* Now look for the format chunk */
     if (findChunk(ft, "fmt ", &len) == SOX_EOF)
     {
-        lsx_fail_errno(ft,SOX_EHDR,"WAVE chunk fmt not found");
+        lsx_fail_errno(ft,SOX_EHDR,"fmt chunk not found");
         return SOX_EOF;
     }
     wFmtSize = len;
 
     if (wFmtSize < 16)
     {
-        lsx_fail_errno(ft,SOX_EHDR,"WAVE file fmt chunk is too short");
+        lsx_fail_errno(ft,SOX_EHDR,"fmt chunk is too short");
         return SOX_EOF;
     }
 
@@ -612,14 +612,14 @@ static int startread(sox_format_t * ft)
 
       if (wFmtSize < 18)
       {
-        lsx_fail_errno(ft,SOX_EHDR,"WAVE file fmt chunk is too short");
+        lsx_fail_errno(ft,SOX_EHDR,"fmt chunk is too short");
         return SOX_EOF;
       }
       lsx_readw(ft, &extensionSize);
       len -= 2;
       if (extensionSize < 22)
       {
-        lsx_fail_errno(ft,SOX_EHDR,"WAVE file fmt chunk is too short");
+        lsx_fail_errno(ft,SOX_EHDR,"fmt chunk is too short");
         return SOX_EOF;
       }
       lsx_readw(ft, &numberOfValidBits);
@@ -629,7 +629,7 @@ static int startread(sox_format_t * ft)
       len -= 22;
       if (numberOfValidBits > wBitsPerSample)
       {
-        lsx_fail_errno(ft,SOX_EHDR,"WAVE file's number of valid bits exceeds the number of bits per sample");
+        lsx_fail_errno(ft,SOX_EHDR,"number of valid bits exceeds the number of bits per sample");
         return SOX_EOF;
       }
       wav->formatTag = subFormatTag;
@@ -639,7 +639,7 @@ static int startread(sox_format_t * ft)
     switch (wav->formatTag)
     {
     case WAVE_FORMAT_UNKNOWN:
-        lsx_fail_errno(ft,SOX_EHDR,"WAVE file is in unsupported Microsoft Official Unknown format.");
+        lsx_fail_errno(ft,SOX_EHDR,"file is in unsupported Microsoft Official Unknown format");
         return SOX_EOF;
 
     case WAVE_FORMAT_PCM:
@@ -715,7 +715,7 @@ static int startread(sox_format_t * ft)
     case WAVE_FORMAT_G722_ADPCM:
         return wavfail(ft, "G.722 ADPCM");
     default:
-        lsx_fail_errno(ft, SOX_EHDR, "Unknown WAV file encoding (type %x)", wav->formatTag);
+        lsx_fail_errno(ft, SOX_EHDR, "Unknown file encoding (type %x)", wav->formatTag);
         return SOX_EOF;
     }
 
@@ -756,7 +756,7 @@ static int startread(sox_format_t * ft)
 
     if (wExtSize > len)
     {
-        lsx_fail_errno(ft,SOX_EOF,"wave header error: wExtSize inconsistent with wFmtLen");
+        lsx_fail_errno(ft,SOX_EOF,"header error: wExtSize inconsistent with wFmtLen");
         return SOX_EOF;
     }
 
@@ -772,7 +772,7 @@ static int startread(sox_format_t * ft)
 
         if (wBitsPerSample != 4)
         {
-            lsx_fail_errno(ft,SOX_EOF,"Can only handle 4-bit MS ADPCM in wav files");
+            lsx_fail_errno(ft,SOX_EOF,"Can only handle 4-bit MS ADPCM");
             return SOX_EOF;
         }
 
@@ -796,7 +796,7 @@ static int startread(sox_format_t * ft)
 
         if (wExtSize < 4 + 4*wav->nCoefs)
         {
-            lsx_fail_errno(ft,SOX_EOF,"wave header error: wExtSize(%d) too small for nCoefs(%d)", wExtSize, wav->nCoefs);
+            lsx_fail_errno(ft,SOX_EOF,"header error: wExtSize(%d) too small for nCoefs(%d)", wExtSize, wav->nCoefs);
             return SOX_EOF;
         }
 
@@ -829,7 +829,7 @@ static int startread(sox_format_t * ft)
 
         if (wBitsPerSample != 4)
         {
-            lsx_fail_errno(ft,SOX_EOF,"Can only handle 4-bit IMA ADPCM in wav files");
+            lsx_fail_errno(ft,SOX_EOF,"Can only handle 4-bit IMA ADPCM");
             return SOX_EOF;
         }
 
@@ -885,7 +885,7 @@ static int startread(sox_format_t * ft)
     if (!ft->encoding.bits_per_sample || ft->encoding.bits_per_sample == wBitsPerSample)
       ft->encoding.bits_per_sample = wBitsPerSample;
     else
-      lsx_warn("User options overriding size read in .wav header");
+      lsx_warn("User options overriding size in header");
 
     /* Now we have enough information to set default encodings. */
     switch (bytespersample)
@@ -906,7 +906,7 @@ static int startread(sox_format_t * ft)
       break;
 
     default:
-      lsx_fail_errno(ft,SOX_EFMT,"Sorry, don't understand .wav size");
+      lsx_fail_errno(ft,SOX_EFMT,"Sorry, don't understand size");
       return SOX_EOF;
     }
 
@@ -919,7 +919,7 @@ static int startread(sox_format_t * ft)
     /* Now look for the wave data chunk */
     if (findChunk(ft, "data", &len) == SOX_EOF)
     {
-        lsx_fail_errno(ft, SOX_EOF, "Could not find data chunk.");
+        lsx_fail_errno(ft, SOX_EOF, "Could not find data chunk");
         return SOX_EOF;
     }
 
@@ -968,7 +968,7 @@ static int startread(sox_format_t * ft)
     default:
         if (ft->encoding.bits_per_sample == 0)
         {
-            lsx_fail_errno(ft, SOX_EHDR, "WAV file bits per sample is zero");
+            lsx_fail_errno(ft, SOX_EHDR, "Bits per sample is zero");
             return SOX_EOF;
         }
         wav->numSamples = div_bits(qwDataLength, ft->encoding.bits_per_sample) / ft->signal.channels;
@@ -1197,7 +1197,7 @@ static size_t read_samples(sox_format_t * ft, sox_sample_t *buf, size_t len)
 
             done = wavgsmread(ft, buf, len);
             if (done == 0 && wav->numSamples != 0 && !wav->ignoreSize)
-                lsx_warn("Premature EOF on .wav input file");
+                lsx_warn("Premature EOF on input file");
         break;
 
         default: /* assume PCM or float encoding */
@@ -1208,7 +1208,7 @@ static size_t read_samples(sox_format_t * ft, sox_sample_t *buf, size_t len)
             /* If software thinks there are more samples but I/O */
             /* says otherwise, let the user know about this.     */
             if (done == 0 && wav->numSamples != 0 && !wav->ignoreSize)
-                lsx_warn("Premature EOF on .wav input file");
+                lsx_warn("Premature EOF on input file");
         }
 
         /* Only return buffers that contain a totally playable
@@ -1272,7 +1272,7 @@ static int startwrite(sox_format_t * ft)
     wav->numSamples = 0;
     wav->dataLength = 0;
     if (!ft->signal.length && !ft->seekable)
-        lsx_warn("Length in output .wav header will be wrong since can't seek to fix it");
+        lsx_warn("Length in output header will be wrong since can't seek to fix it");
 
     rc = wavwritehdr(ft, 0);  /* also calculates various wav->* info */
     if (rc != 0)
@@ -1699,7 +1699,7 @@ static int stopwrite(sox_format_t * ft)
 
         if (lsx_seeki(ft, (off_t)0, SEEK_SET) != 0)
         {
-                lsx_fail_errno(ft,SOX_EOF,"Can't rewind output file to rewrite .wav header.");
+                lsx_fail_errno(ft,SOX_EOF,"Can't rewind output file to rewrite header");
                 return SOX_EOF;
         }
 

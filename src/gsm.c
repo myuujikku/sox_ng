@@ -71,7 +71,7 @@ static int gsmstart_rw(sox_format_t * ft, int w)
         p->channels = ft->signal.channels;
         if (p->channels > MAXCHANS || p->channels <= 0)
         {
-                lsx_fail_errno(ft,SOX_EFMT,"gsm: channels(%d) must be in 1-16", ft->signal.channels);
+                lsx_fail_errno(ft,SOX_EFMT,"channels(%d) must be in 1-16", ft->signal.channels);
                 return(SOX_EOF);
         }
 
@@ -79,7 +79,7 @@ static int gsmstart_rw(sox_format_t * ft, int w)
                 p->handle[ch] = gsm_create();
                 if (!p->handle[ch])
                 {
-                        lsx_fail_errno(ft,errno,"unable to create GSM stream");
+                        lsx_fail_errno(ft,errno,"unable to create stream");
                         return (SOX_EOF);
                 }
         }
@@ -136,7 +136,7 @@ static size_t sox_gsmread(sox_format_t * ft, sox_sample_t *buf, size_t samp)
                         gbuff = p->sampleTop;
                         if (gsm_decode(p->handle[ch], p->frames + ch*FRAMESIZE, gbuff) < 0)
                         {
-                                lsx_fail_errno(ft,errno,"error during GSM decode");
+                                lsx_fail_errno(ft,errno,"error during decode");
                                 return (0);
                         }
 

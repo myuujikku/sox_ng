@@ -39,7 +39,7 @@ static int start_read(sox_format_t * ft)
       lsx_readw (ft, &parmKind        )) return SOX_EOF;
   if (parmKind != Waveform) {
     int n = min(parmKind & 077, Unknown);
-    lsx_fail_errno(ft, SOX_EFMT, "unsupported HTK type `%s' (0%o)", str[n], parmKind);
+    lsx_fail_errno(ft, SOX_EFMT, "unsupported type `%s' (0%o)", str[n], parmKind);
     return SOX_EOF;
   }
   return lsx_check_read_params(ft, 1, 1e7 / period_100ns, SOX_ENCODING_SIGN2,

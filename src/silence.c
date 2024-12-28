@@ -203,12 +203,12 @@ static int sox_silence_getopts(sox_effect_t * effp, int argc, char **argv)
         if ((silence->start_unit == '%') && ((silence->start_threshold < 0.0)
             || (silence->start_threshold > 100.0)))
         {
-            lsx_fail("silence threshold should be between 0.0 and 100.0 %%");
+            lsx_fail("threshold should be between 0.0 and 100.0 %%");
             return (SOX_EOF);
         }
         if ((silence->start_unit == 'd') && (silence->start_threshold >= 0.0))
         {
-            lsx_fail("silence threshold should be less than 0.0 dB");
+            lsx_fail("threshold should be less than 0.0 dB");
             return(SOX_EOF);
         }
     }
@@ -223,12 +223,12 @@ static int sox_silence_getopts(sox_effect_t * effp, int argc, char **argv)
         if ((silence->stop_unit == '%') && ((silence->stop_threshold < 0.0) ||
                     (silence->stop_threshold > 100.0)))
         {
-            lsx_fail("silence threshold should be between 0.0 and 100.0 %%");
+            lsx_fail("threshold should be between 0.0 and 100.0 %%");
             return (SOX_EOF);
         }
         if ((silence->stop_unit == 'd') && (silence->stop_threshold >= 0.0))
         {
-            lsx_fail("silence threshold should be less than 0.0 dB");
+            lsx_fail("threshold should be less than 0.0 dB");
             return(SOX_EOF);
         }
     }

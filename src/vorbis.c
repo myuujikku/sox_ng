@@ -175,7 +175,7 @@ static int refill_buffer(priv_t * vb)
     if (num_read == 0)
       return (BUF_EOF);
     else if (num_read == OV_HOLE)
-      lsx_warn("Warning: hole in stream; probably harmless");
+      lsx_warn("hole in stream; probably harmless");
     else if (num_read < 0)
       return (BUF_ERROR);
     else

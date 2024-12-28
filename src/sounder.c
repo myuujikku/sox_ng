@@ -25,7 +25,7 @@ static int start_read(sox_format_t * ft)
   if (lsx_readw(ft, &type) || lsx_readw(ft, &rate) || lsx_skipbytes(ft, (size_t) 4))
     return SOX_EOF;
   if (type) {
-    lsx_fail_errno(ft, SOX_EHDR, "invalid Sounder header");
+    lsx_fail_errno(ft, SOX_EHDR, "invalid header");
     return SOX_EOF;
   }
   return lsx_check_read_params(ft, 1, (sox_rate_t)rate, SOX_ENCODING_UNSIGNED, 8, (uint64_t)0, sox_true);

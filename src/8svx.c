@@ -51,7 +51,7 @@ static int startread(sox_format_t * ft)
 
         if (! ft->seekable)
         {
-                lsx_fail_errno(ft,SOX_EINVAL,"8svx input file must be a file, not a pipe");
+                lsx_fail_errno(ft,SOX_EINVAL,"input file must be a file, not a pipe");
                 return (SOX_EOF);
         }
         rate = 0;

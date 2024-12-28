@@ -149,7 +149,7 @@ static size_t read_samples(sox_format_t *ft, sox_sample_t *buf, size_t nsamp)
 
   if (rc < 0)
   {
-    lsx_fail_errno(ft, SOX_EPERM, "error reading from pulse audio device: %s", pa_strerror(error));
+    lsx_fail_errno(ft, SOX_EPERM, "error reading from audio device: %s", pa_strerror(error));
     return SOX_EOF;
   }
   else
@@ -175,7 +175,7 @@ static size_t write_samples(sox_format_t *ft, const sox_sample_t *buf, size_t ns
 
   if (rc < 0)
   {
-    lsx_fail_errno(ft, SOX_EPERM, "error writing to pulse audio device: %s", pa_strerror(error));
+    lsx_fail_errno(ft, SOX_EPERM, "error writing to audio device: %s", pa_strerror(error));
     return SOX_EOF;
   }
 

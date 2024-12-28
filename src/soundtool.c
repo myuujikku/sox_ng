@@ -33,7 +33,7 @@ static int start_read(sox_format_t * ft)
       lsx_readchars(ft, comments, text_field_len))
     return SOX_EOF;
   if (memcmp(ID1, id1, sizeof(id1))) {
-    lsx_fail_errno(ft, SOX_EHDR, "soundtool: can't find SoundTool identifier");
+    lsx_fail_errno(ft, SOX_EHDR, "can't find SoundTool identifier");
     return SOX_EOF;
   }
   comments[text_field_len] = '\0'; /* Be defensive against incorrect files */

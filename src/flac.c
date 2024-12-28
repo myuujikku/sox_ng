@@ -157,11 +157,11 @@ static FLAC__StreamDecoderWriteStatus decoder_write_callback(FLAC__StreamDecoder
   (void) flac;
 
   if (frame->header.bits_per_sample != p->bits_per_sample || frame->header.channels != p->channels || frame->header.sample_rate != p->sample_rate) {
-    lsx_fail_errno(ft, SOX_EINVAL, "FLAC ERROR: parameters differ between frame and header");
+    lsx_fail_errno(ft, SOX_EINVAL, "parameters differ between frame and header");
     return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
   }
   if (dst == NULL) {
-    lsx_warn("FLAC ERROR: entered write callback without a buffer (SoX bug)");
+    lsx_warn("entered write callback without a buffer (SoX bug)");
     return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
   }
 
@@ -212,7 +212,7 @@ static int start_read(sox_format_t * const ft)
   lsx_debug("API version %u", FLAC_API_VERSION_CURRENT);
   p->decoder = FLAC__stream_decoder_new();
   if (p->decoder == NULL) {
-    lsx_fail_errno(ft, SOX_ENOMEM, "FLAC ERROR creating the decoder instance");
+    lsx_fail_errno(ft, SOX_ENOMEM, "cannot create the decoder instance");
     return SOX_EOF;
   }
 
@@ -229,17 +229,17 @@ static int start_read(sox_format_t * const ft)
       decoder_metadata_callback,
       decoder_error_callback,
       ft) != FLAC__STREAM_DECODER_INIT_STATUS_OK){
-    lsx_fail_errno(ft, SOX_EHDR, "FLAC ERROR initialising decoder");
+    lsx_fail_errno(ft, SOX_EHDR, "cannot initialize decoder");
     return SOX_EOF;
   }
 
   if (!FLAC__stream_decoder_process_until_end_of_metadata(p->decoder)) {
-    lsx_fail_errno(ft, SOX_EHDR, "FLAC ERROR whilst decoding metadata");
+    lsx_fail_errno(ft, SOX_EHDR, "Error whilst decoding metadata");
     return SOX_EOF;
   }
 
   if (FLAC__stream_decoder_get_state(p->decoder) > FLAC__STREAM_DECODER_END_OF_STREAM) {
-    lsx_fail_errno(ft, SOX_EHDR, "FLAC ERROR during metadata decoding");
+    lsx_fail_errno(ft, SOX_EHDR, "Error during metadata decoding");
     return SOX_EOF;
   }
 
@@ -393,7 +393,7 @@ static int start_write(sox_format_t * const ft)
     if (compression_level != ft->encoding.compression ||
         compression_level > MAX_COMPRESSION) {
       lsx_fail_errno(ft, SOX_EINVAL,
-                 "FLAC compression level must be a whole number from 0 to %i",
+                 "compression level must be a whole number from 0 to %i",
                  MAX_COMPRESSION);
       return SOX_EOF;
     }
@@ -401,7 +401,7 @@ static int start_write(sox_format_t * const ft)
 
   p->encoder = FLAC__stream_encoder_new();
   if (p->encoder == NULL) {
-    lsx_fail_errno(ft, SOX_ENOMEM, "FLAC ERROR creating the encoder instance");
+    lsx_fail_errno(ft, SOX_ENOMEM, "Error creating the encoder instance");
     return SOX_EOF;
   }
 
@@ -472,12 +472,12 @@ static int start_write(sox_format_t * const ft)
 
     p->metadata[p->num_metadata] = FLAC__metadata_object_new(FLAC__METADATA_TYPE_SEEKTABLE);
     if (p->metadata[p->num_metadata] == NULL) {
-      lsx_fail_errno(ft, SOX_ENOMEM, "FLAC ERROR creating the encoder seek table template");
+      lsx_fail_errno(ft, SOX_ENOMEM, "Error creating the encoder seek table template");
       return SOX_EOF;
     }
     {
       if (!FLAC__metadata_object_seektable_template_append_spaced_points_by_samples(p->metadata[p->num_metadata], (unsigned)(10 * ft->signal.rate + .5), (FLAC__uint64)(ft->signal.length/ft->signal.channels))) {
-        lsx_fail_errno(ft, SOX_ENOMEM, "FLAC ERROR creating the encoder seek table points");
+        lsx_fail_errno(ft, SOX_ENOMEM, "Error creating the encoder seek table points");
         return SOX_EOF;
       }
     }
@@ -569,7 +569,7 @@ static int stop_write(sox_format_t * const ft)
     FLAC__metadata_object_delete(p->metadata[i]);
   free(p->decoded_samples);
   if (state != FLAC__STREAM_ENCODER_OK) {
-    lsx_fail_errno(ft, SOX_EINVAL, "FLAC ERROR: failed to encode to end of stream");
+    lsx_fail_errno(ft, SOX_EINVAL, "failed to encode to end of stream");
     return SOX_EOF;
   }
   return SOX_SUCCESS;

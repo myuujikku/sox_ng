@@ -80,7 +80,7 @@ static int startread(sox_format_t * ft)
 
   for (i = 0; id[i].desc && memcmp(magic, id[i].str, sizeof(magic)); ++i);
   if (!id[i].desc) {
-    lsx_fail_errno(ft, SOX_EHDR, "sf: can't find IRCAM identifier");
+    lsx_fail_errno(ft, SOX_EHDR, "can't find IRCAM identifier");
     return SOX_EOF;
   }
   lsx_report("found %s identifier", id[i].desc);
@@ -90,7 +90,7 @@ static int startread(sox_format_t * ft)
     return SOX_EOF;
 
   if (!(encoding = sox_enc(ft_encoding, &bits_per_sample))) {
-    lsx_fail_errno(ft, SOX_EFMT, "sf: unsupported encoding %#x)", ft_encoding);
+    lsx_fail_errno(ft, SOX_EFMT, "unsupported encoding %#x)", ft_encoding);
     return SOX_EOF;
   }
   do {

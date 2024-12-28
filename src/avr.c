@@ -66,7 +66,7 @@ static int startread(sox_format_t * ft)
   lsx_reads(ft, avr->magic, (size_t)4);
 
   if (strncmp (avr->magic, AVR_MAGIC, (size_t)4)) {
-    lsx_fail_errno(ft,SOX_EHDR,"AVR: unknown header");
+    lsx_fail_errno(ft,SOX_EHDR,"unknown header");
     return(SOX_EOF);
   }
 
@@ -88,7 +88,7 @@ static int startread(sox_format_t * ft)
     ft->encoding.bits_per_sample = 16;
   }
   else {
-    lsx_fail_errno(ft,SOX_EFMT,"AVR: unsupported sample resolution");
+    lsx_fail_errno(ft,SOX_EFMT,"unsupported sample resolution");
     return(SOX_EOF);
   }
 
@@ -142,7 +142,7 @@ static int startwrite(sox_format_t * ft)
   int rc;
 
   if (!ft->seekable) {
-    lsx_fail_errno(ft,SOX_EOF,"AVR: file is not seekable");
+    lsx_fail_errno(ft,SOX_EOF,"file is not seekable");
     return(SOX_EOF);
   }
 
@@ -171,7 +171,7 @@ static int startwrite(sox_format_t * ft)
     lsx_writew (ft, 0xffff);
   }
   else {
-    lsx_fail_errno(ft,SOX_EFMT,"AVR: number of channels not supported");
+    lsx_fail_errno(ft,SOX_EFMT,"number of channels not supported");
     return(0);
   }
 
@@ -183,7 +183,7 @@ static int startwrite(sox_format_t * ft)
     lsx_writew (ft, 16);
   }
   else {
-    lsx_fail_errno(ft,SOX_EFMT,"AVR: unsupported sample resolution");
+    lsx_fail_errno(ft,SOX_EFMT,"unsupported sample resolution");
     return(SOX_EOF);
   }
 
@@ -195,7 +195,7 @@ static int startwrite(sox_format_t * ft)
     lsx_writew (ft, 0);
   }
   else {
-    lsx_fail_errno(ft,SOX_EFMT,"AVR: unsupported encoding");
+    lsx_fail_errno(ft,SOX_EFMT,"unsupported encoding");
     return(SOX_EOF);
   }
 
