@@ -996,9 +996,7 @@ cI lI cI lI
 c l c l.
 dB FSD	Display	dB FSD	Display
 \-25	\-	\-11	====
-\-23	T{
-=
-T}	\-9	====\-
+\-23	=	\-9	====\-
 \-21	=\-	\-7	=====
 \-19	==	\-5	=====\-
 \-17	==\-	\-3	======
@@ -2225,19 +2223,19 @@ center;
 cI cI cI lI
 cI c c l.
 \ 	Range	Default	Description
-delay	0 \- 30	0	Base delay in milliseconds.
-depth	0 \- 10	2	Added swept delay in milliseconds.
-regen	\-95 \- 95	0	T{
+delay	0\-30	0	Base delay in milliseconds
+depth	0\-10	2	Added swept delay in milliseconds
+regen	\-95\-95	0	T{
 .na
-Percentage regeneration (delayed signal feedback).
+Percentage regeneration (delayed signal feedback)
 T}
-width	0 \- 100	71	T{
+width	0\-100	71	T{
 .na
-Percentage of delayed signal mixed with original.
+Percentage of delayed signal mixed with original
 T}
-speed	0\*d01 \- 10	0\*d5	Sweeps per second (Hz).
-shape	\ 	sin	Swept wave shape: \fBsine\fR\^|\^\fBtriangle\fR.
-phase	0 \- 100	25	T{
+speed	0\*d01\-10	0\*d5	Sweeps per second (Hz)
+shape	\ 	sin	Swept wave shape: \fBsine\fR\^|\^\fBtriangle\fR
+phase	0\-100	25	T{
 .na
 Swept wave percentage phase-shift for multi-channel (e.g. stereo) flange;
 0 = 100 = same phase on each channel.
@@ -2900,7 +2898,13 @@ As `p', but invert the audio
 T}
 v	voltage multiplier	T{
 .na
-1 = no change, 0\*d5 \(~= 6dB attenuation, 2 \(~= 6dB gain, \-1 = invert
+1 = no change
+.br
+0\*d5 \(~= 6dB attenuation
+.br
+2 \(~= 6dB gain
+.br
+\-1 = invert
 T}
 .TE
 .DT
@@ -3586,27 +3590,38 @@ sample in the audio,
 as follows:
 .TS
 center;
-lI l l.
-Samples read	\fIn\fR\^\(mu\^\fIc\fR	\ 
+lI lx .
+Samples read	\fIn\fR\^\(mu\^\fIc\fR
 Length (seconds)	\fIn\fR\^\(di\^\fIr\fR
-Scaled by	\ 	See \-s below.
-Maximum amplitude	max(\fIx\s-2\dk\u\s0\fR)	T{
+Scaled by	See \-s below.
+Maximum amplitude	T{
+max(\fIx\s-2\dk\u\s0\fR)
+.br
 The maximum sample value in the audio; usually this will be a positive number.
 T}
-Minimum amplitude	min(\fIx\s-2\dk\u\s0\fR)	T{
+Minimum amplitude	T{
+min(\fIx\s-2\dk\u\s0\fR)
+.br
 The minimum sample value in the audio; usually this will be a negative number.
 T}
 Midline amplitude	\(12\^min(\fIx\s-2\dk\u\s0\fR)\^+\^\(12\^max(\fIx\s-2\dk\u\s0\fR)
-Mean norm	\(S1/\s-2n\s+2\^\(*S\^\^\(br\^\fIx\s-2\dk\u\s0\fR\^\(br\^	T{
+Mean norm	T{
+\(S1/\s-2n\s+2\^\(*S\^\^\(br\^\fIx\s-2\dk\u\s0\fR\^\(br\^
+.br
 The average of the absolute value of each sample in the audio.
 T}
-Mean amplitude	\(S1/\s-2n\s+2\^\(*S\^\fIx\s-2\dk\u\s0\fR	T{
-The average of each sample in the audio.  If this figure is non-zero, then it indicates the
+Mean amplitude	T{
+\(S1/\s-2n\s+2\^\(*S\^\fIx\s-2\dk\u\s0\fR
+.br
+The average of each sample in the audio.
+If this figure is non-zero, then it indicates the
 presence of a D.C. offset (which could be removed using the
 .B dcshift
 effect).
 T}
-RMS amplitude	\(sr(\(S1/\s-2n\s+2\^\(*S\^\fIx\s-2\dk\u\s0\fR\(S2)	T{
+RMS amplitude	T{
+\(sr(\(S1/\s-2n\s+2\^\(*S\^\fIx\s-2\dk\u\s0\fR\(S2)
+.br
 The level of a D.C. signal that would have the same power
 as the audio's average power.
 T}
@@ -3614,8 +3629,8 @@ Maximum delta	max(\^\(br\^\fIx\s-2\dk\u\s0\fR\^\-\^\fIx\s-2\dk\-1\u\s0\fR\^\(br\
 Minimum delta	min(\^\(br\^\fIx\s-2\dk\u\s0\fR\^\-\^\fIx\s-2\dk\-1\u\s0\fR\^\(br\^)
 Mean delta	\(S1/\s-2n\-1\s+2\^\(*S\^\^\(br\^\fIx\s-2\dk\u\s0\fR\^\-\^\fIx\s-2\dk\-1\u\s0\fR\^\(br\^
 RMS delta	\(sr(\(S1/\s-2n\-1\s+2\^\(*S\^(\fIx\s-2\dk\u\s0\fR\^\-\^\fIx\s-2\dk\-1\u\s0\fR)\(S2)
-Rough frequency	\ 	In Hz.
-Volume Adjustment	\ 	T{
+Rough frequency	In Hz.
+Volume Adjustment	T{
 The parameter to the
 .B vol
 effect which would make the audio as loud as possible without clipping.
