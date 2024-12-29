@@ -9,7 +9,7 @@
  *
  * Flow diagram scheme for n delays ( 1 <= n <= MAX_ECHOS ):
  *
- *        * gain-in                                              ___
+ *                                                    * gain-in  ___
  * ibuff -----------+------------------------------------------>|   |
  *                  |       _________                           |   |
  *                  |      |         |                * decay 1 |   |
