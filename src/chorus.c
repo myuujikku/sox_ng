@@ -177,12 +177,12 @@ static int sox_chorus_start(sox_effect_t * effp)
                 }
                 if ( chorus->depth[i] < 0.0 )
                 {
-                        lsx_fail("delay must be more positive!");
+                        lsx_fail("depth must be more positive!");
                         return (SOX_EOF);
                 }
                 if ( chorus->depth[i] > 10.0 )
                 {
-                    lsx_fail("delay must be less than 10.0 msec!");
+                    lsx_fail("depth must be less than 10.0 msec!");
                     return (SOX_EOF);
                 }
                 if ( chorus->decay[i] < 0.0 )
