@@ -11,7 +11,7 @@
  *
  * Flow diagram scheme for n delays ( 1 <= n <= MAX_CHORUS ):
  *
- *        * gain-in                                           ___
+ *                                                * gain-in   ___
  * ibuff -----+--------------------------------------------->|   |
  *            |      _________                               |   |
  *            |     |         |                   * decay 1  |   |
