@@ -1698,24 +1698,23 @@ See also
 for an effect that allows channels to be mixed/selected arbitrarily.
 .TP
 \fBchorus \fIgain-in gain-out\fR <\fIdelay decay speed depth \fB\-s\fR\^|\^\fB\-t\fR>
-Add a chorus effect to the audio.  This can make a single vocal sound
-like a chorus, but can also be applied to instrumentation.
+Add a chorus effect to the audio.  This can make a single voice sound
+like a chorus but can also be applied to instrumentation.
 .SP
-Chorus resembles an echo effect with a short delay, but
-whereas with echo the delay is constant, with chorus, it
-is varied using sinusoidal or triangular modulation.  The modulation
-depth defines the range the modulated delay is played before or after the
-delay. Hence the delayed sound will sound slower or faster, that is the delayed
-sound tuned around the original one, like in a chorus where some vocals are
-slightly off key.
-See [3] for more discussion of the chorus effect.
+Chorus resembles an \fBecho\fR effect with a short delay but,
+while an echo's delay is constant, a chorus' delay
+varies by a sinusoidal or triangular modulation wave.
 .SP
-Each four-tuple parameter
-delay/decay/speed/depth gives the delay in milliseconds
-and the decay (relative to gain-in) with a modulation
-speed in Hz using depth in milliseconds.
-The modulation is either sinusoidal (\fB\-s\fR) or triangular
-(\fB\-t\fR).  Gain-out is the volume of the output.
+See [3] for further discussion of the chorus effect.
+.SP
+The parameters for each chorus give its fixed delay in milliseconds,
+the volume of the delayed output w.r.t. to the input,
+the frequency in Hz of the modulation, the depth of the
+modulation in milliseconds \- each delay ranges from
+the fixed \fIdelay\fR to \fIdelay\fR\ \(pl\ \fIdepth\fR \-
+and whether the modulation is sinusoidal (\fB\-s\fR) or triangular (\fB\-t\fR).
+\fIGain-out\fR is then applied to the sum of the input scaled by \fIgain-in\fP
+and the outputs from the delays.
 .SP
 A typical delay is around 40ms to 60ms; the modulation speed is best
 near 0\*d25Hz and the modulation depth around 2ms.
@@ -1729,7 +1728,7 @@ Two delays of the original samples:
    play_ng guitar1.wav chorus 0.6 0.9 50 0.4 0.25 2 \-t \\
 	 60 0.32 0.4 1.3 \-s
 .EE
-A fuller sounding chorus (with three additional delays):
+A fuller-sounding chorus (with three additional delays):
 .EX
 .ne 2
    play_ng guitar1.wav chorus 0.5 0.9 50 0.4 0.25 2 \-t \\
