@@ -5,41 +5,6 @@
  * any purpose.  This copyright notice must be maintained.
  * Juergen Mueller And Sundry Contributors are not responsible for
  * the consequences of using this software.
- *
- *
- * Flow diagram scheme for n delays ( 1 <= n <= MAX_ECHOS ):
- *
- *                                                    * gain-in  ___
- * ibuff -----------+------------------------------------------>|   |
- *                  |       _________                           |   |
- *                  |      |         |                * decay 1 |   |
- *                  +----->| delay 1 |------------------------->|   |
- *                  |      |_________|                          |   |
- *                  |            _________                      | + |
- *                  |           |         |           * decay 2 |   |
- *                  +---------->| delay 2 |-------------------->|   |
- *                  |           |_________|                     |   |
- *                  :                 _________                 |   |
- *                  |                |         |      * decay n |   |
- *                  +--------------->| delay n |--------------->|___|
- *                                   |_________|                  |
- *                                                                | * gain-out
- *                                                                |
- *                                                                +----->obuff
- * Usage:
- *   echo gain-in gain-out delay-1 decay-1 [delay-2 decay-2 ... delay-n decay-n]
- *
- * Where:
- *   gain-in, decay-1 ... decay-n :  0.0 ... 1.0      volume
- *   gain-out :  0.0 ...      volume
- *   delay-1 ... delay-n :  > 0.0 msec
- *
- * Note:
- *   when decay is close to 1.0, the samples can begin clipping and the output
- *   can saturate!
- *
- * Hint:
- *   1 / out-gain > gain-in ( 1 + decay-1 + ... + decay-n )
  */
 
 #include "sox_i.h"
@@ -247,19 +212,42 @@ static int sox_echo_stop(sox_effect_t * effp)
         return (SOX_SUCCESS);
 }
 
-static sox_effect_handler_t sox_echo_effect = {
-  "echo",
-  "gain-in gain-out delay decay [ delay decay ... ]",
-  SOX_EFF_LENGTH | SOX_EFF_GAIN,
-  sox_echo_getopts,
-  sox_echo_start,
-  sox_echo_flow,
-  sox_echo_drain,
-  sox_echo_stop,
-  NULL, sizeof(priv_t)
-};
-
 const sox_effect_handler_t *lsx_echo_effect_fn(void)
 {
-    return &sox_echo_effect;
+  static char usage[] = "\
+gain-in gain-out <delay decay>\n\
+                                                     * gain-in  ___\n\
+  ibuff -----------+------------------------------------------>|   |\n\
+                   |       _________                           |   |\n\
+                   |      |         |                * decay 1 |   |\n\
+                   +----->| delay 1 |------------------------->|   |\n\
+                   |      |_________|                          |   |\n\
+                   |            _________                      | + |\n\
+                   |           |         |           * decay 2 |   |\n\
+                   +---------->| delay 2 |-------------------->|   |\n\
+                   |           |_________|                     |   |\n\
+                   :                 _________                 |   |\n\
+                   |                |         |      * decay n |   |\n\
+                   +--------------->| delay n |--------------->|___|\n\
+                                    |_________|                  |\n\
+                                                                 | * gain-out\n\
+                                                                 |\n\
+                                                                 +----->obuff\n\
+         RANGE  DESCRIPTION\n\
+gain-in   0-1   Proportion of input signal delivered clean to adder\n\
+gain-out  0-1   Final volume adjustment\n\
+delay     0-    Delay in milliseconds\n\
+decay     0-1   Proportion of delayed signal delivered to adder";
+
+  static sox_effect_handler_t handler = {
+    "echo", usage, SOX_EFF_LENGTH | SOX_EFF_GAIN,
+    sox_echo_getopts,
+    sox_echo_start,
+    sox_echo_flow,
+    sox_echo_drain,
+    sox_echo_stop,
+    NULL, sizeof(priv_t)
+  };
+
+  return &handler;
 }

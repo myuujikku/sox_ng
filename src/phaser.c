@@ -1,44 +1,10 @@
-/* Effect: phaser     Copyright (C) 1998 Juergen Mueller And Sundry Contributors
+/* SoX flanger effect
+ * Copyright (C) 24 August 1998, Juergen Mueller And Sundry Contributors
  *
  * This source code is freely redistributable and may be used for
  * any purpose.  This copyright notice must be maintained.
  * Juergen Mueller And Sundry Contributors are not responsible for
  * the consequences of using this software.
- *
- * Flow diagram scheme:                                          August 24, 1998
- *
- *        * gain-in  +---+                     * gain-out
- * ibuff ----------->|   |----------------------------------> obuff
- *                   | + |  * decay
- *                   |   |<------------+
- *                   +---+  _______    |
- *                     |   |       |   |
- *                     +---| delay |---+
- *                         |_______|
- *                            /|\
- *                             |
- *                     +---------------+      +------------------+
- *                     | Delay control |<-----| modulation speed |
- *                     +---------------+      +------------------+
- *
- * The delay is controlled by a sine or triangle modulation.
- *
- * Usage:
- *   phaser gain-in gain-out delay decay speed [ -s | -t ]
- *
- * Where:
- *   gain-in, decay : 0.0 .. 1.0             volume
- *   gain-out       : 0.0 ..                 volume
- *   delay          : 0.0 .. 5.0 msec
- *   speed          : 0.1 .. 2.0 Hz          modulation speed
- *   -s             : modulation by sine     (default)
- *   -t             : modulation by triangle
- *
- * Note:
- *   When decay is close to 1.0, the samples may begin clipping or the output
- *   can saturate!  Hint:
- *     in-gain < (1 - decay * decay)
- *     1 / out-gain > gain-in / (1 - decay)
  */
 
 #include "sox_i.h"
@@ -138,9 +104,39 @@ static int stop(sox_effect_t * effp)
 
 sox_effect_handler_t const * lsx_phaser_effect_fn(void)
 {
+  static char usage[] = "\
+gain-in gain-out delay decay speed -s|-t\n\
+\n\
+   * gain-in  ___  * gain-out\n\
+  ---------->|   |-----------> Out\n\
+  In         | + | * decay\n\
+             |___|<-----------+\n\
+               |    _______   |\n\
+               |   |       |  |\n\
+               +-->| delay |--+\n\
+                   |_______|\n\
+                       ^\n\
+                       |\n\
+               +---------------+\n\
+       speed-->| sine/reiangle |\n\
+               +---------------+\n\
+\n\
+           RANGE  DEFAULT  DESCRIPTION\n\
+  gain-in   0-1     0.4    Proportion of input delivered to output and delay\n\
+  decay     0-1     0.4    Proportion of delay that is fed back\n\
+  gain-out  0-      0.74   Final output volume adjustment\n\
+  delay     0-5     3.0    Delay in milliseconds\n\
+  speed   0.1-2     0.5    Modulation speed in Hz\n\
+  -s                       Sinusoidal modulation\n\
+  -t                       Triangular modulation\n\
+Hint:\n\
+     in-gain < (1 - decay * decay)\n\
+    out-gain < (1 - decay) / gain-in";
+
   static sox_effect_handler_t handler = {
-    "phaser", "gain-in gain-out delay decay speed [ -s | -t ]",
-    SOX_EFF_LENGTH | SOX_EFF_GAIN, getopts, start, flow, NULL, stop, NULL, sizeof(priv_t)
+    "phaser", usage, SOX_EFF_LENGTH | SOX_EFF_GAIN, getopts,
+    start, flow, NULL, stop, NULL, sizeof(priv_t)
   };
+
   return &handler;
 }
