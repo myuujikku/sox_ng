@@ -814,11 +814,6 @@ static void rewrite_id3v2_tag(sox_format_t * ft, size_t id3v2_size, uint64_t num
   }
 
   buffer = lsx_malloc(id3v2_size);
-  if (!buffer)
-  {
-    lsx_warn("cannot update track length info - failed to allocate buffer");
-    return;
-  }
 
   if (num_samples > ULONG_MAX)
   {
@@ -1189,10 +1184,6 @@ static size_t sox_mp3write(sox_format_t * ft, const sox_sample_t *buf, size_t sa
     new_buffer_size = samp * sizeof(float);
     if (p->pcm_buffer_size < new_buffer_size) {
       float *new_buffer = lsx_realloc(p->pcm_buffer, new_buffer_size);
-      if (!new_buffer) {
-        lsx_fail_errno(ft, SOX_ENOMEM, "Out of memory");
-        return 0;
-      }
       p->pcm_buffer_size = new_buffer_size;
       p->pcm_buffer = new_buffer;
     }
@@ -1232,10 +1223,6 @@ static size_t sox_mp3write(sox_format_t * ft, const sox_sample_t *buf, size_t sa
     new_buffer_size = LAME_BUFFER_SIZE(nsamples);
     if (p->mp3_buffer_size < new_buffer_size) {
       unsigned char *new_buffer = lsx_realloc(p->mp3_buffer, new_buffer_size);
-      if (!new_buffer) {
-        lsx_fail_errno(ft, SOX_ENOMEM, "Out of memory");
-        return 0;
-      }
       p->mp3_buffer_size = new_buffer_size;
       p->mp3_buffer = new_buffer;
     }

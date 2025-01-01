@@ -306,11 +306,6 @@ static int start(sox_format_t* ft)
 
   priv->buf_len = ((sox_globals.bufsiz >> priv->sample_shift) + 31) & ~31u;
   priv->data = lsx_malloc((priv->buf_len * num_buffers) << priv->sample_shift);
-  if (!priv->data)
-  {
-    lsx_fail_errno(ft, SOX_ENOMEM, "Out of memory");
-    return SOX_EOF;
-  }
 
   priv->block_finished_event = CreateEventA(NULL, sox_false, sox_false, NULL);
   if (!priv->block_finished_event)
