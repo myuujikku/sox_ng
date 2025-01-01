@@ -228,25 +228,23 @@ static int stop(sox_effect_t * effp)
 
 sox_effect_handler_t const * lsx_gain_effect_fn(void)
 {
+  static char const usage[] = "\
+[-e|-b|-B|-r] [-n] [-l|-h] [gain-dB]\n\
+-e\t Equalise channels: peak to that with max peak;\n\
+-B\t Balance channels: rms to that with max rms; no clip protection\n\
+-b\t Balance channels: rms to that with max rms; clip protection\n\
+\t   Note -Bn = -bn\n\
+-r\t Reclaim headroom (as much as possible without clipping); see -h\n\
+-n\t Norm file to 0dBfs(output precision); gain-dB, if present, usually <0\n\
+-l\t Use simple limiter\n\
+-h\t Apply attenuation for headroom for subsequent effects; gain-dB, if\n\
+\t   present, is subject to reclaim by a subsequent gain -r\n\
+gain-dB\t Apply gain in dB";
   static sox_effect_handler_t handler = {
-    "gain", NULL, SOX_EFF_GAIN,
+    "gain", usage, SOX_EFF_GAIN,
     create, start, flow, drain, stop, NULL, sizeof(priv_t)};
-  static char const * lines[] = {
-    "[-e|-b|-B|-r] [-n] [-l|-h] [gain-dB]",
-    "-e\t Equalise channels: peak to that with max peak;",
-    "-B\t Balance channels: rms to that with max rms; no clip protection",
-    "-b\t Balance channels: rms to that with max rms; clip protection",
-    "\t   Note -Bn = -bn",
-    "-r\t Reclaim headroom (as much as possible without clipping); see -h",
-    "-n\t Norm file to 0dBfs(output precision); gain-dB, if present, usually <0",
-    "-l\t Use simple limiter",
-    "-h\t Apply attenuation for headroom for subsequent effects; gain-dB, if",
-    "\t   present, is subject to reclaim by a subsequent gain -r",
-    "gain-dB\t Apply gain in dB",
-  };
-  static char * usage;
-  handler.usage = lsx_usage_lines(&usage, lines, array_length(lines));
-  return &handler;
+
+    return &handler;
 }
 
 /*------------------ emulation of the old `normalise' effect -----------------*/
