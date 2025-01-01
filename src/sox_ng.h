@@ -1088,10 +1088,10 @@ if clipping occurs.
 #define SOX_EFF_LENGTH   8           /**< Client API: Effect might alter audio length (as measured in time units, not necessarily in samples) */
 #define SOX_EFF_MCHAN    16          /**< Client API: Effect handles multiple channels internally */
 #define SOX_EFF_NULL     32          /**< Client API: Effect does nothing (can be optimized out of chain) */
-#define SOX_EFF_DEPRECATED 64        /**< Client API: Effect will soon be removed from SoX */
+#define SOX_EFF_DEPRECATED 64        /* No longer used */
 #define SOX_EFF_GAIN     128         /**< Client API: Effect does not support gain -r */
 #define SOX_EFF_MODIFY   256         /**< Client API: Effect does not modify sample values (but might remove or duplicate samples or insert zeros) */
-#define SOX_EFF_ALPHA    512         /**< Client API: Effect is experimental/incomplete */
+#define SOX_EFF_ALPHA    512         /* No longer used */
 #define SOX_EFF_INTERNAL 1024        /**< Client API: Effect present in libSoX but not valid for use by SoX command-line tools */
 
 /**

@@ -337,7 +337,7 @@ Options:\n\
 -spf samples_per_frame Specify the number of samples per frame. Default is to\n\
                        use the -fps setting.";
   static sox_effect_handler_t descriptor = {
-    "speexdsp", usage, SOX_EFF_PREC | SOX_EFF_GAIN | SOX_EFF_ALPHA,
+    "speexdsp", usage, SOX_EFF_PREC | SOX_EFF_GAIN,
     getopts, start, flow, drain, stop, NULL, sizeof(priv_t)
   };
 
