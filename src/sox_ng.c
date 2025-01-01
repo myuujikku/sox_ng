@@ -2034,16 +2034,11 @@ static void usage_effect(char const * name)
 {
   size_t i;
 
-  display_SoX_version(stdout);
-  putchar('\n');
-
   if (strcmp("all", name) && !sox_find_effect(name)) {
     printf("Cannot find an effect called `%s'.\n", name);
     display_supported_effects();
   }
   else {
-    printf("Effect usage:\n\n");
-
     for (i = 0; sox_effect_fns[i]; i++) {
       const sox_effect_handler_t *e = sox_effect_fns[i]();
       if (e && e->name && (!strcmp("all", name) || !strcmp(e->name, name))) {
