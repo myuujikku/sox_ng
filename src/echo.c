@@ -10,11 +10,10 @@
 #include "sox_i.h"
 
 
-#define DELAY_BUFSIZ ( 50 * 50U * 1024 )
 #define MAX_ECHOS 7     /* 24 bit x ( 1 + MAX_ECHOS ) = */
                         /* 24 bit x 8 = 32 bit !!!      */
 
-/* Private data for SKEL file */
+/* Private data */
 typedef struct {
         int     counter;
         int     num_delays;
@@ -24,9 +23,6 @@ typedef struct {
         ptrdiff_t samples[MAX_ECHOS], maxsamples;
         size_t fade_out;
 } priv_t;
-
-/* Private data for SKEL file */
-
 
 /*
  * Process options
@@ -89,12 +85,6 @@ static int sox_echo_start(sox_effect_t * effp)
                 {
                     lsx_fail("delay must be positive!");
                     return (SOX_EOF);
-                }
-                if ( echo->samples[i] > (ptrdiff_t)DELAY_BUFSIZ )
-                {
-                        lsx_fail("delay must be less than %g seconds!",
-                                DELAY_BUFSIZ / effp->in_signal.rate );
-                        return (SOX_EOF);
                 }
                 if ( echo->decay[i] < 0.0 )
                 {
