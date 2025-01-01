@@ -36,13 +36,6 @@ static int startwrite(sox_format_t * ft)
   ao->buf_size *= (ft->encoding.bits_per_sample >> 3);
   ao->buf = lsx_malloc(ao->buf_size);
 
-  if (!ao->buf)
-  {
-      lsx_fail_errno(ft, SOX_ENOMEM, "Can not allocate memory for ao driver");
-      return SOX_EOF;
-  }
-
-
   ao_initialize();
   if (strcmp(ft->filename,"default") == 0)
   {

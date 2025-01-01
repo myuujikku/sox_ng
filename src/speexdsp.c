@@ -191,11 +191,6 @@ static int start(sox_effect_t* effp)
     effp->out_signal.precision = 16;
 
     p->buffer = lsx_malloc(p->buffer_end * sizeof(p->buffer[0]));
-    if (!p->buffer)
-    {
-        result = SOX_ENOMEM;
-        goto Done;
-    }
 
     p->sps = speex_preprocess_state_init((int)p->buffer_end, (int)(effp->in_signal.rate + .5));
     if (!p->sps)
