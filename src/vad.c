@@ -299,31 +299,29 @@ static int stop(sox_effect_t * effp)
 
 sox_effect_handler_t const * lsx_vad_effect_fn(void)
 {
-  static sox_effect_handler_t handler = {"vad", NULL,
+  static char const usage[] = "\
+[options]\n\
+\t-t trigger-level                (7)\n\
+\t-T trigger-time-constant        (0.25 s)\n\
+\t-s search-time                  (1 s)\n\
+\t-g allowed-gap                  (0.25 s)\n\
+\t-p pre-trigger-time             (0 s)\n\
+Advanced options:\n\
+\t-b noise-est-boot-time          (0.35 s)\n\
+\t-N noise-est-time-constant-up   (0.1 s)\n\
+\t-n noise-est-time-constant-down (0.01 s)\n\
+\t-r noise-reduction-amount       (1.35)\n\
+\t-f measurement-frequency        (20 Hz)\n\
+\t-m measurement-duration         (0.1 s)\n\
+\t-M measurement-time-constant    (0.4 s)\n\
+\t-h high-pass-filter             (50 Hz)\n\
+\t-l low-pass-filter              (6000 Hz)\n\
+\t-H high-pass-lifter             (150 Hz)\n\
+\t-L low-pass-lifter              (2000 Hz)";
+  static sox_effect_handler_t handler = {"vad", usage,
     SOX_EFF_MCHAN | SOX_EFF_LENGTH | SOX_EFF_MODIFY,
     create, start, flowTrigger, drain, stop, NULL, sizeof(priv_t)
   };
-  static char const * lines[] = {
-    "[options]",
-    "\t-t trigger-level                (7)",
-    "\t-T trigger-time-constant        (0.25 s)",
-    "\t-s search-time                  (1 s)",
-    "\t-g allowed-gap                  (0.25 s)",
-    "\t-p pre-trigger-time             (0 s)",
-    "Advanced options:",
-    "\t-b noise-est-boot-time          (0.35 s)",
-    "\t-N noise-est-time-constant-up   (0.1 s)",
-    "\t-n noise-est-time-constant-down (0.01 s)",
-    "\t-r noise-reduction-amount       (1.35)",
-    "\t-f measurement-frequency        (20 Hz)",
-    "\t-m measurement-duration         (0.1 s)",
-    "\t-M measurement-time-constant    (0.4 s)",
-    "\t-h high-pass-filter             (50 Hz)",
-    "\t-l low-pass-filter              (6000 Hz)",
-    "\t-H high-pass-lifter             (150 Hz)",
-    "\t-L low-pass-lifter              (2000 Hz)",
-  };
-  static char * usage;
-  handler.usage = lsx_usage_lines(&usage, lines, array_length(lines));
+
   return &handler;
 }

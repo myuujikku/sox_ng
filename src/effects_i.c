@@ -31,21 +31,6 @@ int lsx_usage(sox_effect_t * effp)
   return SOX_EOF;
 }
 
-char * lsx_usage_lines(char * * usage, char const * const * lines, size_t n)
-{
-  if (!*usage) {
-    size_t i, len;
-    for (len = i = 0; i < n; len += strlen(lines[i++]) + 1);
-    *usage = lsx_malloc(len); /* FIXME: this memory will never be freed */
-    strcpy(*usage, lines[0]);
-    for (i = 1; i < n; ++i) {
-      strcat(*usage, "\n");
-      strcat(*usage, lines[i]);
-    }
-  }
-  return *usage;
-}
-
 static lsx_enum_item const s_lsx_wave_enum[] = {
   LSX_ENUM_ITEM(SOX_WAVE_,SINE)
   LSX_ENUM_ITEM(SOX_WAVE_,TRIANGLE)

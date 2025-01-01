@@ -707,27 +707,26 @@ static int stop(sox_effect_t * effp)
 
 sox_effect_handler_t const * lsx_rate_effect_fn(void)
 {
+  static char const usage[] = "\
+[-q|-l|-m|-h|-v] [override-options] RATE[k]\n\
+                    BAND-\n\
+     QUALITY        WIDTH  REJ dB   TYPICAL USE\n\
+ -q  quick          n/a  ~30 @ Fs/4 playback on ancient hardware\n\
+ -l  low            80%     100     playback on old hardware\n\
+ -m  medium         95%     100     audio playback\n\
+ -h  high (default) 95%     125     16-bit mastering (use with dither)\n\
+ -v  very high      95%     175     24-bit mastering\n\
+              OVERRIDE OPTIONS (only with -m, -h, -v)\n\
+ -M/-I/-L     Phase response = minimum/intermediate/linear(default)\n\
+ -s           Steep filter (band-width = 99%)\n\
+ -a           Allow aliasing above the pass-band\n\
+ -b 74-99.7   Any band-width %\n\
+ -p 0-100     Any phase response (0 = minimum, 25 = intermediate,\n\
+              50 = linear, 100 = maximum)";
   static sox_effect_handler_t handler = {
-    "rate", 0, SOX_EFF_RATE, create, start, flow, drain, stop, 0, sizeof(priv_t)
+    "rate", usage, SOX_EFF_RATE, create,
+    start, flow, drain, stop, 0, sizeof(priv_t)
   };
-  static char const * lines[] = {
-    "[-q|-l|-m|-h|-v] [override-options] RATE[k]",
-    "                    BAND-",
-    "     QUALITY        WIDTH  REJ dB   TYPICAL USE",
-    " -q  quick          n/a  ~30 @ Fs/4 playback on ancient hardware",
-    " -l  low            80%     100     playback on old hardware",
-    " -m  medium         95%     100     audio playback",
-    " -h  high (default) 95%     125     16-bit mastering (use with dither)",
-    " -v  very high      95%     175     24-bit mastering",
-    "              OVERRIDE OPTIONS (only with -m, -h, -v)",
-    " -M/-I/-L     Phase response = minimum/intermediate/linear(default)",
-    " -s           Steep filter (band-width = 99%)",
-    " -a           Allow aliasing above the pass-band",
-    " -b 74-99.7   Any band-width %",
-    " -p 0-100     Any phase response (0 = minimum, 25 = intermediate,",
-    "              50 = linear, 100 = maximum)",
-  };
-  static char * usage;
-  handler.usage = lsx_usage_lines(&usage, lines, array_length(lines));
+
   return &handler;
 }
