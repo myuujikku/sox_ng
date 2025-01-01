@@ -1024,12 +1024,7 @@ static void create_user_effects(void)
   for (i = 0; i < num_effects; i++) {
     effp = sox_create_effect(sox_find_effect(user_effargs[current_eff_chain][i].name));
 
-    if (effp->handler.flags & SOX_EFF_DEPRECATED)
-      lsx_warn("effect `%s' is deprecated; see sox(1) for an alternative",
-          effp->handler.name);
-    else if (effp->handler.flags & SOX_EFF_ALPHA)
-      lsx_warn("effect `%s' is experimental/incomplete", effp->handler.name);
-    else if (effp->handler.flags & SOX_EFF_INTERNAL) {
+    if (effp->handler.flags & SOX_EFF_INTERNAL) {
       lsx_fail("`%s' is a libSoX-only effect", effp->handler.name);
       exit(1);
     }
@@ -1910,9 +1905,9 @@ static void display_supported_effects(void)
   for (i = 0; sox_effect_fns[i]; i++) {
     e = sox_effect_fns[i]();
     if (e && e->name)
-      printf(" %s%s", e->name, (e->flags & SOX_EFF_DEPRECATED)? "*" : (e->flags & SOX_EFF_ALPHA)? "+" : (e->flags & SOX_EFF_INTERNAL)? "#" : "");
+      printf(" %s%s", e->name, (e->flags & SOX_EFF_INTERNAL)? "#" : "");
   }
-  puts("\n  * Deprecated effect    + Experimental effect    # LibSoX-only effect");
+  puts("\n  # LibSoX-only effect");
 }
 
 static void usage(char const * message)
@@ -2052,15 +2047,8 @@ static void usage_effect(char const * name)
       const sox_effect_handler_t *e = sox_effect_fns[i]();
       if (e && e->name && (!strcmp("all", name) || !strcmp(e->name, name))) {
         printf("%s %s\n", e->name, e->usage? e->usage : "");
-        if (e->flags & (SOX_EFF_DEPRECATED | SOX_EFF_ALPHA | SOX_EFF_INTERNAL))
-          putchar('\n');
-        if (e->flags & SOX_EFF_DEPRECATED)
-          printf("`%s' is deprecated\n", e->name);
-        if (e->flags & SOX_EFF_ALPHA)
-          printf("`%s' is experimental/incomplete\n", e->name);
         if (e->flags & SOX_EFF_INTERNAL)
           printf("`%s' is libSoX-only\n", e->name);
-        printf("\n\n");
       }
     }
   }
