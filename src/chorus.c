@@ -7,57 +7,6 @@
  */
 
 /*
- *      Chorus effect.
- *
- * Flow diagram scheme for n delays ( 1 <= n <= MAX_CHORUS ):
- *
- *                                                * gain-in   ___
- * ibuff -----+--------------------------------------------->|   |
- *            |      _________                               |   |
- *            |     |         |                   * decay 1  |   |
- *            +---->| delay 1 |----------------------------->|   |
- *            |     |_________|                              |   |
- *            |        /|\                                   |   |
- *            :         |                                    |   |
- *            : +-----------------+   +--------------+       | + |
- *            : | Delay control 1 |<--| mod. speed 1 |       |   |
- *            : +-----------------+   +--------------+       |   |
- *            |      _________                               |   |
- *            |     |         |                   * decay n  |   |
- *            +---->| delay n |----------------------------->|   |
- *                  |_________|                              |   |
- *                     /|\                                   |___|
- *                      |                                      |
- *              +-----------------+   +--------------+         | * gain-out
- *              | Delay control n |<--| mod. speed n |         |
- *              +-----------------+   +--------------+         +----->obuff
- *
- *
- * The delay i is controled by a sine or triangle modulation i ( 1 <= i <= n).
- *
- * Usage:
- *   chorus gain-in gain-out delay-1 decay-1 speed-1 depth-1 -s1|t1 [
- *       delay-2 decay-2 speed-2 depth-2 -s2|-t2 ... ]
- *
- * Where:
- *   gain-in, decay-1 ... decay-n :  0.0 ... 1.0      volume
- *   gain-out :  0.0 ...      volume
- *   delay-1 ... delay-n :  20.0 ... 100.0 msec
- *   speed-1 ... speed-n :  0.1 ... 5.0 Hz       modulation 1 ... n
- *   depth-1 ... depth-n :  0.0 ... 10.0 msec    modulated delay 1 ... n
- *   -s1 ... -sn : modulation by sine 1 ... n
- *   -t1 ... -tn : modulation by triangle 1 ... n
- *
- * Note:
- *   when decay is close to 1.0, the samples can begin clipping and the output
- *   can saturate!
- *
- * Hint:
- *   1 / out-gain < gain-in ( 1 + decay-1 + ... + decay-n )
- *
-*/
-
-/*
  * libSoX chorus effect file.
  */
 
@@ -330,19 +279,49 @@ static int sox_chorus_stop(sox_effect_t * effp)
         return (SOX_SUCCESS);
 }
 
-static sox_effect_handler_t sox_chorus_effect = {
-  "chorus",
-  "gain-in gain-out delay decay speed depth [ -s | -t ]",
-  SOX_EFF_LENGTH | SOX_EFF_GAIN,
-  sox_chorus_getopts,
-  sox_chorus_start,
-  sox_chorus_flow,
-  sox_chorus_drain,
-  sox_chorus_stop,
-  NULL, sizeof(priv_t)
-};
-
 const sox_effect_handler_t *lsx_chorus_effect_fn(void)
 {
-    return &sox_chorus_effect;
+  static char const usage[] = "\
+gain-in gain-out <delay decay speed depth -s|-t>\n\
+                                              ___\n\
+  ---+-------------------------------------->|   |\n\
+  In |     _________              * gain-in  |   |\n\
+     |    |         |                        |   |\n\
+     +--->| delay 1 |----------------------->|   |\n\
+     |    |_________|             * decay 1  |   |\n\
+     |         ^                             |   |\n\
+     :         | * depth 1                   |   | * gain-out\n\
+     : +---------------+                     | + |------------>\n\
+     : | sine/triangle |<-- speed 1          |   |          Out\n\
+     : +---------------+                     |   |\n\
+     |     _________                         |   |\n\
+     |    |         |                        |   |\n\
+     +--->| delay n |----------------------->|   |\n\
+          |_________|              * decay n |   |\n\
+               ^                             |___|\n\
+               |  * depth n\n\
+       +---------------+\n\
+       | sine/triangle |<-- speed n\n\
+       +---------------+\n\
+\n\
+         RANGE   DESCRIPTION\n\
+gain-in   0-1    Proportion of input delivered clean to adder\n\
+gain-out  0-     Final volume adjustment\n\
+delay    20-100  Fixed delay in milliseconds\n\
+decay     0-1    Proportion of delay's output delivered to adder\n\
+speed   0.1-5.0  Modulation frequency in Hz\n\
+depth    0-10.0  Additional variable delay in milliseconds\n\
+-s               Modulate sinusoidally\n\
+-t               Modulate triangularly";
+
+  static sox_effect_handler_t sox_chorus_effect = {
+    "chorus", usage, SOX_EFF_LENGTH | SOX_EFF_GAIN,
+    sox_chorus_getopts,
+    sox_chorus_start,
+    sox_chorus_flow,
+    sox_chorus_drain,
+    sox_chorus_stop,
+    NULL, sizeof(priv_t)
+  };
+  return &sox_chorus_effect;
 }
