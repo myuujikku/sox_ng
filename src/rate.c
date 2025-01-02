@@ -707,8 +707,7 @@ sox_effect_handler_t const * lsx_rate_effect_fn(void)
 {
   static char const usage[] = "\
 [-q|-l|-m|-h|-v] [override-options] RATE[k]\n\
-                    BAND-\n\
-     QUALITY        WIDTH  REJ dB   TYPICAL USE\n\
+     QUALITY    BANDWIDTH  REJ dB   TYPICAL USE\n\
  -q  quick          n/a  ~30 @ Fs/4 playback on ancient hardware\n\
  -l  low            80%     100     playback on old hardware\n\
  -m  medium         95%     100     audio playback\n\
