@@ -2038,9 +2038,13 @@ static void usage_effect(char const * name)
     display_supported_effects();
   }
   else {
+    sox_bool first = sox_true;
+
     for (i = 0; sox_effect_fns[i]; i++) {
       const sox_effect_handler_t *e = sox_effect_fns[i]();
       if (e && e->name && (!strcmp("all", name) || !strcmp(e->name, name))) {
+	if (first) first = sox_false;
+	else printf("\n");
         printf("%s %s\n", e->name, e->usage? e->usage : "");
         if (e->flags & SOX_EFF_INTERNAL)
           printf("`%s' is libSoX-only\n", e->name);
@@ -2054,7 +2058,7 @@ static void usage_format1(sox_format_handler_t const * f)
 {
   char const * const * names;
 
-  printf("\nFormat: %s\n", f->names[0]);
+  printf("Format: %s\n", f->names[0]);
   printf("Description: %s\n", f->description);
   if (f->names[1]) {
     printf("Also handles:");
@@ -2105,8 +2109,6 @@ static void usage_format(char const * name)
   sox_format_handler_t const * f;
   unsigned i;
 
-  display_SoX_version(stdout);
-
   if (strcmp("all", name)) {
     if (!(f = sox_find_format(name, sox_false))) {
       printf("Cannot find a format called `%s'.\n", name);
@@ -2115,10 +2117,15 @@ static void usage_format(char const * name)
     else usage_format1(f);
   }
   else {
+    sox_bool first = sox_true;
+
     for (i = 0; sox_format_fns[i].fn; ++i) {
       sox_format_handler_t const * f = sox_format_fns[i].fn();
-      if (!(f->flags & SOX_FILE_PHONY))
+      if (!(f->flags & SOX_FILE_PHONY)) {
+        if (first) first = sox_false;
+	else printf("\n");
         usage_format1(f);
+      }
     }
   }
   exit(1);
