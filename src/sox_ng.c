@@ -2025,7 +2025,7 @@ static void usage(char const * message)
     puts(lines3[i]);
   display_supported_formats();
   display_supported_effects();
-  printf("EFFECT OPTIONS (effopts): effect dependent; see --help-effect\n");
+  printf("EFFECT OPTIONS: effect dependent; see --help-effect\n");
   exit(message != NULL);
 }
 
