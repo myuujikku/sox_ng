@@ -1,0 +1,28 @@
+#! /bin/sh
+
+# Confidence test for the echos effect by comparing its output to
+# equivalent effects made with echo.
+
+rm -f *.wav
+
+# Make a test file of a tone sweep
+${sox:-sox} --no-dither -V1 -n -b 16 -e signed sweep.wav \
+		synth 10 sine 27.5-14080 \
+		fade l 0 36.91 36.91 trim 0 10
+
+status=0
+
+# With one parameter it should be the same as "echo"
+${sox:-sox} --no-dither sweep.wav sweep-echos.wav echos .5 .5 1000 .5
+${sox:-sox} --no-dither sweep.wav sweep-echo.wav  echo  .5 .5 1000 .5
+cmp -s sweep-echo.wav sweep-echos.wav || status=1
+
+# With two parameters we should get two echoes and an echo of the echo
+${sox:-sox} --no-dither sweep.wav sweep-echos.wav echos .5 .5 1000 .5 300 .5
+${sox:-sox} --no-dither sweep.wav sweep-echo.wav  echo  .5 .5 1000 .5 300 .5 \
+							      1300 .5
+cmp -s sweep-echo.wav sweep-echos.wav || status=1
+
+rm *.wav
+
+exit $status
