@@ -98,4 +98,4 @@ before and after them.
 
 Markdown also allows code blocks indented with spaces
 but the two-space-to-four-space conversion for lists
-may messes the indentation up.
+may mess the indentation up.
