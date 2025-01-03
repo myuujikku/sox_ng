@@ -2168,7 +2168,11 @@ static char const * const getoptstr =
   "+b:c:de:hmnpqr:t:v:xBC:DGLMNRSTV::X";
 
 static struct lsx_option_t const long_options[] = {
-  {"add-comment"     , lsx_option_arg_required, NULL, 0},
+  /*
+   * The order and position of these must correspond to the numbers
+   * in the huge case statement in parse_gopts_and_fopts()
+   */
+  {"add-comment"     , lsx_option_arg_required, NULL, 0}, /* 0 */
   {"buffer"          , lsx_option_arg_required, NULL, 0},
   {"combine"         , lsx_option_arg_required, NULL, 0},
   {"comment-file"    , lsx_option_arg_required, NULL, 0},
@@ -2193,8 +2197,12 @@ static struct lsx_option_t const long_options[] = {
   {"clobber"         , lsx_option_arg_none    , NULL, 0},
   {"no-clobber"      , lsx_option_arg_none    , NULL, 0},
   {"multi-threaded"  , lsx_option_arg_none    , NULL, 0},
-  {"dft-min"         , lsx_option_arg_required, NULL, 0},
+  {"dft-min"         , lsx_option_arg_required, NULL, 0}, /* 25 */
 
+  /*
+   * These instead are index by their letters, which limits the
+   * above section to a maximum of 64 enries.
+   */
   {"bits"            , lsx_option_arg_required, NULL, 'b'},
   {"channels"        , lsx_option_arg_required, NULL, 'c'},
   {"compression"     , lsx_option_arg_required, NULL, 'C'},
@@ -2297,6 +2305,10 @@ static char parse_gopts_and_fopts(file_t * f)
     case -1:        /* @ one of: file-name, effect name, end of arg-list. */
       return '\0'; /* i.e. not device. */
 
+    /*
+     * These numbers correspond to the positions of the long options
+     * in long_options[] above
+     */
     case 0:         /* Long options with no short equivalent. */
       switch (optstate.lngind) {
       case 0:
