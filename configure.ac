@@ -431,15 +431,6 @@ AC_SUBST(LADSPA_PATH)
 
 
 
-dnl Test for using curl
-AC_ARG_WITH(curl,
-    AS_HELP_STRING([--with-curl], [Use curl instead of wget]))
-using_curl=no
-if test "$with_curl" = "yes"; then
-    using_curl=yes
-    AC_DEFINE(USING_CURL, 1, [1 if should use curl instead of wget])
-fi
-
 dnl Test for using ffmpeg
 AC_ARG_WITH(ffmpeg,
     AS_HELP_STRING([--with-ffmpeg], [Use ffmpeg to decode otherwise unsupported formats]))

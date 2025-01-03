@@ -554,14 +554,52 @@ static FILE * xfopen(char const * identifier, char const * mode, lsx_io_type * i
   else if (is_url(identifier)) {
     FILE * f = NULL;
 #ifdef HAVE_POPEN
-# ifdef USING_CURL
-    char const * const command_format = "curl --no-cert-status -s -o - \"%s\"";
-# else
-    char const * const command_format = "wget --no-check-certificate -q -O- \"%s\"";
-# endif
-    char * command = lsx_malloc(strlen(command_format) + strlen(identifier));
+    char const curl_command_format[] = "curl --no-cert-status -s -o - \"%s\"";
+    char const wget_command_format[] = "wget --no-check-certificate -q -O - \"%s\"";
+    char const wget2_command_format[] = "wget2 --no-check-certificate -q -O - \"%s\"";
+    char const * command_format = NULL;
+    char * command;
+
+    /* See which of wget, wget2 and curl are installed
+     *
+     * You must send, at least, wget's output into the null device
+     * because its --version text is >1024 bytes and the pipe breaks
+     * making it look like wget is not installed.
+     *
+     * The 2>&1 stops it from saying "sh:  1: wget: not found."
+     *
+     * Not sure what the Windows equivalent is: "> NUL" ?
+     */
+#ifdef _WIN32
+    f = popen("wget2 --version > NUL", POPEN_MODE);
+#else
+    f = popen("wget2 --version > /dev/null 2>&1", POPEN_MODE);
+#endif
+    if (f && pclose(f) == 0) command_format = wget2_command_format;
+    else {
+#ifdef _WIN32
+	f = popen("wget --version > NUL", POPEN_MODE);
+#else
+	f = popen("wget --version > /dev/null 2>&1", POPEN_MODE);
+#endif
+	if (f && pclose(f) == 0) command_format = wget_command_format;
+	else {
+#ifdef _WIN32
+	    f = popen("curl --version > NUL", POPEN_MODE);
+#else
+	    f = popen("curl --version > /dev/null 2>&1", POPEN_MODE);
+#endif
+	    if (f && pclose(f) == 0) command_format = curl_command_format;
+	}
+    }
+    if (!command_format)
+        lsx_fail("to read URLs Please install one of wget, wget2 and curl");
+
+    command = lsx_malloc(strlen(command_format) + strlen(identifier));
+
     sprintf(command, command_format, identifier);
-    f = popen(command, POPEN_MODE);
+    if (!(f = popen(command, POPEN_MODE)))
+        lsx_fail("cannot popen %s", command);
     incr_pipe_size(f);
     free(command);
     *io_type = lsx_io_url;
