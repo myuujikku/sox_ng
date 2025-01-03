@@ -32,7 +32,7 @@ web interface.
 
 It is possible to make a new issue from the command line by creating
 `issues/"Don't worry, be happy".md` and in a directory
-`issues/"Don't worry, be happy" placing files `milestone`
+`issues/"Don't worry, be happy"` placing files `milestone`
 and maybe `labels` and then saying
 `issues/putissues.sh` using your Codeberg username and password.
 It will fill in the `number` file with whatever forgejo assigns to it.
