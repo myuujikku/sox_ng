@@ -105,6 +105,12 @@ static char const * auto_detect_format(sox_format_t * ft, char const * ext)
   CHECK(mp3   , 0, 0, ""     , 0,  3, "ID3")
   CHECK(mp3   , 0, 0, ""     , 0,  2, "\xFF\xFB")
 
+#if HAVE_SNDFILE
+  CHECK(sds   , 0, 0, ""     , 0,  2, "\xF0\x7E")
+  CHECK(mpc2k , 0, 0, ""     , 0,  2, "\x01\x04")
+	/* sndfile always writes [100,0] at [19] */
+#endif
+
 #if USING_FFMPEG
   CHECK(3g2   , 0, 0, ""     , 4,  8, "ftyp3g2a")
   CHECK(3g2   , 0, 0, ""     , 4,  8, "ftyp3g2b")

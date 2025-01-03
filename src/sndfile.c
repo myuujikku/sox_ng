@@ -529,7 +529,9 @@ LSX_FORMAT_HANDLER(sndfile)
   /* LSF wrappers of formats already wrapped in SoX: */
     /* "flac", */
 
-    "sds",  /* ?? */
+    /* Formats that only libsndfile can decode (and encode) */
+    "sds",
+    "mpc2k",
     NULL
   };
 
@@ -553,6 +555,28 @@ LSX_FORMAT_HANDLER(sndfile)
   };
 
   return &format;
+}
+
+LSX_FORMAT_HANDLER(sds)
+{
+  static char const * const names[] = { "sds", NULL };
+  static sox_format_handler_t handler;
+
+  handler = *lsx_sndfile_format_fn();
+  handler.description = "MIDI Sample Dump Standard";
+  handler.names = names;
+  return &handler;
+}
+
+LSX_FORMAT_HANDLER(mpc2k)
+{
+  static char const * const names[] = { "mpc2k", NULL };
+  static sox_format_handler_t handler;
+
+  handler = *lsx_sndfile_format_fn();
+  handler.description = "Akai MPC-2000 format";
+  handler.names = names;
+  return &handler;
 }
 
 #endif

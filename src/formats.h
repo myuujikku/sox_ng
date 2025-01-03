@@ -132,6 +132,11 @@
 
 /*--------------------- Handlers using an external program -------------------*/
 
+#if HAVE_SNDFILE
+FORMAT(sds)
+FORMAT(mpc2k)
+#endif
+
 #if USING_FFMPEG
 FORMAT(ffmpeg)
 FORMAT(3g2)
