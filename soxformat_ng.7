@@ -728,11 +728,27 @@ sample rates are supported by the package, although not all are supported by
 the samplers themselves.  Currently loop points are ignored.
 .TP
 .B .snd
-See
-.BR .au ,
-.B .sndr
-and
-.BR .sndt .
+Several file formats use the \fB.snd\fR extension.
+.SP
+The main one was by NeXT, essentially the same as Sun Microsystems'
+\fB.au\fR format. See \fB.au\fR
+.SP
+Apple made another \B.snd\fR format in which the first two bytes
+specify a 16-bit integer representing the numbers 1 or 2 but which
+can often be read as a raw format.
+.SP
+Akai had an audio file format for its MPC range of samplers
+of which the first byte contains the number 1
+and the second the number 4. See \fB.mpc2k\fR
+.SP
+There are also Sounder and SoundTool files
+from MS-DOS/Windows in the early '90s.
+See \fB.sndr\fR and \fB.sndt\fR
+.SP
+Lastly, the HOM-BOT Robot Vacuum Cleaner and the
+V.Flash Home Entertainment System use \fB.snd\fP audio files
+which are raw single-channel 16-bit 16kHz PCM
+and the Unity Game Engine uses a compressed format called \fB.snd\fP.
 .TP
 \fBsndfile\fR (optional)
 This is a pseudo-type that forces libsndfile to be used. For writing files, the
