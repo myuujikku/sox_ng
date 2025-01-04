@@ -1559,8 +1559,8 @@ static void open_output_file(void)
      * Rely on that printing something. */
     exit(2);
 
-  /* If whether to enable the progress display (similar to that of ogg123) has
-   * not been specified by the user, auto turn on when outputting to an audio
+  /* If the progress display (similar to that of ogg123) has not been
+   * specified by the user, auto turn on when outputting to an audio
    * device: */
   if (show_progress == sox_option_default)
     show_progress = (ofile->ft->handler.flags & SOX_FILE_DEVICE) != 0 &&
