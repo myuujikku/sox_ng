@@ -56,6 +56,7 @@ static int startread(sox_format_t * ft)
 
   command = malloc(strlen(quoted_filename) + strlen(command_fmt) + 1);
   sprintf(command, command_fmt, quoted_filename);
+  free(quoted_filename);
 
   /* If the input is stdin, sox may already have read 256 bytes from it
    * for autodetection so we have to lauch something that feeds ffmpeg
@@ -109,9 +110,15 @@ static int startread(sox_format_t * ft)
 #endif
   }
 
+#ifdef _WIN32
   ft->fp = popen(command, "rb");
+#else
+  ft->fp = popen(command, "r");
+#endif
+  if (ft->fp == NULL)
+    lsx_fail("could not create a pipe for ffmpeg");
+
   free(command);
-  free(quoted_filename);
 
   return lsx_au_format_fn()->startread(ft);
 }
