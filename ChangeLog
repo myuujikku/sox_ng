@@ -5,6 +5,16 @@ This file contains a list of all changes starting after the release of
 sox-11gamma, followed by a list of prior authors and features.
 
 
+sox_ng-14.5.1	2025-02-18
+-------------
+
+Bug fixes:
+
+  o Make reading from ffmpeg work on Unix too.
+    popen("rb") returns NULL with glibc (!)
+  o Make reading from ffmpeg work by popen()ing "rb"
+  o Make it build for Windows using MXE
+
 sox_ng-14.5.0	2024-12-06
 -------------
 
