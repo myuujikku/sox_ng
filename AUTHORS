@@ -5,15 +5,15 @@ SoX was written by Lance Norskog with significant contributions from
 	Reuben Thomas		rrt at sc3d.org
 	Rob Sykes		aquegg at yahoo.co.uk
 	Pascal Giard		evilynux at gmail.com
-	Doug Cook		idigdoug at users.sourceforge.net
+	Doug Cook		idigdoug at gmail.com
 	Ulrich Klauer		uklauer at users.sourceforge.net
 	Eric Wong		normalperson at yhbt.net
 	Jan Stary		hans at stare.cz
 	M\303\244ns Rull\303\244rd		mans at mansr.com
 
 Note that mail to anyone@users.sourceforge.net no longer works.
->You have to log in and send them a private message which is then
-sent to their email proper.
+You have to log in and send a private message which is then
+forwarded to their email proper.
 
 sox_ng is currently maintained by
 
