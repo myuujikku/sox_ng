@@ -333,7 +333,7 @@ using
 Where supported, this is achieved by tapping the `\fBv\fR' & `\fBV\fR' keys during
 playback.
 .SP
-To help with setting a suitable recording level, SoX includes a peak-level
+To help with setting a suitable recording level, SoX includes a peak level
 meter which can be invoked (before making the actual recording) as follows:
 .EX
    rec_ng \-n
@@ -799,7 +799,7 @@ Variables
 .SP
 Mac OS X GUI: Refer to Apple's Technical Q&A QA1067 document.
 .TP
-\fB\-\-buffer\fR \fBBYTES\fR, \fB\-\-input\-buffer\fR \fBBYTES\fR
+\fB\-\-buffer\fR \fIBYTES\fR, \fB\-\-input\-buffer\fR \fIBYTES\fR
 Set the size in bytes of the buffers used for processing audio (default 8192).
 .B \-\-buffer
 applies to input, effects, and output processing;
@@ -880,7 +880,7 @@ Show usage information for the specified effect.  The name
 .TP
 \fB\-\-help\-format \fINAME\fR
 Show information about the specified file format.  The name
-\fBall\fR can be used to show information for all formats.
+\fBall\fR can be used to show information for all supported formats.
 .TP
 \fB\-\-i\fR, \fB\-\-info\fR
 If given as the first parameter to
@@ -892,13 +892,13 @@ behave as
 Equivalent to \fB\-\-combine mix\fR and \fB\-\-combine merge\fR respectively.
 .TP
 .B \-\-magic
-If SoX has been built with the optional `libmagic' library then this
-option can be given to enable its use in helping to detect audio file types.
+If SoX has been built with the optional `libmagic' library, this
+option enables its use in helping to detect audio file types.
 .TP
 \fB\-\-multi\-threaded\fR | \fB\-\-single\-threaded\fR
-By default, SoX is `single threaded'.
-If the \fB\-\-multi\-threaded\fR option is given however then SoX
-will process audio channels for most multichannel
+By default, SoX is `single threaded' but
+if the \fB\-\-multi\-threaded\fR option is given,
+SoX will process audio channels for most multichannel
 effects in parallel on hyper-threading/multi-core architectures. This
 may reduce processing time, though sometimes it may be necessary to use
 this option in conjunction with a larger buffer size than is the default
@@ -909,7 +909,6 @@ to gain any benefit from multi-threaded processing
 Prompt before overwriting an existing file with the same name as that
 given for the output file.
 .SP
-.B N.B.
 Unintentionally overwriting a file is easier than you might think, for
 example, if you accidentally enter
 .EX
@@ -920,9 +919,9 @@ when what you really meant was
    play_ng file1 file2 effect1 effect2 ...
 .EE
 then, without this option, file2 will be overwritten.  Hence, using
-this option is recommended. SOX_OPTS (above), a `shell'
-alias, script, or batch file may be an appropriate way of permanently
-enabling it.
+this option is recommended. \fBSOX_OPTS\fR (see above), a shell
+alias, a script or batch file may be an appropriate way of permanently
+enabling it by default.
 .TP
 \fB\-\-norm\fR[\fB=\fIdB-level\fR]
 Automatically invoke the
@@ -943,24 +942,25 @@ below 0 dBFS:
 .SP
 See also
 .BR \-V,
-.BR \-G,
+.B \-G
 and the
 .B gain
 effect.
 .TP
 \fB\-\-play\-rate\-arg ARG\fR
-Selects a quality option to be used when the `rate' effect is automatically
-invoked whilst playing audio.  This option is typically set via the
+Selects a quality option to be used when the \fBrate\fR effect is invoked
+automatically when playing audio.  This option is typically set via the
 .B SOX_OPTS
-environment variable (see above).
+environment variable (see above)
+and its default value, when playing, is \fB\-l\fR.
 .TP
 \fB\-\-plot gnuplot\fR\^|\^\fBoctave\fR\^|\^\fBoff\fR
 If not set to
 .B off
 (the default if
 .B \-\-plot
-is not given), run in a mode that can be used, in conjunction with the
-gnuplot program or the GNU Octave program, to assist with the selection
+is not given), run in a mode that can be used in conjunction with the
+\fBgnuplot\fR program or the GNU Octave program to assist with the selection
 and configuration of many of the transfer-function based effects.
 For the first given effect that supports the selected plotting program,
 SoX will output commands to plot the effect's transfer function, and
@@ -976,9 +976,10 @@ This is the opposite of the \fB\-S\fR option.
 .TP
 \fB\-R\fR
 Run in `repeatable' mode.  When this option is given, where
-applicable, SoX will embed a fixed time-stamp in the output file (e.g.
-\fBAIFF\fR) and will `seed' pseudo random number generators (e.g.
-\fBdither\fR) with a fixed number, thus ensuring that successive SoX
+applicable, SoX will embed a time stamp in the output file
+if the format supports comments
+and will seed pseudo random number generators, as used by
+\fBdither\fR, with that number, ensuring that successive SoX
 invocations with the same inputs and the same parameters yield the
 same output.
 .TP
@@ -993,44 +994,46 @@ and
 .B album
 for
 .B play_ng
-where (at least) the first two input files are tagged with the same Artist and
-Album names, and
+when (at least) the first two input files are tagged with the same Artist and
+Album names and
 .B track
 for
 .B play_ng
 otherwise.
 .TP
 \fB\-S\fR, \fB\-\-show\-progress\fR
-Display input file format/header information, and processing progress as
-input file(s) percentage complete, elapsed time, and remaining time (if
-known; shown in brackets), and the number of samples written to the
-output file.  Also shown is a peak-level meter, and an indication if
-clipping has occurred.  The peak-level meter shows up to two channels
-and is calibrated for digital audio as follows (right channel shown):
+Display input file format/header information, processing progress as
+a percentage of the input file(s), elapsed time, remaining time
+(if known, in brackets) and the number of samples written to the
+output file.  Also shown is a peak level meter, and an indication of
+whether clipping has occurred.  The peak level meter shows up to two channels
+and is calibrated for digital audio as follows:
 .ne 8
 .TS
 center;
 cI lI cI lI
-c l c l.
-dB FSD	Display	dB FSD	Display
-\-25	\-	\-11	====
-\-23	=	\-9	====\-
-\-21	=\-	\-7	=====
-\-19	==	\-5	=====\-
-\-17	==\-	\-3	======
-\-15	===	\-1	=====!
+c l l c l.
+dB FSD	Display	\ 	dB FSD	Display
+\-25	\-	\ 	\-11	====
+\-23	T{
+=
+T}	\ 	\-9	====\-
+\-21	=\-	\ 	\-7	=====
+\-19	==	\ 	\-5	=====\-
+\-17	==\-	\ 	\-3	======
+\-15	===	\ 	\-1	=====!
 \-13	===\-
 .TE
 .DT
 .SP
-A three-second peak-held value of headroom in dBs will be shown to the right
-of the meter if this is below 6dB.
+A three-second peak-held value of the headroom in dBs will be shown to the right
+of the meter if the headroom is less than 6dB.
 .SP
 This option is enabled by default when using
-SoX to play or record audio.
+SoX to play or record audio but can be disabled with \fB\-q\fR.
 .TP
 \fB\-T\fR\fR
-Equivalent to \fB\-\-combine multiply\fR.
+Equivalent to \fB\-\-combine multiply\fR
 .TP
 \fB\-\-temp\fI DIRECTORY\fR
 Specify that any temporary files should be created in the given
@@ -1057,7 +1060,7 @@ Only error messages are shown.  These are generated if
 SoX cannot complete the requested commands.
 .IP 2
 Warning messages are also shown.  These are generated if
-SoX can complete the requested commands,
+SoX can complete the requested commands
 but not exactly according to the requested command parameters,
 or if clipping occurs.
 .IP 3
@@ -1080,12 +1083,12 @@ e.g.
 sets it to 0.
 .IP
 .SS Input File Options
-These options apply only to input files and may precede only input
-filenames on the command line.
+These options apply to the first input filename that follows them
+on the command line.
 .TP
 \fB\-\-ignore\-length\fR
-Override an (incorrect) audio length given in an audio file's header. If
-this option is given then SoX will keep reading audio until it reaches
+Override the audio length given in an audio file's header. If
+this option is given, SoX will keep reading audio until it reaches
 the end of the input file.
 .TP
 \fB\-v\fR, \fB\-\-volume\fR \fIFACTOR\fR
@@ -1102,18 +1105,19 @@ See also the
 .BR vol ,
 and
 .B gain
-effects, and see \fBInput File Balancing\fR above.
+effects and \fBInput File Balancing\fR above and
+\fBSpecial Filenames\fR' section on \fIwildcard-filenames\fR.
 .SS Input & Output File Format Options
 These options apply to the input or output file whose name they
 immediately precede on the command line and are used mainly when
 working with headerless file formats or when specifying a format
-for the output file that is different to that of the input file.
+for the output file that is different from that of the input file.
 .TP
 \fB\-b\fR \fIBITS\fR, \fB\-\-bits\fR \fIBITS\fR
-The number of bits (a.k.a. bit-depth or sometimes word length) in each
-encoded sample.  Not applicable to complex encodings such as MP3 or GSM.
-Not necessary with encodings that have a fixed number of bits, e.g.
-A-law, \(*m-law, ADPCM.
+Set the number of bits (a.k.a. bit-depth or word length) in each
+encoded sample.  It is not applicable to complex encodings such as MP3 or GSM
+and not necessary with encodings that have a fixed number of bits such as
+A-law, \(*m-law and ADPCM.
 .SP
 For an input file, the most common use for this option is to inform
 SoX of the number of bits per sample in a `raw' (`headerless') audio
@@ -1123,12 +1127,10 @@ file.  For example
 .EE
 converts a particular `raw' file to a self-describing `WAV' file.
 .SP
-For an output file, this option can be used (perhaps along with
-.BR \-e )
-to set the output encoding size.  By default (i.e. if this option is
-not given), the output encoding size will (providing it is supported
-by the output file type) be set to the input encoding size.  For
-example
+For an output file, this option can be used to set the output encoding size.
+By default, the output encoding size is be set to the input encoding size,
+provided it is supported by the output file type.
+For example:
 .EX
    sox_ng input.cdda \-b 24 output.wav
 .EE
@@ -1136,24 +1138,24 @@ converts raw CD digital audio (16-bit, signed-integer) to a
 24-bit (signed-integer) `WAV' file.
 .TP
 \fB\-c\fR \fICHANNELS\fR, \fB\-\-channels\fR \fICHANNELS\fR
-The number of audio channels in the audio file. This can be any number
+Sets the number of audio channels in the audio file. This can be any number
 greater than zero.
 .SP
 For an input file, the most common use for this option is to inform
-SoX of the number of channels in a `raw' (`headerless') audio file.
-Occasionally, it may be useful to use this option with a `headered'
-file, in order to override the (presumably incorrect) value in the
-header\*mnote that this is only supported with certain file types.
-Examples:
+SoX of the number of channels in a `raw' (headerless) audio file.
+Occasionally, it may be useful to use this option with a headered
+file to override the (presumably incorrect) value in the
+header but this is only supported with certain file types.
+For example:
 .EX
    sox_ng \-r 48k \-e float \-b 32 \-c 2 input.raw output.wav
 .EE
-converts a particular `raw' file to a self-describing `WAV' file.
+converts a `raw' file to a self-describing `WAV' file.
 .EX
    play_ng \-c 1 music.wav
 .EE
 interprets the file data as belonging to a single channel regardless
-of what is indicated in the file header.  Note that if the file does
+of what is indicated in the file header and if the file does
 in fact have two channels, this will result in the file playing at
 half speed.
 .SP
@@ -1168,24 +1170,24 @@ example, the following two commands are equivalent:
    sox_ng input.wav \-c 1 output.wav bass \-b 24
    sox_ng input.wav      output.wav bass \-b 24 channels 1
 .EE
-though the second form is more flexible as it allows the effects to
+though the second form is more flexible as it allows effects to
 be ordered arbitrarily.
 .TP
 \fB\-e \fIENCODING\fR, \fB\-\-encoding\fR \fIENCODING\fR
-The audio encoding type.  Sometimes needed with file-types that
-support more than one encoding type. For example, with raw, WAV, or
-AU (but not, for example, with MP3 or FLAC).
+Set the audio encoding type, sometimes needed with file types that
+support more than one encoding scheme such as raw, WAV or
+AU but not with MP3 or FLAC.
 The available encoding types are as follows:
 .RS
-.IP \fBsigned-integer\fR
+.IP \fBsigned\-integer\fR
 PCM data stored as signed (`two's complement') integers.  Commonly used
 with a 16 or 24 \-bit encoding size.
 A value of 0 represents minimum signal power.
-.IP \fBunsigned-integer\fR
+.IP \fBunsigned\-integer\fR
 PCM data stored as unsigned integers.  Commonly used
 with an 8-bit encoding size.  A value of 0 represents maximum signal
 power.
-.IP \fBfloating-point\fR
+.IP \fBfloating\-point\fR
 PCM data stored as IEEE 753 single precision (32-bit) or double
 precision (64-bit) floating-point (`real') numbers.
 A value of 0 represents minimum signal power.
@@ -1195,36 +1197,33 @@ sample.  It has a precision equivalent to roughly 13-bit PCM and is
 sometimes encoded with reversed bit-ordering (see the
 .B \-X
 option).
-.IP \fBu-law,\ mu-law\fR
-North American telephony standard for logarithmic encoding to 8 bits per
-sample.  A.k.a. \(*m-law.  It has a precision equivalent to roughly
+.IP \fBu\-law\fR\^/\^\fBmu\-law\fR
+The North American telephony standard for logarithmic encoding to 8 bits per
+sample, a.k.a. \(*m-law has a precision equivalent to roughly
 14-bit PCM and is
 sometimes encoded with reversed bit-ordering (see the
 .B \-X
 option).
-.IP \fBoki-adpcm\fR
-OKI (a.k.a. VOX, Dialogic, or Intel) 4-bit ADPCM;
-it has a precision equivalent to roughly 12-bit PCM.
-ADPCM is a form of audio compression that has a good
+.IP \fBoki\-adpcm\fR
+OKI (a.k.a. VOX, Dialogic, or Intel) 4-bit ADPCM
+has a precision equivalent to roughly 12-bit PCM.
+ADPCM is a form of audio compression that makes a good
 compromise between audio quality and encoding/decoding speed.
-.IP \fBima-adpcm\fR
-IMA (a.k.a. DVI) 4-bit ADPCM;
-it has a precision equivalent to roughly 13-bit PCM.
+.IP \fBima\-adpcm\fR
+IMA (a.k.a. DVI) 4-bit ADPCM has a precision equivalent to roughly 13-bit PCM.
 .IP \fBms-adpcm\fR
-Microsoft 4-bit ADPCM; it has a precision equivalent to roughly 14-bit
-PCM.
-.IP \fBgsm-full-rate\fR
-GSM is currently used for the vast majority of the world's digital
+Microsoft 4-bit ADPCM has a precision equivalent to roughly 14-bit PCM.
+.IP \fBgsm\-full\-rate\fR
+GSM is currently used for the majority of the world's digital
 wireless telephone calls.  It utilizes several audio
 formats with different bit rates and associated speech quality.
 SoX has support for GSM's original 13kbps `Full Rate' audio format.
-It is usually CPU-intensive to work with GSM audio.
 .RE
 .TP
 \ 
 Encoding names can be abbreviated where this would not be ambiguous;
-e.g. `unsigned-integer' can be given as `un', but not `u' (ambiguous
-with `u-law').
+e.g. \fBunsigned-integer\fR can be given as \fBun\fR, but not \fBu\fR
+(which is ambiguous with \fBu-law\fR.)
 .SP
 For an input file, the most common use for this option is to inform
 SoX of the encoding of a `raw' (`headerless') audio
@@ -1234,20 +1233,18 @@ and
 .B \-c
 above).
 .SP
-For an output file, this option can be used (perhaps along with
+For an output file, this option can be used (perhaps with
 .BR \-b )
-to set the output encoding type  For example
+to set the output encoding. For example:
 .EX
    sox_ng input.cdda \-e float output1.wav
-
    sox_ng input.cdda \-b 64 \-e float output2.wav
 .EE
-convert raw CD digital audio (16-bit, signed-integer) to
-floating-point `WAV' files (single & double precision respectively).
+converts a raw CD digital audio (16-bit signed integer) to
+floating-point `WAV' files of single and double precision respectively.
 .SP
-By default (i.e. if this option is not given), the output encoding
-type will (providing it is supported by the output file type) be set
-to the input encoding type.
+If this option is not given, the output encoding will be the same as
+the input encoding, provided it is supported by the output file type.
 .TP
 \fB\-\-no\-glob\fR
 Specifies that filename `globbing' (wildcard matching) should not be
@@ -1269,15 +1266,14 @@ and
 .B \-c
 above).
 Occasionally it may be useful to use this option with a `headered'
-file, in order to override the (presumably incorrect) value in the
-header\*mnote that this is only supported with certain file types.
-For example, if audio was recorded with a sample rate of say 48k from
-a source that played back a little, say 1\*d5%, too slowly, then
+file to override the value in the header, though this is only supported
+with certain file types.
+For example, if audio was recorded with a sample rate of 48k from
+a source that played back a little too slowly, say 1\*d5%,
 .EX
    sox_ng \-r 48720 input.wav output.wav
 .EE
-effectively corrects the speed by changing only the file header (but see
-also the
+would correct the speed by changing only the file header (but see the
 .B speed
 effect for the more usual solution to this problem).
 .SP
@@ -1297,17 +1293,16 @@ though the second form is more flexible as it allows
 options to be given, and allows the effects to be ordered arbitrarily.
 .TP
 \fB\-t\fR, \fB\-\-type\fR \fIFILE-TYPE\fR
-Gives the type of the audio file.  For both input and output files,
+Give the type of an audio file.  For both input and output files,
 this option is commonly used to inform SoX of the type a `headerless'
-audio file (e.g. raw, mp3) where the actual/desired type cannot be
-determined from a given filename extension.  For example:
+audio file where the actual/desired type cannot be
+determined from the filename extension.  For example:
 .EX
    another-command | sox_ng \-t mp3 \- output.wav
-
    sox_ng input.wav \-t raw output.bin
 .EE
 It can also be used to override the type implied by an input filename
-extension, but if overriding with a type that has a header, SoX will
+extension but, if overriding with a type that has a header, SoX will
 exit with an appropriate error message if such a header is not
 actually present.
 .SP
@@ -1329,19 +1324,19 @@ respectively, `little endian', `big endian', or the opposite to that of
 the system on which SoX is being used.  Endianness applies only to data
 encoded as floating-point, or as signed or unsigned integers of 16 or
 more bits.  It is often necessary to specify one of these options for
-headerless files, and sometimes necessary for (otherwise)
+headerless files and sometimes necessary for (otherwise)
 self-describing files.  A given endian-setting option may be ignored
 for an input file whose header contains a specific endianness
-identifier, or for an output file that is actually an audio device.
+identifier or for an output file that is actually an audio device.
 .SP
 .B N.B.
 Unlike other format characteristics, the endianness (byte, nibble, &
 bit ordering) of the input file is not automatically used for the output
-file; so, for example, when the following is run on a little-endian system:
+file so, for example, when the following is run on a little-endian system:
 .EX
    sox_ng \-B audio.s16 trimmed.s16 trim 2
 .EE
-trimmed.s16 will be created as little-endian;
+\f(CWtrimmed.s16\fR will be created as little-endian;
 .EX
    sox_ng \-B audio.s16 \-B trimmed.s16 trim 2
 .EE
@@ -1352,8 +1347,8 @@ The
 option can be used to check the selected orderings.
 .TP
 \fB\-N\fR, \fB\-\-reverse\-nibbles\fR
-Specifies that the nibble ordering (i.e. the 2 halves of a byte) of the samples should be reversed;
-sometimes useful with ADPCM-based formats.
+Specifies that the nibble ordering of the samples (i.e. the 2 halves of a byte)
+should be reversed, which is sometimes useful with ADPCM-based formats.
 .SP
 .B N.B.
 See also N.B. in section on
@@ -1361,15 +1356,15 @@ See also N.B. in section on
 above.
 .TP
 \fB\-X\fR, \fB\-\-reverse\-bits\fR
-Specifies that the bit ordering of the samples should be reversed;
+Specifies that the bit ordering of the samples should be reversed, which is
 sometimes useful with a few (mostly headerless) formats.
 .SP
 .B N.B.
-See also N.B. in section on
+See also N.B. in the section on
 .B \-x
 above.
 .SS Output File Format Options
-These options apply only to the output file and may precede only the output
+These options only apply to output files and may only precede an output
 filename on the command line.
 .TP
 \fB\-\-add\-comment \fITEXT\fR
@@ -1379,7 +1374,7 @@ Append a comment in the output file header (where applicable).
 Specify the comment text to store in the output file header (where
 applicable).
 .SP
-SoX will provide a default comment if this option (or
+SoX will provide a default comment `Processed by SoX' if this option (or
 .BR \-\-comment\-file )
 is not given. To specify that no comment should be stored in the output file,
 use
@@ -1390,21 +1385,21 @@ Specify a file containing the comment text to store in the output
 file header (where applicable).
 .TP
 \fB\-C\fR, \fB\-\-compression\fR \fIFACTOR\fR
-The compression factor for variably compressing output file formats.  If
-this option is not given then a default compression factor will apply.
+Set the compression factor for variably-compressed output file formats.
+If this option is not given then a default compression factor applies.
 The compression factor is interpreted differently for different
-compressing file formats.  See the description of the file formats that
+compressed file formats; see the description of the file formats that
 use this option in
 .BR soxformat_ng (7)
 for more information.
 .SH EFFECTS
 In addition to converting, playing and recording audio files, SoX can
-be used to invoke a number of audio `effects'.  Multiple effects may
+be used to invoke a number of audio effects.  Multiple effects may
 be applied by specifying them one after another at the end of the SoX
 command line, forming an `effects chain'.
 Note that applying multiple effects in real time (i.e. when playing audio)
 is likely to require a high performance computer. Stopping other applications
-may alleviate performance issues should they occur.
+may alleviate performance issues, should they occur.
 .SP
 Some of the SoX effects are primarily intended to be applied to a single
 instrument or `voice'.  To facilitate this, the \fBremix\fR effect and
@@ -1413,20 +1408,21 @@ tracks from a multi-track recording.
 .SS Multiple Effects Chains
 A single effects chain is made up of one or more effects.  Audio from
 the input runs through the chain until either the end of the input file
-is reached or an effect in the chain requests to terminate the chain.
+is reached or an effect terminates the chain.
 .SP
 SoX supports running multiple effects chains over the input audio.
-In this case, when one chain indicates it is done processing audio,
-the audio data is then sent through the next effects chain.  This
+In this case, when one chain indicates that it is done processing audio,
+the audio data is sent through the next effects chain.  This
 continues until either no more effects chains exist or the input has
 reached the end of the file.
 .SP
-An effects chain is terminated by placing a
+Effects chains can be separated by placing a
 .B :
-(colon) after an effect.  Any following effects are a part of a new effects chain.
+(colon) after an effect;
+any following effects are a part of a new effects chain.
 .SP
 It is important to place the effect that will stop the chain
-as the first effect in the chain.  This is because any samples
+as the first effect in the chain because any samples
 that are buffered by effects to the left of the terminating effect
 will be discarded.  The amount of samples discarded is related to the
 .B \-\-buffer
@@ -1436,21 +1432,22 @@ stopping effects can be found in the
 .B Stopping SoX
 section.
 .SP
-There are a few pseudo-effects that aid using multiple effects chains.
+There are a few pseudo-effects that can help when using multiple effects chains.
 These include
-.B newfile
+.BR newfile ,
 which will start writing to a new output file before moving to the
-next effects chain and
-.B restart
+next effects chain, and
+.BR restart ,
 which will move back to the first effects chain.  Pseudo-effects
 must be specified as the first effect in a chain and as the only
-effect in a chain (they must have a
+effect in a chain (i.e. they must have a
 .B :
-before and after they are specified).
+before and after them).
 .SP
-The following is an example of multiple effects chains.  It will split the
-input file into multiple files of 30 seconds in length.  Each output filename
-will have unique number in its name as documented in the
+Here is an example of multiple effects chains.  It splits the
+input file into multiple files, each of 30 seconds in length.
+Each output filename will have unique number in its name,
+as documented in the
 .B Output Files
 section.
 .EX
@@ -1458,42 +1455,46 @@ section.
 .EE
 .SS Common Notation And Parameters
 In the descriptions that follow,
-brackets [ ] are used to denote parameters that are optional, braces
-{ } to denote those that are both optional and repeatable,
-and angle brackets < > to denote those that are repeatable but not
-optional.
-Where applicable, default values for optional parameters are shown in parenthesis ( ).
+[square brackets] are used to denote parameters that are optional,
+{braces} to denote those that are both optional and repeatable,
+<angle brackets> to denote those that are repeatable but not
+optional and pipe characters `|' separate options from which to choose
+one of several alternatives.
+Where applicable, default values for optional parameters are shown
+(in parentheses).
 .SP
 The following parameters are used with, and have the same meaning for,
 several effects:
 .TP
-\fIcenter\fR[\fBk\fR]
-See
-.IR frequency .
-.TP
-\fIfrequency\fR[\fBk\fR]
-A frequency in Hz, or, if appended with `k', kHz.
+\fIcenter\fR[\fBk\fR] and \fIfrequency\fR[\fBk\fR]
+A frequency in Hz or, if followed by \fBk\fR, kHz.
 .TP
 \fIgain\fR
 A power gain in dB.
-Zero gives no gain; less than zero gives an attenuation.
+Zero gives no gain, less than zero gives an attenuation
+and greater than zero amplifies.
+.TP
+\fIduration\fR
+See \fBTime Specifications\fR below.
 .TP
 \fIposition\fR
 A position within the audio stream; the syntax is
-[\fB=\fR\^|\^\fB+\fR\^|\^\fB\-\fR]\fItimespec\fR, where \fItimespec\fR is a
-time specification (see below).  The optional first character indicates
+[\fB=\fR\^|\^\fB\-\fR\^|\^\fB+\fR]\fItimespec\fR, where \fItimespec\fR is a
+time specification (see below). The optional first character indicates
 whether the \fItimespec\fR is to be interpreted relative to the start
-(\fB=\fR) or end (\fB\-\fR) of audio, or to the previous \fIposition\fR if
-the effect accepts multiple position arguments (\fB+\fR).  The audio length
-must be known for end-relative locations to work; some effects do accept
-\fB\-0\fR for the end of the audio, though, even if the length is unknown.
-Which of \fB=\fR, \fB+\fR, \fB\-\fR is the default depends on the effect
+(\fB=\fR) or end (\fB\-\fR) of the audio or relative to the previous
+\fIposition\fR (\fB+\fR) if the effect accepts multiple positional arguments.
+The audio length
+must be known for end-relative locations to work, though some effects do accept
+\fB\-0\fR for the end of the audio even if the length is unknown.
+Which of \fB=\fR, \fB\-\fR and \fB+\fR is the default depends on the effect
 and is shown in its syntax as, e.g., \fIposition(+)\fR.
 .SP
-Examples: \fB=2:00\fR (two minutes into the audio stream), \fB\-100s\fR (one
-hundred samples before the end of audio), \fB+0:12+10s\fR (twelve seconds
-and ten samples after the previous position), \fB\-0.5+1s\fR (one sample less
-than half a second before the end of audio).
+Examples: \fB=2:00\fR is two minutes into the audio stream,
+\fB\-100s\fR is one hundred samples before the end of audio,
+\fB+0:12+10s\fR is twelve seconds and ten samples after the previous position
+and
+\fB\-0.5+1s\fR is one sample less than half a second before the end of audio.
 .TP
 \fIwidth\fR[\fBh\fR\^|\^\fBk\fR\^|\^\fBo\fR\^|\^\fBq\fR]
 Used to specify the bandwidth of a filter.  A number of different
@@ -1516,17 +1517,15 @@ q	Q-factor	See [2]
 For each effect that uses this parameter, the default method (i.e. if no
 character is appended) is the one that it listed first in the first line of
 the effect's description.
-.PP
-Most effects that expect an audio position or duration in a parameter,
-i.e. a \fBtime specification\fR, accept either of the following two forms:
+.SS Time Specifications
+A \fItimespec\fR can be given in one the following two forms:
 .TP
 [[\fIhours\fB:\fR]\fIminutes\fB:\fR]\fIseconds\fR[\fB.\fIfrac\fR][\fBt\fR]
-A specification of `1:30\*d5' corresponds to one minute, thirty and
-\(12 seconds.  The \fBt\fR suffix is entirely optional (however, see the
-\fBsilence\fR effect for an exception).
-Note that the component values do not have to be normalized; e.g.,
-`1:23:45', `83:45', `79:0285', `1:0:1425', `1::1425' and `5025' all are
-legal and equivalent to each other.
+For example, a time specification of `1:30.5' corresponds to
+one minute, thirty and \(12 seconds.
+The component values do not have to be normalized; e.g.
+`1:23:45', `83:45', `79:0285', `1:0:1425', `1::1425' and `5025'
+are all equivalent.
 .TP
 \fIsamples\fBs\fR
 Specifies the number of samples directly, as in `8000s'.  For large sample
@@ -1534,14 +1533,18 @@ counts, \fIe notation\fR is supported: `1.7e6s' is the same as `1700000s'.
 .PP
 Time specifications can also be chained with \fB+\fR or \fB\-\fR into a new
 time specification where the right part is added to or subtracted from the
-left, respectively: `3:00\-200s' means two hundred samples less than three
-minutes.
-.SP
+ttal so far.
+For example, `3:00\-200s' means two hundred samples less than three minutes.
+.PP
+If a \fItime specification\fR is a plain whole number with no \fBt\fP or \fBs\fR
+suffix, whether it is taken as a number of seconds or a number of samples
+depends on the effect in question. At present, it always means seconds
+except for the \fIduration\fR parameters of the \fBsilence\fP effect.
+.SS Supported Effects
 To see if SoX has support for an optional effect, enter
 .B sox_ng \-h
-and look for its name under the list: `EFFECTS'.
-.SS Supported Effects
-Note: a categorized list of the effects can be found in the
+and look for its name in the list \fBEFFECTS\fR;
+a categorized list of the effects can be found in the
 accompanying `README' file.
 .TP
 \fBallpass\fR \fIfrequency\fR[\fBk\fR]\fI width\fR[\fBh\fR\^|\^\fBk\fR\^|\^\fBo\fR\^|\^\fBq\fR]
@@ -2763,13 +2766,13 @@ as detailed in the following table:
 .TS
 center;
 lB lw51.
-\-M/\-I/\-L	Phase response = minimum/intermediate/linear
-\-s	Steep filter (bandwidth = 99%)
+\-M/\-I/\-L	Phase response=minimum/intermediate/linear
+\-s	Steep filter (bandwidth=99%)
 \-a	Allow aliasing/imaging above the pass band
 \-b\ 74\-99\*d7	Any bandwidth %
 \-p\ 0\-100	T{
 .na
-Any phase response (0 = minimum, 25 = intermediate, 50 = linear, 100 = maximum)
+Any phase response (0=minimum, 25=intermediate, 50=linear, 100=maximum)
 T}
 .TE
 .DT
@@ -2918,6 +2921,7 @@ of input channels with a \fIvol-spec\fR (volume specification).
 This is one of the letters \fBp\fR, \fBi\fR, or \fBv\fR,
 followed by a volume number, the meaning of which depends on the given
 letter and is defined as follows:
+.ne 7
 .TS
 center;
 lI lI lI
@@ -3480,6 +3484,7 @@ or
 .B \-q
 may be given to select the fade envelope as half cosine wave (the default),
 triangular (a.k.a. linear), or quarter cosine wave respectively.
+.ne 4
 .TS
 center;
 cI lI lI lI
@@ -3901,7 +3906,7 @@ See also
 for an effect that allows arbitrary channel selection and ordering
 (and mixing).
 .TP
-\fBsynth\fR [\fB\-j \fIKEY\fR] [\fB\-n\fR] [\fIlen\fR [\fIoff\fR [\fIph\fR [\fIp1\fR [\fIp2\fR [\fIp3\fR]]]]]] {[\fItype\fR] [\fIcombine\fR] \:[[\fB%\fR]\fIfreq\fR[\fBk\fR][\fB:\fR\^|\^\fB+\fR\^|\^\fB/\fR\^|\^\fB\-\fR[\fB%\fR]\fIfreq2\fR[\fBk\fR]]] [\fIoff\fR [\fIph\fR [\fIp1\fR [\fIp2\fR [\fIp3\fR]]]]]}
+\fBsynth\fR [\fB\-j \fIKEY\fR] [\fB\-n\fR] [\fIlength\fR [\fIoff\fR [\fIph\fR [\fIp1\fR [\fIp2\fR [\fIp3\fR]]]]]] {[\fItype\fR] [\fIcombine\fR] \:[[\fB%\fR]\fIfreq\fR[\fBk\fR][\fB:\fR\^|\^\fB+\fR\^|\^\fB/\fR\^|\^\fB\-\fR[\fB%\fR]\fIfreq2\fR[\fBk\fR]]] [\fIoff\fR [\fIph\fR [\fIp1\fR [\fIp2\fR [\fIp3\fR]]]]]}
 .ad
 This effect can be used to generate fixed or swept frequency audio tones
 with various wave shapes, or to generate wide-band noise of various
@@ -3983,7 +3988,7 @@ A detailed description of each
 .B synth
 parameter follows:
 .SP
-\fIlen\fR is the length of audio to synthesize (any time specification);
+\fIlength\fR is the length of audio to synthesize (any time specification);
 a value of 0 indicated to use the input length, which is also the default.
 .SP
 \fItype\fR is one of sine, square, triangle, sawtooth, trapezium, exp,
@@ -4007,7 +4012,7 @@ or 3 selects the key of C), or a note in scientific notation.
 If
 .I freq2
 is given, then
-.I len
+.I length
 must also have been given and the generated tone will be swept between
 the given frequencies.  The two given frequencies must be separated by
 one of the characters `:', `+', `/', or `\-'.  This character is used to
