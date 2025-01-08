@@ -86,6 +86,9 @@ distclean-local:
 	$(RM) mingw32-config.cache
 	$(RM) -r -f soxpng
 
+CLEANFILES = sox_ng.txt soxi_ng.txt soxformat_ng.txt libsox_ng.txt \
+	     sox_ng.pdf soxi_ng.pdf soxformat_ng.pdf libsox_ng.pdf
+
 # Rule for making HTML man pages
 #
 # Get rid on unneeded Content-Type, man directory and manpage index in extension.
