@@ -242,7 +242,7 @@ static int sox_silence_start(sox_effect_t * effp)
 
     /* When you want to remove silence, small window sizes are
      * better or else RMS will look like non-silence at
-     * aburpt changes from load to silence.
+     * abrupt changes from load to silence.
      */
     silence->window_size = (effp->in_signal.rate / 50) * 
         effp->in_signal.channels;
