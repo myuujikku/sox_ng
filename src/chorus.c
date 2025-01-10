@@ -12,9 +12,6 @@
 
 #include "sox_i.h"
 
-
-#define MOD_SINE        0
-#define MOD_TRIANGLE    1
 #define MAX_CHORUS      7
 
 typedef struct {
@@ -60,9 +57,9 @@ static int sox_chorus_getopts(sox_effect_t * effp, int argc, char **argv)
                 sscanf(argv[i++], "%f", &chorus->speed[chorus->num_chorus]);
                 sscanf(argv[i++], "%f", &chorus->depth[chorus->num_chorus]);
                 if ( !strcmp(argv[i], "-s"))
-                        chorus->modulation[chorus->num_chorus] = MOD_SINE;
+                        chorus->modulation[chorus->num_chorus] = SOX_WAVE_SINE;
                 else if ( ! strcmp(argv[i], "-t"))
-                        chorus->modulation[chorus->num_chorus] = MOD_TRIANGLE;
+                        chorus->modulation[chorus->num_chorus] = SOX_WAVE_TRIANGLE;
                 else
                   return lsx_usage(effp);
                 i++;
@@ -146,14 +143,10 @@ static int sox_chorus_start(sox_effect_t * effp)
                 chorus->length[i] = effp->in_signal.rate / chorus->speed[i];
                 chorus->lookup_tab[i] = lsx_malloc(sizeof (int) * chorus->length[i]);
 
-                if (chorus->modulation[i] == MOD_SINE)
-                  lsx_generate_wave_table(SOX_WAVE_SINE, SOX_INT, chorus->lookup_tab[i],
-                                         (size_t)chorus->length[i], 0., (double)chorus->depth_samples[i], 0.);
-                else
-                  lsx_generate_wave_table(SOX_WAVE_TRIANGLE, SOX_INT, chorus->lookup_tab[i],
-                                         (size_t)chorus->length[i],
-                                         (double)(chorus->samples[i] - 1 - 2 * chorus->depth_samples[i]),
-                                         (double)(chorus->samples[i] - 1), 3 * M_PI_2);
+                lsx_generate_wave_table(chorus->modulation[i],
+					SOX_INT, chorus->lookup_tab[i],
+                                        (size_t)chorus->length[i], 0.,
+					(double)chorus->depth_samples[i], 0.);
                 chorus->phase[i] = 0;
 
                 if ( chorus->samples[i] > chorus->maxsamples )
@@ -199,10 +192,12 @@ static int sox_chorus_flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sa
                 d_in = (float) *ibuf++ / 256;
                 /* Compute output first */
                 d_out = d_in * chorus->in_gain;
-                for ( i = 0; i < chorus->num_chorus; i++ )
-                        d_out += chorus->chorusbuf[(chorus->maxsamples +
-                        chorus->counter - chorus->lookup_tab[i][chorus->phase[i]]) %
-                        chorus->maxsamples] * chorus->decay[i];
+		for ( i = 0; i < chorus->num_chorus; i++ ) {
+		    long modulation_index = chorus->phase[i];
+		    size_t offset = chorus->lookup_tab[i][modulation_index];
+		    size_t delay_line_index = (chorus->counter + offset) % chorus->maxsamples;
+		    d_out += chorus->chorusbuf[delay_line_index] * chorus->decay[i];
+		}
                 /* Adjust the output volume and size to 24 bit */
                 d_out = d_out * chorus->out_gain;
                 out = SOX_24BIT_CLIP_COUNT((sox_sample_t) d_out, effp->clips);
