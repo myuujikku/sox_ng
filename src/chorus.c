@@ -7,14 +7,7 @@
  */
 
 /*
- *      Chorus effect.
- *
- * Flow diagram scheme for n delays ( 1 <= n <= MAX_CHORUS ):
- *
-*/
-
-/*
- * libSoX chorus effect file.
+ * Chorus effect
  */
 
 #include "sox_i.h"
@@ -286,26 +279,26 @@ const sox_effect_handler_t *lsx_chorus_effect_fn(void)
 {
   static char const usage[] = "\
 gain-in gain-out <delay decay speed depth -s|-t>\n\
-                                              ___\n\
-  ---+-------------------------------------->|   |\n\
-  In |     _________              * gain-in  |   |\n\
-     |    |         |                        |   |\n\
-     +--->| delay 1 |----------------------->|   |\n\
-     |    |_________|             * decay 1  |   |\n\
-     |         ^                             |   |\n\
-     :         | * depth 1                   |   | * gain-out\n\
-     : +---------------+                     | + |------------>\n\
-     : | sine/triangle |<-- speed 1          |   |          Out\n\
-     : +---------------+                     |   |\n\
-     |     _________                         |   |\n\
-     |    |         |                        |   |\n\
-     +--->| delay n |----------------------->|   |\n\
-          |_________|              * decay n |   |\n\
-               ^                             |___|\n\
-               |  * depth n\n\
-       +---------------+\n\
-       | sine/triangle |<-- speed n\n\
-       +---------------+\n\
+                                                ___\n\
+  In---+-------------------------------------->|   |\n\
+       |     _________              * gain-in  |   |\n\
+       |    |         |                        |   |\n\
+       +--->| delay 1 |----------------------->|   |\n\
+       |    |_________|             * decay 1  |   |\n\
+       |         ^                             |   |\n\
+       :         | * depth 1                   |   |\n\
+       : +---------------+                     | + |------------>Out\n\
+       : | sine/triangle |<--speed 1           |   | * gain-out\n\
+       : +---------------+                     |   |\n\
+       |     _________                         |   |\n\
+       |    |         |                        |   |\n\
+       +--->| delay n |----------------------->|   |\n\
+            |_________|              * decay n |   |\n\
+                 ^                             |___|\n\
+                 | * depth n\n\
+         +---------------+\n\
+         | sine/triangle |<--speed n\n\
+         +---------------+\n\
 \n\
          RANGE   DESCRIPTION\n\
 gain-in   0-1    Proportion of input delivered clean to adder\n\
