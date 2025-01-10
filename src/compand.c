@@ -16,29 +16,6 @@
 
 /*
  * Compressor/expander effect for libSoX.
- *
- * Flow diagram for one channel:
- *
- *               ------------      ---------------
- *              |            |    |               |     ---
- * ibuff ---+---| integrator |--->| transfer func |--->|   |
- *          |   |            |    |               |    |   |
- *          |    ------------      ---------------     |   |  * gain
- *          |                                          | * |----------->obuff
- *          |       -------                            |   |
- *          |      |       |                           |   |
- *          +----->| delay |-------------------------->|   |
- *                 |       |                            ---
- *                  -------
- */
-#define compand_usage \
-  "attack1,decay1{,attack2,decay2} [soft-knee-dB:]in-dB1[,out-dB1]{,in-dB2,out-dB2} [gain [initial-volume-dB [delay]]]\n" \
-  "\twhere {} means optional and repeatable and [] means optional.\n" \
-  "\tdB values are floating point or -inf'; times are in seconds."
-/*
- * Note: clipping can occur if the transfer function pushes things too
- * close to 0 dB.  In that case, use a negative gain, or reduce the
- * output level of the transfer function.
  */
 
 typedef struct {
@@ -285,9 +262,28 @@ static int lsx_kill(sox_effect_t * effp)
 
 sox_effect_handler_t const * lsx_compand_effect_fn(void)
 {
+  static char usage[] = "\
+attack1,decay1{,attack2,decay2} [soft-knee-dB:]in-dB1[,out-dB1]{,in-dB2,out-dB2} [gain [initial-volume-dB [delay]]]\n\
+  dB values are floating point or -inf'; times are in seconds.\n\
+\n\
+  Flow diagram for one channel:\n\
+           ____________      _______________\n\
+          |            |    |               |     ___\n\
+  In--+-->| integrator |--->| transfer func |--->|   |\n\
+      |   |____________|    |_______________|    |   | * gain\n\
+      |       _______                            | * |-------->Out\n\
+      |      |       |                           |   |\n\
+      +----->| delay |-------------------------->|___|\n\
+             |_______|\n\
+\n\
+Clipping can occur if the transfer function pushes things\n\
+too close to 0 dB.  In that case, use a negative gain\n\
+or reduce the output level of the transfer function.";
+
   static sox_effect_handler_t handler = {
-    "compand", compand_usage, SOX_EFF_MCHAN | SOX_EFF_GAIN,
+    "compand", usage, SOX_EFF_MCHAN | SOX_EFF_GAIN,
     getopts, start, flow, drain, stop, lsx_kill, sizeof(priv_t)
   };
+
   return &handler;
 }

@@ -7,41 +7,6 @@
  * the consequences of using this software.
  *
  *
- * Flow diagram scheme for n delays ( 1 <= n <= MAX_ECHOS ):
- *
- *    iBuff
- *      |                                                   ___
- *      v                                         x gainIn |   | x gainOut
- *      +--------+-------------------+-------------------->|   |--------+
- *      |        |                   |                     |   |        |
- *  ____v___    _v_     ________    _v_     ________       |   |        |
- * |        |  |   |   |        |  |   |   |        |      |   |        v
- * | delay1 |  | + |-->| delay2 |  | + |-->| delayn |      |   |      oBuff
- * |________|  |___|   |________|  |___|   |________|      |   |
- *      |        ^          |        ^          |          | + |
- *      |        |          |        |          | x decayn |   |
- *      |        |          |        |          +--------->|   |
- *      |        |          |        |            x decay2 |   |
- *      |        |          +--------+-------------------->|   |
- *      |        |                                x decay1 |   |
- *      +--------+---------------------------------------->|   |
- *                                                         |___|
- *
- * Usage:
- *   echos gain-in gain-out delay1 decay1 [delay2 decay2 ... delayn decayn]
- *
- * Where:
- *   gain-in, decay1 ... decayn :  0.0 ... 1.0      volume
- *   gain-out :  0.0 ...      volume
- *   delay1 ... delayn :  > 0.0 msec
- *
- * Note:
- *   when decay is close to 1.0, the samples can begin clipping and the output
- *   can saturate!
- *
- * Hint:
- *   1 / gain-out > gain-in ( 1 + decay-1 + ... + decay-n )
- *
  */
 
 #include "sox_i.h"
@@ -269,19 +234,39 @@ static int sox_echos_stop(sox_effect_t * effp)
         return (SOX_SUCCESS);
 }
 
-static sox_effect_handler_t sox_echos_effect = {
-  "echos",
-  "gain-in gain-out delay decay [ delay decay ... ]",
-  SOX_EFF_LENGTH | SOX_EFF_GAIN,
-  sox_echos_getopts,
-  sox_echos_start,
-  sox_echos_flow,
-  sox_echos_drain,
-  sox_echos_stop,
-  NULL, sizeof(priv_t)
-};
-
 const sox_effect_handler_t *lsx_echos_effect_fn(void)
 {
-    return &sox_echos_effect;
+  static char usage[] = "gain-in gain-out delay decay <delay decay>\n\
+                                                           ___\n\
+   In--+--------+-------------------+-------------------->|   |\n\
+       |        |                   |           * gain-in |   |\n\
+   ____v___    _v_     ________    _v_     ________       |   |\n\
+  |        |  |   |   |        |  |   |   |        |      |   |\n\
+  | delay1 |  | + |-->| delay2 |  | + |-->| delayN |      |   |\n\
+  |________|  |___|   |________|  |___|   |________|      |   | * gain-out\n\
+       |        ^          |        ^          |          | + |------------>\n\
+       |        |          |        |          |          |   |         Out\n\
+       |        |          |        |          +--------->|   |\n\
+       |        |          |        |           * decay N |   |\n\
+       |        |          +--------+-------------------->|   |\n\
+       |        |                               * decay 2 |   |\n\
+       +--------+---------------------------------------->|   |\n\
+                                                * decay 1 |___|\n\
+         RANGE  DESCRIPTION\n\
+gain-in   0-1   Proportion of input signal delivered clean to adder\n\
+gain-out  0-    Final volume adjustment\n\
+delay     0-    Delay in milliseconds\n\
+decay     0-1   Proportion of delayed signal delivered to adder\n\
+\n\
+When decay is close to 1.0, the samples can clip and the output can saturate.\n\
+Hint: gain-out < 1 / (gain-in * ( 1 + decay1 + ... + decayN ))";
+
+  static sox_effect_handler_t handler = {
+    "echos", usage, SOX_EFF_LENGTH | SOX_EFF_GAIN,
+    sox_echos_getopts,
+    sox_echos_start, sox_echos_flow, sox_echos_drain, sox_echos_stop,
+    NULL, sizeof(priv_t)
+  };
+
+  return &handler;
 }
