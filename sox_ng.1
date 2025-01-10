@@ -1466,8 +1466,10 @@ Where applicable, default values for optional parameters are shown
 The following parameters are used with, and have the same meaning for,
 several effects:
 .TP
-\fIcenter\fR[\fBk\fR] and \fIfrequency\fR[\fBk\fR]
-A frequency in Hz or, if followed by \fBk\fR, kHz.
+\fIfrequency\fR
+A frequency in Hz or, if followed by \fBk\fR, kHz,
+if preceded with `%', semitones relative to A (440\ Hz);
+alternatively, `scientific' note notation (e.g. E2) may be used.
 .TP
 \fIgain\fR
 A power gain in dB.
@@ -1541,27 +1543,29 @@ suffix, whether it is taken as a number of seconds or a number of samples
 depends on the effect in question. At present, it always means seconds
 except for the \fIduration\fR parameters of the \fBsilence\fP effect.
 .SS Supported Effects
-To see if SoX has support for an optional effect, enter
+To see whether SoX has support for an optional effect, enter
 .B sox_ng \-h
 and look for its name in the list \fBEFFECTS\fR;
 a categorized list of the effects can be found in the
 accompanying `README' file.
 .TP
-\fBallpass\fR \fIfrequency\fR[\fBk\fR]\fI width\fR[\fBh\fR\^|\^\fBk\fR\^|\^\fBo\fR\^|\^\fBq\fR]
-Apply a two-pole all-pass filter with central frequency (in Hz)
-\fIfrequency\fR, and filter-width \fIwidth\fR.
+\fBallpass\fR [\fB\-1\fR\^|\^\fB\-2\fR] \fIfrequency width\fR[\fBh\fR\^|\^\fBk\fR\^|\^\fBo\fR\^|\^\fBq\fR]
+Apply a two-pole all-pass filter with central frequency \fIfrequency\fR
+and filter-width \fIwidth\fR.
 An all-pass filter changes the
 audio's frequency to phase relationship without changing its frequency
 to amplitude relationship.  The filter is described in detail in [1].
 .SP
+\fB-1\fR or \fB-2\fR use an experimental 1-pole or 2-pole filter,
+in which case \fIwidth\fR does not apply.
+.SP
 This effect supports the \fB\-\-plot\fR global option.
 .TP
-\fBband\fR [\fB\-n\fR] \fIcenter\fR[\fBk\fR]\fR [\fIwidth\fR[\fBh\fR\^|\^\fBk\fR\^|\^\fBo\fR\^|\^\fBq\fR]]
+\fBband\fR [\fB\-n\fR] \fIfrequency\fR [\fIwidth\fR[\fBh\fR\^|\^\fBk\fR\^|\^\fBo\fR\^|\^\fBq\fR]]
 Apply a band-pass filter.
 The frequency response drops logarithmically
-around the
-.I center
-frequency.
+around the center
+.IR frequency .
 The
 .I width
 parameter gives the slope of the drop.
@@ -1584,7 +1588,7 @@ for unpitched audio (e.g. percussion).
 of output clipping.
 .B band
 introduces noise in the shape of the filter,
-i.e. peaking at the
+peaking at the
 .I center
 frequency and settling around it.
 .SP
@@ -1592,15 +1596,15 @@ This effect supports the \fB\-\-plot\fR global option.
 .SP
 See also \fBsinc\fR for a band-pass filter with steeper shoulders.
 .TP
-\fBbandpass\fR\^|\^\fBbandreject\fR [\fB\-c\fR] \fIfrequency\fR[\fBk\fR]\fI width\fR[\fBh\fR\^|\^\fBk\fR\^|\^\fBo\fR\^|\^\fBq\fR]
+\fBbandpass\fR [\fB\-c\fR] \fIfrequency width\fR[\fBh\fR\^|\^\fBk\fR\^|\^\fBo\fR\^|\^\fBq\fR]
 Apply a two-pole Butterworth band-pass or band-reject filter with
-central frequency \fIfrequency\fR, and (3dB-point) bandwidth
-\fIwidth\fR.  The
+central frequency \fIfrequency\fR, and (3dB-point) bandwidth \fIwidth\fR.
+The
 .B \-c
 option applies only to
 .B bandpass
 and selects a constant skirt gain (peak gain = Q) instead of the
-default: constant 0dB peak gain.
+default, a constant 0dB peak gain.
 The filters roll off at 6dB per octave (20dB per decade)
 and are described in detail in [1].
 .SP
@@ -1608,20 +1612,19 @@ These effects support the \fB\-\-plot\fR global option.
 .SP
 See also \fBsinc\fR for a band-pass filter with steeper shoulders.
 .TP
-\fBbandreject \fIfrequency\fR[\fBk\fR]\fI width\fR[\fBh\fR\^|\^\fBk\fR\^|\^\fBo\fR\^|\^\fBq\fR]
+\fBbandreject \fIfrequency width\fR[\fBh\fR\^|\^\fBk\fR\^|\^\fBo\fR\^|\^\fBq\fR]
 Apply a band-reject filter.
 See the description of the \fBbandpass\fR effect for details.
 .TP
-\fBbass\fR\^|\^\fBtreble \fIgain\fR [\fIfrequency\fR[\fBk\fR]\fR [\fIwidth\fR[\fBs\fR\^|\^\fBh\fR\^|\^\fBk\fR\^|\^\fBo\fR\^|\^\fBq\fR]]]
+\fBbass\fR\^|\^\fBtreble \fIgain\fR [\fIfrequency\fR [\fIwidth\fR[\fBs\fR\^|\^\fBh\fR\^|\^\fBk\fR\^|\^\fBo\fR\^|\^\fBq\fR]]]
 Boost or cut the bass (lower) or treble (upper) frequencies of the audio
 using a two-pole shelving filter with a response similar to that
 of a standard hifi's tone controls.  This is also
-known as shelving equalization (EQ).
+known as shelving equalization.
 .SP
-\fIgain\fR gives the gain at 0\ Hz (for \fBbass\fR), or whichever is
-the lower of \(ap22\ kHz and the Nyquist frequency (for \fBtreble\fR).  Its
-useful range is about \-20 (for a large cut) to +20 (for a large
-boost).
+\fIgain\fR gives the gain at 0\ Hz for \fBbass\fR, or whichever is
+the lower of \(ap22\ kHz and the Nyquist frequency for \fBtreble\fR.
+Its useful range is about \-20 (for a large cut) to +20 (for a large boost.)
 Beware of
 .B Clipping
 when using a positive \fIgain\fR.
@@ -1631,17 +1634,17 @@ optional parameters:
 .SP
 \fIfrequency\fR sets the filter's central frequency and so can be
 used to extend or reduce the frequency range to be boosted or
-cut.  The default value is 100\ Hz (for \fBbass\fR) or 3\ kHz (for
-\fBtreble\fR).
+cut.
+The default values are 100\ Hz for \fBbass\fR and 3\ kHz for \fBtreble\fR.
 .SP
 \fIwidth\fR
 determines how
-steep is the filter's shelf transition.  In addition to the common
+steep the filter's shelf transition is.  In addition to the common
 width specification methods described above,
 `slope' (the default, or if appended with `\fBs\fR') may be used.
 The useful range of `slope' is
-about 0\*d3, for a gentle slope, to 1 (the maximum), for a steep slope; the
-default value is 0\*d5.
+about 0\*d3 for a gentle slope, to 1 (the maximum) for a steep slope;
+the default value is 0\*d5.
 .SP
 The filters are described in detail in [1].
 .SP
@@ -1650,14 +1653,17 @@ These effects support the \fB\-\-plot\fR global option.
 See also \fBequalizer\fR for a peaking equalization effect.
 .TP
 \fBbend\fR [\fB\-f \fIframe-rate\fR(25)] [\fB\-o \fIover-sample\fR(16)] { \fIstart-position(+)\fB,\fIcents\fB,\fIend-position(+)\fR }
-Changes pitch by specified amounts at specified times.
+Changes the pitch by specified amounts at specified times without changing
+the duration.
 Each given triple: \fIstart-position\fB,\fIcents\fB,\fIend-position\fR
 specifies one bend.
 \fIcents\fR is the number of cents (100 cents = 1 semitone) by which to
 bend the pitch. The other values specify the points in time at which to start
-and end bending the pitch, respectively.
+and end bending the pitch.
+During each bend, the frequency changes logarithmically,
+i.e. by the same number of cents per second.
 .SP
-The pitch bending algorithm utilizes the Discrete Fourier Transform (DFT)
+The pitch bending algorithm uses the Discrete Fourier Transform (DFT)
 at a particular frame rate and over-sampling rate.
 The
 .B \-f
@@ -1673,7 +1679,7 @@ four different notes in total:
    play_ng \-n synth 2.5 sin 667 gain 1 \\
 	bend .35,180,.25  .15,740,.53  0,\-520,.3
 .EE
-Here, the first bend runs from 0.35 to 0.6, and the second one from 0.75
+Here, the first \fBbend\fR runs from 0.35 to 0.6 and the second one from 0.75
 to 1.28 seconds.
 Note that the clipping that is produced in this example is deliberate;
 to remove it, use
@@ -1691,10 +1697,9 @@ See http://en.wikipedia.org/wiki/Digital_biquad_filter (where a0 = 1).
 .SP
 This effect supports the \fB\-\-plot\fR global option.
 .TP
-\fBchannels \fICHANNELS\fR
+\fBchannels \fIchannels\fR
 Invoke a simple algorithm to change the number of channels in
-the audio signal to the given number
-.IR CHANNELS :
+the audio signal to the given number,
 mixing if decreasing the number of channels or duplicating if
 increasing the number of channels.
 .SP
@@ -1702,7 +1707,7 @@ The
 .B channels
 effect is invoked automatically if SoX's \fB\-c\fR option specifies a
 number of channels that is different to that of the input file(s).
-Alternatively, if this effect is given explicitly, then SoX's
+Alternatively, if this effect is given explicitly, SoX's
 .B \-c
 option need not be given.  For example, the following two commands are
 equivalent:
@@ -1714,17 +1719,22 @@ equivalent:
 though the second form is more flexible as it allows the effects to
 be ordered arbitrarily.
 .SP
-See also
+For example, when making a stereo file quadrophonic,
+the left and right channels are copied into the third and fourth and
+when mixing a four-channel file down to stereo, the left channel is
+the mix of the first and third and the right of the second and fourth.
+.SP
+See
 .B remix
-for an effect that allows channels to be mixed/selected arbitrarily.
+for an effect that allows channels to be mixed and selected arbitrarily.
 .TP
 \fBchorus \fIgain-in gain-out\fR <\fIdelay decay speed depth \fB\-s\fR\^|\^\fB\-t\fR>
 Add a chorus effect to the audio.  This can make a single voice sound
 like a chorus but can also be applied to instrumentation.
 .SP
 Chorus resembles an \fBecho\fR effect with a short delay but,
-while an echo's delay is constant, a chorus' delay
-varies by a sinusoidal or triangular modulation wave.
+while \fBecho\fR's delay is constant, \fBchorus\fR' delay
+varies by a sinusoidal or triangular modulation.
 .SP
 See [3] for further discussion of the chorus effect.
 .SP
@@ -1735,7 +1745,10 @@ modulation in milliseconds \- each delay ranges from
 the fixed \fIdelay\fR to \fIdelay\fR\ \(pl\ \fIdepth\fR \-
 and whether the modulation is sinusoidal (\fB\-s\fR) or triangular (\fB\-t\fR).
 \fIGain-out\fR is then applied to the sum of the input scaled by \fIgain-in\fP
-and the outputs from the delays.
+and the outputs from the delays scaled by their \fIdecay\fRs.
+.SP
+For a flow diagram of how \fBchorus\fR works,
+say \fBsox_ng --help-effect chorus\fR.
 .SP
 A typical delay is around 40ms to 60ms; the modulation speed is best
 near 0\*d25Hz and the modulation depth around 2ms.
@@ -1755,9 +1768,6 @@ A fuller-sounding chorus (with three additional delays):
    play_ng guitar1.wav chorus 0.5 0.9 50 0.4 0.25 2 \-t \\
 	 60 0.32 0.4 2.3 \-t 40 0.3 0.3 1.3 \-s
 .EE
-.SP
-There is an ASCII art flow diagram for this effect
-at the top of src/chorus.c
 .TP
 \fBcompand \fIattack1\fB,\fIdecay1\fR{\fB,\fIattack2\fB,\fIdecay2\fR}
 [\fIsoft-knee-dB\fB:\fR]\fIin-dB1\fR[\fB,\fIout-dB1\fR]{\fB,\fIin-dB2\fB,\fIout-dB2\fR}
@@ -1866,8 +1876,8 @@ similar to squelch):
 .EE
 This effect supports the \fB\-\-plot\fR global option (for the transfer function).
 .SP
-There is an ASCII art flow diagram for this effect
-at the top of src/compand.c
+For a flow diagram of how \fBcompand\fR works,
+say \fBsox_ng --help-effect compand\fR.
 .SP
 See also
 .B mcompand
@@ -2073,6 +2083,10 @@ Each given
 pair gives the delay in milliseconds
 and the decay of that echo.
 Gain-out is the volume of the output.
+.SP
+For a flow diagram of how \fBecho\fR works,
+say \fBsox_ng --help-effect echo\fR.
+.SP
 For example:
 This will make it sound as if there are twice as many instruments as are
 actually playing:
@@ -2092,9 +2106,6 @@ One mountain more, and:
 .EX
    play_ng lead.aiff echo 0.8 0.9 1000 0.3 1800 0.25
 .EE
-.SP
-There is an ASCII art flow diagram for this effect
-at the top of src/echo.c
 .TP
 \fBechos \fIgain-in gain-out\fR <\fIdelay decay\fR>
 Add a sequence of echoes to the audio.
@@ -2104,11 +2115,15 @@ pair gives the delay in milliseconds
 and the decay of that echo.
 Gain-out is the volume of the output.
 .SP
-Echos stand for `ECHO in Sequel', that is the first echos
-takes the input, the second the input and the first echos, the third the input
-and the first and the second echos, ... and so on.
-Care should be taken using many echos; a single echos
-has the same effect as a single echo.
+Echos stands for `Echo in Sequel'; that is, the first echo
+takes the input, the second the input and the first echo,
+the third the input and the first and the second echoes and so on.
+A single \fBechos\fR has the same effect as a single \fBecho\fR.
+.SP
+For a flow diagram of how \fBechos\fR works,
+say \fBsox_ng --help-effect echos\fR.
+.SP
+For example:
 .SP
 The sample will be bounced twice in symmetric echos:
 .EX
@@ -2122,11 +2137,8 @@ The sample will sound as if played in a garage:
 .EX
    play_ng lead.aiff echos 0.8 0.7 40 0.25 63 0.3
 .EE
-.SP
-There is an ASCII art flow diagram for this effect
-at the top of src/echos.c
 .TP
-\fBequalizer \fIfrequency\fR[\fBk\fR]\fI width\fR[\fBq\fR\^|\^\fBo\fR\^|\^\fBh\fR\^|\^\fBk\fR] \fIgain\fR
+\fBequalizer \fIfrequency width\fR[\fBq\fR\^|\^\fBo\fR\^|\^\fBh\fR\^|\^\fBk\fR] \fIgain\fR
 Apply a two-pole peaking equalization (EQ) filter.
 With this filter, the signal level at and around a selected frequency
 can be increased or decreased, whilst (unlike band-pass and band-reject
@@ -2413,7 +2425,7 @@ and
 .B vol
 effects.
 .TP
-\fBhighpass\fR\^|\^\fBlowpass\fR [\fB\-1\fR|\fB\-2\fR] \fIfrequency\fR[\fBk\fR]\fR [\fRwidth\fR[\fBq\fR\^|\^\fBo\fR\^|\^\fBh\fR\^|\^\fBk\fR]]
+\fBhighpass\fR\^|\^\fBlowpass\fR [\fB\-1\fR|\fB\-2\fR] \fIfrequency\fR [\fRwidth\fR[\fBq\fR\^|\^\fBo\fR\^|\^\fBh\fR\^|\^\fBk\fR]]
 Apply a high-pass or low-pass filter with 3dB point \fIfrequency\fR.
 The filter can be either single-pole (with
 .BR \-1 ),
@@ -2491,7 +2503,7 @@ See also the
 .B gain
 effect.
 .TP
-\fBlowpass\fR [\fB\-1\fR|\fB\-2\fR] \fIfrequency\fR[\fBk\fR]\fR [\fRwidth\fR[\fBq\fR\^|\^\fBo\fR\^|\^\fBh\fR\^|\^\fBk\fR]]
+\fBlowpass\fR [\fB\-1\fR|\fB\-2\fR] \fIfrequency\fR [\fRwidth\fR[\fBq\fR\^|\^\fBo\fR\^|\^\fBh\fR\^|\^\fBk\fR]]
 Apply a low-pass filter.
 See the description of the \fBhighpass\fR effect for details.
 .TP
@@ -2654,8 +2666,8 @@ More severe:
    play_ng snare.flac phaser 0.6 0.66 3 0.6 2 \-t
 .EE
 .SP
-There is an ASCII art flow diagram for this effect
-at the top of src/phaser.c
+For a flow diagram of how \fBphaser\fR works,
+say \fBsox_ng --help-effect phaser\fR.
 .TP
 \fBpitch \fR[\fB\-q\fR] \fIshift\fR [\fIsegment\fR [\fIsearch\fR [\fIoverlap\fR]]]
 Change the audio pitch (but not tempo).
@@ -3083,15 +3095,17 @@ an \fIabove-period\fR of 2 to strip out both silence periods and the
 first song.
 .SP
 When \fIabove-periods\fR is non-zero, you must also specify a
-\fIduration\fR and \fIthreshold\fR. \fIduration\fR indicates the
-amount of time that non-silence must be detected before it stops
-trimming audio. By increasing the duration, burst of noise can be
-treated as silence and trimmed off.
+\fIduration\fR and \fIthreshold\fR.
 .SP
-\fIthreshold\fR is used to indicate what sample value you should treat as
-silence.  For digital audio, a value of 0 may be fine but for audio
-recorded from analog, you may wish to increase the value to account
-for background noise.
+\fIduration\fR indicates the
+amount of time that non-silence must be detected before it stops
+trimming audio. By increasing the duration, bursts of quiet noise
+can be treated as silence and trimmed off.
+.SP
+\fIthreshold\fR is used to indicate what sample value in any channel
+is considered silence. For digital audio, a value of 0 may be fine but
+for audio recorded from analog you may wish to increase the value
+to account for background noise.
 .SP
 When optionally trimming silence from the end of the audio, you specify
 a \fIbelow-periods\fR count.  In this case, \fIbelow-period\fR means
@@ -3110,7 +3124,7 @@ in the middle and 2 seconds of silence at the end, a duration of 2
 seconds could be used to skip over the middle silence.
 .SP
 Unfortunately, you must know the length of the silence at the
-end of your audio file to trim off silence reliably.  A workaround is
+end of your audio file to trim silence off reliably.  A workaround is
 to use the \fBsilence\fR effect in combination with the \fBreverse\fR effect.
 By first reversing the audio, you can use the \fIabove-periods\fR
 to reliably trim all audio from what looks like the front of the file.
@@ -3137,10 +3151,10 @@ a decimal point (as in `2.0') or specify minutes too (as in `0:02').
 .SP
 \fIthreshold\fR numbers may be suffixed with
 .B d
-to indicate the value is in decibels, or
+to indicate the value is in decibels or
 .B %
-to indicate a percentage of maximum value of the sample value
-(\fB0%\fR specifies pure digital silence).
+to indicate a percentage of the maximum possible sample value
+(\fB0%\fR specifies pure digital silence). By default, it is in percent.
 .SP
 The following example shows how this effect can be used to start a recording
 that does not contain the delay at the start which usually occurs between
@@ -3989,18 +4003,19 @@ A detailed description of each
 parameter follows:
 .SP
 \fIlength\fR is the length of audio to synthesize (any time specification);
-a value of 0 indicated to use the input length, which is also the default.
+a value of 0 indicated to use the input length, which is also the default;
+if the input is \fB\-n\fR and the \fIlength\fR is zero, it will continue
+generating sound until it is stopped in some other way.
 .SP
 \fItype\fR is one of sine, square, triangle, sawtooth, trapezium, exp,
 [white]noise, tpdfnoise, pinknoise, brownnoise, pluck; default=sine.
 .SP
-\fIcombine\fR is one of create, mix, amod (amplitude modulation), fmod
-(frequency modulation); default=create.
+\fIcombine\fR is one of create (the default), mix (50:50 with the input signal),
+amod (amplitude modulation) and fmod (frequency modulation).
 .SP
 \fIfreq\fR/\fIfreq2\fR are the frequencies at the beginning/end of
-synthesis in Hz or, if preceded with `%', semitones relative to A
-(440\ Hz); alternatively, `scientific' note notation (e.g. E2) may
-be used.  The default frequency is 440Hz.  By default, the tuning used
+synthesis.
+The default frequency is 440Hz.  By default, the tuning used
 with the note notations is `equal temperament'; the
 .B \-j
 .I KEY
@@ -4127,7 +4142,7 @@ and \fBbend\fR for effects that change pitch only, and
 .B stretch
 for an effect that changes tempo using a different algorithm.
 .TP
-\fBtreble \fIgain\fR [\fIfrequency\fR[\fBk\fR]\fR [\fIwidth\fR[\fBs\fR\^|\^\fBh\fR\^|\^\fBk\fR\^|\^\fBo\fR\^|\^\fBq\fR]]]
+\fBtreble \fIgain\fR [\fIfrequency\fR [\fIwidth\fR[\fBs\fR\^|\^\fBh\fR\^|\^\fBk\fR\^|\^\fBo\fR\^|\^\fBq\fR]]]
 Apply a treble tone control effect.
 See the description of the \fBbass\fR effect for details.
 .TP
