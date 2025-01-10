@@ -309,8 +309,8 @@ gain-in   0-1    Proportion of input delivered clean to adder\n\
 gain-out  0-     Final volume adjustment\n\
 delay    20-100  Fixed delay in milliseconds\n\
 decay     0-1    Proportion of delay's output delivered to adder\n\
-speed   0.1-5.0  Modulation frequency in Hz\n\
-depth    0-10.0  Additional variable delay in milliseconds\n\
+speed   0.1-5    Modulation frequency in Hz\n\
+depth     0-10   Additional variable delay in milliseconds\n\
 -s               Modulate sinusoidally\n\
 -t               Modulate triangularly";
 
