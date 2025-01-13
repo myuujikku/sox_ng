@@ -50,7 +50,7 @@ SoX \- Sound eXchange_ng, another Swiss Army knife of audio manipulation
 SoX reads and writes audio files in most popular formats and can
 optionally apply effects to them. It can combine multiple input
 sources, synthesize audio and, on many systems, act as a general
-purpose audio player or a multi-track audio recorder. It also has
+purpose audio player or a multitrack audio recorder. It also has
 limited ability to split the input into multiple output files.
 .SP
 All SoX functionality is available using just the \fBsox_ng\fR command.
@@ -86,7 +86,7 @@ Input(s) \*(RA Combiner \*(RA Effects \*(RA Output(s)
 .SP
 Note, however, that on the SoX command line, the positions of the
 Output(s) and the Effects are swapped w.r.t. the logical flow just
-shown.  Note also that, whilek options pertaining to files are placed
+shown.  Note also that, while options pertaining to files are placed
 before their respective file names, the opposite is true for effects.
 To show how this works in practice, here is a selection of examples of
 how SoX might be used.  The simple
@@ -132,7 +132,7 @@ records half an hour of stereo audio and
    play_ng \-q take1.aiff & rec \-M take1.aiff take1\-dub.aiff
 .EE
 (with a POSIX shell and where supported by hardware)
-records a new track in a multi-track recording.  Finally,
+records a new track in a multitrack recording.  Finally,
 .EX
 .ne 3
    rec_ng \-r 44100 \-b 16 \-e signed-integer \-p \\
@@ -183,7 +183,7 @@ encodings have variants with different byte-orderings or bit-orderings,
 some compress the audio data so that it takes up less
 space (disk space or transmission bandwidth) than uncompressed formats.
 Commonly-used
-encoding types include floating-point, \(*m-law, ADPCM, signed-integer
+encoding types include floating point, \(*m-law, ADPCM, signed-integer
 PCM, MP3 and FLAC.
 .TP
 channels
@@ -287,7 +287,7 @@ For example, on many systems:
 .EE
 may help or, on Microsoft Windows:
 .EX
-   set AUDIODRIVER=wazeaudio
+   set AUDIODRIVER=waveaudio
 .EE
 The
 .B AUDIODEV
@@ -630,8 +630,8 @@ Note that
 giving SoX an input or output filename that is the same as the name
 of a SoX effect will not work since SoX will treat it as an effect
 specification.  You can work around this by calling the file
-\fB./chorus\fR on Unix or \fB.\echorus\fR on NS/DOS, but it is
-generally not a probleb since most audio
+\fB./chorus\fR on Unix or \fB.\echorus\fR on MS/DOS but it is
+generally not a problem since most audio
 filenames have a filename extension after a dot while effect names do not.
 .SP
 Using the same file name as an input and an output is unlikely to
@@ -722,7 +722,7 @@ as described above.
 \fB\-n\fR, \fB\-\-null\fR
 This can be used in place of an input or output filename to specify that
 a `null file' is to be used.  Here, `null file' refers to a
-SoX-specific mechanism and is not related to any operating-system
+SoX-specific mechanism and is not related to any operating system
 mechanism with some special name.
 .SP
 Using a null file to input audio is equivalent to
@@ -899,10 +899,10 @@ option enables its use in helping to detect audio file types.
 By default, SoX is `single threaded' but
 if the \fB\-\-multi\-threaded\fR option is given,
 SoX will process audio channels for most multichannel
-effects in parallel on hyper-threading/multi-core architectures. This
+effects in parallel on hyperthreading/multicore architectures. This
 may reduce processing time, though sometimes it may be necessary to use
 this option in conjunction with a larger buffer size than is the default
-to gain any benefit from multi-threaded processing
+to gain any benefit from multithreaded processing
 (e.g. 131072; see \fB\-\-buffer\fR above).
 .TP
 \fB\-\-no\-clobber\fR
@@ -961,7 +961,7 @@ If not set to
 .B \-\-plot
 is not given), run in a mode that can be used in conjunction with the
 \fBgnuplot\fR program or the GNU Octave program to assist with the selection
-and configuration of many of the transfer-function based effects.
+and configuration of many of the transfer function-based effects.
 For the first given effect that supports the selected plotting program,
 SoX will output commands to plot the effect's transfer function, and
 then exit without actually processing any audio.  E.g.
@@ -1038,7 +1038,7 @@ Equivalent to \fB\-\-combine multiply\fR
 \fB\-\-temp\fI DIRECTORY\fR
 Specify that any temporary files should be created in the given
 .IR DIRECTORY .
-This can be useful if there are permission or free-space problems with the
+This can be useful if there are permission or free space problems with the
 default location. In this case, using `\fB\-\-temp .\fR' (to use the
 current directory) is often a good solution.
 .TP
@@ -1189,7 +1189,7 @@ with an 8-bit encoding size.  A value of 0 represents maximum signal
 power.
 .IP \fBfloating\-point\fR
 PCM data stored as IEEE 753 single precision (32-bit) or double
-precision (64-bit) floating-point (`real') numbers.
+precision (64-bit) floating point (`real') numbers.
 A value of 0 represents minimum signal power.
 .IP \fBa-law\fR
 International telephony standard for logarithmic encoding to 8 bits per
@@ -1241,7 +1241,7 @@ to set the output encoding. For example:
    sox_ng input.cdda \-b 64 \-e float output2.wav
 .EE
 converts a raw CD digital audio (16-bit signed integer) to
-floating-point `WAV' files of single and double precision respectively.
+floating point `WAV' files of single and double precision respectively.
 .SP
 If this option is not given, the output encoding will be the same as
 the input encoding, provided it is supported by the output file type.
@@ -1322,7 +1322,7 @@ for a list of supported file types.
 These options specify whether the byte-order of the audio data is,
 respectively, `little endian', `big endian', or the opposite to that of
 the system on which SoX is being used.  Endianness applies only to data
-encoded as floating-point, or as signed or unsigned integers of 16 or
+encoded as floating point, or as signed or unsigned integers of 16 or
 more bits.  It is often necessary to specify one of these options for
 headerless files and sometimes necessary for (otherwise)
 self-describing files.  A given endian-setting option may be ignored
@@ -1404,7 +1404,7 @@ may alleviate performance issues, should they occur.
 Some of the SoX effects are primarily intended to be applied to a single
 instrument or `voice'.  To facilitate this, the \fBremix\fR effect and
 the global SoX option \fB\-M\fR can be used to isolate then recombine
-tracks from a multi-track recording.
+tracks from a multitrack recording.
 .SS Multiple Effects Chains
 A single effects chain is made up of one or more effects.  Audio from
 the input runs through the chain until either the end of the input file
@@ -1537,7 +1537,7 @@ counts, \fIe notation\fR is supported: `1.7e6s' is the same as `1700000s'.
 .PP
 Time specifications can also be chained with \fB+\fR or \fB\-\fR into a new
 time specification where the right part is added to or subtracted from the
-ttal so far.
+total so far.
 For example, `3:00\-200s' means two hundred samples less than three minutes.
 .PP
 If a \fItime specification\fR is a plain whole number with no \fBt\fP or \fBs\fR
@@ -1553,7 +1553,7 @@ accompanying `README' file.
 .TP
 \fBallpass\fR [\fB\-1\fR\^|\^\fB\-2\fR] \fIfrequency \fR[\fIwidth\fR[\fBh\fR\^|\^\fBk\fR\^|\^\fBo\fR\^|\^\fBq\fR]]
 Apply a two-pole all-pass filter with central frequency \fIfrequency\fR
-and filter-width \fIwidth\fR.
+and filter width \fIwidth\fR.
 An all-pass filter changes the
 audio's frequency to phase relationship without changing its frequency
 to amplitude relationship.  The filter is described in detail in [1].
@@ -1656,7 +1656,7 @@ These effects support the \fB\-\-plot\fR global option.
 .SP
 See also \fBequalizer\fR for a peaking equalization effect.
 .TP
-\fBbend\fR [\fB\-f \fIframe-rate\fR(25)] [\fB\-o \fIover-sample\fR(16)] {\fIstart-position(+)\fB,\fIcents\fB,\fIend-position(+)\fR}
+\fBbend\fR [\fB\-f \fIframe-rate\fR(25)] [\fB\-o \fIoversampling\fR(16)] {\fIstart-position(+)\fB,\fIcents\fB,\fIend-position(+)\fR}
 Changes the pitch by specified amounts at specified times without changing
 the duration.
 Each given triple: \fIstart-position\fB,\fIcents\fB,\fIend-position\fR
@@ -1668,7 +1668,7 @@ During each bend, the frequency changes logarithmically,
 i.e. by the same number of cents per second.
 .SP
 The pitch bending algorithm uses the Discrete Fourier Transform (DFT)
-at a particular frame rate and over-sampling rate.
+at a particular frame rate and oversampling rate.
 The
 .B \-f
 and
@@ -2001,7 +2001,7 @@ Apply dithering to the audio.
 Dithering deliberately adds a small amount of noise to the signal in
 order to mask audible quantization effects that can occur if the output
 sample size is less than 24 bits.  With no options, this effect will
-add Triangular Probability Densitity Function (TPDF) white noise.
+add Triangular Probability Density Function (TPDF) white noise.
 .SP
 The \fB\-s\fR option enables noise-shaping with the \fBshibata\fP filter
 and with the
@@ -2522,7 +2522,7 @@ See the description of the \fBhighpass\fR effect for details.
 [\fIgain\fR [\fIinitial-volume-dB\fR [\fIdelay\fR]]]\(dq {\fIcrossover-freq\fR[\fBk\fR] \(dqattack1,...\(dq}
 .SP
 The multi-band compander is similar to the single-band compander but the
-audio is first divided into bands using Linkwitz-Riley cross-over filters
+audio is first divided into bands using Linkwitz-Riley crossover filters
 and a separately specifiable compander run on each band.  See the
 \fBcompand\fR effect for the definition of its parameters.  Compand
 parameters are specified between double quotes and the crossover
@@ -2544,7 +2544,7 @@ companding is typically used in FM radio:
 .EE
 The audio file is played with a simulated FM radio sound (or broadcast
 signal condition if the low-pass filter at the end is skipped).
-Note ihat the pipeline is set up with US-style 75\(*ms pre-emphasis.
+Note that the pipeline is set up with US-style 75\(*ms pre-emphasis.
 .SP
 See also
 .B compand
@@ -2612,7 +2612,7 @@ It is equivalent to \fBremix 1,2i 1,2i\fR.
 \fBoverdrive\fR [\fIgain\fR(20) [\fIcolor\fR(20)]]
 Non-linear distortion.
 The \fIcolor\fR parameter controls the amount of even harmonic content
-in the over-driven output. Both parameters range from 0 to 100.
+in the overdriven output. Both parameters range from 0 to 100.
 .TP
 \fBpad\fR { \fI[%]length\fR[\fB@\fIposition(=)\fR] }
 Pad the audio with silence, at the beginning, the end, or any
@@ -2650,7 +2650,7 @@ Add a phasing effect to the audio.
 See [3] for a detailed description of phasing.
 .SP
 \fIdelay\fR gives the delay in milliseconds,
-\fIdecay\fR ithe amount of feedback from the delay
+\fIdecay\fR the amount of feedback from the delay
 and \fIspeed\fR the frequency of delay-time modulation wave in Hz.
 .SP
 The modulation is either sinusoidal (\fB\-s\fR), which is preferable
@@ -3039,10 +3039,7 @@ It requires temporary file space to store the audio to be repeated.
 Note that repeating once yields two copies: the original audio and the
 repeated audio.
 .TP
-\fBreverb\fR [\fB\-w\fR|\fB\-\-wet-only\fR] [\fIreverberance\fR (50%) [\fIHF-damping\fR (50%)
-[\fIroom-scale\fR (100%) [\fIstereo-depth\fR (100%)
-.br
-[\fIpre-delay\fR (0ms) [\fIwet-gain\fR (0dB)]]]]]]
+\fBreverb\fR [\fB\-w\fR|\fB\-\-wet-only\fR] [\fIreverberance\fR(50%) [\fIHF-damping\fR(50%) [\fIroom-scale\fR(100%) [\fIstereo-depth\fR(100%) [\fIpre-delay\fR(0ms) [\fIwet-gain\fR(0dB)]]]]]]
 .SP
 Add reverberation to the audio using the `freeverb' algorithm.  A
 reverberation effect is sometimes desirable for concert halls that are too
@@ -3219,8 +3216,8 @@ through the SoX processing chain.  This effect is optional\*mtype
 it has been included.
 .SP
 The spectrogram is rendered in a Portable Network Graphic (PNG) file
-and shows time in the X-axis, frequency in the Y-axis, and audio
-signal magnitude in the Z-axis.  Z-axis values are represented by the
+and shows time in the X axis, frequency in the Y axis, and audio
+signal magnitude in the Z axis.  Z axis values are represented by the
 color (or optionally the intensity) of the pixels in the X-Y plane.
 If the audio signal contains multiple channels then these are shown
 from top to bottom starting from channel 1 (which is the left channel
@@ -3252,7 +3249,7 @@ With
 .EE
 the given options control the size of the spectrogram's X, Y & Z axes
 (in this case, the spectrogram area of the produced image will be 600
-by 200 pixels in size and the Z-axis range will be 100 dB).  Note that
+by 200 pixels in size and the Z axis range will be 100 dB).  Note that
 the produced image includes axes legends etc. and so will be a little
 larger than the specified spectrogram size.  In this example
 .EX
@@ -3278,12 +3275,12 @@ printer.
 .I Options:
 .RS
 .IP \fB\-x\ \fInum\fR
-Change the (maximum) width (X-axis) of the spectrogram from its default
+Change the (maximum) width (X axis) of the spectrogram from its default
 value of 800 pixels to a given number between 100 and 200000.
 See also \fB\-X\fR and \fB\-d\fR.
 .IP \fB\-X\ \fInum\fR
-X-axis pixels/second; the default is auto-calculated to fit the given
-or known audio duration to the X-axis size, or 100 otherwise.  If
+X axis pixels per second; the default is auto-calculated to fit the given
+or known audio duration to the X axis size, or 100 otherwise.  If
 given in conjunction with \fB\-d\fR, this option affects the width of
 the spectrogram; otherwise, it affects the duration of the
 spectrogram.
@@ -3297,9 +3294,9 @@ quantisation reasons; if so, SoX will report the actual number used
 is in effect).
 See also \fB\-x\fR and \fB\-d\fR.
 .IP \fB\-y\ \fInum\fR
-Sets the Y-axis size per channel in pixels; this is the number of
+Sets the size of the Y axis per channel in pixels; this is the number of
 frequency `bins' used in the Fourier analysis that produces the spectrogram.
-By default the Y-axis size is chosen automatically, depending on the number of
+By default the Y axis size is chosen automatically, depending on the number of
 channels.  See
 .B \-Y
 for an alternative way of setting the spectrogram height.
@@ -3316,13 +3313,13 @@ See
 .B \-y
 for alternative way of setting spectrogram height.
 .IP \fB\-z\ \fInum\fR
-Z-axis (color) range in dB, default 120.  This sets the dynamic range
+Z axis (color) range in dB, default 120.  This sets the dynamic range
 of the spectrogram to be \-\fInum\fR\ dBFS to 0\ dBFS.
 .I Num
 may range from 20 to 180.  Decreasing dynamic range effectively
 increases the contrast of the spectrogram display and vice versa.
 .IP \fB\-Z\ \fInum\fR
-Sets the upper limit of the Z-axis in dBFS.
+Sets the upper limit of the Z axis in dBFS.
 A negative
 .I num
 effectively increases the brightness of the spectrogram display
@@ -3332,12 +3329,12 @@ Normalizes the upper limit of the Z axis so that the loudest pixels
 are shown using the brightest color in the palette - a kind of
 automatic \fB\-Z\fR flag.
 .IP \fB\-q\ \fInum\fR
-Sets the Z-axis quantisation, i.e. the number of different colors (or
-intensities) in which to render Z-axis
+Sets the Z axis quantisation, i.e. the number of different colors (or
+intensities) in which to render Z axis
 values.  A small number (e.g. 4) will give a poster-like effect making
 it easier to discern magnitude bands of similar level and
 result in small PNG files.  The number given specifies the number of
-colors to use in the Z-axis range; two colors are reserved to
+colors to use in the Z axis range; two colors are reserved to
 represent out-of-range values.
 .IP \fB\-w\ \fIname\fR
 Window: Hann (default), Hamming, Bartlett, Rectangular, Kaiser or Dolph.
@@ -3417,9 +3414,9 @@ effects or the output signal (unlike when the
 effect is used), the following options may be used:
 .RS
 .IP \fB\-d\ \fIduration\fR
-This option sets the X-axis resolution such that audio with the given
+This option sets the X axis resolution such that audio with the given
 .I duration
-(a time specification) fits the selected (or default) X-axis width.  For
+(a time specification) fits the selected (or default) X axis width.  For
 example,
 .EX
    sox_ng input.mp3 output.wav \-n spectrogram \-d 1:00 stats
@@ -3431,7 +3428,7 @@ effect is applied to the entire audio signal.
 .SP
 See also
 .B \-X
-for an alternative way of setting the X-axis resolution.
+for an alternative way of setting the X axis resolution.
 .IP \fB\-S\ \fIposition(=)\fR
 Start the spectrogram at the given point in the audio stream.  For
 example
@@ -3785,7 +3782,7 @@ option behaves the same way as
 except that the signed integer values are displayed in hexadecimal.
 The
 .B \-s
-option scales the three measurements by a given floating-point number.
+option scales the three measurements by a given floating point number.
 .SP
 .I Pk\ lev\ dB
 and
@@ -3831,7 +3828,7 @@ and is directly related to
 .IR Pk\ lev\ dB .
 .SP
 In mathematical terms, the right-hand figure is the ordinal,
-counting from the most-significant bit,
+counting from the most significant bit,
 of the least significant bit that is set to one in at least one sample.
 The left-hand figure is the ordinal,
 counting from the least significant repeated sign bit across all samples,
@@ -3890,7 +3887,7 @@ This effect is broadly equivalent to the
 effect with \fIfactor\fR inverted and
 .I search
 set to zero so, in general, its results are comparatively poor;
-it is retained as it can sometimes out-perform
+it is retained as it can sometimes outperform
 .B tempo
 for small
 .IR factor s.
@@ -4184,13 +4181,13 @@ minutes before the end of audio.
 .TP
 \fBupsample\fR [\fIfactor\fR]
 Upsample the signal by an integer factor: \fIfactor\fR\-1 zero-value
-samples are inserted between each pair of input samples.  As a result, the
-original spectrum is replicated into the new frequency space and
+samples are inserted between each pair of input samples.  As a result,
+the original spectrum is replicated into the new frequency space and
 attenuated.  This attenuation can be compensated for by adding
-\fBvol \fIfactor\fR after any further processing.  The upsample effect is
-typically used in combination with filtering effects.
+\fBvol\ \fIfactor\fR after any further processing.
+The upsample effect is typically used in combination with filtering effects.
 .SP
-For a general resampling effect with antialiasing see \fBrate\fR.
+For a general resampling effect with antialiasing, see \fBrate\fR.
 See also \fBdownsample\fR.
 .TP
 \fBvad \fR[\fIoptions\fR]
@@ -4228,7 +4225,7 @@ Default values are shown in parentheses, the allowed range in square brackets.
 .IP "\fB\-t\ \fInum\fR (7) [0 \- 20]"
 The measurement level used to trigger activity detection.  This might
 need to be changed depending on the noise level, signal level and
-other charactistics of the input audio.
+other characteristics of the input audio.
 .IP "\fB\-T \fInum\fR (0.25) [0.01 \- 1]"
 The time constant (in seconds) used to help ignore short bursts of
 sound.
