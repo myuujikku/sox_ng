@@ -389,7 +389,7 @@ to the signal.  In most cases, SoX can determine whether the selected
 processing requires dither and will add it during output formatting if
 appropriate.
 .SP
-Specifically, by default, SoX automatically adds TPDF dither
+By default, SoX automatically adds TPDF dither
 when the output bit-depth is less than 24 and any
 of the following are true:
 .IP \(bu 4
@@ -496,7 +496,7 @@ and with this the input files must also have the same number of
 channels.  The audio from each input will be concatenated in the order
 given to form the output file.
 .SP
-By default, \fBplay_ng\fR (and \fBsox_ng \fIfile\FB -d\fR) select the
+By default, \fBplay_ng\fR (and \fBsox_ng \fIfile\fB -d\fR) select the
 \fBsequence\fR combining method.
 It is similar to \fBconcatenate\fR in that the audio from each input file is
 sent serially to the output file but here, the output file may be
@@ -1255,7 +1255,7 @@ directory contains the two files `five-seconds.wav' and `five*.wav', then
 .EE
 can be used to play just the single file `five*.wav'.
 .TP
-\fB\-r, \fB\-\-rate\fR \fIRATE\fR[\fBk\fR]
+\fB\-r, \fB\-\-rate\fR \fIrate\fR[\fBk\fR]
 Gives the sample rate in Hz (or kHz if appended with `k') of the file.
 .SP
 For an input file, the most common use for this option is to inform
@@ -1467,9 +1467,9 @@ The following parameters are used with, and have the same meaning for,
 several effects:
 .TP
 \fIfrequency\fR
-A frequency in Hz or, if followed by \fBk\fR, kHz,
-if preceded with `%', semitones relative to A (440\ Hz);
-alternatively, `scientific' note notation (e.g. E2) may be used.
+A frequency in Hz or, if followed by \fBk\fR, in kHz or,
+if preceded by \fB%\fR, in semitones relative to A (440\ Hz);
+alternatively, scientific note names (e.g. E2) may be used.
 .TP
 \fIgain\fR
 A power gain in dB.
@@ -1511,13 +1511,15 @@ cB c l.
 \ 	Method	Notes
 h	Hz	\ 
 k	kHz	\ 
-o	Octaves	\ 
+b	Hz	Old non-frequency-warped response
+o	octaves	\ 
 q	Q-factor	See [2]
+s	slope	\ 
 .TE
 .DT
 .SP
-For each effect that uses this parameter, the default method (i.e. if no
-character is appended) is the one that it listed first in the first line of
+For each effect that uses this parameter, the default method (if no
+character is appended) is the one that is listed first in the first line of
 the effect's description.
 .SS Time Specifications
 A \fItimespec\fR can be given in one the following two forms:
@@ -1549,7 +1551,7 @@ and look for its name in the list \fBEFFECTS\fR;
 a categorized list of the effects can be found in the
 accompanying `README' file.
 .TP
-\fBallpass\fR [\fB\-1\fR\^|\^\fB\-2\fR] \fIfrequency width\fR[\fBh\fR\^|\^\fBk\fR\^|\^\fBo\fR\^|\^\fBq\fR]
+\fBallpass\fR [\fB\-1\fR\^|\^\fB\-2\fR] \fIfrequency \fR[\fIwidth\fR[\fBh\fR\^|\^\fBk\fR\^|\^\fBo\fR\^|\^\fBq\fR]]
 Apply a two-pole all-pass filter with central frequency \fIfrequency\fR
 and filter-width \fIwidth\fR.
 An all-pass filter changes the
@@ -1568,19 +1570,21 @@ around the center
 .IR frequency .
 The
 .I width
-parameter gives the slope of the drop.
-The frequencies at
-.I center
+parameter gives the slope of the drop:
+the frequencies at
+.I frequency
 +
 .I width
 and
-.I center
+.I frequency
 \-
 .I width
 will be half of their original amplitudes.
+Its default value is half of the center frequency.
+.SP
 .B band
 defaults to a mode oriented to pitched audio,
-i.e. voice, singing, or instrumental music.
+i.e. voice, singing or instrumental music.
 The \fB\-n\fR (for noise) option uses the alternate mode
 for unpitched audio (e.g. percussion).
 .B Warning:
@@ -1589,14 +1593,14 @@ of output clipping.
 .B band
 introduces noise in the shape of the filter,
 peaking at the
-.I center
+center
 frequency and settling around it.
 .SP
 This effect supports the \fB\-\-plot\fR global option.
 .SP
 See also \fBsinc\fR for a band-pass filter with steeper shoulders.
 .TP
-\fBbandpass\fR [\fB\-c\fR] \fIfrequency width\fR[\fBh\fR\^|\^\fBk\fR\^|\^\fBo\fR\^|\^\fBq\fR]
+\fBbandpass\fR [\fB\-c\fR] \fIfrequency width\fR[\fBh\fR\^|\^\fBk\fR\^|\^\fBo\fR\^|\^\fBq\fR\^|\^\fBb\fR]
 Apply a two-pole Butterworth band-pass or band-reject filter with
 central frequency \fIfrequency\fR, and (3dB-point) bandwidth \fIwidth\fR.
 The
@@ -1612,7 +1616,7 @@ These effects support the \fB\-\-plot\fR global option.
 .SP
 See also \fBsinc\fR for a band-pass filter with steeper shoulders.
 .TP
-\fBbandreject \fIfrequency width\fR[\fBh\fR\^|\^\fBk\fR\^|\^\fBo\fR\^|\^\fBq\fR]
+\fBbandreject \fIfrequency width\fR[\fBh\fR\^|\^\fBk\fR\^|\^\fBo\fR\^|\^\fBq\fR\^|\^\fBb\fR]
 Apply a band-reject filter.
 See the description of the \fBbandpass\fR effect for details.
 .TP
@@ -1652,7 +1656,7 @@ These effects support the \fB\-\-plot\fR global option.
 .SP
 See also \fBequalizer\fR for a peaking equalization effect.
 .TP
-\fBbend\fR [\fB\-f \fIframe-rate\fR(25)] [\fB\-o \fIover-sample\fR(16)] { \fIstart-position(+)\fB,\fIcents\fB,\fIend-position(+)\fR }
+\fBbend\fR [\fB\-f \fIframe-rate\fR(25)] [\fB\-o \fIover-sample\fR(16)] {\fIstart-position(+)\fB,\fIcents\fB,\fIend-position(+)\fR}
 Changes the pitch by specified amounts at specified times without changing
 the duration.
 Each given triple: \fIstart-position\fB,\fIcents\fB,\fIend-position\fR
@@ -1787,12 +1791,10 @@ decreases.
 For most situations, the attack time (response to the music getting
 louder) should be shorter than the decay time because the human ear is more
 sensitive to sudden loud music than sudden soft music.
-Where more than one pair of attack/decay parameters are
-specified, each input channel is companded separately and the number of
+When more than one pair of attack/decay parameters is specified,
+each input channel is companded separately and the number of
 pairs must agree with the number of input channels.
-Typical values are
-.B 0\*d3,0\*d8
-seconds.
+Typical values are 0\*d3,0\*d8 seconds.
 .SP
 The second parameter is a list of points on the compander's transfer
 function specified in dB relative to the maximum possible signal
@@ -1804,7 +1806,7 @@ defaults to the same value as
 .IR in-dB1 ;
 levels below
 .I in-dB1
-are not companded (but may have gain applied to them).
+are not companded but may have gain applied to them.
 The point \fB0,0\fR is assumed but may be overridden (by
 \fB0,\fIout-dBn\fR).
 If the list is preceded by a
@@ -1832,7 +1834,7 @@ The fifth (optional) parameter is a delay in seconds.  The input signal
 is analyzed immediately to control the compander, but it is delayed
 before being fed to the volume adjuster.  Specifying a delay
 approximately equal to the attack/decay times allows the compander to
-effectively operate in a `predictive' rather than a reactive mode.
+operate in a predictive rather than a reactive mode.
 A typical value is
 .B 0\*d2
 seconds.
@@ -1863,14 +1865,14 @@ The \-90 (dB) for the initial volume will work fine for a clip that starts
 with near silence, and the delay of 0\*d2 (seconds) has the effect of causing
 the compander to react a bit more quickly to sudden volume changes.
 .SP
-In the next example, compand is being used as a noise-gate for when the
+In the next example, \fBcompand\fR is used as a noise-gate for when the
 noise is at a lower level than the signal:
 .EX
    play_ng infile compand .1,.2 \-inf,\-50.1,\-inf,\-50,\-50 0 \-90 .1
 .EE
 Here is another noise-gate, this time for when the
 noise is at a higher level than the signal (making it, in some ways,
-similar to squelch):
+similar to a squelch effect):
 .EX
    play_ng infile compand .1,.1 \-45.1,\-45,\-inf,0,\-inf 45 \-90 .1
 .EE
@@ -1943,16 +1945,16 @@ Pre-emphasis was applied in the mastering of some CDs issued in the early
 sought-after issues of albums by The Beatles, Pink Floyd and others.
 Pre-emphasis should be removed at playback time by a de-emphasis
 filter in the playback device.  However, not all modern CD players have
-this filter, and very few PC CD drives have it; playing pre-emphasized
+this filter and very few PC CD drives have it; playing pre-emphasized
 audio without the correct de-emphasis filter results in audio that sounds harsh
 and is far from what its creators intended.
 .SP
 With the
 .B deemph
 effect, it is possible to apply the necessary de-emphasis to audio that
-has been extracted from a pre-emphasized CD, and then either burn the
+has been extracted from a pre-emphasized CD and then either burn the
 de-emphasized audio to a new CD (which will then play correctly on any
-CD player), or simply play the correctly de-emphasized audio files on the
+CD player) or simply play the correctly de-emphasized audio files on the
 PC.  For example:
 .EX
    sox_ng track1.wav track1\-deemph.wav deemph
@@ -1970,8 +1972,6 @@ audio sample rate to be either 44.1kHz or 48kHz.  Maximum deviation
 from the ideal response is only 0\*d06dB (up to 20kHz).
 .SP
 This effect supports the \fB\-\-plot\fR global option.
-.SP
-See also the \fBbass\fR and \fBtreble\fR shelving equalization effects.
 .TP
 \fBdelay\fR {\fIposition(=)\fR}
 Delay one or more audio channels such that they start at the given
@@ -2001,24 +2001,40 @@ Apply dithering to the audio.
 Dithering deliberately adds a small amount of noise to the signal in
 order to mask audible quantization effects that can occur if the output
 sample size is less than 24 bits.  With no options, this effect will
-add triangular (TPDF) white noise.  Noise-shaping (only for certain
-sample rates) can be selected with
-.BR \-s .
-With the
+add Triangular Probability Densitity Function (TPDF) white noise.
+.SP
+The \fB\-s\fR option enables noise-shaping with the \fBshibata\fP filter
+and with the
 .B \-f
-option, it is possible to select a particular noise-shaping filter from
-the following list: lipshitz, f-weighted, modified-e-weighted,
-improved-e-weighted, gesemann, shibata, low-shibata and high-shibata.
-Note that most filter types are available only with 44100Hz sample rate.
+option it is possible to select a particular noise-shaping filter from
+the following list: \fBlipshitz\fR, \fBf-weighted\fR, \fBmodified-e-weighted\fR,
+\fBimproved-e-weighted\fR, \fBgesemann\fR, \fBshibata\fR, \fBlow-shibata\fR
+and \fBhigh-shibata\fR.
 The filter types are distinguished by the following properties:
 audibility of noise, level of (inaudible, but in some circumstances
-problematic) shaped high frequency noise and processing speed.
+problematic) shaped high frequency noise and processing speed
+and are available for the following sample rates:
+.ne 8
+.TS
+center;
+lI lI
+lB l.
+Filter	Sample rates
+lipshitz	44100
+f-weighted	46000
+e-weighted	46000
+gesemann	44100,48000
+shibata	8000,11025,16000,22050,32000,37800,44100,48000
+low-shibata	44100,48000
+high-shibata	44100
+.TE
+.DT
 .SP
 The
 .B \-S
 option selects a slightly `sloped' TPDF, biased towards higher
-frequencies.  It can be used at any sampling rate but below \(~~22k,
-plain TPDF is probably better, and above \(~~ 37k, noise-shaping
+frequencies.  It can be used at any sampling rate but, below \(~~22kHz,
+plain TPDF is probably better and, above \(~~ 37kHz, noise-shaping
 (if available) is probably better.
 .SP
 The
@@ -2030,27 +2046,27 @@ that the redithering applies only to the faded portions.  However, auto
 dithering is not foolproof, so the fades should be checked carefully
 for any noise modulation; if this occurs, then either redither the whole
 file, or use
-.BR trim ,
+.BR trim and
 .B fade 
 and concatenate the results.
 .SP
 The
 .B \-p
-option allows overriding the target precision.
+option overrides the target precision in bits, from 1 to 24.
 .SP
 If the SoX global option
 .B \-R
 option is not given, then the pseudo-random number generator used to
 generate the white noise will be `reseeded', i.e. the generated noise
-will be different between invocations.
+will be different on every invocation.
 .SP
 This effect should not be followed by any other effect that
 affects the audio.
 .SP
-See also the `Dithering' section above.
+See also the \fBDithering\fR section above.
 .TP
 \fBdownsample\fR [\fIfactor\fR(2)]
-Downsample the signal by an integer factor: Only the first out of
+Downsample the signal by an integer factor: Only the first of
 each \fIfactor\fR samples is retained, the others are discarded.
 .SP
 No decimation filter is applied.  If the input is not a properly
@@ -2061,39 +2077,35 @@ For a general resampling effect with antialiasing, see \fBrate\fR.
 See also \fBupsample\fR.
 .TP
 \fBearwax\fR
-Makes audio easier to listen to on headphones.
-Adds `cues' to 44\*d1kHz stereo (i.e. audio CD format) audio so that
-when listened to on headphones the stereo image is
-moved from inside
-your head (standard for headphones) to outside and in front of the
-listener (standard for speakers).
+This effect takes a 44.1kHz stereo signal and adds audio cues that,
+when listened to on headphones, move the soundstage from inside your head
+to outside and in front of you, as if listening to loudspeakers.
+This makes the sound much easier to listen to on headphones.
 .TP
 \fBecho \fIgain-in gain-out\fR <\fIdelay decay\fR>
 Add echoing to the audio.
 Echoes are reflected sound and can occur naturally amongst mountains
-(and sometimes large buildings) when talking or shouting; digital echo
+and large buildings; digital echo
 effects emulate this behaviour and are often used to help fill
-out the sound of a single instrument or vocal.  The time difference
-between the original signal and the reflection is the `delay' (time),
-and the loudness of the reflected signal is the `decay'.  Multiple echoes
-can have different delays and decays.
+out the sound of a single instrument or vocal.
 .SP
-Each given
-.I "delay decay"
-pair gives the delay in milliseconds
-and the decay of that echo.
-Gain-out is the volume of the output.
+\fIGain-in\fR controls how much of the input signal is delivered clean
+to the output, \fIdelay\fR is the time difference in milliseconds
+between the original signal and the reflection
+and \fIdecay\fR is the loudness of the reflected signal.
+.SP
+\fIGain-out\fR is a final volume adjustment of the result.
 .SP
 For a flow diagram of how \fBecho\fR works,
 say \fBsox_ng --help-effect echo\fR.
 .SP
-For example:
-This will make it sound as if there are twice as many instruments as are
+For example,
+this will make it sound as if there are twice as many instruments as are
 actually playing:
 .EX
    play_ng lead.aiff echo 0.8 0.88 60 0.4
 .EE
-If the delay is very short, then it sound like a (metallic) robot playing
+If the delay is very short, then it sound like a metallic robot:
 music:
 .EX
    play_ng lead.aiff echo 0.8 0.88 6 0.4
@@ -2141,11 +2153,11 @@ The sample will sound as if played in a garage:
 \fBequalizer \fIfrequency width\fR[\fBq\fR\^|\^\fBo\fR\^|\^\fBh\fR\^|\^\fBk\fR] \fIgain\fR
 Apply a two-pole peaking equalization (EQ) filter.
 With this filter, the signal level at and around a selected frequency
-can be increased or decreased, whilst (unlike band-pass and band-reject
-filters) that at all other frequencies is unchanged.
+can be increased or decreased while, unlike band-pass and band-reject
+filters, the level at all other frequencies is unchanged.
 .SP
 \fIfrequency\fR gives the filter's central frequency in Hz,
-\fIwidth\fR, the bandwidth,
+\fIwidth\fRgives its bandwidth,
 and \fIgain\fR the required gain
 or attenuation in dB.
 Beware of
@@ -2158,8 +2170,6 @@ can be given several times, each with a different central frequency.
 The filter is described in detail in [1].
 .SP
 This effect supports the \fB\-\-plot\fR global option.
-.SP
-See also \fBbass\fR and \fBtreble\fR for shelving equalization effects.
 .TP
 \fBfade\fR [\fItype\fR] \fIfade-in-length\fR [\fIstop-position(=)\fR [\fIfade-out-length\fR]]
 Apply a fade effect to the beginning, end, or both of the audio.
@@ -2199,7 +2209,7 @@ See also the
 effect.
 .TP
 \fBfir\fR [\fIcoefs-file\fR\^|\^\fIcoefs\fR]
-Use SoX's FFT convolution engine with given FIR filter
+Use SoX's FFT convolution engine with given Finite Impulse Response filter
 coefficients.
 If a single argument is given then this is treated as the name of a file
 containing the filter coefficients (white space separated; may contain
@@ -2213,15 +2223,14 @@ Examples:
 .EX
    sox_ng infile outfile fir coefs.txt
 .EE
-with coefs.txt containing
+.ne 6
+with \f(CWcoefs.txt\fR containing
 .EX
-   # HP filter
-   # freq=10000
+   # HP filter: freq=10000
      1.2311233052619888e\-01
     \-4.4777096106211783e\-01
      5.1031563346705155e\-01
     \-6.6502926320995331e\-02
-   ...
 .EE
 .SP
 This effect supports the \fB\-\-plot\fR global option.
@@ -2229,10 +2238,10 @@ This effect supports the \fB\-\-plot\fR global option.
 \fBfirfit\fR [\fIknots-file\fR\^|\^<\fIfreq gain\fR>]
 Use SoX's FFT convolution engine to make a filter whose frequency response
 approximates a spline passing through a series of frequency/gain pairs.
-If a single argument is given then this is treated as the name of a file
+If a single argument is given, it is the name of a file
 containing the knots (white space separated; may contain
-`#' comments).  If the given filename is `\-', or if no argument is
-given, then the knots are read from the `standard input' (stdin);
+`#' comments).  If the given filename is `\-' or if no argument is
+given, the knots are read from the `standard input' (stdin);
 otherwise, knots may be given on the command line.
 Examples:
 .EX
@@ -2256,11 +2265,9 @@ The knot frequencies must be in increasing order.
 .SP
 This effect supports the \fB\-\-plot\fR global option.
 .TP
-\fBflanger\fR [\fIdelay depth regen width speed shape phase interp\fR]
+\fBflanger\fR [\fIdelay \fR[\fIdepth \fR[\fIregen \fR[\fIwidth \fR[\fIspeed \fR[\fIshape \fR[\fIphase \fR[\fIinterp\fR]]]]]]]]
 Apply a flanging effect to the audio.
 See [3] for a detailed description of flanging.
-.SP
-All parameters are optional (right to left).
 .ne 15
 .TS
 center;
@@ -2286,13 +2293,14 @@ Swept wave percentage phase shift for multichannel (e.g. stereo) flange;
 T}
 interp	\ 	lin	T{
 .na
-Digital delay-line interpolation: \fBlinear\fR\^|\^\fBquadratic\fR.
+Digital delay-line interpolation: \fBlinear\fR or \fBquadratic\fR.
 T}
 .TE
 .DT
+\fBsine\fR, \fBtriangle\fR, \fBlinear\fR and \fBquadratic\fR can be abbreviated.
 .TP
 \fBgain \fR[\fB\-e\fR\^|\^\fB\-B\fR\^|\^\fB\-b\fR\^|\^\fB\-r\fR] [\fB\-n\fR] [\fB\-l\fR\^|\^\fB\-h\fR] [\fIgain-dB\fR]
-Apply amplification or attenuation to the audio signal, or, in some
+Apply amplification or attenuation to the audio signal or, in some
 cases, to some of its channels.
 Note that use of any of
 .BR \-e ,
@@ -2302,21 +2310,21 @@ Note that use of any of
 or
 .B \-n
 requires temporary file space to store the audio to be processed, so may
-be unsuitable for use with `streamed' audio.
+be unsuitable for use with streamed audio.
 .SP
 Without other options,
 .I gain-dB
-is used to adjust the signal power level by the given number of dB:
-positive amplifies (beware of Clipping), negative attenuates.  With
+adjusts the signal power level by the given number of dB:
+positive amplifies (beware of clipping), negative attenuates.  With
 other options, the
 .I gain-dB
-amplification or attenuation is (logically) applied after the processing due to those options.
+amplification or attenuation is applied after the processing due to those options.
 .SP
 Given the
 .B \-e
 option, the levels of the audio channels of a multichannel file are `equalized', i.e.
 gain is applied to all channels other than that with the highest peak
-level, such that all channels attain the same peak level
+level so that all channels attain the same peak level
 (but, without also giving
 .BR \-n ,
 the audio is not `normalized').
@@ -2341,7 +2349,7 @@ is similar to
 .B \-B
 but has clipping protection, i.e.  if necessary to prevent clipping
 whilst balancing, attenuation is applied to all channels.
-Note, however, that in conjunction with
+In conjunction with
 .BR \-n ,
 .B \-B
 and
@@ -2358,9 +2366,10 @@ option\*msee below for details.
 .SP
 The
 .B \-n
-option normalizes the audio to 0dB FSD; it is often used in conjunction with a negative
+option normalizes the audio to 0dB FSD.
+It is often used in conjunction with a negative
 .I gain-dB
-to the effect that the audio is normalized to a given level below 0dB.
+so that the audio is normalized to a given level below 0dB.
 For example,
 .EX
    sox_ng infile outfile gain \-n
@@ -2373,7 +2382,7 @@ normalizes to \-3dB.
 .SP
 The
 .B \-l
-option invokes a simple limiter, e.g.
+option invokes a simple limiter. For example,
 .EX
    sox_ng infile outfile gain \-l 6
 .EE
@@ -2391,11 +2400,11 @@ processing.  For example, with
 .EX
    sox_ng infile outfile gain \-h bass +6
 .EE
-6dB of attenuation will be applied prior to the bass boosting effect
+6dB of attenuation will be applied prior to the bass boosting effect,
 thus ensuring that it will not clip.  Of course, with bass, it is
 obvious how much headroom will be needed, but with other effects (e.g.
 rate, dither) it is not always as clear.  Another advantage of using
-\fBgain \-h\fR rather than an explicit attenuation, is that if the
+\fBgain \-h\fR rather than an explicit attenuation is that if the
 headroom is not used by subsequent effects, it can be reclaimed with
 \fBgain \-r\fR, for example:
 .EX
@@ -2406,7 +2415,7 @@ it attenuates if necessary to prevent clipping, but by only as
 much as is needed to do so.
 .SP
 Output formatting (dithering and bit-depth reduction) also requires
-headroom (which cannot be `reclaimed'), e.g.
+headroom which cannot be reclaimed, e.g.
 .EX
    sox_ng infile outfile gain \-h bass +6 rate 44100 gain \-rh dither
 .EE
@@ -2459,7 +2468,7 @@ This effect supports the \fB\-\-plot\fR global option.
 .TP
 \fBladspa\fR [\fB-l\fR\^|\^\fB-r\fR] \fImodule\fR [\fIplugin\fR] [\fIargument\fR ...]
 Apply a LADSPA [5] (Linux Audio Developer's Simple Plugin API) plugin.
-Despite the name, LADSPA is not Linux-specific, and a wide range of
+Despite the name, LADSPA is not Linux-specific and a wide range of
 effects is available as LADSPA plugins, such as cmt [6] (the Computer
 Music Toolkit) and Steve Harris's plugin collection [7]. The first
 argument is the plugin module, the second the name of the plugin (a
@@ -2480,21 +2489,21 @@ The
 (latency compensation) option automatically compensates for latency
 as reported by the plugin via an output control port named "latency".
 .SP
-If found, the environment variable LADSPA_PATH will be used as search
+If it is set, the environment variable \fBLADSPA_PATH\fP will be used as search
 path for plugins.
 .TP
 \fBloudness\fR [\fIgain\fR [\fIreference\fR]]
-Loudness control\*msimilar to the
+Loudness control is similar to the
 .B gain
-effect, but provides equalization for the human auditory system.  See
+effect but provides equalization for the human auditory system.  See
 http://en.wikipedia.org/wiki/Loudness for a detailed description of
 loudness.  The gain is adjusted by the given
 .I gain
 parameter (usually negative) and the signal equalized according to ISO
 226 w.r.t. a reference level of 65dB, though an alternative
 .I reference
-level may be given if the original audio has been equalized for some
-other optimal level.
+level may be given if the original audio has been equalized at some
+other level.
 A default gain of \-10dB is used if a
 .I gain
 value is not given.
@@ -2535,7 +2544,7 @@ companding is typically used in FM radio:
 .EE
 The audio file is played with a simulated FM radio sound (or broadcast
 signal condition if the low-pass filter at the end is skipped).
-Note that the pipeline is set up with US-style 75us pre-emphasis.
+Note ihat the pipeline is set up with US-style 75\(*ms pre-emphasis.
 .SP
 See also
 .B compand
@@ -2551,8 +2560,8 @@ effect is moderately effective at removing consistent background noise
 such as hiss or hum.  To use it, first run SoX with the \fBnoiseprof\fR
 effect on a section of audio that ideally would contain silence but in
 fact contains noise\*msuch sections are typically found at the beginning
-or the end of a recording.  \fBnoiseprof\fR will write out a noise
-profile to \fIprofile-file\fR, or to stdout if no \fIprofile-file\fR or
+or the end of a recording.  \fBnoiseprof\fR will write a noise
+profile to \fIprofile-file\fR or to stdout if no \fIprofile-file\fR or
 if `\-' is given.  E.g.
 .EX
    sox_ng speech.wav \-n trim 0 1.5 noiseprof speech.noise-profile
@@ -2563,7 +2572,7 @@ effect;
 will reduce noise according to a noise profile (which was generated by
 .BR noiseprof ),
 from
-.IR profile-file ,
+.I profile-file
 or from stdin if no \fIprofile-file\fR or if `\-' is given.  E.g.
 .EX
    sox_ng speech.wav cleaned.wav noisered speech.noise-profile 0.3
@@ -2601,13 +2610,13 @@ of removing most or all of the vocals from a recording.
 It is equivalent to \fBremix 1,2i 1,2i\fR.
 .TP
 \fBoverdrive\fR [\fIgain\fR(20) [\fIcolor\fR(20)]]
-Non linear distortion.
+Non-linear distortion.
 The \fIcolor\fR parameter controls the amount of even harmonic content
-in the over-driven output.
+in the over-driven output. Both parameters range from 0 to 100.
 .TP
 \fBpad\fR { \fI[%]length\fR[\fB@\fIposition(=)\fR] }
 Pad the audio with silence, at the beginning, the end, or any
-specified points through the audio.
+specified points throughout the audio.
 .I length
 is the amount of silence to insert and
 .I position
@@ -2620,7 +2629,7 @@ is optional for the first and last lengths specified and
 if omitted correspond to the beginning and the end of the audio respectively.
 For example,
 .B pad 1\*d5 1\*d5
-adds 1\*d5 seconds of silence padding at each end of the audio, whilst
+adds 1\*d5 seconds of silence at each end of the audio, whilst
 .B pad 4000s@3:00
 inserts 4000 samples of silence 3 minutes into the audio.
 If silence is wanted only at the end of the audio, either specify the end
@@ -2640,14 +2649,19 @@ the audio on a channel-by-channel basis.
 Add a phasing effect to the audio.
 See [3] for a detailed description of phasing.
 .SP
-delay/decay/speed gives the delay in milliseconds
-and the decay (relative to gain-in) with a modulation
-speed in Hz.
-The modulation is either sinusoidal (\fB\-s\fR) \*mpreferable for multiple
-instruments, or triangular
-(\fB\-t\fR) \*mgives single instruments a sharper phasing effect.
+\fIdelay\fR gives the delay in milliseconds,
+\fIdecay\fR ithe amount of feedback from the delay
+and \fIspeed\fR the frequency of delay-time modulation wave in Hz.
+.SP
+The modulation is either sinusoidal (\fB\-s\fR), which is preferable
+for multiple instruments, or triangular
+(\fB\-t\fR) which gives single instruments a sharper phasing effect.
 The decay should be less than 0\*d5 to avoid
-feedback, and usually no less than 0\*d1.  Gain-out is the volume of the output.
+feedback, and usually no less than 0\*d1.
+\fIGain-out\fR is the volume of the output.
+.SP
+For a flow diagram of how \fBphaser\fR works,
+say \fBsox_ng --help-effect phaser\fR.
 .SP
 For example:
 .EX
@@ -2665,12 +2679,9 @@ More severe:
 .EX
    play_ng snare.flac phaser 0.6 0.66 3 0.6 2 \-t
 .EE
-.SP
-For a flow diagram of how \fBphaser\fR works,
-say \fBsox_ng --help-effect phaser\fR.
 .TP
 \fBpitch \fR[\fB\-q\fR] \fIshift\fR [\fIsegment\fR [\fIsearch\fR [\fIoverlap\fR]]]
-Change the audio pitch (but not tempo).
+Change the audio pitch but not the tempo.
 .SP
 .I shift
 gives the pitch shift as positive or negative `cents' (i.e. 100ths of a
@@ -2678,14 +2689,11 @@ semitone).  See the
 .B tempo
 effect for a description of the other parameters.
 .SP
-See also the \fBbend\fR, \fBspeed\fR,
-and
-.B tempo
-effects.
+See also the \fBbend\fR and \fBspeed\fR effects.
 .TP
-\fBrate\fR [\fB\-q\fR\^|\^\fB\-l\fR\^|\^\fB\-m\fR\^|\^\fB\-h\fR\^|\^\fB\-v\fR] [override-options] \fIRATE\fR[\fBk\fR]
+\fBrate\fR [\fB\-q\fR\^|\^\fB\-l\fR\^|\^\fB\-m\fR\^|\^\fB\-h\fR\^|\^\fB\-v\fR] [override-options] \fIfrequency\fR]
 Change the audio sampling rate (i.e. resample the audio) to any given
-.I RATE
+.I frequency
 (even non-integer if this is supported by the output file format)
 using a quality level defined as follows:
 .ne 10
@@ -2736,11 +2744,11 @@ is the percentage of the audio frequency band that is preserved and
 is the level of noise rejection.  Increasing levels of resampling
 quality come at the expense of increasing amounts of time to process the
 audio.  If no quality option is given, the quality level used is `high'
-(but see `Playing & Recording Audio' above regarding playback).
+(but see \fBPlaying & Recording Audio\fR (above) regarding playback).
 .SP
 The `quick' algorithm uses cubic interpolation; all others use
 band-limited interpolation.  By default, all algorithms have
-a `linear' phase response; for `medium', `high' and
+a linear phase response; for `medium', `high' and
 `very high', the phase response is configurable (see below).
 .SP
 The
@@ -2771,9 +2779,8 @@ Warning: technically detailed discussion follows.
 The simple quality selection described above provides settings that
 satisfy the needs of the vast majority of resampling tasks.
 Occasionally, however, it may be desirable to fine-tune the resampler's
-filter response; this can be achieved using
-.IR override\ options ,
-as detailed in the following table:
+filter response; this can be achieved using the override options
+in the following table:
 .ne 6
 .TS
 center;
@@ -2789,14 +2796,13 @@ T}
 .TE
 .DT
 .SP
-N.B.  Override options cannot be used with the `quick' or `low'
-quality algorithms.
+These cannot be used with the `quick' or `low' algorithms.
 .SP
 All resamplers use filters that can sometimes create `echo' (a.k.a.
 `ringing') artefacts with transient signals such as those that occur
 with `finger snaps' or other highly percussive sounds.  Such artefacts are
 much more noticeable to the human ear if they occur before the transient
-(`pre-echo') than if they occur after it (`post-echo').  Note that
+(`pre-echo') than if they occur after it (`post-echo').  Note that the
 frequency of any such artefacts is related to the smaller of the
 original and new sampling rates but that if this is at least 44\*d1kHz,
 then the artefacts will lie outside the range of human hearing.
@@ -2804,10 +2810,10 @@ then the artefacts will lie outside the range of human hearing.
 A phase response setting may be used to control the distribution of any
 transient echo between
 `pre' and `post': with minimum phase, there is no pre-echo but the
-longest -echo; with linear phase, pre and post echo are in equal
+longest post-echo; with linear phase, pre- and post-echo are in equal
 amounts (in signal terms, but not audibility terms); the intermediate
 phase setting attempts to find the best compromise by selecting a small
-length (and level) of pre-echo and a medium lengthed post-echo.
+length (and level) of pre-echo and a medium-length of post-echo.
 .SP
 Minimum, intermediate, or linear phase response is selected using the
 .BR \-M ,
@@ -2821,7 +2827,7 @@ option.  Note that phase responses between `linear' and `maximum'
 .SP
 A resampler's bandwidth setting determines how much of the frequency
 content of the original signal (w.r.t. the original sample rate when
-upsampling, or the new sample rate when downsampling) is preserved
+upsampling or the new sample rate when downsampling) is preserved
 during conversion.  The term `pass band' is used to refer to all frequencies
 up to the bandwidth point (e.g. for 44\*d1kHz sampling rate, and a
 resampling bandwidth of 95%, the pass band represents frequencies from
@@ -2831,8 +2837,8 @@ artefacts (and vice versa).
 .SP
 The
 .B \-s
-`steep filter' option changes resampling bandwidth from the default 95%
-(based on the 3dB point), to 99%.  The
+`steep filter' option changes resampling bandwidth from the default of 95%
+(based on the 3dB point) to 99%.  The
 .B \-b
 option allows the bandwidth to be set to any value in the range
 74\-99\*d7 %, but note that bandwidth values greater than 99% are not
@@ -2840,14 +2846,14 @@ recommended for normal use as they can cause excessive transient echo.
 .SP
 If the
 .B \-a
-option is given, then aliasing/imaging above the pass band is allowed.  For
+option is given, aliasing/imaging above the pass band is allowed.  For
 example, with 44\*d1kHz sampling rate, and a
 resampling bandwidth of 95%, this means that frequency content above
 21kHz can be distorted; however, since this is above the pass band (i.e.
 above the highest frequency of interest/audibility), this may not be a
 problem.  The benefits of allowing aliasing/imaging are reduced processing time,
 and reduced (by almost half) transient echo artefacts.
-Note that if this option is given, then
+Note that if this option is given,
 the minimum bandwidth allowable with
 .B \-b
 increases to 85%.
@@ -2864,12 +2870,6 @@ file.
 .EE
 very high quality resampling; overrides: intermediate phase, bandwidth 90%;
 to 48k sample rate; store output to 24-bit AIFF file.
-.TS
-center;
-c8 c8 c.
-*	*	*
-.TE
-.DT
 .SP
 The
 .B pitch
@@ -2895,9 +2895,8 @@ Note that this effect operates on the audio
 .I channels
 within the SoX effects processing chain; it should not be confused with the
 .B \-m
-global option (where multiple
-.I files
-are mix-combined before entering the effects chain).
+global option, where multiple files
+are mix-combined before entering the effects chain.
 .SP
 An
 .I out-spec
@@ -2915,7 +2914,7 @@ Whereas
    sox_ng input.wav output.wav remix 1\-3,7 3
 .EE
 creates a (somewhat bizarre) stereo output file where the left channel
-is a mix-down of input channels 1, 2, 3, and 7, and the right channel is
+is a mix-down of input channels 1, 2, 3 and 7 and the right channel is
 a copy of input channel 3.
 .SP
 Where a range of channels is specified, the channel numbers to the left and
@@ -2926,11 +2925,11 @@ channels respectively. Thus
 .EE
 performs a mix-down of all input channels to mono.
 .SP
-By default, where an output channel is mixed from multiple (n) input
+By default, where an output channel is mixed from multiple input
 channels, each input channel will be scaled by a factor of \(S1/\s-2n\s+2.
 Custom mixing volumes can be set by following a given input channel or range
-of input channels with a \fIvol-spec\fR (volume specification).
-This is one of the letters \fBp\fR, \fBi\fR, or \fBv\fR,
+of input channels with a \fIvol-spec\fR (volume specification)
+which is one of the letters \fBp\fR, \fBi\fR, or \fBv\fR,
 followed by a volume number, the meaning of which depends on the given
 letter and is defined as follows:
 .ne 7
@@ -3008,10 +3007,11 @@ c8 c8 c.
 One use of the
 .B remix
 effect is to split an audio file into a set of files, each containing
-one of the constituent channels (in order to perform subsequent
-processing on individual audio channels).  Where more than a few
+one of the constituent channels in order to perform subsequent
+processing on individual audio channels.  When more than a few
 channels are involved, a script such as the following (Bourne shell
 script) is useful:
+.ne 8
 .EX
 #!/bin/sh
 chans=\`soxi_ng \-c "$1"\`
@@ -3035,7 +3035,7 @@ See also the \fBswap\fR effect.
 \fBrepeat\fR [\fIcount\fR(1)|\fB\-\fR]
 Repeat the entire audio \fIcount\fR times, or once if \fIcount\fR is not given.
 The special value \fB\-\fR requests infinite repetition.
-Requires temporary file space to store the audio to be repeated.
+It requires temporary file space to store the audio to be repeated.
 Note that repeating once yields two copies: the original audio and the
 repeated audio.
 .TP
@@ -3052,8 +3052,8 @@ will usually make it sound more natural.  See [3] for a detailed description
 of reverberation.
 .SP
 Note that this effect
-increases both the volume and the length of the audio, so to prevent clipping
-in these domains, a typical invocation might be:
+increases both the volume and the length of the audio so, to prevent clipping,
+a typical invocation might be:
 .EX
    play_ng dry.wav gain \-3 pad 0 3 reverb
 .EE
@@ -3083,9 +3083,9 @@ Removes silence from the beginning, middle, or end of the audio.
 `Silence' is determined by a specified threshold.
 .SP
 The \fIabove-periods\fR value is used to indicate if audio should be
-trimmed at the beginning of the audio. A value of zero indicates no
+trimmed at the beginning of the audio. A value of zero indicates that no
 silence should be trimmed from the beginning. When specifying a
-non-zero \fIabove-periods\fR, it trims audio up until it finds
+non-zero \fIabove-periods\fR, it trims audio until it finds
 non-silence. Normally, when trimming silence from beginning of audio
 the \fIabove-periods\fR will be 1 but it can be increased to higher
 values to trim all audio up to a specific count of non-silence
@@ -3098,8 +3098,8 @@ When \fIabove-periods\fR is non-zero, you must also specify a
 \fIduration\fR and \fIthreshold\fR.
 .SP
 \fIduration\fR indicates the
-amount of time that non-silence must be detected before it stops
-trimming audio. By increasing the duration, bursts of quiet noise
+amount of time for which non-silence must be detected before it stops
+trimming. By increasing the duration, bursts of quiet noise
 can be treated as silence and trimmed off.
 .SP
 \fIthreshold\fR is used to indicate what sample value in any channel
@@ -3111,7 +3111,7 @@ When optionally trimming silence from the end of the audio, you specify
 a \fIbelow-periods\fR count.  In this case, \fIbelow-period\fR means
 to remove all audio after silence is detected.
 Normally, this will be a value 1 of but it can
-be increased to skip over periods of silence that are wanted.  For example,
+be increased to leave periods of silence that are wanted.  For example,
 if you have a song with 2 seconds of silence in the middle and 2 second
 at the end, you could set below-period to a value of 2 to skip over the
 silence in the middle of the audio.
@@ -3127,8 +3127,8 @@ Unfortunately, you must know the length of the silence at the
 end of your audio file to trim silence off reliably.  A workaround is
 to use the \fBsilence\fR effect in combination with the \fBreverse\fR effect.
 By first reversing the audio, you can use the \fIabove-periods\fR
-to reliably trim all audio from what looks like the front of the file.
-Then reverse the file again to get back to normal.
+to reliably trim all audio from what looks like the front of the file,
+then reverse the file again to get back to normal.
 .SP
 To remove silence from the middle of a file, specify a
 \fIbelow-periods\fR that is negative.  This value is then
@@ -3140,13 +3140,13 @@ silence in the middle of the audio.
 The option
 .B \-l
 indicates that \fIbelow-periods\fR \fIduration\fR length of audio
-should be left intact at the beginning of each period of silence.
-For example, if you want to remove long pauses between words
+should be left intact at the beginning of each period of silence,
+for example, if you want to remove long pauses between words
 but do not want to remove the pauses completely.
 .SP
 \fIduration\fR is a time specification with the peculiarity that a bare
 number is interpreted as a sample count, not as a number of seconds.
-For specifying seconds, either use the \fBt\fR suffix (as in `2t'),
+To specify seconds, either use the \fBt\fR suffix (as in `2t'),
 a decimal point (as in `2.0') or specify minutes too (as in `0:02').
 .SP
 \fIthreshold\fR numbers may be suffixed with
@@ -3166,12 +3166,12 @@ that does not contain the delay at the start which usually occurs between
 .TP
 \fBsinc\fR [\fB\-a\fI att\fR\^|\^\fB\-b\fI beta\fR] [\fB\-p\fI phase\fR\^|\^\fB\-M\fR\^|\^\fB\-I\fR\^|\^\fB\-L\fR] \:[\fB\-t\fI tbw\fR\^|\^\fB\-n\fI taps\fR] [\fIfreqHP\fR]\:[\fB\-\fIfreqLP\fR [\fB\-t\fR tbw\^|\^\fB\-n\fR taps]] [\fB\-r\fR]]
 .ad
-Apply a sinc kaiser-windowed low-pass, high-pass, band-pass, or band-reject filter
+Apply a kaiser-windowed low-pass, high-pass, band-pass or band-reject filter
 to the signal.
 The \fIfreqHP\fR and \fIfreqLP\fR parameters give the frequencies of the
 6dB points of a high-pass and low-pass filter that may be invoked
-individually, or together.  If both are
-given, then \fIfreqHP\fR less than \fIfreqLP\fR creates a band-pass filter,
+individually or together.  If both are
+given, \fIfreqHP\fR less than \fIfreqLP\fR creates a band-pass filter,
 \fIfreqHP\fR greater than \fIfreqLP\fR creates a band-reject filter.
 For example, the invocations
 .EX
@@ -3191,7 +3191,7 @@ The default transition bandwidth of 5% of the total band can be
 overridden with \fB\-t\fR (and \fItbw\fR in Hertz); alternatively, the
 number of filter taps can be given directly with \fB\-n\fR.
 .SP
-If both \fIfreqHP\fR and \fIfreqLP\fR are given, then a \fB\-t\fR or
+If both \fIfreqHP\fR and \fIfreqLP\fR are given, a \fB\-t\fR or
 \fB\-n\fR option given to the left of the frequencies applies to both
 frequencies; one of these options given to the right of the frequencies
 applies only to \fIfreqLP\fR.
@@ -3208,17 +3208,17 @@ for details.
 The
 .B \-r
 option controls whether the filter should round the number of taps to the closest integer
-instead of truncating it..
+instead of truncating it.
 .SP
 This effect supports the \fB\-\-plot\fR global option.
 .TP
 \fBspectrogram \fR[\fIoptions\fR]
-Create a spectrogram of the audio; the audio is passed unmodified
+Create a spectrogram of the audio. The audio is passed unmodified
 through the SoX processing chain.  This effect is optional\*mtype
 \fBsox_ng \-\-help\fR and check the list of supported effects to see if
 it has been included.
 .SP
-The spectrogram is rendered in a Portable Network Graphic (PNG) file,
+The spectrogram is rendered in a Portable Network Graphic (PNG) file
 and shows time in the X-axis, frequency in the Y-axis, and audio
 signal magnitude in the Z-axis.  Z-axis values are represented by the
 color (or optionally the intensity) of the pixels in the X-Y plane.
@@ -3237,7 +3237,7 @@ of the audio is required; e.g. with
    sox_ng my.wav \-n remix 2 trim 20 30 spectrogram
 .EE
 the spectrogram shows information only from the second (right)
-channel, and of thirty seconds of audio starting from twenty seconds
+channel of thirty seconds of audio starting from twenty seconds
 in.  To analyze a small portion of the frequency domain, the
 .B rate
 effect may be used, e.g.
@@ -3254,11 +3254,11 @@ the given options control the size of the spectrogram's X, Y & Z axes
 (in this case, the spectrogram area of the produced image will be 600
 by 200 pixels in size and the Z-axis range will be 100 dB).  Note that
 the produced image includes axes legends etc. and so will be a little
-larger than the specified spectrogram size.  In this example:
+larger than the specified spectrogram size.  In this example
 .EX
    sox_ng \-n \-n synth 6 tri 10k:14k spectrogram \-z 100 \-w kaiser
 .EE
-an analysis `window' with high dynamic range is selected to best
+an analysis window with high dynamic range is selected to best
 display the spectrogram of a swept triangular wave.  For a similar
 example, append the following to the `chime' command in the
 description of the
@@ -3272,7 +3272,7 @@ brightness, contrast, etc.) and filename of the spectrogram; e.g. with
 .EX
    sox_ng my.wav \-n spectrogram \-m \-l \-o print.png
 .EE
-a spectrogram is created suitable for printing on a `black and white'
+a spectrogram is created suitable for printing on a black and white
 printer.
 .SP
 .I Options:
@@ -3297,19 +3297,20 @@ quantisation reasons; if so, SoX will report the actual number used
 is in effect).
 See also \fB\-x\fR and \fB\-d\fR.
 .IP \fB\-y\ \fInum\fR
-Sets the Y-axis size in pixels (per channel); this is the number of
+Sets the Y-axis size per channel in pixels; this is the number of
 frequency `bins' used in the Fourier analysis that produces the spectrogram.
-By default the Y-axis size is chosen automatically (depending on the number of
-channels).  See
+By default the Y-axis size is chosen automatically, depending on the number of
+channels.  See
 .B \-Y
-for alternative way of setting spectrogram height.
+for an alternative way of setting the spectrogram height.
 .IP \fB\-Y\ \fInum\fR
 Sets the target total height of the spectrogram(s).  The default value
 is 550 pixels and the maximum is 16384 or 200000 depending on your system's
-capabilities.  Using this option (and by default), SoX will choose a
+capabilities.  Using this option, and by default, SoX will choose a
 height for individual spectrogram channels that is one more than a
 power of two, so the actual total height may fall short of the given
-number.  However, there is also a minimum height of 64 per channel so if
+number or be larger.
+However, there is also a minimum height of 64 per channel so if
 there are many channels, the number may be exceeded.
 See
 .B \-y
@@ -3319,45 +3320,44 @@ Z-axis (color) range in dB, default 120.  This sets the dynamic range
 of the spectrogram to be \-\fInum\fR\ dBFS to 0\ dBFS.
 .I Num
 may range from 20 to 180.  Decreasing dynamic range effectively
-increases the `contrast' of the spectrogram display, and vice versa.
+increases the contrast of the spectrogram display and vice versa.
 .IP \fB\-Z\ \fInum\fR
 Sets the upper limit of the Z-axis in dBFS.
 A negative
 .I num
-effectively increases the `brightness' of the spectrogram display,
+effectively increases the brightness of the spectrogram display
 and vice versa.
 .IP \fB\-n\fR
-Sets the upper limit of the Z axis so that the loudest pixels
+Normalizes the upper limit of the Z axis so that the loudest pixels
 are shown using the brightest color in the palette - a kind of
 automatic \fB\-Z\fR flag.
 .IP \fB\-q\ \fInum\fR
 Sets the Z-axis quantisation, i.e. the number of different colors (or
 intensities) in which to render Z-axis
 values.  A small number (e.g. 4) will give a poster-like effect making
-it easier to discern magnitude bands of similar level.  Small numbers
-also usually
+it easier to discern magnitude bands of similar level and
 result in small PNG files.  The number given specifies the number of
-colors to use inside the Z-axis range; two colors are reserved to
+colors to use in the Z-axis range; two colors are reserved to
 represent out-of-range values.
 .IP \fB\-w\ \fIname\fR
-Window: Hann (default), Hamming, Bartlett, Rectangular, Kaiser or Dolph.  The
-spectrogram is produced using the Discrete Fourier Transform (DFT)
-algorithm.  A significant parameter to this algorithm is the choice of
-`window function'.  By default, SoX uses the Hann window which has good
+Window: Hann (default), Hamming, Bartlett, Rectangular, Kaiser or Dolph.
+The spectrogram is produced using the Discrete Fourier Transform (DFT)
+algorithm and a significant parameter to this algorithm is the choice of
+window function.  By default, SoX uses the Hann window, which has good
 all-round properties for frequency resolution and dynamic range.  For better
 frequency resolution but lower dynamic range, select a Hamming window;
 for higher dynamic range but poorer frequency resolution, select a
-Dolph window.  Kaiser, Bartlett and Rectangular windows are also available.
+Dolph window.
 .IP \fB\-W\ \fInum\fR
 Window adjustment parameter.  This can be used to make small
-adjustments to the Kaiser or Dolph window shape.  A positive number (up to
+adjustments to the Kaiser or Dolph windows.  A positive number (up to
 ten) increases its dynamic range, a negative number decreases it.
 .IP \fB\-s\fR
 Allow slack overlapping of DFT windows.
 This can, in some cases, increase image sharpness and give greater adherence
 to the
 .B \-x
-value, but at the expense of a little spectral loss.
+value but at the expense of a little spectral loss.
 .IP \fB\-m\fR
 Creates a monochrome spectrogram (the default is color).
 .IP \fB\-h\fR
@@ -3386,9 +3386,9 @@ not normally be used as it has some problems, not least, a lack of
 differentiation at the bottom end which results in masking of low-level
 artefacts.
 .IP \fB\-t\ \fItext\fR
-Set the image title\*mtext to display above the spectrogram.
+Set the image title, the text to display above the spectrogram.
 .IP \fB\-c\ \fItext\fR
-Set (or clear) the image comment\*mtext to display below and to the
+Set (or clear) the image comment, the text to display below and to the
 left of the spectrogram.
 .IP \fB\-o\ \fIfile\fR
 Name of the spectrogram output PNG file, default `spectrogram.png'.
@@ -3400,19 +3400,21 @@ Plot the frequency on a logarithmic axis.
 .IP \fB\-R\ \fIL\fR:\fIH\fR
 Specify the frequency range (from \fIL\fR to \fIH\fR)"
 The frequencies can have an optional suffix such as
-'k' (x 1000) and 'M' (x 1000000), e.g. with
+'k' (\(mu1000) and 'M' (\(mu1000000), e.g. with
 .EX
-   sox mymusic.mp3 \-n spectrogram \-L \-R 100:8k
+   sox_ng mymusic.mp3 \-n spectrogram \-L \-R 100:8k
 .EE
+By default, the lowest frequency is 0Hz for a linear graph or
+1Hz for a logarithmic graph and the highest is the Nyquist frequency.
 .RE
 .TP
 \ 
-.I Advanced Options:
+.B Advanced Options
 .br
 In order to process a smaller section of audio without affecting other
 effects or the output signal (unlike when the
 .B trim
-effect is used), the following options may be used.
+effect is used), the following options may be used:
 .RS
 .IP \fB\-d\ \fIduration\fR
 This option sets the X-axis resolution such that audio with the given
@@ -3422,8 +3424,7 @@ example,
 .EX
    sox_ng input.mp3 output.wav \-n spectrogram \-d 1:00 stats
 .EE
-creates a spectrogram showing the first minute of the audio, whilst
-.EE
+creates a spectrogram showing the first minute of the audio, while
 the
 .B stats
 effect is applied to the entire audio signal.
@@ -3442,17 +3443,16 @@ creates a spectrogram showing all but the first minute of the audio
 .RE
 .TP
 \ 
-For the ability to perform off-line processing of spectral data, see the
-.B stat
-effect.
+For the ability to perform off-line processing of spectral data, see
+.BR "stat \-freq".
 .TP
 \fBspeed \fIfactor\fR[\fBc\fR]
 Adjust the audio speed (pitch and tempo together).  \fIfactor\fR
-is either the ratio of the new speed to the old speed: greater
-than 1 speeds up, less than 1 slows down, or, if appended with the
+is either the ratio of the new speed to the old speed (greater
+than 1 speeds it up, less than 1 slows it down) or, if the
 letter
-`c', the number of cents (i.e. 100ths of a semitone) by
-which the pitch (and tempo) should be adjusted: greater than 0
+\fBc\fR is appended, it's the number of cents (100ths of a semitone)
+by which the pitch (and tempo) should be adjusted: greater than 0
 increases, less than 0 decreases.
 .SP
 Technically, the speed effect only changes the sample rate information,
@@ -3462,7 +3462,7 @@ quality/speed.  For higher quality or higher speed
 resampling, in addition to the \fBspeed\fR effect, specify
 the \fBrate\fR effect with the desired quality option.
 .SP
-See also the \fBbend\fR, \fBpitch\fR,
+See also the \fBbend\fR, \fBpitch\fR
 and
 .B tempo
 effects.
@@ -3470,13 +3470,13 @@ effects.
 \fBspeexdsp \fR[\fB\-agc\fR [\fItarget_level\fR(100)]] [\fB\-denoise\fR [\fImax_db\fR(15)]] [\fB\-dereverb\fR] [\fB\-fps\fR \fIframes_per_second\fR(20)] [\fB\-spf\fR \fIsamples_per_frame\fR]
 Use the Speex DSP library to improve perceived sound quality.
 .SP
-If no options are specified, the -agc and -denoise features are enabled.
+If no options are specified, the \fB\-agc\fR and \fB\-denoise\fR features are enabled.
 .RS
 .IP \fB\-agc\ \fR[\fItarget_level\fR]
 Enable automatic gain control and optionally specify
 a target volume level from 1 to 100.
 .IP \fB\-denoise\ \fR[\fImax_db\fR]
-Enable noise reduction and optionally specify the max attenuation.
+Enable noise reduction and optionally specify the maximum attenuation.
 .IP \fB\-dereverb\fR
 Enable reverb reduction.
 .IP \fB\-fps\ \fIframes_per_second\fR
@@ -3486,9 +3486,9 @@ Specify the number of samples per frame. The default is to use the \-fps setting
 .RE
 .TP
 \fBsplice \fR [\fB\-h\fR\^|\^\fB\-t\fR\^|\^\fB\-q\fR] { \fIposition(=)\fR[\fB,\fIexcess\fR[\fB,\fIleeway\fR]] }
-Splice together audio sections.  This effect provides two things over
+Splice audio sections together.  This effect provides two things over
 simple audio concatenation: a (usually short) cross-fade is applied at
-the join, and a wave similarity comparison is made to help determine the
+the join and a wave similarity comparison is made to help determine the
 best place at which to make the join.
 .SP
 One of the options
@@ -3531,6 +3531,7 @@ length of the first audio section (including the excess).
 .SP
 The following diagram uses the tape analogy to illustrate the splice
 operation.  The effect simulates the diagonal cuts and joins the two pieces:
+.ne 14
 .EX
 
       length1   excess
@@ -3575,13 +3576,13 @@ For another example, the SoX command
 generates and plays two notes, but there is a nasty click at the
 transition; the click can be removed by splicing instead of
 concatenating the audio, i.e. by appending \fBsplice 1\fR to the
-command. (Clicks at the beginning and end of the audio can be removed by
-\fIpreceding\fR the splice effect with \fBfade q .01 2 .01\fR).
+command. Clicks at the beginning and end of the audio can be removed by
+\fIpreceding\fR the splice effect with \fBfade q .01 2 .01\fR.
 .SP
 Provided your arithmetic is good enough, multiple splices can be
 performed with a single
 .B splice
-invocation.  For example:
+invocation.  For example, with a Bourne shell script `acpo':
 .EX
 #!/bin/sh
 # Audio Copy and Paste Over
@@ -3596,7 +3597,6 @@ sox_ng "$1" part2.wav trim $4+$3\-$2\-$e\-$l
 sox_ng part1.wav piece.wav part2.wav "$5" \\
    splice $4+$e +$3\-$2+$e+$l+$e
 .EE
-In the above Bourne shell script,
 two splices are used to `copy and paste' audio.
 .TS
 center;
@@ -3608,9 +3608,9 @@ c8 c8 c.
 It is also possible to use this effect to perform general cross-fades,
 e.g. to join two songs.  In this case,
 .I excess
-would typically be an number of seconds, the
+would typically be a number of seconds, the
 .B \-q
-option would typically be given (to select an `equal power' cross-fade), and
+option would typically be given to select an `equal power' cross-fade and
 .I leeway
 should be zero (which is the default if
 .B \-q
@@ -3621,30 +3621,31 @@ to be cross-faded, then
 .EE
 cross-fades the files where the point of equal loudness is 3 seconds
 before the end of f1.wav, i.e. the total length of the cross-fade is
-2 \(mu 3 = 6 seconds (Note: the $(...) notation is POSIX shell).
+2 \(mu 3 = 6 seconds (\f(CW$(...)\fR is POSIX shell notation that is replaced
+by the output of the enclosed command).
 .TP
 \fBstat\fR [\fB\-s \fIscale\fR] [\fB\-rms\fR] [\fB\-freq\fR] [\fB\-v\fR] [\fB\-d\fR]
 Display time and frequency domain statistical information about the audio.
 Audio is passed unmodified through the SoX processing chain.
 .SP
 The information is output to the `standard error' (stderr) stream and is
-calculated, where
+calculated (where
 .I n
 is the duration of the audio in samples,
 .I c
 is the number of audio channels,
 .I r
-is the audio sample rate, and
+is the audio sample rate and
 .I x\s-2\dk\u\s0
-represents the PCM value (in the range \-1 to +1 by default) of each successive
-sample in the audio,
+represents the value (in the range \-1 to +1) of each successive
+sample in the audio),
 as follows:
 .TS
 center;
 lI lx .
 Samples read	\fIn\fR\^\(mu\^\fIc\fR
 Length (seconds)	\fIn\fR\^\(di\^\fIr\fR
-Scaled by	See \-s below.
+Scaled by	See \fB\-s\fR below.
 Maximum amplitude	T{
 max(\fIx\s-2\dk\u\s0\fR)
 .br
@@ -3666,9 +3667,9 @@ Mean amplitude	T{
 .br
 The average of each sample in the audio.
 If this figure is non-zero, then it indicates the
-presence of a D.C. offset (which could be removed using the
+presence of a D.C. offset which could be removed using the
 .B dcshift
-effect).
+effect.
 T}
 RMS amplitude	T{
 \(sr(\(S1/\s-2n\s+2\^\(*S\^\fIx\s-2\dk\u\s0\fR\(S2)
@@ -3692,7 +3693,7 @@ T}
 .TE
 .DT
 .SP
-Note that the delta measurements are not applicable for multichannel audio.
+Note that the delta measurements are not applicable to multichannel audio.
 .SP
 The
 .B \-s
@@ -3715,8 +3716,8 @@ option displays only the `Volume Adjustment' value.
 .SP
 The
 .B \-freq
-option calculates the input's power spectrum (4096 point DFT) instead of the
-statistics listed above.  This should only be used with a single channel
+option outputs the input's power spectrum (a 4096-point DFT) instead of the
+statistics listed above.  This should only be used with a single-channel
 audio file.
 .SP
 The
@@ -3730,8 +3731,8 @@ sometimes occur in cross-platform versions of SoX.
 The
 .B \-a
 option
-will output the average input's power spectrum instead of the default
-behavior in which the power spectrum is given for each 4096 point DFT.
+outputs the average power spectrum instead of
+the power spectrum for each 4096-point DFT.
 .SP
 See also the
 .B stats
@@ -3775,7 +3776,7 @@ and
 are shown, by default, in the range \(+-1.
 If the
 .B \-b
-(bits) options is given, then these three measurements will be scaled to a signed integer
+(bits) options is given, these three measurements will be scaled to a signed integer
 with the given number of bits; for example, for 16 bits, the scale would be \-32768 to +32767.
 The
 .B \-x
@@ -3793,7 +3794,9 @@ are standard peak and RMS level measured in dBFS.
 .I RMS\ Pk\ dB
 and
 .I RMS\ Tr\ dB
-are peak and trough values for RMS level measured over a short window (default 50ms).
+are peak and trough values for RMS level measured over a short window
+(default: 50ms).
+That can be changed with the \fB\-w\fP option.
 .SP
 .I Crest\ factor
 is the standard ratio of peak to RMS level (note: not in dB).
@@ -3879,31 +3882,40 @@ See also the
 .B stat
 effect.
 .TP
-\fBstretch \fIfactor\fR [\fIwindow fade shift fading\fR]
-Change the audio duration (but not its pitch).
+\fBstretch [\fIfactor\fR [\fIwindow \fR[\fIfade \fR[\fIshift \fR[\fIfading\fR]]]]]
+Change the audio duration but not its pitch by cross-fading between
+short windows of samples.
 This effect is broadly equivalent to the
 .B tempo
-effect with (\fIfactor\fR inverted and)
+effect with \fIfactor\fR inverted and
 .I search
-set to zero, so in general, its results are comparatively poor;
+set to zero so, in general, its results are comparatively poor;
 it is retained as it can sometimes out-perform
 .B tempo
 for small
 .IR factor s.
 .SP
 .I factor
-of stretching: >1 lengthen, <1 shorten duration.
+determines the change in length: >1 lengthens and <1 shortens.
+By default, it is 1 (no change)
+.SP
 .I window
-size is in ms.  Default is 20ms.  The
+is the length of the crossfading window in milliseconds with a default of 20ms.
+.SP
+The
 .I fade
-option, can be `lin'.
+option, can only be \fBl\fR for \fBlinear\fR.
+.SP
+The 
 .I shift
-ratio, in [0 1].  Default depends on stretch factor. 1
-to shorten, 0\*d8 to lengthen.  The
+ratio can be from 0 to 1 and its default depends on the stretch factor.
+Its default is 1 when speeding up, 0\*d8 when slowing down.
+.SP
+The
 .I fading
-ratio, in [0 0\*d5].  The amount of a fade's default depends on
-.I factor
-and \fIshift\fR.
+ratio, from 0 to 0\*d5, seems to be how much of each window is cross-faded
+with the adjacent ones.
+The default value depends on \fI\A\fRfactor and \fIshift\fR.
 .SP
 See also the
 .B tempo
@@ -4095,20 +4107,20 @@ option is used to optimize default values of segment, search and
 overlap for `linear' processing that tends to cause more
 noticeable distortion but may be useful when factor is close to 1.
 .SP
-If \-m, \-s, or \-l is specified, the default value of segment will be
-calculated based on factor, while default search and overlap values are
-based on segment. Any values you provide still override these default
-values.
+If \fB\-m\fR, \fB\-s\fR or \fB\-l\fR is specified,
+the default value of \fIsegment\fR will be calculated based on \fIfactor\fR,
+while default \fIsearch\fR and \fIoverlap\fR values are based on \fIsegment\fR.
+Any values you provide still override these default values.
 .SP
 .I factor
-gives the ratio of new tempo to the old tempo, so e.g. 1.1 speeds up the
-tempo by 10%, and 0.9 slows it down by 10%.
+gives the ratio of new tempo to the old tempo, so e.g. 1.1 speeds the
+tempo up by 10%, and 0.9 slows it down by 10%.
 .SP
 The optional
 .I segment
 parameter selects the algorithm's segment size in milliseconds.  If no other
-flags are specified, the default value is 82 and is typically suited to
-making small changes to the tempo of music. For larger changes (e.g. a factor
+flags are specified, the default value is 82, which is suited to
+small changes in the tempo of music. For larger changes (e.g. a factor
 of 2), 41\ ms may give a better result.  The \-m, \-s, and \-l flags will cause
 the segment default to be automatically adjusted based on factor.
 For example using \-s (for speech) with a tempo of 1.25 will calculate a
@@ -4128,19 +4140,15 @@ the search default to be automatically adjusted based on segment.
 The optional
 .I overlap
 parameter gives the segment overlap length in milliseconds.
-Default value is 12, but \-m, \-s, or \-l flags automatically
-adjust overlap based on segment size. Increasing overlap increases
-processing time and may increase quality. A practical maximum for overlap
-is the value of search, with overlap typically being (at least) a little
-smaller then search.
+Its default value is 12 but the \fB\-m\fR, \fB\-s\fR and \fB\-l\fR flags
+automatically adjust the overlap based on the segment size.
+Increasing \fIoverlap\fR increases processing time but may increase quality.
+A practical maximum for \fIoverlap\fR is the value of \fIsearch\fR
+with \fIoverlap\fR being a little smaller then \fIsearch\fR.
 .SP
-See also
-.B speed
-for an effect that changes tempo and pitch together,
-.B pitch
-and \fBbend\fR for effects that change pitch only, and
-.B stretch
-for an effect that changes tempo using a different algorithm.
+See \fBspeed\fR for an effect that changes tempo and pitch together,
+\fBpitch\fR and \fBbend\fR for effects that change pitch only and
+\fBstretch\fR for an effect that changes the tempo using a different algorithm.
 .TP
 \fBtreble \fIgain\fR [\fIfrequency\fR [\fIwidth\fR[\fBs\fR\^|\^\fBh\fR\^|\^\fBk\fR\^|\^\fBo\fR\^|\^\fBq\fR]]]
 Apply a treble tone control effect.
@@ -4148,14 +4156,11 @@ See the description of the \fBbass\fR effect for details.
 .TP
 \fBtremolo \fIspeed\fR [\fIdepth\fR]
 Apply a tremolo (low frequency amplitude modulation) effect to the audio.
-The tremolo frequency in Hz is given by
-.IR speed ,
-and the depth as a percentage by
-.I depth
-(default 40).
+The frequency of the tremolo in Hz is given by \fIspeed\fR
+and its \fIdepth\fR is a percentage with a default of 40.
 .TP
 \fBtrim\fR {\fIposition(+)\fR}
-Cuts portions out of the audio.  Any number of \fIposition\fRs may be
+Cuts out portions of the audio.  Any number of \fIposition\fRs may be
 given; audio is not sent to the output until the first \fIposition\fR
 is reached.  The effect then alternates between copying and discarding
 audio at each \fIposition\fR.  Using a value of 0 for the first \fIposition\fR
@@ -4180,7 +4185,7 @@ minutes before the end of audio.
 \fBupsample\fR [\fIfactor\fR]
 Upsample the signal by an integer factor: \fIfactor\fR\-1 zero-value
 samples are inserted between each pair of input samples.  As a result, the
-original spectrum is replicated into the new frequency space (imaging) and
+original spectrum is replicated into the new frequency space and
 attenuated.  This attenuation can be compensated for by adding
 \fBvol \fIfactor\fR after any further processing.  The upsample effect is
 typically used in combination with filtering effects.
@@ -4189,7 +4194,7 @@ For a general resampling effect with antialiasing see \fBrate\fR.
 See also \fBdownsample\fR.
 .TP
 \fBvad \fR[\fIoptions\fR]
-Voice Activity Detector.  Attempts to trim silence and quiet
+The Voice Activity Detector attempts to trim silence and quiet
 background sounds from the ends of (fairly high resolution
 i.e. 16-bit, 44\-48kHz) recordings of speech.  The algorithm currently
 uses a simple cepstral power measurement to detect voice, so may be
@@ -4218,22 +4223,22 @@ is suitable for use with streamed audio.
 .SP
 .I Options:
 .br
-Default values are shown in parenthesis.
+Default values are shown in parentheses, the allowed range in square brackets.
 .RS
-.IP \fB\-t\ \fInum\fR\ (7)
+.IP "\fB\-t\ \fInum\fR (7) [0 \- 20]"
 The measurement level used to trigger activity detection.  This might
 need to be changed depending on the noise level, signal level and
 other charactistics of the input audio.
-.IP \fB\-T\ \fInum\fR\ (0.25)
+.IP "\fB\-T \fInum\fR (0.25) [0.01 \- 1]"
 The time constant (in seconds) used to help ignore short bursts of
 sound.
-.IP \fB\-s\ \fInum\fR\ (1)
+.IP "\fB\-s \fInum\fR (1) [0.1 \- 4]"
 The amount of audio (in seconds) to search for quieter/shorter bursts
 of audio to include prior to the detected trigger point.
-.IP \fB\-g\ \fInum\fR\ (0.25)
+.IP "\fB\-g \fInum\fR (0.25) [0.1 \- 1]"
 Allowed gap (in seconds) between quieter/shorter bursts of audio to
 include prior to the detected trigger point.
-.IP \fB\-p\ \fInum\fR\ (0)
+.IP "\fB\-p \fInum\fR (0) [0 \- 4]"
 The amount of audio (in seconds) to preserve before the trigger point
 and any found quieter/shorter bursts.
 .RE
@@ -4243,38 +4248,37 @@ and any found quieter/shorter bursts.
 .br
 These allow fine tuning of the algorithm's internal parameters.
 .RS
-.IP \fB\-b\ \fInum\fR
-The algorithm (internally) uses adaptive noise estimation/reduction in
-order to detect the start of the wanted audio.  This option sets the
-time for the initial noise estimate.
-.IP \fB\-N\ \fInum\fR
+.IP "\fB\-b \fInum\fR (0.35) [0.1 \- 10]"
+The algorithm uses adaptive noise estimation/reduction in
+order to detect the start of the wanted audio.
+This option sets the time in seconds for the initial noise estimate.
+.IP "\fB\-N \fInum\fR (0.1) [0.1 \- 10]"
 Time constant used by the adaptive noise estimator for when the noise
 level is increasing.
-.IP \fB\-n\ \fInum\fR
-Time constant used by the adaptive noise estimator for when the noise
+.IP "\fB\-n \fInum\fR (0.01) [0.001 \- 0.1]"
+Time constant used by the adaptive noise estimator when the noise
 level is decreasing.
-.IP \fB\-r\ \fInum\fR
-Amount of noise reduction to use in the detection algorithm (e.g. 0,
-0.5, ...).
-.IP \fB\-f\ \fInum\fR
+.IP "\fB\-r \fInum\fR (1.35) [0 \- 2]"
+Amount of noise reduction to use in the detection algorithm.
+.IP "\fB\-f \fInum\fR (20) [5 \- 50]"
 Frequency of the algorithm's processing/measurements.
-.IP \fB\-m\ \fInum\fR
-Measurement duration; by default, twice the measurement period; i.e.
-with overlap.
-.IP \fB\-M\ \fInum\fR
+.IP "\fB\-m \fInum\fR (0.1) [0.01 \- 1]"
+Measurement duration. By default, it is twice the measurement period;
+i.e. with 50% overlap, but if you set \fB-f\fR,
+you also need to change \fB\-m\fR to 2/^\(di\^ its value
+if you want to keep a 50% overlap.
+.IP "\fB\-M \fInum\fR (0.4) [0-1 \- 1]"
 Time constant used to smooth spectral measurements.
-.IP \fB\-h\ \fInum\fR
+.IP "\fB\-h \fInum\fR (50) [10 \-\^]"
 `Brick-wall' frequency of high-pass filter applied at the input to the
 detector algorithm.
-.IP \fB\-l\ \fInum\fR
+.IP "\fB\-l \fInum\fR (6000) [1000 \-\^]"
 `Brick-wall' frequency of low-pass filter applied at the input to the
 detector algorithm.
-.IP \fB\-H\ \fInum\fR
-`Brick-wall' frequency of high-pass lifter used in the detector
-algorithm.
-.IP \fB\-L\ \fInum\fR
-`Brick-wall' frequency of low-pass lifter used in the detector
-algorithm.
+.IP "\fB\-H \fInum\fR (150) [10 \-\^]"
+`Brick-wall' frequency of high-pass lifter used in the detector algorithm.
+.IP "\fB\-L \fInum\fR (2000) [1000 \-\^]"
+`Brick-wall' frequency of low-pass lifter used in the detector algorithm.
 .RE
 .TP
 \ 
@@ -4283,14 +4287,14 @@ See also the
 effect.
 .TP
 \fBvol \fIgain\fR [\fItype\fR [\fIlimitergain\fR]]
-Apply an amplification or an attenuation to the audio signal.
+Apply amplification or attenuation to the audio signal.
 Unlike the
 .B \-v
 option (which is used for balancing multiple input files as they enter the
 SoX effects processing chain),
 .B vol
-is an effect like any other so can be applied anywhere, and several times
-if necessary, during the processing chain.
+is an effect like any other so can be applied anywhere in the processing chain
+and several times if necessary.
 .SP
 The amount to change the volume is given by
 .I gain
@@ -4350,7 +4354,7 @@ for a volume-changing effect with different capabilities, and
 for a dynamic range compression/expansion/limiting effect.
 .SH DIAGNOSTICS
 Exit status is 0 for no error, 1 if there is a problem with the
-command-line parameters, or 2 if an error occurs during file processing.
+command-line parameters or 2 if an error occurs during file processing.
 .SH BUGS
 Please report any bugs found in this version of SoX to the mailing list
 (sox-ng@groups.io).
@@ -4378,8 +4382,7 @@ A BibTeX entry for SoX users is
 .br
 .BR audacity (1),
 .BR gnuplot (1),
-.BR octave (1),
-.BR wget (1)
+.BR octave (1).
 .br
 The sox_ng web site at https://codeberg.org/sox_ng/sox_ng
 .br
@@ -4436,13 +4439,12 @@ Copyright 1991 Lance Norskog and Sundry Contributors.
 .SP
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
-any later version.
+the Free Software Foundation, version 2.
 .SP
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 .SH AUTHORS
-Lance Norskog, Chris Bagwell and many others listed in the ChangeLog file
+Lance Norskog, Chris Bagwell and many others listed in the AUTHORS file
 that is distributed with the source code.
