@@ -545,10 +545,14 @@ static FILE * xfopen(char const * identifier, char const * mode, lsx_io_type * i
 
   if (*identifier == '|') {
     FILE * f = NULL;
-#ifdef HAVE_POPEN
-#ifndef POPEN_MODE
-#define POPEN_MODE "r"
-#endif
+#if HAVE_POPEN
+# ifndef POPEN_MODE
+#  ifdef _WIN32
+#   define POPEN_MODE "rb"
+#  else
+#   define POPEN_MODE "r"
+#  endif
+# endif
     f = popen(identifier + 1, POPEN_MODE);
     *io_type = lsx_io_pipe;
     incr_pipe_size(f);
