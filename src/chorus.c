@@ -7,7 +7,60 @@
  */
 
 /*
- * Chorus effect
+ *      Chorus effect.
+ *
+ * Flow diagram scheme for n delays ( 1 <= n <= MAX_CHORUS ):
+ *
+ *                                                * gain-in   ___
+ * ibuff -----+--------------------------------------------->|   |
+ *            |      _________                               |   |
+ *            |     |         |                   * decay 1  |   |
+ *            +---->| delay 1 |----------------------------->|   |
+ *            |     |_________|                              |   |
+ *            |        /|\                                   |   |
+ *            :         |                                    |   |
+ *            : +-----------------+   +--------------+       | + |
+ *            : | Delay control 1 |<--| mod. speed 1 |       |   |
+ *            : +-----------------+   +--------------+       |   |
+ *            |      _________                               |   |
+ *            |     |         |                   * decay n  |   |
+ *            +---->| delay n |----------------------------->|   |
+ *                  |_________|                              |   |
+ *                     /|\                                   |___|
+ *                      |                                      |
+ *              +-----------------+   +--------------+         | * gain-out
+ *              | Delay control n |<--| mod. speed n |         |
+ *              +-----------------+   +--------------+         +----->obuff
+ *
+ * In reality, it only has one delay buffer, whose size is the longest version
+ * of (delay + depth) and each of the apparent delays reads from that,
+ *
+ * The delay i is controlled by a sine or triangle modulation i ( 1 <= i <= n).
+ *
+ * Usage:
+ *   chorus gain-in gain-out delay-1 decay-1 speed-1 depth-1 -s1|t1 [
+ *       delay-2 decay-2 speed-2 depth-2 -s2|-t2 ... ]
+ *
+ * Where:
+ *   gain-in, decay-1 ... decay-n :  0.0 ... 1.0      volume
+ *   gain-out :  0.0 ...      volume
+ *   delay-1 ... delay-n :  20.0 ... 100.0 msec
+ *   speed-1 ... speed-n :  0.1 ... 5.0 Hz       modulation 1 ... n
+ *   depth-1 ... depth-n :  0.0 ... 10.0 msec    modulated delay 1 ... n
+ *   -s1 ... -sn : modulation by sine 1 ... n
+ *   -t1 ... -tn : modulation by triangle 1 ... n
+ *
+ * Note:
+ *   when decay is close to 1.0, the samples can begin clipping and the output
+ *   can saturate!
+ *
+ * Hint:
+ *   1 / out-gain < gain-in ( 1 + decay-1 + ... + decay-n )
+ *
+ */
+
+/*
+ * libSoX chorus effect
  */
 
 #include "sox_i.h"
@@ -15,18 +68,34 @@
 #define MAX_CHORUS      7
 
 typedef struct {
+	/* How many chorus effects do they want: 1-MAX_CHORUS */
         int     num_chorus;
-        int     modulation[MAX_CHORUS];
-        int     counter;
-        long    phase[MAX_CHORUS];
-        float   *chorusbuf;
+
+	/* The initial arguments */
         float   in_gain, out_gain;
+	/* The arguments to each chorus */
         float   delay[MAX_CHORUS], decay[MAX_CHORUS];
         float   speed[MAX_CHORUS], depth[MAX_CHORUS];
-        long    length[MAX_CHORUS];
-        int     *lookup_tab[MAX_CHORUS];
-        int     depth_samples[MAX_CHORUS], samples[MAX_CHORUS];
-        int maxsamples;
+        int     modulation[MAX_CHORUS]; /* MOD_SIN for -s or MOD_TRIANGLE */
+	/* Derived value: the modulation depths measured in samples */
+        int     depth_samples[MAX_CHORUS];
+
+        float   *chorusbuf;     /* The delay buffer */
+        int     maxsamples;	/* Length of the delay buffer */
+        int     counter;	/* Index into chorusbuf[] of where to write
+				 * the next input sample */
+
+        int     *lookup_tab[MAX_CHORUS]; /* The modulation wavetables */
+        long    length[MAX_CHORUS];      /* Length of modulation wavetables */
+        long    phase[MAX_CHORUS];	 /* Index into modulation tables */
+
+	/* The number of samples of chorusbuf[] used by each chorus:
+	 * the effective length of each chorus' virtual delay buffer.
+	 * Each item in turn is initialized, used and never used again
+	 * so this is actually useless. */
+	int     samples[MAX_CHORUS];
+
+	/* How many samples will we extend the audio by at the end? */
         unsigned int fade_out;
 } priv_t;
 
