@@ -230,12 +230,16 @@ static int startread(sox_format_t * ft)
 
   /* read the offset to data, from start of file */
   /* after this read we have read 20 bytes of header + 2 */
-  lsx_readw(ft, &sbseek);
+  if (lsx_readw(ft, &sbseek) == SOX_EOF) {
+    lsx_fail_errno(ft, SOX_EHDR, "unexpected EOF in header");
+    return (SOX_EOF);
+  }
 
   /* ANN:  read to skip the header, instead of lseek */
   /* this should allow use with pipes.... */
   for (ii = 22; ii < sbseek; ii++)
-    lsx_readb(ft, &uc);
+    if (lsx_readb(ft, &uc) == SOX_EOF)
+      lsx_fail_errno(ft, SOX_EHDR, "unexpected EOF in header");
 
   v->rate = -1;
   v->block_remaining = 0;
@@ -422,9 +426,9 @@ static size_t read_samples(sox_format_t * ft, sox_sample_t * buf,
             }
             break;
           case 16:
-            lsx_readsw(ft, &sw);
-            if (lsx_eof(ft)) {
-              lsx_warn("VOC input: short file");
+            if (lsx_readsw(ft, &sw) == SOX_EOF ||
+	        lsx_eof(ft)) {
+              lsx_warn("short input file");
               v->block_remaining = 0;
               return done;
             }
@@ -576,13 +580,15 @@ static int getblock(sox_format_t * ft)
     if (lsx_eof(ft))
       return SOX_EOF;
 
-    lsx_read3(ft, &sblen);
+    if (lsx_read3(ft, &sblen) == SOX_EOF)
+      return SOX_EOF;
 
     /* Based on VOC block type, process the block */
     /* audio may be in one or multiple blocks */
     switch (block) {
       case VOC_DATA:
-        lsx_readb(ft, &uc);
+        if (lsx_readb(ft, &uc) == SOX_EOF)
+	  return SOX_EOF;
         /* When DATA block preceeded by an EXTENDED     */
         /* block, the DATA blocks rate value is invalid */
         if (!v->extended) {
@@ -600,13 +606,15 @@ static int getblock(sox_format_t * ft)
           ft->signal.rate = 1000000.0 / (256 - v->rate);
           v->channels = 1;
         }
-        lsx_readb(ft, &uc);
+        if (lsx_readb(ft, &uc) == SOX_EOF)
+	  return SOX_EOF;
         v->format = uc;
         v->extended = 0;
         v->block_remaining = sblen - 2;
         return (SOX_SUCCESS);
       case VOC_DATA_16:
-        lsx_readdw(ft, &new_rate_32);
+        if (lsx_readdw(ft, &new_rate_32) == SOX_EOF)
+	  return SOX_EOF;
         if (new_rate_32 == 0) {
           lsx_fail_errno(ft, SOX_EFMT, "Sample rate is zero?");
           return (SOX_EOF);
@@ -618,15 +626,17 @@ static int getblock(sox_format_t * ft)
         }
         v->rate = new_rate_32;
         ft->signal.rate = new_rate_32;
-        lsx_readb(ft, &uc);
+        if (lsx_readb(ft, &uc) == SOX_EOF)
+	  return SOX_EOF;
         if (uc <= 1) {
           lsx_fail_errno(ft, SOX_EFMT, "2 bits per word required");
           return (SOX_EOF);
         }
         v->size = uc;
-        lsx_readb(ft, &(v->channels));
-        lsx_readw(ft, &(v->format));    /* ANN: added format */
-        lsx_skipbytes(ft, (size_t) 4);
+        if (lsx_readb(ft, &(v->channels)) == SOX_EOF ||
+            lsx_readw(ft, &(v->format)) == SOX_EOF ||
+            lsx_skipbytes(ft, (size_t) 4) == SOX_EOF)
+	  return SOX_EOF;
         v->block_remaining = sblen - 12;
         return (SOX_SUCCESS);
       case VOC_CONT:
@@ -636,8 +646,9 @@ static int getblock(sox_format_t * ft)
         {
           unsigned short period;
 
-          lsx_readw(ft, &period);
-          lsx_readb(ft, &uc);
+          if (lsx_readw(ft, &period) == SOX_EOF ||
+              lsx_readb(ft, &uc) == SOX_EOF)
+	    return SOX_EOF;
           if (uc == 0) {
             lsx_fail_errno(ft, SOX_EFMT, "Silence sample rate is zero");
             return (SOX_EOF);
@@ -656,8 +667,9 @@ static int getblock(sox_format_t * ft)
           return (SOX_SUCCESS);
         }
       case VOC_MARKER:
-        lsx_readb(ft, &uc);
-        lsx_readb(ft, &uc);
+        if (lsx_readb(ft, &uc) == SOX_EOF ||
+            lsx_readb(ft, &uc) == SOX_EOF)
+	  return SOX_EOF;
         /* Falling! Falling! */
       case VOC_TEXT:
         {
@@ -667,7 +679,8 @@ static int getblock(sox_format_t * ft)
 
           lsx_warn("VOC TEXT");
           while (i--) {
-            lsx_readsb(ft, &c);
+            if (lsx_readsb(ft, &c) == SOX_EOF)
+	      return SOX_EOF;
             /* FIXME: this needs to be tested but I couldn't
              * find a voc file with a VOC_TEXT chunk :(
              if (c != '\0' && c != '\r')
@@ -694,7 +707,8 @@ static int getblock(sox_format_t * ft)
         /* value from the extended block and not the     */
         /* data block.                                   */
         v->extended = 1;
-        lsx_readw(ft, &new_rate_16);
+        if (lsx_readw(ft, &new_rate_16) == SOX_EOF)
+	  return SOX_EOF;
         if (new_rate_16 == 0) {
           lsx_fail_errno(ft, SOX_EFMT, "Sample rate is zero?");
           return (SOX_EOF);
@@ -705,8 +719,10 @@ static int getblock(sox_format_t * ft)
           return (SOX_EOF);
         }
         v->rate = new_rate_16;
-        lsx_readb(ft, &uc); /* bits_per_sample */
-        lsx_readb(ft, &uc);
+	/* bits_per_sample */
+        if (lsx_readb(ft, &uc) == SOX_EOF ||
+            lsx_readb(ft, &uc) == SOX_EOF)
+	  return SOX_EOF;
         ft->signal.channels = uc? 2 : 1;      /* Stereo */
         /* Needed number of channels before finishing
          * compute for rate */
