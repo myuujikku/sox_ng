@@ -75,16 +75,18 @@ static int readtrailer(sox_format_t * ft, struct smptrailer *trailer)
         int i;
         uint16_t trash16;
 
-        lsx_readw(ft, &trash16); /* read reserved word */
+        if (lsx_readw(ft, &trash16)) /* read reserved word */
+		return 0;
         for(i = 0; i < 8; i++) {        /* read the 8 loops */
-                lsx_readdw(ft, &(trailer->loops[i].start));
+                if (lsx_readdw(ft, &(trailer->loops[i].start)) ||
+                    lsx_readdw(ft, &(trailer->loops[i].end)) ||
+                    lsx_readb(ft, &(trailer->loops[i].type)) ||
+                    lsx_readw(ft, &(trailer->loops[i].count)))
+			return 0;
                 ft->oob.loops[i].start = trailer->loops[i].start;
-                lsx_readdw(ft, &(trailer->loops[i].end));
                 ft->oob.loops[i].length =
                         trailer->loops[i].end - trailer->loops[i].start;
-                lsx_readb(ft, &(trailer->loops[i].type));
                 ft->oob.loops[i].type = trailer->loops[i].type;
-                lsx_readw(ft, &(trailer->loops[i].count));
                 ft->oob.loops[i].count = trailer->loops[i].count;
         }
         for(i = 0; i < 8; i++) {        /* read the 8 markers */
@@ -94,12 +96,14 @@ static int readtrailer(sox_format_t * ft, struct smptrailer *trailer)
                     return(SOX_EOF);
                 }
                 trailer->markers[i].name[MARKERLEN] = 0;
-                lsx_readdw(ft, &(trailer->markers[i].position));
+                if (lsx_readdw(ft, &(trailer->markers[i].position)))
+                    return(SOX_EOF);
         }
-        lsx_readsb(ft, &(trailer->MIDInote));
-        lsx_readdw(ft, &(trailer->rate));
-        lsx_readdw(ft, &(trailer->SMPTEoffset));
-        lsx_readdw(ft, &(trailer->CycleSize));
+        if (lsx_readsb(ft, &(trailer->MIDInote)) ||
+            lsx_readdw(ft, &(trailer->rate)) ||
+            lsx_readdw(ft, &(trailer->SMPTEoffset)) ||
+            lsx_readdw(ft, &(trailer->CycleSize)))
+                return(SOX_EOF);
         return(SOX_SUCCESS);
 }
 
@@ -250,7 +254,8 @@ static int sox_smpstartread(sox_format_t * ft)
         sox_append_comments(&ft->oob.comments, smp->comment);
 
         /* Extract out the sample size (always intel format) */
-        lsx_readdw(ft, &dw);
+        if (lsx_readdw(ft, &dw))
+	    return(SOX_EOF);
         smp->NoOfSamps = dw;
         /* mark the start of the sample data */
         samplestart = lsx_tell(ft);
@@ -329,7 +334,8 @@ static size_t sox_smpread(sox_format_t * ft, sox_sample_t *buf, size_t len)
         size_t done = 0;
 
         for(; done < len && smp->NoOfSamps; done++, smp->NoOfSamps--) {
-                lsx_readw(ft, &datum);
+                if (lsx_readw(ft, &datum))
+		        break;
                 /* scale signed up to long's range */
                 *buf++ = SOX_SIGNED_16BIT_TO_SAMPLE(datum,);
         }

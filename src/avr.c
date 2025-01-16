@@ -63,16 +63,18 @@ static int startread(sox_format_t * ft)
   priv_t * avr = (priv_t *)ft->priv;
   int rc;
 
-  lsx_reads(ft, avr->magic, (size_t)4);
+  if (lsx_reads(ft, avr->magic, (size_t)4))
+    return(SOX_EOF);
 
   if (strncmp (avr->magic, AVR_MAGIC, (size_t)4)) {
     lsx_fail_errno(ft,SOX_EHDR,"unknown header");
     return(SOX_EOF);
   }
 
-  lsx_readbuf(ft, avr->name, sizeof(avr->name));
+  if (lsx_readbuf(ft, avr->name, sizeof(avr->name)) != sizeof(avr->name) ||
+      lsx_readw (ft, &(avr->mono)))
+    return(SOX_EOF);
 
-  lsx_readw (ft, &(avr->mono));
   if (avr->mono) {
     ft->signal.channels = 2;
   }
@@ -80,7 +82,8 @@ static int startread(sox_format_t * ft)
     ft->signal.channels = 1;
   }
 
-  lsx_readw (ft, &(avr->rez));
+  if (lsx_readw (ft, &(avr->rez)))
+    return(SOX_EOF);
   if (avr->rez == 8) {
     ft->encoding.bits_per_sample = 8;
   }
@@ -92,7 +95,8 @@ static int startread(sox_format_t * ft)
     return(SOX_EOF);
   }
 
-  lsx_readw (ft, &(avr->sign));
+  if (lsx_readw (ft, &(avr->sign)))
+    return(SOX_EOF);
   if (avr->sign) {
     ft->encoding.encoding = SOX_ENCODING_SIGN2;
   }
@@ -100,34 +104,26 @@ static int startread(sox_format_t * ft)
     ft->encoding.encoding = SOX_ENCODING_UNSIGNED;
   }
 
-  lsx_readw (ft, &(avr->loop));
+  if (lsx_readw (ft, &(avr->loop)) ||
+      lsx_readw (ft, &(avr->midi)) ||
+      lsx_readdw (ft, &(avr->rate)) ||
+      lsx_readdw (ft, &(avr->size)) ||
+      lsx_readdw (ft, &(avr->lbeg)) ||
+      lsx_readdw (ft, &(avr->lend)) ||
+      lsx_readw (ft, &(avr->res1)) ||
+      lsx_readw (ft, &(avr->res2)) ||
+      lsx_readw (ft, &(avr->res3)) ||
+      lsx_readbuf(ft, avr->ext, sizeof(avr->ext)) != sizeof(avr->ext) ||
+      lsx_readbuf(ft, avr->user, sizeof(avr->user)) != sizeof(avr->user))
+    return(SOX_EOF);
 
-  lsx_readw (ft, &(avr->midi));
-
-  lsx_readdw (ft, &(avr->rate));
   /*
    * No support for AVRs created by ST-Replay,
-   * Replay Proffesional and PRO-Series 12.
+   * Replay Profesional and PRO-Series 12.
    *
    * Just masking the upper byte out.
    */
   ft->signal.rate = (avr->rate & 0x00ffffff);
-
-  lsx_readdw (ft, &(avr->size));
-
-  lsx_readdw (ft, &(avr->lbeg));
-
-  lsx_readdw (ft, &(avr->lend));
-
-  lsx_readw (ft, &(avr->res1));
-
-  lsx_readw (ft, &(avr->res2));
-
-  lsx_readw (ft, &(avr->res3));
-
-  lsx_readbuf(ft, avr->ext, sizeof(avr->ext));
-
-  lsx_readbuf(ft, avr->user, sizeof(avr->user));
 
   rc = lsx_rawstartread (ft);
   if (rc)
@@ -257,12 +253,12 @@ static int stopwrite(sox_format_t * ft)
   unsigned size = avr->size / ft->signal.channels;
 
   /* Fix size */
-  lsx_seeki(ft, (off_t)26, SEEK_SET);
-  lsx_writedw (ft, size);
-
-  /* Fix lend */
-  lsx_seeki(ft, (off_t)34, SEEK_SET);
-  lsx_writedw (ft, size);
+  if (lsx_seeki(ft, (off_t)26, SEEK_SET) ||
+      lsx_writedw (ft, size) ||
+      /* Fix lend */
+      lsx_seeki(ft, (off_t)34, SEEK_SET) ||
+      lsx_writedw (ft, size))
+    return(SOX_EOF);
 
   return(SOX_SUCCESS);
 }

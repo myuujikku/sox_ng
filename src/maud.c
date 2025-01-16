@@ -50,15 +50,17 @@ static int startread(sox_format_t * ft)
             return rc;
 
         /* read FORM chunk */
-        if (lsx_reads(ft, buf, (size_t)4) == SOX_EOF || strncmp(buf, "FORM", (size_t)4) != 0)
+        if (lsx_reads(ft, buf, (size_t)4) == SOX_EOF ||
+	    strncmp(buf, "FORM", (size_t)4) != 0)
         {
                 lsx_fail_errno(ft,SOX_EHDR,"header does not begin with magic word `FORM'");
                 return (SOX_EOF);
         }
 
-        lsx_readdw(ft, &trash32); /* totalsize */
+        if (lsx_readdw(ft, &trash32) || /* totalsize */
 
-        if (lsx_reads(ft, buf, (size_t)4) == SOX_EOF || strncmp(buf, "MAUD", (size_t)4) != 0)
+            lsx_reads(ft, buf, (size_t)4) == SOX_EOF ||
+	    strncmp(buf, "MAUD", (size_t)4) != 0)
         {
                 lsx_fail_errno(ft,SOX_EHDR,"`FORM' chunk does not specify `MAUD' as type");
                 return(SOX_EOF);
@@ -75,7 +77,8 @@ static int startread(sox_format_t * ft)
 
                 if (strncmp(buf,"MHDR",(size_t)4) == 0) {
 
-                        lsx_readdw(ft, &chunksize);
+                        if (lsx_readdw(ft, &chunksize))
+                            return(SOX_EOF);
                         if (chunksize != 8*4)
                         {
                             lsx_fail_errno(ft,SOX_EHDR,"MHDR chunk has bad size");
@@ -83,16 +86,16 @@ static int startread(sox_format_t * ft)
                         }
 
                         /* number of samples stored in MDAT */
-                        lsx_readdw(ft, &(p->nsamples));
-
-                        /* number of bits per sample as stored in MDAT */
-                        lsx_readw(ft, &bitpersam);
-
-                        /* number of bits per sample after decompression */
-                        lsx_readw(ft, &trash16);
-
-                        lsx_readdw(ft, &nom);         /* clock source frequency */
-                        lsx_readw(ft, &denom);       /* clock devide           */
+                        if (lsx_readdw(ft, &(p->nsamples)) ||
+                            /* number of bits per sample as stored in MDAT */
+                            lsx_readw(ft, &bitpersam) ||
+                            /* number of bits per sample after decompression */
+                            lsx_readw(ft, &trash16) ||
+			    /* clock source frequency */
+                            lsx_readdw(ft, &nom) ||
+			    /* clock divide */
+                            lsx_readw(ft, &denom))
+			    return(SOX_EOF);
                         if (denom == 0)
                         {
                             lsx_fail_errno(ft,SOX_EHDR,"frequency denominator == 0, failed");
@@ -101,7 +104,8 @@ static int startread(sox_format_t * ft)
 
                         ft->signal.rate = nom / denom;
 
-                        lsx_readw(ft, &chaninf); /* channel information */
+                        if (lsx_readw(ft, &chaninf)) /* channel information */
+			        return(SOX_EOF);
                         switch (chaninf) {
                         case 0:
                                 ft->signal.channels = 1;
@@ -114,18 +118,20 @@ static int startread(sox_format_t * ft)
                                 return (SOX_EOF);
                         }
 
-                        lsx_readw(ft, &chaninf); /* number of channels (mono: 1, stereo: 2, ...) */
+			/* number of channels (mono: 1, stereo: 2, ...) */
+                        if (lsx_readw(ft, &chaninf))
+			        return(SOX_EOF);
                         if (chaninf != ft->signal.channels)
                         {
                                 lsx_fail_errno(ft,SOX_EFMT,"unsupported number of channels in file");
-                            return(SOX_EOF);
+                                return(SOX_EOF);
                         }
 
-                        lsx_readw(ft, &chaninf); /* compression type */
-
-                        lsx_readdw(ft, &trash32); /* rest of chunk, unused yet */
-                        lsx_readdw(ft, &trash32);
-                        lsx_readdw(ft, &trash32);
+                        if (lsx_readw(ft, &chaninf) || /* compression type */
+                            lsx_readdw(ft, &trash32) || /* rest of chunk, unused yet */
+                            lsx_readdw(ft, &trash32) ||
+                            lsx_readdw(ft, &trash32))
+			        return(SOX_EOF);
 
                         if (bitpersam == 8 && chaninf == 0) {
                                 ft->encoding.bits_per_sample = 8;
@@ -153,7 +159,8 @@ static int startread(sox_format_t * ft)
                 }
 
                 if (strncmp(buf,"ANNO",(size_t)4) == 0) {
-                        lsx_readdw(ft, &chunksize);
+                        if (lsx_readdw(ft, &chunksize))
+			        return(SOX_EOF);
                         if (chunksize & 1)
                                 chunksize++;
                         chunk_buf = lsx_malloc(chunksize + (size_t)1);
@@ -171,10 +178,12 @@ static int startread(sox_format_t * ft)
                 }
 
                 /* some other kind of chunk */
-                lsx_readdw(ft, &chunksize);
+                if (lsx_readdw(ft, &chunksize))
+			return(SOX_EOF);
                 if (chunksize & 1)
                         chunksize++;
-                lsx_seeki(ft, (off_t)chunksize, SEEK_CUR);
+                if (lsx_seeki(ft, (off_t)chunksize, SEEK_CUR))
+			return(SOX_EOF);
                 continue;
 
         }
@@ -184,7 +193,8 @@ static int startread(sox_format_t * ft)
             lsx_fail_errno(ft,SOX_EFMT,"MDAT chunk not found");
             return(SOX_EOF);
         }
-        lsx_readdw(ft, &(p->nsamples));
+        if (lsx_readdw(ft, &(p->nsamples)))
+            return(SOX_EOF);
         return(SOX_SUCCESS);
 }
 

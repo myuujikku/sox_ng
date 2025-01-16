@@ -106,8 +106,9 @@ static int startread(sox_format_t * ft)
             return rc;
 
         /* Get essential numbers from the header */
-        lsx_readdw(ft, &datasize); /* bytes 83-86 */
-        lsx_readdw(ft, &rsrcsize); /* bytes 87-90 */
+        if (lsx_readdw(ft, &datasize) || /* bytes 83-86 */
+            lsx_readdw(ft, &rsrcsize))   /* bytes 87-90 */
+	  return SOX_EOF;
 
         /* Skip the rest of the header (total 128 bytes) */
         rc = lsx_skipbytes(ft, (size_t) 128-91);
@@ -122,22 +123,24 @@ static int startread(sox_format_t * ft)
         }
 
         /* Then follow various parameters */
-        lsx_readdw(ft, &huffcount);
-        lsx_readdw(ft, &checksum);
-        lsx_readdw(ft, &compresstype);
+        if (lsx_readdw(ft, &huffcount) ||
+            lsx_readdw(ft, &checksum) ||
+            lsx_readdw(ft, &compresstype))
+	  return SOX_EOF;
         if (compresstype > 1)
         {
                 lsx_fail_errno(ft,SOX_EHDR,"Bad compression type in HCOM header");
                 return (SOX_EOF);
         }
-        lsx_readdw(ft, &divisor);
+        if (lsx_readdw(ft, &divisor))
+	  return SOX_EOF;
         if (divisor == 0 || divisor > 4)
         {
                 lsx_fail_errno(ft,SOX_EHDR,"Bad sampling rate divisor in HCOM header");
                 return (SOX_EOF);
         }
-        lsx_readw(ft, &dictsize);
-        if (dictsize == 0 || dictsize > 511)
+        if (lsx_readw(ft, &dictsize) ||
+            dictsize == 0 || dictsize > 511)
         {
                 lsx_fail_errno(ft, SOX_EHDR, "Implausible dictionary size in HCOM header");
                 return SOX_EOF;
@@ -154,8 +157,9 @@ static int startread(sox_format_t * ft)
 
         /* Read dictionary */
         for(i = 0; i < dictsize; i++) {
-                lsx_readsw(ft, &(p->dictionary[i].dict_leftson));
-                lsx_readsw(ft, &(p->dictionary[i].dict_rightson));
+                if (lsx_readsw(ft, &(p->dictionary[i].dict_leftson)) ||
+                    lsx_readsw(ft, &(p->dictionary[i].dict_rightson)))
+		  return SOX_EOF;
                 lsx_debug("%d %d",
                        p->dictionary[i].dict_leftson,
                        p->dictionary[i].dict_rightson);
@@ -213,8 +217,7 @@ static size_t read_samples(sox_format_t * ft, sox_sample_t *buf, size_t len)
 
         while (p->huffcount > 0) {
                 if(p->nrbits == 0) {
-                        lsx_readdw(ft, &(p->current));
-                        if (lsx_eof(ft))
+                        if (lsx_readdw(ft, &(p->current)) || lsx_eof(ft))
                         {
                                 lsx_fail_errno(ft,SOX_EOF,"unexpected EOF in HCOM data");
                                 return (0);

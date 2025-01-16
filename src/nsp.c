@@ -50,7 +50,8 @@ int lsx_nspstartread(sox_format_t * ft)
     lsx_fail_errno(ft,SOX_EHDR,"header does not begin with magic word `FORMDS16'");
     return(SOX_EOF);
   }
-  lsx_readdw(ft, &hchunksize);
+  if (lsx_readdw(ft, &hchunksize))
+    return(SOX_EOF);
 
   while (1) {
     if (lsx_reads(ft, buf, (size_t)4) == SOX_EOF) {
@@ -63,13 +64,14 @@ int lsx_nspstartread(sox_format_t * ft)
     }
     if (strncmp(buf, "HEDR", (size_t)4) == 0) {
       /* HEDR chunk */
-      lsx_readdw(ft, &chunksize);
-      lsx_reads(ft, date, (size_t)20);
-      lsx_readdw(ft, &samplerate);
+      if (lsx_readdw(ft, &chunksize) ||
+          lsx_reads(ft, date, (size_t)20) ||
+          lsx_readdw(ft, &samplerate) ||
+          lsx_readdw(ft, &datalength) ||
+          lsx_readw(ft, &maxabschan[0]) ||
+          lsx_readw(ft, &maxabschan[1]))
+        return(SOX_EOF);
       rate = (double)samplerate;
-      lsx_readdw(ft, &datalength);
-      lsx_readw(ft, &maxabschan[0]);
-      lsx_readw(ft, &maxabschan[1]);
 
       /* Most likely there will only be 1 channel, but there can be 2 here */
       if (maxabschan[0] == 0xffff && maxabschan[1] == 0xffff) {
@@ -81,19 +83,20 @@ int lsx_nspstartread(sox_format_t * ft)
       }
     } else if (strncmp(buf, "HDR8", (size_t)4) == 0) {
       /* HDR8 chunk */
-      lsx_readdw(ft, &chunksize);
-      lsx_reads(ft, date, (size_t)20);
-      lsx_readdw(ft, &samplerate);
+      if (lsx_readdw(ft, &chunksize) ||
+          lsx_reads(ft, date, (size_t)20) ||
+          lsx_readdw(ft, &samplerate) ||
+          lsx_readdw(ft, &datalength) ||
+          lsx_readw(ft, &maxabschan[0]) ||
+          lsx_readw(ft, &maxabschan[1]) ||
+          lsx_readw(ft, &maxabschan[2]) ||
+          lsx_readw(ft, &maxabschan[3]) ||
+          lsx_readw(ft, &maxabschan[4]) ||
+          lsx_readw(ft, &maxabschan[5]) ||
+          lsx_readw(ft, &maxabschan[6]) ||
+          lsx_readw(ft, &maxabschan[7]))
+        return(SOX_EOF);
       rate = (double)samplerate;
-      lsx_readdw(ft, &datalength);
-      lsx_readw(ft, &maxabschan[0]);
-      lsx_readw(ft, &maxabschan[1]);
-      lsx_readw(ft, &maxabschan[2]);
-      lsx_readw(ft, &maxabschan[3]);
-      lsx_readw(ft, &maxabschan[4]);
-      lsx_readw(ft, &maxabschan[5]);
-      lsx_readw(ft, &maxabschan[6]);
-      lsx_readw(ft, &maxabschan[7]);
 
       /* Can be up to 8 channels */
       numchannels = 0;
@@ -109,28 +112,35 @@ int lsx_nspstartread(sox_format_t * ft)
     } else if (strncmp(buf, "NOTE", (size_t)4) == 0) {
       unsigned char nullc = 0;
       /* NOTE chunk */
-      lsx_readdw(ft, &chunksize);
+      if (lsx_readdw(ft, &chunksize))
+        return(SOX_EOF);
       comment = lsx_malloc(chunksize * sizeof(char*));
-      lsx_reads(ft, comment, (size_t)chunksize);
+      if (lsx_reads(ft, comment, (size_t)chunksize))
+        return(SOX_EOF);
       if(strlen(comment) != 0)
         lsx_debug("NSP comment: %s", comment);
       free(comment);
-      lsx_readb(ft, &nullc);
+      if (lsx_readb(ft, &nullc))
+        return(SOX_EOF);
+
     } else if (strncmp(buf, "SDA_", (size_t)4) == 0) {
-      lsx_readdw(ft, &chunksize);
+      if (lsx_readdw(ft, &chunksize))
+        return(SOX_EOF);
       ssndsize = chunksize;
       /* if can't seek, just do sound now */
       if (!ft->seekable)
         break;
       /* else, seek to end of sound and hunt for more */
       seekto = lsx_tell(ft);
-      lsx_seeki(ft, (off_t)chunksize, SEEK_CUR);
+      if (lsx_seeki(ft, (off_t)chunksize, SEEK_CUR))
+        return(SOX_EOF);
     } else {
       if (lsx_eof(ft))
         break;
       buf[4] = 0;
       lsx_debug("NSPstartread: ignoring `%s' chunk", buf);
-      lsx_readdw(ft, &chunksize);
+      if (lsx_readdw(ft, &chunksize))
+        return(SOX_EOF);
       if (lsx_eof(ft))
         break;
       /* Skip the chunk using lsx_readb() so we may read
@@ -145,9 +155,10 @@ int lsx_nspstartread(sox_format_t * ft)
   }
 
   if (ft->seekable) {
-    if (seekto > 0)
-      lsx_seeki(ft, seekto, SEEK_SET);
-    else {
+    if (seekto > 0) {
+      if (lsx_seeki(ft, seekto, SEEK_SET))
+        return(SOX_EOF);
+    } else {
       lsx_fail_errno(ft,SOX_EOF,"no sound data on input file");
       return(SOX_EOF);
     }
