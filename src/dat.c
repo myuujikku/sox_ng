@@ -94,9 +94,9 @@ static size_t sox_datread(sox_format_t * ft, sox_sample_t *buf, size_t nsamp)
         inpstr[LINEWIDTH-1] = 0;
         ((priv_t *)ft->priv)->buffered=0;
       } else {
-        lsx_reads(ft, inpstr, LINEWIDTH-1);
         inpstr[LINEWIDTH-1] = 0;
-        if (lsx_eof(ft)) return (done);
+        if (lsx_reads(ft, inpstr, LINEWIDTH-1) ||
+            lsx_eof(ft)) return (done);
       }
 
       /* Skip over comments - ie. 0 or more whitespace, then ';' */

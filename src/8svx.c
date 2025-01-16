@@ -63,42 +63,50 @@ static int startread(sox_format_t * ft)
         channels = 1;
 
         /* read FORM chunk */
-        if (lsx_reads(ft, buf, (size_t)4) == SOX_EOF || strncmp(buf, "FORM", (size_t)4) != 0)
+        if (lsx_reads(ft, buf, (size_t)4) ||
+	    strncmp(buf, "FORM", (size_t)4) != 0)
         {
                 lsx_fail_errno(ft, SOX_EHDR, "Header did not begin with magic word `FORM'");
                 return(SOX_EOF);
         }
-        lsx_readdw(ft, &totalsize);
-        if (lsx_reads(ft, buf, (size_t)4) == SOX_EOF || strncmp(buf, "8SVX", (size_t)4) != 0)
+        if (lsx_readdw(ft, &totalsize))
+                return(SOX_EOF);
+        if (lsx_reads(ft, buf, (size_t)4) ||
+	    strncmp(buf, "8SVX", (size_t)4) != 0)
         {
                 lsx_fail_errno(ft, SOX_EHDR, "'FORM' chunk does not specify `8SVX' as type");
                 return(SOX_EOF);
         }
 
         /* read chunks until 'BODY' (or end) */
-        while (lsx_reads(ft, buf, (size_t)4) == SOX_SUCCESS && strncmp(buf,"BODY",(size_t)4) != 0) {
+        while (lsx_reads(ft, buf, (size_t)4) == SOX_SUCCESS &&
+	       strncmp(buf,"BODY",(size_t)4) != 0) {
                 if (strncmp(buf,"VHDR",(size_t)4) == 0) {
-                        lsx_readdw(ft, &chunksize);
+                        if (lsx_readdw(ft, &chunksize))
+                                return(SOX_EOF);
                         if (chunksize != 20)
                         {
                                 lsx_fail_errno(ft, SOX_EHDR, "VHDR chunk has bad size");
                                 return(SOX_EOF);
                         }
-                        lsx_seeki(ft,(off_t)12,SEEK_CUR);
-                        lsx_readw(ft, &rate);
-                        lsx_seeki(ft,(off_t)1,SEEK_CUR);
-                        lsx_readbuf(ft, buf,(size_t)1);
+                        if (lsx_seeki(ft,(off_t)12,SEEK_CUR) ||
+                            lsx_readw(ft, &rate) ||
+                            lsx_seeki(ft,(off_t)1,SEEK_CUR) ||
+                            lsx_readbuf(ft, buf,(size_t)1) != 1)
+                                return(SOX_EOF);
                         if (buf[0] != 0)
                         {
                                 lsx_fail_errno(ft, SOX_EFMT, "Unsupported data compression");
                                 return(SOX_EOF);
                         }
-                        lsx_seeki(ft,(off_t)4,SEEK_CUR);
+                        if (lsx_seeki(ft,(off_t)4,SEEK_CUR))
+                                return(SOX_EOF);
                         continue;
                 }
 
                 if (strncmp(buf,"ANNO",(size_t)4) == 0) {
-                        lsx_readdw(ft, &chunksize);
+                        if (lsx_readdw(ft, &chunksize))
+                                return(SOX_EOF);
                         if (chunksize & 1)
                                 chunksize++;
                         chunk_buf = lsx_malloc(chunksize + (size_t)2);
@@ -116,7 +124,8 @@ static int startread(sox_format_t * ft)
                 }
 
                 if (strncmp(buf,"NAME",(size_t)4) == 0) {
-                        lsx_readdw(ft, &chunksize);
+                        if (lsx_readdw(ft, &chunksize))
+                                return(SOX_EOF);
                         if (chunksize & 1)
                                 chunksize++;
                         chunk_buf = lsx_malloc(chunksize + (size_t)1);
@@ -134,13 +143,15 @@ static int startread(sox_format_t * ft)
                 }
 
                 if (strncmp(buf,"CHAN",(size_t)4) == 0) {
-                        lsx_readdw(ft, &chunksize);
+                        if (lsx_readdw(ft, &chunksize))
+                                return(SOX_EOF);
                         if (chunksize != 4)
                         {
                                 lsx_fail_errno(ft, SOX_EHDR, "Couldn't read all of header");
                                 return(SOX_EOF);
                         }
-                        lsx_readdw(ft, &channels);
+                        if (lsx_readdw(ft, &channels))
+                                return(SOX_EOF);
                         channels = (channels & 0x01) +
                                         ((channels & 0x02) >> 1) +
                                         ((channels & 0x04) >> 2) +
@@ -150,10 +161,12 @@ static int startread(sox_format_t * ft)
                 }
 
                 /* some other kind of chunk */
-                lsx_readdw(ft, &chunksize);
+                if (lsx_readdw(ft, &chunksize))
+			return(SOX_EOF);
                 if (chunksize & 1)
                         chunksize++;
-                lsx_seeki(ft,(off_t)chunksize,SEEK_CUR);
+                if (lsx_seeki(ft,(off_t)chunksize,SEEK_CUR))
+			return(SOX_EOF);
                 continue;
 
         }
@@ -168,7 +181,8 @@ static int startread(sox_format_t * ft)
                 lsx_fail_errno(ft, SOX_EHDR, "BODY chunk not found");
                 return(SOX_EOF);
         }
-        lsx_readdw(ft, &(p->nsamples));
+        if (lsx_readdw(ft, &(p->nsamples)))
+                return(SOX_EOF);
         p->left = p->nsamples;
         p->ch0_pos = lsx_tell(ft);
 

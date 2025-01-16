@@ -667,7 +667,8 @@ static int sox_mp3seek(sox_format_t * ft, sox_uint64_t offset)
           tagsize = tagtype(p->Stream.this_frame, (size_t) available);
           if (tagsize) {   /* It's some ID3 tags, so just skip */
             if (tagsize >= available) {
-              lsx_seeki(ft, (off_t)(tagsize - available), SEEK_CUR);
+              if (lsx_seeki(ft, (off_t)(tagsize - available), SEEK_CUR))
+	        return SOX_EOF;
               depadded = sox_false;
             }
             p->mad_stream_skip(&p->Stream, min(tagsize, available));
@@ -860,7 +861,9 @@ static void rewrite_id3v2_tag(sox_format_t * ft, size_t id3v2_size, uint64_t num
     else
       lsx_warn("cannot update track length info - failed to adjust tag size");
   } else {
-    lsx_seeki(ft, (off_t)0, SEEK_SET);
+    if (lsx_seeki(ft, (off_t)0, SEEK_SET))
+      lsx_warn("cannot rewrite Id3v2 tag");
+      
     /* Overwrite the Id3v2 tag (this time TLEN should be accurate) */
     if (lsx_writebuf(ft, buffer, id3v2_size) != 1) {
       lsx_debug("Rewrote Id3v2 tag (%" PRIuPTR " bytes)", id3v2_size);

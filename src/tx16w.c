@@ -93,22 +93,27 @@ static int startread(sox_format_t * ft)
     while (lsx_read_b_buf(ft, &trash, (size_t) 1) == 1)
         num_samp_bytes++;
     num_samp_bytes -= 32;         /* calculate num samples by sub header size */
-    lsx_seeki(ft, (off_t)0, 0);   /* rewind file */
+    if (lsx_seeki(ft, (off_t)0, 0)) /* rewind file */
+        return(SOX_EOF);
     sk->rest = num_samp_bytes;    /* set how many sample bytes to read */
 
     /* first 6 bytes are file type ID LM8953 */
-    lsx_readchars(ft, filetype, sizeof(filetype) - 1);
+    if (lsx_readchars(ft, filetype, sizeof(filetype) - 1))
+        return(SOX_EOF);
     filetype[6] = '\0';
     for( c = 16; c > 0 ; c-- )    /* Discard next 16 bytes */
-        lsx_readb(ft, &trash);
-    lsx_readsb(ft, &format);
-    lsx_readb(ft, &sample_rate);
+        if (lsx_readb(ft, &trash))
+            return(SOX_EOF);
+    if (lsx_readsb(ft, &format) ||
+        lsx_readb(ft, &sample_rate))
+            return(SOX_EOF);
     /*
      * save next 8 bytes - if sample rate is 0, then we need
      *  to look at gunk[2] and gunk[5] to get real rate
      */
     for( c = 0; c < 8; c++ )
-        lsx_readb(ft, &(gunk[c]));
+        if (lsx_readb(ft, &(gunk[c])))
+            return(SOX_EOF);
     /*
      * We should now be pointing at start of raw sample data in file
      */
@@ -210,9 +215,10 @@ static size_t read_samples(sox_format_t * ft, sox_sample_t *buf, size_t len)
      */
     for(done = 0; done < len; ) {
         if(sk->rest < 3) break; /* Finished reading from file? */
-        lsx_readb(ft, &uc1);
-        lsx_readb(ft, &uc2);
-        lsx_readb(ft, &uc3);
+        if (lsx_readb(ft, &uc1) ||
+            lsx_readb(ft, &uc2) ||
+            lsx_readb(ft, &uc3))
+	        break;
         sk->rest -= 3; /* adjust remaining for bytes we just read */
         s1 = (unsigned short) (uc1 << 4) | (((uc2 >> 4) & 017));
         s2 = (unsigned short) (uc3 << 4) | (( uc2 & 017 ));
