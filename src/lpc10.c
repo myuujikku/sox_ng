@@ -44,8 +44,10 @@ typedef struct {
   last character is padded with 0 bits -- the padding is in the least
   significant bits of the last byte. The 8 bit characters are "filled"
   in order from most significant bit to least significant.
+
+  Returns SOX_SUCCESS or SOX_EOF.
 */
-static void write_bits(sox_format_t * ft, INT32 *bits, int len)
+static int write_bits(sox_format_t * ft, INT32 *bits, int len)
 {
   int i;
   uint8_t mask; /* The next bit position within the variable "data" to
@@ -75,11 +77,13 @@ static void write_bits(sox_format_t * ft, INT32 *bits, int len)
      * then mask won't yet be 0.  */
     mask >>= 1;
     if ((mask == 0) || (i == len-1)) {
-      lsx_writeb(ft, data);
+      if (lsx_writeb(ft, data))
+        return SOX_EOF;
       data = 0;
       mask = 0x80;
     }
   }
+  return SOX_SUCCESS;
 }
 
 /*
@@ -188,7 +192,8 @@ static size_t write_samples(sox_format_t * ft, const sox_sample_t *buf, size_t l
       INT32 bits[LPC10_BITS_IN_COMPRESSED_FRAME];
 
       lpc10_encode(lpc->speech, bits, lpc->encst);
-      write_bits(ft, bits, LPC10_BITS_IN_COMPRESSED_FRAME);
+      if (write_bits(ft, bits, LPC10_BITS_IN_COMPRESSED_FRAME))
+        return (size_t)SOX_EOF;
       lpc->samples = 0;
     }
   }

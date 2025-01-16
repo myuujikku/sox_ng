@@ -28,7 +28,7 @@
 static double read_ieee_extended(sox_format_t *);
 static int aiffwriteheader(sox_format_t *, uint64_t);
 static int aifcwriteheader(sox_format_t *, uint64_t);
-static void write_ieee_extended(sox_format_t *, double);
+static int write_ieee_extended(sox_format_t *, double);
 static double ConvertFromIeeeExtended(unsigned char*);
 static void ConvertToIeeeExtended(double, char *);
 static int textChunk(char **text, char *chunkDescription, sox_format_t * ft);
@@ -713,7 +713,8 @@ static int aiffwriteheader(sox_format_t * ft, uint64_t nframes)
           hsize += 8 /* COMT hdr */ + comment_chunk_size;
         }
 
-        lsx_writes(ft, "FORM"); /* IFF header */
+        if (lsx_writes(ft, "FORM")) /* IFF header */
+          return(SOX_EOF);
         /* file size */
         size = hsize + nframes * (ft->encoding.bits_per_sample >> 3) * ft->signal.channels;
         if (size > UINT_MAX)
@@ -721,49 +722,50 @@ static int aiffwriteheader(sox_format_t * ft, uint64_t nframes)
             lsx_warn("file size too big for accurate AIFF header");
             size = UINT_MAX;
         }
-        lsx_writedw(ft, (unsigned)size);
-        lsx_writes(ft, "AIFF"); /* File type */
+        if (lsx_writedw(ft, (unsigned)size) ||
+            lsx_writes(ft, "AIFF")) /* File type */
+          return(SOX_EOF);
 
         /* Now we write the COMT comment chunk using the precomputed sizes */
         if (ft->oob.comments)
         {
-          lsx_writes(ft, "COMT");
-          lsx_writedw(ft, (unsigned) comment_chunk_size);
-
-          /* one comment */
-          lsx_writew(ft, 1);
-
-          /* time stamp of comment, Unix knows of time from 1/1/1970,
-             Apple knows time from 1/1/1904 */
-          lsx_writedw(ft, (unsigned)((sox_globals.repeatable? 0 : time(NULL)) + 2082844800));
-
-          /* A marker ID of 0 indicates the comment is not associated
-             with a marker */
-          lsx_writew(ft, 0);
-
-          /* now write the count and the bytes of text */
-          lsx_writew(ft, (unsigned) padded_comment_size);
-          lsx_writes(ft, comment);
-          if (comment_size != padded_comment_size)
-                lsx_writes(ft, " ");
+          if (lsx_writes(ft, "COMT") ||
+              lsx_writedw(ft, (unsigned) comment_chunk_size) ||
+              /* one comment */
+	      lsx_writew(ft, 1) ||
+              /* time stamp of comment, Unix knows of time from 1/1/1970,
+                 Apple knows time from 1/1/1904 */
+              lsx_writedw(ft, (unsigned)((sox_globals.repeatable? 0 : time(NULL)) + 2082844800)) ||
+              /* A marker ID of 0 indicates the comment is not associated
+                 with a marker */
+              lsx_writew(ft, 0) ||
+              /* now write the count and the bytes of text */
+              lsx_writew(ft, (unsigned) padded_comment_size) ||
+              lsx_writes(ft, comment) ||
+              (comment_size != padded_comment_size
+                ? lsx_writes(ft, " ") : 0))
+            return(SOX_EOF);
         }
         free(comment);
 
         /* COMM chunk -- describes encoding (and #frames) */
-        lsx_writes(ft, "COMM");
-        lsx_writedw(ft, 18); /* COMM chunk size */
-        lsx_writew(ft, ft->signal.channels); /* nchannels */
-        lsx_writedw(ft, (unsigned) nframes); /* number of frames */
-        lsx_writew(ft, bits); /* sample width, in bits */
-        write_ieee_extended(ft, (double)ft->signal.rate);
+        if (lsx_writes(ft, "COMM") ||
+            lsx_writedw(ft, 18) || /* COMM chunk size */
+            lsx_writew(ft, ft->signal.channels) || /* nchannels */
+            lsx_writedw(ft, (unsigned) nframes) || /* number of frames */
+            lsx_writew(ft, bits) || /* sample width, in bits */
+            write_ieee_extended(ft, (double)ft->signal.rate))
+                return(SOX_EOF);
 
         /* MARK chunk -- set markers */
         if (ft->oob.instr.nloops) {
-                lsx_writes(ft, "MARK");
+                if (lsx_writes(ft, "MARK"))
+                        return(SOX_EOF);
                 if (ft->oob.instr.nloops > 2)
                         ft->oob.instr.nloops = 2;
-                lsx_writedw(ft, 2 + 16u*ft->oob.instr.nloops);
-                lsx_writew(ft, ft->oob.instr.nloops);
+                if (lsx_writedw(ft, 2 + 16u*ft->oob.instr.nloops) ||
+                    lsx_writew(ft, ft->oob.instr.nloops))
+                        return(SOX_EOF);
 
                 for(i = 0; i < ft->oob.instr.nloops; i++) {
                         unsigned start = ft->oob.loops[i].start > UINT_MAX
@@ -772,49 +774,50 @@ static int aiffwriteheader(sox_format_t * ft, uint64_t nframes)
                         unsigned end = ft->oob.loops[i].start + ft->oob.loops[i].length > UINT_MAX
                             ? UINT_MAX
                             : ft->oob.loops[i].start + ft->oob.loops[i].length;
-                        lsx_writew(ft, i + 1);
-                        lsx_writedw(ft, start);
-                        lsx_writeb(ft, 0);
-                        lsx_writeb(ft, 0);
-                        lsx_writew(ft, i*2 + 1);
-                        lsx_writedw(ft, end);
-                        lsx_writeb(ft, 0);
-                        lsx_writeb(ft, 0);
+                        if (lsx_writew(ft, i + 1) ||
+                            lsx_writedw(ft, start) ||
+                            lsx_writeb(ft, 0) ||
+                            lsx_writeb(ft, 0) ||
+                            lsx_writew(ft, i*2 + 1) ||
+                            lsx_writedw(ft, end) ||
+                            lsx_writeb(ft, 0) ||
+                            lsx_writeb(ft, 0))
+				return(SOX_EOF);
                 }
 
-                lsx_writes(ft, "INST");
-                lsx_writedw(ft, 20);
-                /* random MIDI shit that we default on */
-                lsx_writeb(ft, (uint8_t)ft->oob.instr.MIDInote);
-                lsx_writeb(ft, 0);                       /* detune */
-                lsx_writeb(ft, (uint8_t)ft->oob.instr.MIDIlow);
-                lsx_writeb(ft, (uint8_t)ft->oob.instr.MIDIhi);
-                lsx_writeb(ft, 1);                       /* low velocity */
-                lsx_writeb(ft, 127);                     /* hi  velocity */
-                lsx_writew(ft, 0);                               /* gain */
+                if (lsx_writes(ft, "INST") ||
+                    lsx_writedw(ft, 20) ||
+                    /* random MIDI shit that we default on */
+                    lsx_writeb(ft, (uint8_t)ft->oob.instr.MIDInote) ||
+                    lsx_writeb(ft, 0) ||                 /* detune */
+                    lsx_writeb(ft, (uint8_t)ft->oob.instr.MIDIlow) ||
+                    lsx_writeb(ft, (uint8_t)ft->oob.instr.MIDIhi) ||
+                    lsx_writeb(ft, 1) ||                 /* low velocity */
+                    lsx_writeb(ft, 127) ||               /* hi  velocity */
+                    lsx_writew(ft, 0) ||                 /* gain */
 
-                /* sustain loop */
-                lsx_writew(ft, ft->oob.loops[0].type);
-                lsx_writew(ft, 1);                               /* marker 1 */
-                lsx_writew(ft, 3);                               /* marker 3 */
-                /* release loop, if there */
-                if (ft->oob.instr.nloops == 2) {
-                        lsx_writew(ft, ft->oob.loops[1].type);
-                        lsx_writew(ft, 2);                       /* marker 2 */
-                        lsx_writew(ft, 4);                       /* marker 4 */
-                } else {
-                        lsx_writew(ft, 0);                       /* no release loop */
-                        lsx_writew(ft, 0);
-                        lsx_writew(ft, 0);
-                }
+                    /* sustain loop */
+                    lsx_writew(ft, ft->oob.loops[0].type) ||
+                    lsx_writew(ft, 1) ||                 /* marker 1 */
+                    lsx_writew(ft, 3) ||
+                    /* release loop, if there */
+                    (ft->oob.instr.nloops == 2
+                      ?(lsx_writew(ft, ft->oob.loops[1].type) ||
+                        lsx_writew(ft, 2) ||             /* marker 2 */
+                        lsx_writew(ft, 4))               /* marker 4 */
+                      :(lsx_writew(ft, 0) ||             /* no release loop */
+                        lsx_writew(ft, 0) ||
+                        lsx_writew(ft, 0))))
+		    return SOX_EOF;
         }
 
         /* SSND chunk -- describes data */
-        lsx_writes(ft, "SSND");
-        /* chunk size */
-        lsx_writedw(ft, (unsigned) (8 + nframes * ft->signal.channels * (ft->encoding.bits_per_sample >> 3)));
-        lsx_writedw(ft, 0); /* offset */
-        lsx_writedw(ft, 0); /* block size */
+        if (lsx_writes(ft, "SSND") ||
+            /* chunk size */
+            lsx_writedw(ft, (unsigned) (8 + nframes * ft->signal.channels * (ft->encoding.bits_per_sample >> 3))) ||
+            lsx_writedw(ft, 0) || /* offset */
+            lsx_writedw(ft, 0))   /* block size */
+	        return(SOX_EOF);
         return(SOX_SUCCESS);
 }
 
@@ -916,7 +919,8 @@ static int aifcwriteheader(sox_format_t * ft, uint64_t nframes)
         hsize = 12 /*FVER*/ + 8 /*COMM hdr*/ + comm_len+comm_padding /*COMM chunk*/ +
                 8 /*SSND hdr*/ + 12 /*SSND chunk*/;
 
-        lsx_writes(ft, "FORM"); /* IFF header */
+        if (lsx_writes(ft, "FORM")) /* IFF header */
+	    return(SOX_EOF);
         /* file size */
         size = hsize + nframes * (ft->encoding.bits_per_sample >> 3) * ft->signal.channels;
         if (size > UINT_MAX)
@@ -924,34 +928,34 @@ static int aifcwriteheader(sox_format_t * ft, uint64_t nframes)
             lsx_warn("file size too big for accurate AIFC header");
             size = UINT_MAX;
         }
-        lsx_writedw(ft, (unsigned)size);
-        lsx_writes(ft, "AIFC"); /* File type */
+        if (lsx_writedw(ft, (unsigned)size) ||
+            lsx_writes(ft, "AIFC") || /* File type */
 
-        /* FVER chunk */
-        lsx_writes(ft, "FVER");
-        lsx_writedw(ft, 4); /* FVER chunk size */
-        lsx_writedw(ft, 0xa2805140); /* version_date(May23,1990,2:40pm) */
+            /* FVER chunk */
+            lsx_writes(ft, "FVER") ||
+            lsx_writedw(ft, 4) || /* FVER chunk size */
+            lsx_writedw(ft, 0xa2805140) || /* version_date(May23,1990,2:40pm) */
 
-        /* COMM chunk -- describes encoding (and #frames) */
-        lsx_writes(ft, "COMM");
-        lsx_writedw(ft, comm_len+comm_padding); /* COMM chunk size */
-        lsx_writew(ft, ft->signal.channels); /* nchannels */
-        lsx_writedw(ft, (unsigned) nframes); /* number of frames */
-        lsx_writew(ft, bits); /* sample width, in bits */
-        write_ieee_extended(ft, (double)ft->signal.rate);
+            /* COMM chunk -- describes encoding (and #frames) */
+            lsx_writes(ft, "COMM") ||
+            lsx_writedw(ft, comm_len+comm_padding) || /* COMM chunk size */
+            lsx_writew(ft, ft->signal.channels) || /* nchannels */
+            lsx_writedw(ft, (unsigned) nframes) || /* number of frames */
+            lsx_writew(ft, bits) || /* sample width, in bits */
+            write_ieee_extended(ft, (double)ft->signal.rate) ||
 
-        lsx_writes(ft, ctype); /*compression_type*/
-        lsx_writeb(ft, cname_len);
-        lsx_writes(ft, cname);
-        if (comm_padding)
-          lsx_writeb(ft, 0);
+            lsx_writes(ft, ctype) || /*compression_type*/
+            lsx_writeb(ft, cname_len) ||
+            lsx_writes(ft, cname) ||
+            (comm_padding ? lsx_writeb(ft, 0) : 0) ||
 
-        /* SSND chunk -- describes data */
-        lsx_writes(ft, "SSND");
-        /* chunk size */
-        lsx_writedw(ft, (unsigned) (8 + nframes * ft->signal.channels * (ft->encoding.bits_per_sample >> 3)));
-        lsx_writedw(ft, 0); /* offset */
-        lsx_writedw(ft, 0); /* block size */
+            /* SSND chunk -- describes data */
+            lsx_writes(ft, "SSND") ||
+            /* chunk size */
+            lsx_writedw(ft, (unsigned) (8 + nframes * ft->signal.channels * (ft->encoding.bits_per_sample >> 3))) ||
+            lsx_writedw(ft, 0) || /* offset */
+            lsx_writedw(ft, 0)) /* block size */
+	        return(SOX_EOF);
 
         /* Any Private chunks shall appear after the required chunks (FORM,FVER,COMM,SSND) */
         return(SOX_SUCCESS);
@@ -968,7 +972,7 @@ static double read_ieee_extended(sox_format_t * ft)
         return ConvertFromIeeeExtended(buf);
 }
 
-static void write_ieee_extended(sox_format_t * ft, double x)
+static int write_ieee_extended(sox_format_t * ft, double x)
 {
         char buf[10];
         ConvertToIeeeExtended(x, buf);
@@ -976,7 +980,9 @@ static void write_ieee_extended(sox_format_t * ft, double x)
                 x,
                 buf[0], buf[1], buf[2], buf[3], buf[4],
                 buf[5], buf[6], buf[7], buf[8], buf[9]);
-        (void)lsx_writebuf(ft, buf, (size_t) 10);
+        if (lsx_writebuf(ft, buf, (size_t) 10) != 10)
+		return SOX_EOF;
+	return SOX_SUCCESS;
 }
 
 

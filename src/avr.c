@@ -147,25 +147,29 @@ static int startwrite(sox_format_t * ft)
   if (rc)
       return rc;
 
-  /* magic */
-  lsx_writes(ft, AVR_MAGIC);
+  if (
+      /* magic */
+      lsx_writes(ft, AVR_MAGIC) ||
 
-  /* name */
-  lsx_writeb(ft, 0);
-  lsx_writeb(ft, 0);
-  lsx_writeb(ft, 0);
-  lsx_writeb(ft, 0);
-  lsx_writeb(ft, 0);
-  lsx_writeb(ft, 0);
-  lsx_writeb(ft, 0);
-  lsx_writeb(ft, 0);
+      /* name */
+      lsx_writeb(ft, 0) ||
+      lsx_writeb(ft, 0) ||
+      lsx_writeb(ft, 0) ||
+      lsx_writeb(ft, 0) ||
+      lsx_writeb(ft, 0) ||
+      lsx_writeb(ft, 0) ||
+      lsx_writeb(ft, 0) ||
+      lsx_writeb(ft, 0))
+    return(SOX_EOF);
 
   /* mono */
   if (ft->signal.channels == 1) {
-    lsx_writew (ft, 0);
+    if (lsx_writew (ft, 0))
+      return(SOX_EOF);
   }
   else if (ft->signal.channels == 2) {
-    lsx_writew (ft, 0xffff);
+    if (lsx_writew (ft, 0xffff))
+      return(SOX_EOF);
   }
   else {
     lsx_fail_errno(ft,SOX_EFMT,"AVR: number of channels not supported");
@@ -174,10 +178,12 @@ static int startwrite(sox_format_t * ft)
 
   /* rez */
   if (ft->encoding.bits_per_sample == 8) {
-    lsx_writew (ft, 8);
+    if (lsx_writew (ft, 8))
+      return(SOX_EOF);
   }
   else if (ft->encoding.bits_per_sample == 16) {
-    lsx_writew (ft, 16);
+    if (lsx_writew (ft, 16))
+      return(SOX_EOF);
   }
   else {
     lsx_fail_errno(ft,SOX_EFMT,"AVR: unsupported sample resolution");
@@ -186,54 +192,58 @@ static int startwrite(sox_format_t * ft)
 
   /* sign */
   if (ft->encoding.encoding == SOX_ENCODING_SIGN2) {
-    lsx_writew (ft, 0xffff);
+    if (lsx_writew (ft, 0xffff))
+      return(SOX_EOF);
   }
   else if (ft->encoding.encoding == SOX_ENCODING_UNSIGNED) {
-    lsx_writew (ft, 0);
+    if (lsx_writew (ft, 0))
+      return(SOX_EOF);
   }
   else {
     lsx_fail_errno(ft,SOX_EFMT,"AVR: unsupported encoding");
     return(SOX_EOF);
   }
 
-  /* loop */
-  lsx_writew (ft, 0xffff);
+  if (
+      /* loop */
+      lsx_writew (ft, 0xffff) ||
 
-  /* midi */
-  lsx_writew (ft, 0xffff);
+      /* midi */
+      lsx_writew (ft, 0xffff) ||
 
-  /* rate */
-  lsx_writedw(ft, (unsigned)(ft->signal.rate + .5));
+      /* rate */
+      lsx_writedw(ft, (unsigned)(ft->signal.rate + .5)) ||
 
-  /* size */
-  /* Don't know the size yet. */
-  lsx_writedw (ft, 0);
+      /* size */
+      /* Don't know the size yet. */
+      lsx_writedw (ft, 0) ||
 
-  /* lbeg */
-  lsx_writedw (ft, 0);
+      /* lbeg */
+      lsx_writedw (ft, 0) ||
 
-  /* lend */
-  /* Don't know the size yet, so we can't set lend, either. */
-  lsx_writedw (ft, 0);
+      /* lend */
+      /* Don't know the size yet, so we can't set lend, either. */
+      lsx_writedw (ft, 0) ||
 
-  /* res1 */
-  lsx_writew (ft, 0);
+      /* res1 */
+      lsx_writew (ft, 0) ||
 
-  /* res2 */
-  lsx_writew (ft, 0);
+      /* res2 */
+      lsx_writew (ft, 0) ||
 
-  /* res3 */
-  lsx_writew (ft, 0);
+      /* res3 */
+      lsx_writew (ft, 0) ||
 
-  /* ext */
-  lsx_writebuf(ft, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", sizeof(avr->ext));
+      /* ext */
+      lsx_writebuf(ft, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", sizeof(avr->ext)) ||
 
-  /* user */
-  lsx_writebuf(ft,
-           "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
-           "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
-           "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
-           "\0\0\0\0", sizeof (avr->user));
+      /* user */
+      lsx_writebuf(ft,
+	       "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+	       "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+	       "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+	       "\0\0\0\0", sizeof (avr->user)))
+        return(SOX_EOF);
 
   return(SOX_SUCCESS);
 }

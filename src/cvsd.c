@@ -265,7 +265,8 @@ int lsx_cvsdstopwrite(sox_format_t * ft)
         priv_t *p = (priv_t *) ft->priv;
 
         if (p->bit.cnt) {
-                lsx_writeb(ft, p->bit.shreg);
+                if (lsx_writeb(ft, p->bit.shreg))
+			return (SOX_EOF);
                 p->bytes_written++;
         }
         lsx_debug("cvsd: min slope %f, max slope %f",
@@ -407,7 +408,8 @@ size_t lsx_cvsdwrite(sox_format_t * ft, const sox_sample_t *buf, size_t nsamp)
                 } else
                         p->c.enc.recon_int -= p->com.mla_int;
                 if ((++(p->bit.cnt)) >= 8) {
-                        lsx_writeb(ft, p->bit.shreg);
+                        if (lsx_writeb(ft, p->bit.shreg))
+				return (SOX_EOF);
                         p->bytes_written++;
                         p->bit.shreg = p->bit.cnt = 0;
                         p->bit.mask = 1;

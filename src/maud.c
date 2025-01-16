@@ -22,7 +22,7 @@ typedef struct {
         uint32_t nsamples;
 } priv_t;
 
-static void maudwriteheader(sox_format_t *);
+static int maudwriteheader(sox_format_t *);
 
 /*
  * Do anything required before you start reading samples.
@@ -253,85 +253,99 @@ static int stopwrite(sox_format_t * ft)
 }
 
 #define MAUDHEADERSIZE (4+(4+4+32)+(4+4+19+1)+(4+4))
-static void maudwriteheader(sox_format_t * ft)
+static int maudwriteheader(sox_format_t * ft)
 {
         priv_t * p = (priv_t *) ft->priv;
         uint32_t mdat_size; /* MDAT chunk size */
 
         mdat_size = p->nsamples * (ft->encoding.bits_per_sample >> 3);
 
-        lsx_writes(ft, "FORM");
-        lsx_writedw(ft, MAUDHEADERSIZE + mdat_size + mdat_size%2);  /* size of file */
-        lsx_writes(ft, "MAUD"); /* File type */
+        if (lsx_writes(ft, "FORM") ||
+            lsx_writedw(ft, MAUDHEADERSIZE + mdat_size + mdat_size%2) ||  /* size of file */
+            lsx_writes(ft, "MAUD") ||     /* File type */
 
-        lsx_writes(ft, "MHDR");
-        lsx_writedw(ft,  8*4); /* number of bytes to follow */
-        lsx_writedw(ft, p->nsamples);  /* number of samples stored in MDAT */
+            lsx_writes(ft, "MHDR") ||
+            lsx_writedw(ft,  8*4) ||      /* number of bytes to follow */
+            lsx_writedw(ft, p->nsamples)) /* number of samples stored in MDAT */
+	  return SOX_EOF;
 
         switch (ft->encoding.encoding) {
 
         case SOX_ENCODING_UNSIGNED:
-          lsx_writew(ft, 8); /* number of bits per sample as stored in MDAT */
-          lsx_writew(ft, 8); /* number of bits per sample after decompression */
+          if (lsx_writew(ft, 8) || /* number of bits per sample as stored in MDAT */
+              lsx_writew(ft, 8)) /* number of bits per sample after decompression */
+	    return SOX_EOF;
           break;
 
         case SOX_ENCODING_SIGN2:
-          lsx_writew(ft, 16); /* number of bits per sample as stored in MDAT */
-          lsx_writew(ft, 16); /* number of bits per sample after decompression */
+          if (lsx_writew(ft, 16) || /* number of bits per sample as stored in MDAT */
+              lsx_writew(ft, 16)) /* number of bits per sample after decompression */
+	    return SOX_EOF;
           break;
 
         case SOX_ENCODING_ALAW:
         case SOX_ENCODING_ULAW:
-          lsx_writew(ft, 8); /* number of bits per sample as stored in MDAT */
-          lsx_writew(ft, 16); /* number of bits per sample after decompression */
+          if (lsx_writew(ft, 8) || /* number of bits per sample as stored in MDAT */
+              lsx_writew(ft, 16)) /* number of bits per sample after decompression */
+	    return SOX_EOF;
           break;
 
         default:
           break;
         }
 
-        lsx_writedw(ft, (unsigned)(ft->signal.rate + .5)); /* sample rate, Hz */
-        lsx_writew(ft, (int) 1); /* clock devide */
+        if (lsx_writedw(ft, (unsigned)(ft->signal.rate + .5)) || /* sample rate, Hz */
+            lsx_writew(ft, (int) 1)) /* clock devide */
+	  return SOX_EOF;
 
         if (ft->signal.channels == 1) {
-          lsx_writew(ft, 0); /* channel information */
-          lsx_writew(ft, 1); /* number of channels (mono: 1, stereo: 2, ...) */
+          if (lsx_writew(ft, 0) || /* channel information */
+              lsx_writew(ft, 1)) /* number of channels (mono: 1, stereo: 2, ...) */
+	    return SOX_EOF;
         }
         else {
-          lsx_writew(ft, 1);
-          lsx_writew(ft, 2);
+          if (lsx_writew(ft, 1) ||
+              lsx_writew(ft, 2))
+	    return SOX_EOF;
         }
 
         switch (ft->encoding.encoding) {
 
         case SOX_ENCODING_UNSIGNED:
         case SOX_ENCODING_SIGN2:
-          lsx_writew(ft, 0); /* no compression */
+          if (lsx_writew(ft, 0)) /* no compression */
+	    return SOX_EOF;
           break;
 
         case SOX_ENCODING_ULAW:
-          lsx_writew(ft, 3);
+          if (lsx_writew(ft, 3))
+	    return SOX_EOF;
           break;
 
         case SOX_ENCODING_ALAW:
-          lsx_writew(ft, 2);
+          if (lsx_writew(ft, 2))
+	    return SOX_EOF;
           break;
 
         default:
           break;
         }
 
-        lsx_writedw(ft, 0); /* reserved */
-        lsx_writedw(ft, 0); /* reserved */
-        lsx_writedw(ft, 0); /* reserved */
+        if (lsx_writedw(ft, 0) || /* reserved */
+            lsx_writedw(ft, 0) || /* reserved */
+            lsx_writedw(ft, 0) || /* reserved */
 
-        lsx_writes(ft, "ANNO");
-        lsx_writedw(ft, 19); /* length of block */
-        lsx_writes(ft, "file created by SoX");
-        lsx_padbytes(ft, (size_t)1);
+            lsx_writes(ft, "ANNO") ||
+            lsx_writedw(ft, 19) || /* length of block */
+            lsx_writes(ft, "file created by SoX") ||
+            lsx_padbytes(ft, (size_t)1) ||
 
-        lsx_writes(ft, "MDAT");
-        lsx_writedw(ft, p->nsamples * (ft->encoding.bits_per_sample >> 3)); /* samples in file */
+            lsx_writes(ft, "MDAT") ||
+	    /* samples in file */
+            lsx_writedw(ft, p->nsamples * (ft->encoding.bits_per_sample >> 3)))
+	  return SOX_EOF;
+
+        return SOX_SUCCESS;
 }
 
 LSX_FORMAT_HANDLER(maud)

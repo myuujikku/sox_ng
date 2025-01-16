@@ -252,7 +252,8 @@ static int startwrite(sox_format_t * ft)
     /* dummy numbers, just for place holder, real header is written
        at end of processing, since byte count is needed */
 
-    lsx_writebuf(ft, &WH, (size_t) 32);
+    if (lsx_writebuf(ft, &WH, (size_t) 32))
+      return(SOX_EOF);
     sk->bytes_out = 32;
     return(SOX_SUCCESS);
 }
@@ -343,9 +344,10 @@ static int stopwrite(sox_format_t * ft)
         AttackLength                       = 0x40;
         LoopLength                         = 0x40;
         for(i=sk->samples_out;i<0x80;i++) {
-            lsx_writeb(ft, 0);
-            lsx_writeb(ft, 0);
-            lsx_writeb(ft, 0);
+            if (lsx_writeb(ft, 0) ||
+                lsx_writeb(ft, 0) ||
+                lsx_writeb(ft, 0))
+                return(SOX_EOF);
             sk->bytes_out += 3;
         }
     }
@@ -353,7 +355,8 @@ static int stopwrite(sox_format_t * ft)
     /* Fill up to 256 byte blocks; the TX16W seems to like that */
 
     while ((sk->bytes_out % 0x100) != 0) {
-        lsx_writeb(ft, 0);
+        if (lsx_writeb(ft, 0))
+            return(SOX_EOF);
         sk->bytes_out++;
     }
 
@@ -368,7 +371,8 @@ static int stopwrite(sox_format_t * ft)
         magic2[WH.sample_rate];
 
     lsx_rewind(ft);
-    lsx_writebuf(ft, &WH, (size_t) 32);
+    if (lsx_writebuf(ft, &WH, (size_t) 32) != 32)
+        return(SOX_EOF);
 
     return(SOX_SUCCESS);
 }
