@@ -61,7 +61,7 @@ typedef struct {
   unsigned frame_samp;     /* samples left to read in current frame */
 } priv_t;
 
-static void prcwriteheader(sox_format_t * ft);
+static int prcwriteheader(sox_format_t * ft);
 
 static int seek(sox_format_t * ft, sox_uint64_t offset)
 {
@@ -330,35 +330,43 @@ static int startwrite(sox_format_t * ft)
   return SOX_SUCCESS;
 }
 
-static void write_cardinal(sox_format_t * ft, unsigned a)
+static int write_cardinal(sox_format_t * ft, unsigned a)
 {
   uint8_t byte;
 
   if (a < 0x80) {
     byte = a << 1;
     lsx_debug_more("Cardinal byte 1: %x", byte);
-    lsx_writeb(ft, byte);
+    if (lsx_writeb(ft, byte))
+      return SOX_EOF;
   } else if (a < 0x8000) {
     byte = (a << 2) | 1;
     lsx_debug_more("Cardinal byte 1: %x", byte);
-    lsx_writeb(ft, byte);
+    if (lsx_writeb(ft, byte))
+      return SOX_EOF;
     byte = a >> 6;
     lsx_debug_more("Cardinal byte 2: %x", byte);
-    lsx_writeb(ft, byte);
+    if (lsx_writeb(ft, byte))
+      return SOX_EOF;
   } else {
     byte = (a << 3) | 3;
     lsx_debug_more("Cardinal byte 1: %x", byte);
-    lsx_writeb(ft, byte);
+    if (lsx_writeb(ft, byte))
+      return SOX_EOF;
     byte = a >> 5;
     lsx_debug_more("Cardinal byte 2: %x", byte);
-    lsx_writeb(ft, byte);
+    if (lsx_writeb(ft, byte))
+      return SOX_EOF;
     byte = a >> 13;
     lsx_debug_more("Cardinal byte 3: %x", byte);
-    lsx_writeb(ft, byte);
+    if (lsx_writeb(ft, byte))
+      return SOX_EOF;
     byte = a >> 21;
     lsx_debug_more("Cardinal byte 4: %x", byte);
-    lsx_writeb(ft, byte);
+    if (lsx_writeb(ft, byte))
+      return SOX_EOF;
   }
+  return SOX_SUCCESS;
 }
 
 static size_t write_samples(sox_format_t * ft, const sox_sample_t *buf, size_t nsamp)
@@ -371,21 +379,30 @@ static size_t write_samples(sox_format_t * ft, const sox_sample_t *buf, size_t n
     while (written < nsamp) {
       size_t written1, samp = min(nsamp - written, 800);
 
-      write_cardinal(ft, (unsigned) samp);
+      if (write_cardinal(ft, (unsigned) samp))
+        return (size_t)SOX_EOF;
       /* Write compressed length */
-      write_cardinal(ft, (unsigned) ((samp / 2) + (samp % 2) + 4));
+      if (write_cardinal(ft, (unsigned) ((samp / 2) + (samp % 2) + 4)))
+        return (size_t)SOX_EOF;
       /* Write length again (seems to be a BListL) */
       lsx_debug_more("list length %lu", (unsigned long)samp);
-      lsx_writedw(ft, (unsigned) samp);
+      if (lsx_writedw(ft, (unsigned) samp))
+        return (size_t)SOX_EOF;
       lsx_adpcm_reset(&p->adpcm, ft->encoding.encoding);
       written1 = lsx_adpcm_write(ft, &p->adpcm, buf + written, samp);
+      if (written1 == (size_t)SOX_EOF)
+        return (size_t)SOX_EOF;
       if (written1 != samp)
         break;
-      lsx_adpcm_flush(ft, &p->adpcm);
+      if (lsx_adpcm_flush(ft, &p->adpcm))
+        return (size_t)SOX_EOF;
       written += written1;
     }
-  } else
+  } else {
     written = lsx_rawwrite(ft, buf, nsamp);
+    if (written == (size_t) SOX_EOF)
+      return (size_t) SOX_EOF;
+  }
   p->nsamp += written;
   return written;
 }
@@ -409,28 +426,37 @@ static int stopwrite(sox_format_t * ft)
   return SOX_SUCCESS;
 }
 
-static void prcwriteheader(sox_format_t * ft)
+static int prcwriteheader(sox_format_t * ft)
 {
   priv_t * p = (priv_t *)ft->priv;
 
-  lsx_writebuf(ft, prc_header, sizeof(prc_header));
-  lsx_writes(ft, "\x2arecord.app");
+  if (lsx_writebuf(ft, prc_header, sizeof(prc_header)) != sizeof(prc_header) ||
+      lsx_writes(ft, "\x2arecord.app"))
+    return SOX_EOF;
 
   lsx_debug("Number of samples: %d",p->nsamp);
-  lsx_writedw(ft, p->nsamp);
+  if (lsx_writedw(ft, p->nsamp))
+    return SOX_EOF;
 
-  if (ft->encoding.encoding == SOX_ENCODING_ALAW)
-    lsx_writedw(ft, 0);
-  else
-    lsx_writedw(ft, 0x100001a1); /* ADPCM */
+  if (ft->encoding.encoding == SOX_ENCODING_ALAW) {
+    if (lsx_writedw(ft, 0))
+      return SOX_EOF;
+  } else {
+    if (lsx_writedw(ft, 0x100001a1)) /* ADPCM */
+      return SOX_EOF;
+  }
 
-  lsx_writew(ft, 0);             /* Number of repeats */
-  lsx_writeb(ft, 3);             /* Volume: use default value of Record.app */
-  lsx_writeb(ft, 0);             /* Unused and seems always zero */
-  lsx_writedw(ft, 0);            /* Time between repeats in usec */
+  if (lsx_writew(ft, 0) ||       /* Number of repeats */
+      lsx_writeb(ft, 3) ||       /* Volume: use default value of Record.app */
+      lsx_writeb(ft, 0) ||       /* Unused and seems always zero */
+      lsx_writedw(ft, 0))        /* Time between repeats in usec */
+    return SOX_EOF;
 
   lsx_debug("Number of bytes: %d", p->nbytes);
-  lsx_writedw(ft, p->nbytes);    /* Number of bytes of data */
+  if (lsx_writedw(ft, p->nbytes))    /* Number of bytes of data */
+    return SOX_EOF;
+
+  return SOX_SUCCESS;
 }
 
 LSX_FORMAT_HANDLER(prc)
