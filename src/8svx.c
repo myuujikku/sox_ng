@@ -30,7 +30,7 @@ typedef struct{
   FILE* tmp[4];
 } priv_t;
 
-static void svxwriteheader(sox_format_t *, size_t);
+static int svxwriteheader(sox_format_t *, size_t);
 
 /*======================================================================*/
 /*                         8SVXSTARTREAD                                */
@@ -288,7 +288,8 @@ static int stopwrite(sox_format_t * ft)
         size_t i, len;
         char svxbuf[512];
 
-        svxwriteheader(ft, (size_t) p->nsamples);
+        if (svxwriteheader(ft, (size_t) p->nsamples))
+	    return SOX_EOF;
 
         /* append all channel pieces to channel 0 */
         /* close temp files */
@@ -310,7 +311,8 @@ static int stopwrite(sox_format_t * ft)
 
         /* add a pad byte if BODY size is odd */
         if(p->nsamples % 2 != 0)
-            lsx_writeb(ft, '\0');
+            if (lsx_writeb(ft, '\0'))
+	        return SOX_EOF;
 
         return(SOX_SUCCESS);
 }
@@ -319,38 +321,41 @@ static int stopwrite(sox_format_t * ft)
 /*                         8SVXWRITEHEADER                              */
 /*======================================================================*/
 #define SVXHEADERSIZE 100
-static void svxwriteheader(sox_format_t * ft, size_t nsamples)
+static int svxwriteheader(sox_format_t * ft, size_t nsamples)
 {
         size_t formsize =  nsamples + SVXHEADERSIZE - 8;
 
         /* FORM size must be even */
         if(formsize % 2 != 0) formsize++;
 
-        lsx_writes(ft, "FORM");
-        lsx_writedw(ft, (unsigned) formsize);  /* size of file */
-        lsx_writes(ft, "8SVX"); /* File type */
+        if (lsx_writes(ft, "FORM") ||
+            lsx_writedw(ft, (unsigned) formsize) ||  /* size of file */
+            lsx_writes(ft, "8SVX") || /* File type */
 
-        lsx_writes(ft, "VHDR");
-        lsx_writedw(ft, 20); /* number of bytes to follow */
-        lsx_writedw(ft, (unsigned) nsamples/ft->signal.channels);  /* samples, 1-shot */
-        lsx_writedw(ft, 0);  /* samples, repeat */
-        lsx_writedw(ft, 0);  /* samples per repeat cycle */
-        lsx_writew(ft, min(65535, (unsigned)(ft->signal.rate + .5)));
-        lsx_writeb(ft,1); /* number of octabes */
-        lsx_writeb(ft,0); /* data compression (none) */
-        lsx_writew(ft,1); lsx_writew(ft,0); /* volume */
+            lsx_writes(ft, "VHDR") ||
+            lsx_writedw(ft, 20) || /* number of bytes to follow */
+            lsx_writedw(ft, (unsigned) nsamples/ft->signal.channels) ||  /* samples, 1-shot */
+            lsx_writedw(ft, 0) ||  /* samples, repeat */
+            lsx_writedw(ft, 0) ||  /* samples per repeat cycle */
+            lsx_writew(ft, min(65535, (unsigned)(ft->signal.rate + .5))) ||
+            lsx_writeb(ft,1) || /* number of octabes */
+            lsx_writeb(ft,0) || /* data compression (none) */
+            lsx_writew(ft,1) || lsx_writew(ft,0) || /* volume */
 
-        lsx_writes(ft, "ANNO");
-        lsx_writedw(ft, 32); /* length of block */
-        lsx_writes(ft, "File created by Sound Exchange  ");
+            lsx_writes(ft, "ANNO") ||
+            lsx_writedw(ft, 32) || /* length of block */
+            lsx_writes(ft, "File created by Sound Exchange  ") ||
 
-        lsx_writes(ft, "CHAN");
-        lsx_writedw(ft, 4);
-        lsx_writedw(ft, (ft->signal.channels == 2) ? 6u :
-                   (ft->signal.channels == 4) ? 15u : 2u);
+            lsx_writes(ft, "CHAN") ||
+            lsx_writedw(ft, 4) ||
+            lsx_writedw(ft, (ft->signal.channels == 2) ? 6u :
+                       (ft->signal.channels == 4) ? 15u : 2u) ||
 
-        lsx_writes(ft, "BODY");
-        lsx_writedw(ft, (unsigned) nsamples); /* samples in file */
+            lsx_writes(ft, "BODY") ||
+            lsx_writedw(ft, (unsigned) nsamples)) /* samples in file */
+	        return SOX_EOF;
+
+	return SOX_SUCCESS;
 }
 
 LSX_FORMAT_HANDLER(svx)

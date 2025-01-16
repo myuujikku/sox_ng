@@ -172,7 +172,8 @@ static int stop_write(sox_format_t * ft)
     if (!memcmp(buf, "wvpk", (size_t)4)) {
       WavpackUpdateNumSamples(p->codec, buf);
       lsx_rewind(ft);
-      lsx_writebuf(ft, buf, p->first_block_size);
+      if (lsx_writebuf(ft, buf, p->first_block_size))
+        return SOX_EOF;
     }
     free(buf);
   }

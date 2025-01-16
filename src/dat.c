@@ -64,9 +64,11 @@ static int sox_datstartwrite(sox_format_t * ft)
     dat->deltat = 1.0 / (double)ft->signal.rate;
     /* Write format comments to start of file */
     sprintf(s,"; Sample Rate %ld\015\n", (long)ft->signal.rate);
-    lsx_writes(ft, s);
+    if (lsx_writes(ft, s))
+        return (SOX_EOF);
     sprintf(s,"; Channels %d\015\n", (int)ft->signal.channels);
-    lsx_writes(ft, s);
+    if (lsx_writes(ft, s))
+        return (SOX_EOF);
 
     return (SOX_SUCCESS);
 }
@@ -133,15 +135,18 @@ static size_t sox_datwrite(sox_format_t * ft, const sox_sample_t *buf, size_t ns
     /* Write time, then sample values, then CRLF newline */
     while(done < nsamp) {
       sprintf(s," %15.8g ",dat->timevalue);
-      lsx_writes(ft, s);
+      if (lsx_writes(ft, s))
+        return (size_t)SOX_EOF;
       for (i=0; i<ft->signal.channels; i++) {
         sampval = SOX_SAMPLE_TO_FLOAT_64BIT(*buf++, ft->clips);
         sprintf(s," %15.11g", sampval);
-        lsx_writes(ft, s);
+        if (lsx_writes(ft, s))
+          return (size_t)SOX_EOF;
         done++;
       }
       sprintf(s," \r\n");
-      lsx_writes(ft, s);
+      if (lsx_writes(ft, s))
+        return (size_t)SOX_EOF;
       dat->timevalue += dat->deltat;
     }
     return done;
