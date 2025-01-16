@@ -108,8 +108,8 @@ static int read_bits(sox_format_t * ft, INT32 *bits, int len)
   /* Unpack the array bits into coded_frame. */
   for (i = 0; i < len; i++) {
     if (i % 8 == 0) {
-      lsx_read_b_buf(ft, &c, (size_t) 1);
-      if (lsx_eof(ft)) {
+      if (lsx_read_b_buf(ft, &c, (size_t) 1) != 1 ||
+          lsx_eof(ft)) {
         return (i);
       }
     }

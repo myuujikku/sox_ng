@@ -110,7 +110,8 @@ static const char prc_header[41] = {
 
 static int prc_checkheader(sox_format_t * ft, char *head)
 {
-  lsx_readbuf(ft, head, sizeof(prc_header));
+  if (lsx_readbuf(ft, head, sizeof(prc_header)) != sizeof(prc_header))
+    return 0;
   return memcmp(head, prc_header, sizeof(prc_header)) == 0;
 }
 
@@ -132,7 +133,8 @@ static int startread(sox_format_t * ft)
       return (SOX_EOF);
   }
 
-  lsx_readb(ft, &byte);
+  if (lsx_readb(ft, &byte))
+      return (SOX_EOF);
   if ((byte & 0x3) != 0x2) {
     lsx_fail_errno(ft, SOX_EHDR, "Invalid length byte for application name string %d", (int)(byte));
     return SOX_EOF;
@@ -140,17 +142,20 @@ static int startread(sox_format_t * ft)
 
   byte >>= 2;
   assert(byte < 64);
-  lsx_reads(ft, appname, (size_t)byte);
+  if (lsx_reads(ft, appname, (size_t)byte))
+    return SOX_EOF;
   if (strncasecmp(appname, "record.app", (size_t) byte) != 0) {
     lsx_fail_errno(ft, SOX_EHDR, "Invalid application name string %.63s", appname);
     return SOX_EOF;
   }
 
-  lsx_readdw(ft, &len);
+  if (lsx_readdw(ft, &len))
+    return SOX_EOF;
   p->nsamp = len;
   lsx_debug("Number of samples: %d", len);
 
-  lsx_readdw(ft, &encoding);
+  if (lsx_readdw(ft, &encoding))
+    return SOX_EOF;
   lsx_debug("Encoding of samples: %x", encoding);
   if (encoding == 0)
     ft->encoding.encoding = SOX_ENCODING_ALAW;
@@ -161,20 +166,23 @@ static int startread(sox_format_t * ft)
     return SOX_EOF;
   }
 
-  lsx_readw(ft, &reps);    /* Number of repeats */
+  if (lsx_readw(ft, &reps))    /* Number of repeats */
+    return SOX_EOF;
   lsx_debug("Repeats: %d", reps);
 
-  lsx_readb(ft, &volume);
+  if (lsx_readb(ft, &volume))
+    return SOX_EOF;
   lsx_debug("Volume: %d", (unsigned)volume);
   if (volume < 1 || volume > 5)
     lsx_warn("Volume %d outside range 1..5", volume);
 
-  lsx_readb(ft, &byte);   /* Unused and seems always zero */
-
-  lsx_readdw(ft, &repgap); /* Time between repeats in usec */
+  if (lsx_readb(ft, &byte) ||  /* Unused and seems always zero */
+      lsx_readdw(ft, &repgap)) /* Time between repeats in usec */
+    return SOX_EOF;
   lsx_debug("Time between repeats (usec): %u", repgap);
 
-  lsx_readdw(ft, &listlen); /* Length of samples list */
+  if (lsx_readdw(ft, &listlen)) /* Length of samples list */
+    return SOX_EOF;
   lsx_debug("Number of bytes in samples list: %u", listlen);
 
   if (ft->signal.rate != 0 && ft->signal.rate != 8000)
@@ -260,7 +268,8 @@ static size_t read_samples(sox_format_t * ft, sox_sample_t *buf, size_t samp)
       /* Discard length of compressed data */
       lsx_debug_more("compressed length %d", read_cardinal(ft));
       /* Discard length of BListL */
-      lsx_readdw(ft, &trash);
+      if (lsx_readdw(ft, &trash))
+        return 0;
       lsx_debug_more("list length %d", trash);
 
       /* Reset CODEC for start of frame */
