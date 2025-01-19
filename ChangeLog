@@ -10,6 +10,7 @@ sox_ng-14.5.0.3	2025-01-05
 
 Bug fixes:
 
+  o Make reading from wget/curl work on Windows.
   o Make reading from ffmpeg work on Unix too.
     popen("rb") returns NULL with glibc (!)
 

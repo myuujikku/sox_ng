@@ -7,6 +7,17 @@
    "tags": "audio, audio-editing, audio-processing, c, commandline-tool, digital-audio-editor, opensource, sound",
    "releases": [
       {
+         "version": "14.5.0.3",
+         "state": "stable",
+         "scope": "minor bugfix",
+         "changes": "Bug fixes:
+
+  o Make reading from wget/curl work on Windows by popen()ing rb"
+  o Make reading from ffmpeg work on Unix by *not* popen()ing rb"
+         "download": "https://codeberg.org/sox_ng/sox_ng/releases/download/sox_ng-14.5.0.3/sox_ng-14.5.0.3.tar.gz",
+         "published": "2025-01-19T08:00:00+00:00"
+      },
+      {
          "version": "14.5.0.2",
          "state": "stable",
          "scope": "minor bugfix",
