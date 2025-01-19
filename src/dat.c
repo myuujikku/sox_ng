@@ -55,6 +55,12 @@ static int sox_datstartread(sox_format_t * ft)
     return (SOX_SUCCESS);
 }
 
+static char write_error_msg[] = "write error";
+#define write_error() { \
+    lsx_fail_errno(ft, SOX_EOF, write_error_msg); \
+    return (SOX_EOF); \
+}
+
 static int sox_datstartwrite(sox_format_t * ft)
 {
     priv_t * dat = (priv_t *) ft->priv;
@@ -65,10 +71,10 @@ static int sox_datstartwrite(sox_format_t * ft)
     /* Write format comments to start of file */
     sprintf(s,"; Sample Rate %ld\015\n", (long)ft->signal.rate);
     if (lsx_writes(ft, s))
-        return (SOX_EOF);
+        write_error();
     sprintf(s,"; Channels %d\015\n", (int)ft->signal.channels);
     if (lsx_writes(ft, s))
-        return (SOX_EOF);
+        write_error();
 
     return (SOX_SUCCESS);
 }
@@ -136,17 +142,17 @@ static size_t sox_datwrite(sox_format_t * ft, const sox_sample_t *buf, size_t ns
     while(done < nsamp) {
       sprintf(s," %15.8g ",dat->timevalue);
       if (lsx_writes(ft, s))
-        return (size_t)SOX_EOF;
+        write_error();
       for (i=0; i<ft->signal.channels; i++) {
         sampval = SOX_SAMPLE_TO_FLOAT_64BIT(*buf++, ft->clips);
         sprintf(s," %15.11g", sampval);
         if (lsx_writes(ft, s))
-          return (size_t)SOX_EOF;
+          write_error();
         done++;
       }
       sprintf(s," \r\n");
       if (lsx_writes(ft, s))
-        return (size_t)SOX_EOF;
+        write_error();
       dat->timevalue += dat->deltat;
     }
     return done;

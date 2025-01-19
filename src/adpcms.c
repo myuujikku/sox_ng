@@ -263,8 +263,10 @@ size_t lsx_adpcm_write(sox_format_t * ft, adpcm_io_t * state, const sox_sample_t
       state->file.buf[state->file.count++] = byte;
 
       if (state->file.count >= state->file.size) {
-        if (lsx_writebuf(ft, state->file.buf, state->file.count) != state->file.count)
+        if (lsx_writebuf(ft, state->file.buf, state->file.count) != state->file.count) {
+	  lsx_fail_errno(ft, SOX_EOF, "write error");
 	  return (size_t) SOX_EOF;
+       }
 
         state->file.count = 0;
       }
@@ -301,8 +303,10 @@ int lsx_adpcm_flush(sox_format_t * ft, adpcm_io_t * state)
     state->file.buf[state->file.count++] = byte;
   }
   if (state->file.count > 0)
-    if(lsx_writebuf(ft, state->file.buf, state->file.count) != state->file.count)
-	return SOX_EOF;
+    if(lsx_writebuf(ft, state->file.buf, state->file.count) != state->file.count) {
+      lsx_fail_errno(ft, SOX_EOF, "write error");
+      return (size_t) SOX_EOF;
+    }
   return SOX_SUCCESS;
 }
 

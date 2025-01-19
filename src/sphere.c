@@ -144,6 +144,12 @@ static int start_read(sox_format_t * ft)
       bytes_per_sample << 3, (uint64_t)num_samples * channels, sox_true);
 }
 
+static char write_error_msg[] = "write error";
+#define write_error() { \
+    lsx_fail_errno(ft, SOX_EOF, write_error_msg); \
+    return SOX_EOF; \
+}
+
 static int write_header(sox_format_t * ft)
 {
   char buf[128];
@@ -151,21 +157,21 @@ static int write_header(sox_format_t * ft)
 
   if (lsx_writes(ft, "NIST_1A\n") ||
       lsx_writes(ft, "   1024\n"))
-    return SOX_EOF;
+    write_error();
 
   if (samples) {
     sprintf(buf, "sample_count -i %" PRIu64 "\n", samples);
     if (lsx_writes(ft, buf))
-      return SOX_EOF;
+      write_error();
   }
 
   sprintf(buf, "sample_n_bytes -i %d\n", ft->encoding.bits_per_sample >> 3);
   if (lsx_writes(ft, buf))
-    return SOX_EOF;
+    write_error();
 
   sprintf(buf, "channel_count -i %d\n", ft->signal.channels);
   if (lsx_writes(ft, buf))
-    return SOX_EOF;
+    write_error();
 
   if (ft->encoding.bits_per_sample == 8)
     sprintf(buf, "sample_byte_format -s1 1\n");
@@ -173,22 +179,22 @@ static int write_header(sox_format_t * ft)
     sprintf(buf, "sample_byte_format -s2 %s\n",
             ft->encoding.reverse_bytes != MACHINE_IS_BIGENDIAN ? "10" : "01");
   if (lsx_writes(ft, buf))
-    return SOX_EOF;
+    write_error();
 
   sprintf(buf, "sample_rate -i %u\n", (unsigned) (ft->signal.rate + .5));
   if (lsx_writes(ft, buf))
-    return SOX_EOF;
+    write_error();
 
   if (ft->encoding.encoding == SOX_ENCODING_ULAW) {
     if (lsx_writes(ft, "sample_coding -s4 ulaw\n"))
-      return SOX_EOF;
+      write_error();
   } else {
     if (lsx_writes(ft, "sample_coding -s3 pcm\n"))
-      return SOX_EOF;
+      write_error();
   }
   if (lsx_writes(ft, "end_head\n") ||
       lsx_padbytes(ft, 1024 - (size_t)lsx_tell(ft)))
-    return SOX_EOF;
+    write_error();
   return SOX_SUCCESS;
 }
 

@@ -115,6 +115,12 @@ static char *wav_format_str(unsigned wFormatTag);
 
 static int wavwritehdr(sox_format_t *, int);
 
+static char write_error_msg[] = "write error";
+#define write_error() { \
+    lsx_fail_errno(ft, SOX_EOF, write_error_msg); \
+    return SOX_EOF; \
+}
+
 
 /****************************************************************************/
 /* IMA ADPCM Support Functions Section                                      */
@@ -220,10 +226,7 @@ static int xxxAdpcmWriteBlock(sox_format_t * ft)
         }
         /* write the compressed packet */
         if (lsx_writebuf(ft, wav->packet, (size_t) wav->blockAlign) != wav->blockAlign)
-        {
-            lsx_fail_errno(ft,SOX_EOF,"write error");
-            return (SOX_EOF);
-        }
+            write_error();
         /* update lengths and samplePtr */
         wav->dataLength += wav->blockAlign;
         if (pad_nsamps)
@@ -327,10 +330,7 @@ static int wavgsmflush(sox_format_t * ft)
     /*encode the odd half long (33 byte) frame */
     gsm_encode(wav->gsmhandle, wav->gsmsample+160, frame+32);
     if (lsx_writebuf(ft, frame, (size_t) 65) != 65)
-    {
-        lsx_fail_errno(ft,SOX_EOF,"write error");
-        return (SOX_EOF);
-    }
+        write_error();
     wav->gsmbytecount += 65;
 
     wav->gsmindex = 0;
@@ -362,24 +362,26 @@ static size_t wavgsmwrite(sox_format_t * ft, const sox_sample_t *buf, size_t len
 
 }
 
-static void wavgsmstopwrite(sox_format_t * ft)
+static int wavgsmstopwrite(sox_format_t * ft)
 {
     priv_t *       wav = (priv_t *) ft->priv;
 
     ft->sox_errno = SOX_SUCCESS;
 
     if (wav->gsmindex)
-        wavgsmflush(ft);
+        if (wavgsmflush(ft))
+            write_error();
 
     /* Add a pad byte if amount of written bytes is not even. */
     if (wav->gsmbytecount && wav->gsmbytecount % 2){
         if(lsx_writeb(ft, 0))
-            lsx_fail_errno(ft,SOX_EOF,"write error");
-        else
-            wav->gsmbytecount += 1;
+            write_error();
+	wav->gsmbytecount += 1;
     }
 
     wavgsmdestroy(ft);
+
+    return SOX_SUCCESS;
 }
 
 /****************************************************************************/
@@ -499,6 +501,12 @@ static int wavfail(sox_format_t * ft, const char *format)
     return SOX_EOF;
 }
 
+static char truncated[] = "file is truncated";
+#define read_error() { \
+    lsx_fail_errno(ft, SOX_EOF, truncated); \
+    return SOX_EOF; \
+}
+
 /*
  * Do anything required before you start reading samples.
  * Read file header.
@@ -531,8 +539,11 @@ static int startread(sox_format_t * ft)
     ft->sox_errno = SOX_SUCCESS;
     wav->ignoreSize = ft->signal.length == SOX_IGNORE_LENGTH;
 
-    if (lsx_reads(ft, magic, (size_t)4) == SOX_EOF || (strncmp("RIFF", magic, (size_t)4) != 0 &&
-                                             strncmp("RIFX", magic, (size_t)4) != 0 && strncmp("RF64", magic, (size_t)4)!=0 ))
+    if (lsx_reads(ft, magic, (size_t)4) == SOX_EOF)
+	read_error();
+    if ((strncmp("RIFF", magic, (size_t)4) != 0 &&
+         strncmp("RIFX", magic, (size_t)4) != 0 &&
+	 strncmp("RF64", magic, (size_t)4)!=0 ))
     {
         lsx_fail_errno(ft,SOX_EHDR,"RIFF header not found");
         return SOX_EOF;
@@ -555,8 +566,10 @@ static int startread(sox_format_t * ft)
         wav->isRF64 = sox_false;
     }
 
-    if (lsx_readdw(ft, &dwRiffLength_tmp))
+    if (lsx_readdw(ft, &dwRiffLength_tmp)) {
+        lsx_fail_errno(ft,SOX_EHDR,"WAVE header not found");
         return SOX_EOF;
+    }
     qwRiffLength = dwRiffLength_tmp;
 
     if (lsx_reads(ft, magic, (size_t)4) == SOX_EOF || strncmp("WAVE", magic, (size_t)4))
@@ -571,16 +584,16 @@ static int startread(sox_format_t * ft)
         if (dwRiffLength_tmp==0xffffffff)
         {
             if (lsx_readqw(ft, &qwRiffLength))
-                return SOX_EOF;
+                read_error();
         }
         else
         {
             if (lsx_skipbytes(ft, (size_t)8))
-                return SOX_EOF;
+                read_error();
         }
         if (lsx_readqw(ft, &wav->ds64_dataSize) ||
             lsx_skipbytes(ft, (size_t)len-16))
-                return SOX_EOF;
+                read_error();
     }
 
     /* Now look for the format chunk */
@@ -603,7 +616,7 @@ static int startread(sox_format_t * ft)
         lsx_readdw(ft, &dwAvgBytesPerSec) || /* Average bytes/second */
         lsx_readw(ft, &(wav->blockAlign)) || /* Block align */
         lsx_readw(ft, &wBitsPerSample))      /* bits per sample per channel */
-        return SOX_EOF;
+        read_error();
     len -= 16;
 
     if (wav->formatTag == WAVE_FORMAT_EXTENSIBLE)
@@ -621,7 +634,7 @@ static int startread(sox_format_t * ft)
         return SOX_EOF;
       }
       if (lsx_readw(ft, &extensionSize))
-        return SOX_EOF;
+        read_error();
       len -= 2;
       if (extensionSize < 22)
       {
@@ -631,10 +644,10 @@ static int startread(sox_format_t * ft)
       if (lsx_readw(ft, &numberOfValidBits) ||
           lsx_readdw(ft, &speakerPositionMask) ||
           lsx_readw(ft, &subFormatTag))
-        return SOX_EOF;
+        read_error();
       for (i = 0; i < 14; ++i)
         if (lsx_readb(ft, &dummyByte))
-          return SOX_EOF;
+          read_error();
       len -= 22;
       if (numberOfValidBits > wBitsPerSample)
       {
@@ -757,7 +770,7 @@ static int startread(sox_format_t * ft)
         wav->formatTag != WAVE_FORMAT_MULAW) {
         if (len >= 2) {
             if (lsx_readw(ft, &wExtSize))
-                return SOX_EOF;
+                read_error();
             len -= 2;
         } else {
             lsx_warn("wave header missing extended part of fmt chunk");
@@ -787,7 +800,7 @@ static int startread(sox_format_t * ft)
         }
 
         if (lsx_readw(ft, &(wav->samplesPerBlock)))
-            return SOX_EOF;
+            read_error();
         bytesPerBlock = lsx_ms_adpcm_bytes_per_block((size_t) ft->signal.channels, (size_t) wav->samplesPerBlock);
         if (bytesPerBlock != wav->blockAlign)
         {
@@ -797,7 +810,7 @@ static int startread(sox_format_t * ft)
         }
 
         if (lsx_readw(ft, &(wav->nCoefs)))
-            return SOX_EOF;
+            read_error();
         if (wav->nCoefs < 7 || wav->nCoefs > 0x100) {
             lsx_fail_errno(ft,SOX_EOF,"ADPCM file nCoefs (%.4hx) makes no sense", wav->nCoefs);
             return SOX_EOF;
@@ -821,7 +834,7 @@ static int startread(sox_format_t * ft)
             int i, errct=0;
             for (i=0; len>=2 && i < 2*wav->nCoefs; i++) {
                 if (lsx_readsw(ft, &(wav->lsx_ms_adpcm_i_coefs[i])))
-                    return SOX_EOF;
+                    read_error();
                 len -= 2;
                 if (i<14) errct += (wav->lsx_ms_adpcm_i_coefs[i] != lsx_ms_adpcm_i_coef[i/2][i%2]);
                 /* lsx_debug("lsx_ms_adpcm_i_coefs[%2d] %4d",i,wav->lsx_ms_adpcm_i_coefs[i]); */
@@ -847,7 +860,7 @@ static int startread(sox_format_t * ft)
         }
 
         if (lsx_readw(ft, &(wav->samplesPerBlock)))
-            return SOX_EOF;
+            read_error();
         bytesPerBlock = lsx_ima_bytes_per_block((size_t) ft->signal.channels, (size_t) wav->samplesPerBlock);
         if (bytesPerBlock != wav->blockAlign || wav->samplesPerBlock%8 != 1)
         {
@@ -873,7 +886,7 @@ static int startread(sox_format_t * ft)
             return SOX_EOF;
         }
         if (lsx_readw(ft, &wav->samplesPerBlock))
-            return SOX_EOF;
+            read_error();
         bytesPerBlock = 65;
         if (wav->blockAlign != 65)
         {
@@ -927,7 +940,7 @@ static int startread(sox_format_t * ft)
 
     /* Skip anything left over from fmt chunk */
     if (lsx_seeki(ft, (off_t)len, SEEK_CUR))
-        return SOX_EOF;
+        read_error();
 
     /* for non-PCM formats, there's a 'fact' chunk before
      * the upcoming 'data' chunk */
@@ -1068,7 +1081,7 @@ static int startread(sox_format_t * ft)
                 {
                     uint32_t len_tmp;
                     if (lsx_readdw(ft,&len_tmp) == SOX_EOF)
-                        break;
+                        read_error();
                     len = len_tmp;
                     if (strncmp(magic,"ICRD",(size_t)4) == 0)
                     {
@@ -1079,7 +1092,7 @@ static int startread(sox_format_t * ft)
                             break;
                         }
                         if (lsx_reads(ft,text, (size_t)len))
-			    return SOX_EOF;
+			    read_error();
                         if (strlen(wav->comment) + strlen(text) < 254)
                         {
                             if (wav->comment[0] != 0)
@@ -1089,7 +1102,7 @@ static int startread(sox_format_t * ft)
                         }
                         if (strlen(text) < len)
                            if (lsx_seeki(ft, (off_t)(len - strlen(text)), SEEK_CUR))
-			    return SOX_EOF;
+			    read_error();
                     }
                     else if (strncmp(magic,"ISFT",(size_t)4) == 0)
                     {
@@ -1100,7 +1113,7 @@ static int startread(sox_format_t * ft)
                             break;
                         }
                         if (lsx_reads(ft,text, (size_t)len))
-			    return SOX_EOF;
+			    read_error();
                         if (strlen(wav->comment) + strlen(text) < 254)
                         {
                             if (wav->comment[0] != 0)
@@ -1110,39 +1123,39 @@ static int startread(sox_format_t * ft)
                         }
                         if (strlen(text) < len)
                             if (lsx_seeki(ft, (off_t)(len - strlen(text)), SEEK_CUR))
-			        return SOX_EOF;
+			        read_error();
                     }
                     else if (strncmp(magic,"cue ",(size_t)4) == 0)
                     {
                         lsx_debug("Chunk cue ");
                         if (lsx_seeki(ft,(off_t)(len-4),SEEK_CUR) ||
                             lsx_readdw(ft,&dwLoopPos))
-			    return SOX_EOF;
+			    read_error();
                         ft->oob.loops[0].start = dwLoopPos;
                     }
                     else if (strncmp(magic,"ltxt",(size_t)4) == 0)
                     {
                         lsx_debug("Chunk ltxt");
                         if (lsx_readdw(ft,&dwLoopPos))
-			    return SOX_EOF;
+			    read_error();
                         ft->oob.loops[0].length = dwLoopPos - ft->oob.loops[0].start;
                         if (len > 4)
                             if (lsx_seeki(ft, (off_t)(len - 4), SEEK_CUR))
-			        return SOX_EOF;
+			        read_error();
                     }
                     else
                     {
                         lsx_debug("Attempting to seek beyond unsupported chunk `%c%c%c%c' of length %" PRIu64 " bytes", magic[0], magic[1], magic[2], magic[3], len);
                         len = (len + 1) & ~1u;
                         if (lsx_seeki(ft, (off_t)len, SEEK_CUR))
-			    return SOX_EOF;
+			    read_error();
                     }
                 }
             }
         }
         lsx_clearerr(ft);
         if (lsx_seeki(ft,(off_t)wav->dataStart,SEEK_SET))
-	    return SOX_EOF;
+	    read_error();
     }
     return lsx_rawstartread(ft);
 }
@@ -1550,11 +1563,11 @@ static int wavwritehdr(sox_format_t * ft, int second_header)
         if (!second_header)
             lsx_report("Requested to swap bytes so writing RIFX header");
         if (lsx_writes(ft, "RIFX"))
-	    return SOX_EOF;
+	    write_error();
     }
     else
         if (lsx_writes(ft, "RIFF"))
-	    return SOX_EOF;
+	    write_error();
 
     if (lsx_writedw(ft, wRiffLength) ||
         lsx_writes(ft, "WAVE") ||
@@ -1566,7 +1579,7 @@ static int wavwritehdr(sox_format_t * ft, int second_header)
         lsx_writedw(ft, dwAvgBytesPerSec) ||
         lsx_writew(ft, wBlockAlign) ||
         lsx_writew(ft, wBitsPerSample)) /* end info common to all fmts */
-	    return SOX_EOF;
+	    write_error();
 
     if (isExtensible) {
       uint32_t dwChannelMask=0;  /* unassigned speaker mapping by default */
@@ -1589,35 +1602,35 @@ static int wavwritehdr(sox_format_t * ft, int second_header)
           lsx_writew(ft, wBitsPerSample) || /* No padding in container */
           lsx_writedw(ft, dwChannelMask) || /* Speaker mapping is something reasonable */
           lsx_writew(ft, wFormatTag) ||
-          lsx_writebuf(ft, guids[!strcmp(ft->filetype, "amb")], (size_t)14))
-	      return SOX_EOF;
+          lsx_writebuf(ft, guids[!strcmp(ft->filetype, "amb")], (size_t)14) != 14)
+	      write_error();
     }
     else
     /* if not PCM, we need to write out wExtSize even if wExtSize=0 */
     if (wFormatTag != WAVE_FORMAT_PCM)
         if (lsx_writew(ft,wExtSize))
-	    return SOX_EOF;
+	    write_error();
 
     switch (wFormatTag)
     {
         int i;
         case WAVE_FORMAT_IMA_ADPCM:
         if (lsx_writew(ft, wSamplesPerBlock))
-	    return SOX_EOF;
+	    write_error();
         break;
         case WAVE_FORMAT_ADPCM:
         if (lsx_writew(ft, wSamplesPerBlock) ||
             lsx_writew(ft, 7)) /* nCoefs */
-	        return SOX_EOF;
+	        write_error();
         for (i=0; i<7; i++) {
             if (lsx_writew(ft, (uint16_t)(lsx_ms_adpcm_i_coef[i][0])) ||
                 lsx_writew(ft, (uint16_t)(lsx_ms_adpcm_i_coef[i][1])))
-	            return SOX_EOF;
+	            write_error();
         }
         break;
         case WAVE_FORMAT_GSM610:
         if (lsx_writew(ft, wSamplesPerBlock))
-	    return SOX_EOF;
+	    write_error();
         break;
         default:
         break;
@@ -1628,12 +1641,12 @@ static int wavwritehdr(sox_format_t * ft, int second_header)
         if (lsx_writes(ft, "fact") ||
             lsx_writedw(ft,dwFactSize) ||
             lsx_writedw(ft,dwSamplesWritten))
-	        return SOX_EOF;
+	        write_error();
     }
 
     if (lsx_writes(ft, "data") ||
         lsx_writedw(ft, dwDataLength))               /* data chunk size */
-	    return SOX_EOF;
+	    write_error();
 
     if (!second_header) {
         lsx_debug("Writing Wave file: %s format, %d channel%s, %d samp/sec",
@@ -1709,10 +1722,12 @@ static int stopwrite(sox_format_t * ft)
         {
         case WAVE_FORMAT_IMA_ADPCM:
         case WAVE_FORMAT_ADPCM:
-            xxxAdpcmWriteBlock(ft);
+            if (xxxAdpcmWriteBlock(ft))
+		return SOX_EOF;
             break;
         case WAVE_FORMAT_GSM610:
-            wavgsmstopwrite(ft);
+            if (wavgsmstopwrite(ft))
+		return SOX_EOF;
             break;
         }
 
