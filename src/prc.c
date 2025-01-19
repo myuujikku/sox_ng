@@ -120,6 +120,12 @@ static int prc_checkheader(sox_format_t * ft, char *head)
   return memcmp(head, prc_header, sizeof(prc_header)) == 0;
 }
 
+static char truncated[] = "file is truncated";
+#define read_error() { \
+  lsx_fail_errno(ft, SOX_EOF, truncated); \
+  return SOX_EOF; \
+}
+
 static int startread(sox_format_t * ft)
 {
   priv_t * p = (priv_t *)ft->priv;
@@ -139,7 +145,7 @@ static int startread(sox_format_t * ft)
   }
 
   if (lsx_readb(ft, &byte))
-      return (SOX_EOF);
+      read_error();
   if ((byte & 0x3) != 0x2) {
     lsx_fail_errno(ft, SOX_EHDR, "Invalid length byte for application name string %d", (int)(byte));
     return SOX_EOF;
@@ -148,19 +154,19 @@ static int startread(sox_format_t * ft)
   byte >>= 2;
   assert(byte < 64);
   if (lsx_reads(ft, appname, (size_t)byte))
-    return SOX_EOF;
+    read_error();
   if (strncasecmp(appname, "record.app", (size_t) byte) != 0) {
     lsx_fail_errno(ft, SOX_EHDR, "Invalid application name string %.63s", appname);
     return SOX_EOF;
   }
 
   if (lsx_readdw(ft, &len))
-    return SOX_EOF;
+    read_error();
   p->nsamp = len;
   lsx_debug("Number of samples: %d", len);
 
   if (lsx_readdw(ft, &encoding))
-    return SOX_EOF;
+    read_error();
   lsx_debug("Encoding of samples: %x", encoding);
   if (encoding == 0)
     ft->encoding.encoding = SOX_ENCODING_ALAW;
@@ -172,22 +178,22 @@ static int startread(sox_format_t * ft)
   }
 
   if (lsx_readw(ft, &reps))    /* Number of repeats */
-    return SOX_EOF;
+    read_error();
   lsx_debug("Repeats: %d", reps);
 
   if (lsx_readb(ft, &volume))
-    return SOX_EOF;
+    read_error();
   lsx_debug("Volume: %d", (unsigned)volume);
   if (volume < 1 || volume > 5)
     lsx_warn("Volume %d outside range 1..5", volume);
 
   if (lsx_readb(ft, &byte) ||  /* Unused and seems always zero */
       lsx_readdw(ft, &repgap)) /* Time between repeats in usec */
-    return SOX_EOF;
+    read_error();
   lsx_debug("Time between repeats (usec): %u", repgap);
 
   if (lsx_readdw(ft, &listlen)) /* Length of samples list */
-    return SOX_EOF;
+    read_error();
   lsx_debug("Number of bytes in samples list: %u", listlen);
 
   if (ft->signal.rate != 0 && ft->signal.rate != 8000)
@@ -223,25 +229,25 @@ static unsigned read_cardinal(sox_format_t * ft)
   uint8_t byte;
 
   if (lsx_readb(ft, &byte) == SOX_EOF)
-    return (unsigned)SOX_EOF;
+    read_error();
   lsx_debug_more("Cardinal byte 1: %x", byte);
   a = byte;
   if (!(a & 1))
     a >>= 1;
   else {
     if (lsx_readb(ft, &byte) == SOX_EOF)
-      return (unsigned)SOX_EOF;
+      read_error();
     lsx_debug_more("Cardinal byte 2: %x", byte);
     a |= byte << 8;
     if (!(a & 2))
       a >>= 2;
     else if (!(a & 4)) {
       if (lsx_readb(ft, &byte) == SOX_EOF)
-        return (unsigned)SOX_EOF;
+        read_error();
       lsx_debug_more("Cardinal byte 3: %x", byte);
       a |= byte << 16;
       if (lsx_readb(ft, &byte) == SOX_EOF)
-        return (unsigned)SOX_EOF;
+        read_error();
       lsx_debug_more("Cardinal byte 4: %x", byte);
       a |= byte << 24;
       a >>= 3;
@@ -311,16 +317,22 @@ static int stopread(sox_format_t * ft)
    if it is not, the unspecified size remains in the header
    (this is illegal). */
 
+static char write_error_msg[] = "write error";
+#define write_error() { \
+  lsx_fail_errno(ft, SOX_EOF, write_error_msg); \
+  return SOX_EOF; \
+}
+
 static int startwrite(sox_format_t * ft)
 {
   priv_t * p = (priv_t *)ft->priv;
 
   if (ft->encoding.encoding == SOX_ENCODING_ALAW) {
     if (lsx_rawstartwrite(ft))
-      return SOX_EOF;
+      write_error();
   } else if (ft->encoding.encoding == SOX_ENCODING_IMA_ADPCM) {
     if (lsx_adpcm_ima_start(ft, &p->adpcm))
-      return SOX_EOF;
+      write_error();
   }
 
   p->nsamp = 0;
@@ -343,33 +355,33 @@ static int write_cardinal(sox_format_t * ft, unsigned a)
     byte = a << 1;
     lsx_debug_more("Cardinal byte 1: %x", byte);
     if (lsx_writeb(ft, byte))
-      return SOX_EOF;
+      write_error();
   } else if (a < 0x8000) {
     byte = (a << 2) | 1;
     lsx_debug_more("Cardinal byte 1: %x", byte);
     if (lsx_writeb(ft, byte))
-      return SOX_EOF;
+      write_error();
     byte = a >> 6;
     lsx_debug_more("Cardinal byte 2: %x", byte);
     if (lsx_writeb(ft, byte))
-      return SOX_EOF;
+      write_error();
   } else {
     byte = (a << 3) | 3;
     lsx_debug_more("Cardinal byte 1: %x", byte);
     if (lsx_writeb(ft, byte))
-      return SOX_EOF;
+      write_error();
     byte = a >> 5;
     lsx_debug_more("Cardinal byte 2: %x", byte);
     if (lsx_writeb(ft, byte))
-      return SOX_EOF;
+      write_error();
     byte = a >> 13;
     lsx_debug_more("Cardinal byte 3: %x", byte);
     if (lsx_writeb(ft, byte))
-      return SOX_EOF;
+      write_error();
     byte = a >> 21;
     lsx_debug_more("Cardinal byte 4: %x", byte);
     if (lsx_writeb(ft, byte))
-      return SOX_EOF;
+      write_error();
   }
   return SOX_SUCCESS;
 }
@@ -385,28 +397,28 @@ static size_t write_samples(sox_format_t * ft, const sox_sample_t *buf, size_t n
       size_t written1, samp = min(nsamp - written, 800);
 
       if (write_cardinal(ft, (unsigned) samp))
-        return (size_t)SOX_EOF;
+        write_error();
       /* Write compressed length */
       if (write_cardinal(ft, (unsigned) ((samp / 2) + (samp % 2) + 4)))
-        return (size_t)SOX_EOF;
+        write_error();
       /* Write length again (seems to be a BListL) */
       lsx_debug_more("list length %lu", (unsigned long)samp);
       if (lsx_writedw(ft, (unsigned) samp))
-        return (size_t)SOX_EOF;
+        write_error();
       lsx_adpcm_reset(&p->adpcm, ft->encoding.encoding);
       written1 = lsx_adpcm_write(ft, &p->adpcm, buf + written, samp);
       if (written1 == (size_t)SOX_EOF)
-        return (size_t)SOX_EOF;
+        write_error();
       if (written1 != samp)
         break;
       if (lsx_adpcm_flush(ft, &p->adpcm))
-        return (size_t)SOX_EOF;
+        write_error();
       written += written1;
     }
   } else {
     written = lsx_rawwrite(ft, buf, nsamp);
     if (written == (size_t) SOX_EOF)
-      return (size_t) SOX_EOF;
+      write_error();
   }
   p->nsamp += written;
   return written;
@@ -427,8 +439,7 @@ static int stopwrite(sox_format_t * ft)
       lsx_fail_errno(ft,errno,"Can't rewind output file to rewrite Psion header.");
       return(SOX_EOF);
   }
-  prcwriteheader(ft);
-  return SOX_SUCCESS;
+  return prcwriteheader(ft);
 }
 
 static int prcwriteheader(sox_format_t * ft)
@@ -437,29 +448,29 @@ static int prcwriteheader(sox_format_t * ft)
 
   if (lsx_writebuf(ft, prc_header, sizeof(prc_header)) != sizeof(prc_header) ||
       lsx_writes(ft, "\x2arecord.app"))
-    return SOX_EOF;
+    write_error();
 
   lsx_debug("Number of samples: %d",p->nsamp);
   if (lsx_writedw(ft, p->nsamp))
-    return SOX_EOF;
+    write_error();
 
   if (ft->encoding.encoding == SOX_ENCODING_ALAW) {
     if (lsx_writedw(ft, 0))
-      return SOX_EOF;
+      write_error();
   } else {
     if (lsx_writedw(ft, 0x100001a1)) /* ADPCM */
-      return SOX_EOF;
+      write_error();
   }
 
   if (lsx_writew(ft, 0) ||       /* Number of repeats */
       lsx_writeb(ft, 3) ||       /* Volume: use default value of Record.app */
       lsx_writeb(ft, 0) ||       /* Unused and seems always zero */
       lsx_writedw(ft, 0))        /* Time between repeats in usec */
-    return SOX_EOF;
+    write_error();
 
   lsx_debug("Number of bytes: %d", p->nbytes);
   if (lsx_writedw(ft, p->nbytes))    /* Number of bytes of data */
-    return SOX_EOF;
+    write_error();
 
   return SOX_SUCCESS;
 }

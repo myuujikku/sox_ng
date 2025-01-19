@@ -63,6 +63,12 @@ struct WaveHeader_ {
 static const unsigned char magic1[4] = {0, 0x06, 0x10, 0xF6};
 static const unsigned char magic2[4] = {0, 0x52, 0x00, 0x52};
 
+static char truncated[] = "file is truncated";
+#define read_error() { \
+    lsx_fail_errno(ft, SOX_EOF, truncated); \
+    return(SOX_EOF); \
+}
+
 /*
  * Do anything required before you start reading samples.
  * Read file header.
@@ -99,21 +105,21 @@ static int startread(sox_format_t * ft)
 
     /* first 6 bytes are file type ID LM8953 */
     if (lsx_readchars(ft, filetype, sizeof(filetype) - 1))
-        return(SOX_EOF);
+        read_error();
     filetype[6] = '\0';
     for( c = 16; c > 0 ; c-- )    /* Discard next 16 bytes */
         if (lsx_readb(ft, &trash))
-            return(SOX_EOF);
+            read_error();
     if (lsx_readsb(ft, &format) ||
         lsx_readb(ft, &sample_rate))
-            return(SOX_EOF);
+            read_error();
     /*
      * save next 8 bytes - if sample rate is 0, then we need
      *  to look at gunk[2] and gunk[5] to get real rate
      */
     for( c = 0; c < 8; c++ )
         if (lsx_readb(ft, &(gunk[c])))
-            return(SOX_EOF);
+            read_error();
     /*
      * We should now be pointing at start of raw sample data in file
      */
@@ -233,9 +239,15 @@ static size_t read_samples(sox_format_t * ft, sox_sample_t *buf, size_t len)
     return done;
 }
 
+static char write_error_msg[] = "write error";
+#define write_error() { \
+    lsx_fail_errno(ft, SOX_EOF, write_error_msg); \
+    return(SOX_EOF); \
+}
+
 static int startwrite(sox_format_t * ft)
 {
-  priv_t * sk = (priv_t *) ft->priv;
+    priv_t * sk = (priv_t *) ft->priv;
     struct WaveHeader_ WH;
 
     lsx_debug("tx16w selected output");
@@ -253,7 +265,7 @@ static int startwrite(sox_format_t * ft)
        at end of processing, since byte count is needed */
 
     if (lsx_writebuf(ft, &WH, (size_t) 32))
-      return(SOX_EOF);
+      write_error();
     sk->bytes_out = 32;
     return(SOX_SUCCESS);
 }
@@ -299,7 +311,8 @@ static int stopwrite(sox_format_t * ft)
 
     if (sk->odd_flag) {
       sox_sample_t pad = 0;
-      write_samples(ft, &pad, (size_t) 1);
+      if (write_samples(ft, &pad, (size_t) 1) != 1)
+        write_error();
     }
 
     /* All samples are already written out. */
@@ -356,7 +369,7 @@ static int stopwrite(sox_format_t * ft)
 
     while ((sk->bytes_out % 0x100) != 0) {
         if (lsx_writeb(ft, 0))
-            return(SOX_EOF);
+            write_error();
         sk->bytes_out++;
     }
 
@@ -372,7 +385,7 @@ static int stopwrite(sox_format_t * ft)
 
     lsx_rewind(ft);
     if (lsx_writebuf(ft, &WH, (size_t) 32) != 32)
-        return(SOX_EOF);
+        write_error();
 
     return(SOX_SUCCESS);
 }

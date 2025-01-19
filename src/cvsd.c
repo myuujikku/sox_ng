@@ -488,6 +488,7 @@ static int dvms_read_header(sox_format_t * ft, struct dvms_header *hdr)
 
         if (lsx_readbuf(ft, hdrbuf, sizeof(hdrbuf)) != sizeof(hdrbuf))
         {
+		lsx_fail_errno(ft, SOX_EOF, "header is truncated");
                 return (SOX_EOF);
         }
         for(i = sizeof(hdrbuf), sum = 0; i > /*2*/3; i--) /* Deti bug */

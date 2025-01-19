@@ -65,8 +65,14 @@ static int startread(sox_format_t * ft)
   priv_t * avr = (priv_t *)ft->priv;
   int rc;
 
+  static char truncated[] = "file is truncated";
+#define read_error() { \
+    lsx_fail_errno(ft, SOX_EOF, truncated); \
+    return(SOX_EOF); \
+  }
+
   if (lsx_reads(ft, avr->magic, (size_t)4))
-    return(SOX_EOF);
+    read_error();
 
   if (strncmp (avr->magic, AVR_MAGIC, (size_t)4)) {
     lsx_fail_errno(ft,SOX_EHDR,"AVR: unknown header");
@@ -75,7 +81,7 @@ static int startread(sox_format_t * ft)
 
   if (lsx_readbuf(ft, avr->name, sizeof(avr->name)) != sizeof(avr->name) ||
       lsx_readw (ft, &(avr->mono)))
-    return(SOX_EOF);
+    read_error();
   if (avr->mono) {
     ft->signal.channels = 2;
   }
@@ -84,7 +90,7 @@ static int startread(sox_format_t * ft)
   }
 
   if (lsx_readw (ft, &(avr->rez)))
-    return(SOX_EOF);
+    read_error();
   if (avr->rez == 8) {
     ft->encoding.bits_per_sample = 8;
   }
@@ -97,7 +103,7 @@ static int startread(sox_format_t * ft)
   }
 
   if (lsx_readw (ft, &(avr->sign)))
-    return(SOX_EOF);
+    read_error();
   if (avr->sign) {
     ft->encoding.encoding = SOX_ENCODING_SIGN2;
   }
@@ -116,7 +122,7 @@ static int startread(sox_format_t * ft)
       lsx_readw (ft, &(avr->res3)) ||
       lsx_readbuf(ft, avr->ext, sizeof(avr->ext)) != sizeof(avr->ext) ||
       lsx_readbuf(ft, avr->user, sizeof(avr->user)) != sizeof(avr->user))
-    return(SOX_EOF);
+    read_error();
 
   /*
    * No support for AVRs created by ST-Replay,
@@ -131,6 +137,12 @@ static int startread(sox_format_t * ft)
       return rc;
 
   return(SOX_SUCCESS);
+}
+
+static char write_error_msg[] = "write error";
+#define write_error() { \
+    lsx_fail_errno(ft, SOX_EOF, write_error_msg); \
+    return(SOX_EOF); \
 }
 
 static int startwrite(sox_format_t * ft)
@@ -160,16 +172,16 @@ static int startwrite(sox_format_t * ft)
       lsx_writeb(ft, 0) ||
       lsx_writeb(ft, 0) ||
       lsx_writeb(ft, 0))
-    return(SOX_EOF);
+    write_error();
 
   /* mono */
   if (ft->signal.channels == 1) {
     if (lsx_writew (ft, 0))
-      return(SOX_EOF);
+      write_error();
   }
   else if (ft->signal.channels == 2) {
     if (lsx_writew (ft, 0xffff))
-      return(SOX_EOF);
+      write_error();
   }
   else {
     lsx_fail_errno(ft,SOX_EFMT,"AVR: number of channels not supported");
@@ -179,11 +191,11 @@ static int startwrite(sox_format_t * ft)
   /* rez */
   if (ft->encoding.bits_per_sample == 8) {
     if (lsx_writew (ft, 8))
-      return(SOX_EOF);
+      write_error();
   }
   else if (ft->encoding.bits_per_sample == 16) {
     if (lsx_writew (ft, 16))
-      return(SOX_EOF);
+      write_error();
   }
   else {
     lsx_fail_errno(ft,SOX_EFMT,"AVR: unsupported sample resolution");
@@ -193,11 +205,11 @@ static int startwrite(sox_format_t * ft)
   /* sign */
   if (ft->encoding.encoding == SOX_ENCODING_SIGN2) {
     if (lsx_writew (ft, 0xffff))
-      return(SOX_EOF);
+      write_error();
   }
   else if (ft->encoding.encoding == SOX_ENCODING_UNSIGNED) {
     if (lsx_writew (ft, 0))
-      return(SOX_EOF);
+      write_error();
   }
   else {
     lsx_fail_errno(ft,SOX_EFMT,"AVR: unsupported encoding");
@@ -235,15 +247,17 @@ static int startwrite(sox_format_t * ft)
       lsx_writew (ft, 0) ||
 
       /* ext */
-      lsx_writebuf(ft, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", sizeof(avr->ext)) ||
+      lsx_writebuf(ft, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
+                   sizeof(avr->ext)) ||
 
       /* user */
       lsx_writebuf(ft,
 	       "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
 	       "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
 	       "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
-	       "\0\0\0\0", sizeof (avr->user)))
-        return(SOX_EOF);
+	       "\0\0\0\0", sizeof (avr->user)) != sizeof(avr->user)
+     )
+        write_error();
 
   return(SOX_SUCCESS);
 }
@@ -269,7 +283,7 @@ static int stopwrite(sox_format_t * ft)
       /* Fix lend */
       lsx_seeki(ft, (off_t)34, SEEK_SET) ||
       lsx_writedw (ft, size))
-    return(SOX_EOF);
+    write_error();
 
   return(SOX_SUCCESS);
 }

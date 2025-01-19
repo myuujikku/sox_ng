@@ -69,6 +69,11 @@ int lsx_aiffstartread(sox_format_t * ft)
   uint32_t trash32;
 
   int rc;
+  static char truncated[] = "file is truncated in %.4s chunk";
+#define read_error() { \
+	lsx_fail_errno(ft,SOX_EOF, truncated, buf); \
+        return(SOX_EOF); \
+}
 
   /* FORM chunk */
   if (lsx_reads(ft, buf, (size_t)4) == SOX_EOF || strncmp(buf, "FORM", (size_t)4) != 0) {
@@ -101,12 +106,12 @@ int lsx_aiffstartread(sox_format_t * ft)
           lsx_readw(ft, &channels) ||
           lsx_readdw(ft, &frames) ||
           lsx_readw(ft, &bits) ||
-          (rate = read_ieee_extended(ft)))
-        return(SOX_EOF);
+          isnan(rate = read_ieee_extended(ft)))
+	read_error();
       chunksize -= 18;
       if (chunksize > 0) {
-        if (lsx_reads(ft, buf, (size_t)4) < 4)
-          return(SOX_EOF);
+        if (lsx_reads(ft, buf, (size_t)4))
+	  read_error();
         chunksize -= 4;
         if (strncmp(buf, "sowt", (size_t)4) == 0) {
           /* CD audio as read on Mac OS machines */
@@ -140,7 +145,7 @@ int lsx_aiffstartread(sox_format_t * ft)
       }
       while(chunksize-- > 0)
         if (lsx_readb(ft, &trash8))
-          return(SOX_EOF);
+	  read_error();
       foundcomm = 1;
     }
     else if (strncmp(buf, "SSND", (size_t)4) == 0) {
@@ -148,7 +153,7 @@ int lsx_aiffstartread(sox_format_t * ft)
       if (lsx_readdw(ft, &chunksize) ||
           lsx_readdw(ft, &offset) ||
           lsx_readdw(ft, &blocksize))
-        return(SOX_EOF);
+	read_error();
       chunksize -= 8;
       ssndsize = chunksize;
       /* word-align chunksize in case it wasn't
@@ -161,15 +166,15 @@ int lsx_aiffstartread(sox_format_t * ft)
       /* else, seek to end of sound and hunt for more */
       seekto = lsx_tell(ft);
       if (lsx_seeki(ft, (off_t)chunksize, SEEK_CUR))
-        return(SOX_EOF);
+	read_error();
     }
     else if (strncmp(buf, "MARK", (size_t)4) == 0) {
       /* MARK chunk */
       if (lsx_readdw(ft, &chunksize))
-        return(SOX_EOF);
+	read_error();
       if (chunksize >= sizeof(nmarks)) {
         if (lsx_readw(ft, &nmarks))
-          return(SOX_EOF);
+          read_error();
         chunksize -= sizeof(nmarks);
       }
       else nmarks = 0;
@@ -194,7 +199,7 @@ int lsx_aiffstartread(sox_format_t * ft)
           break;
         if (lsx_readw(ft, &(marks[i].id)) ||
             lsx_readdw(ft, &(marks[i].position)))
-	  return SOX_EOF;
+          read_error();
         chunksize -= 6;
         /* If error reading length then
          * don't try to read more bytes
@@ -210,7 +215,7 @@ int lsx_aiffstartread(sox_format_t * ft)
           read_len = 39;
         for(j = 0; j < len && chunksize; j++) {
           if (lsx_readb(ft, &tmp_c))
-	    return SOX_EOF;
+	    read_error();
           if (j < read_len)
             marks[i].name[j] = tmp_c;
           chunksize--;
@@ -219,7 +224,7 @@ int lsx_aiffstartread(sox_format_t * ft)
         if ((len & 1) == 0 && chunksize) {
           chunksize--;
           if (lsx_readb(ft, &trash8))
-	    return SOX_EOF;
+	    read_error();
         }
       }
       /* HA HA!  Sound Designer (and others) makes */
@@ -227,7 +232,7 @@ int lsx_aiffstartread(sox_format_t * ft)
       /* for MARK field */
       while(chunksize-- > 0)
         if (lsx_readb(ft, &trash8))
-	  return SOX_EOF;
+	  read_error();
     }
     else if (strncmp(buf, "INST", (size_t)4) == 0) {
       unsigned short sustain, release;
@@ -246,7 +251,7 @@ int lsx_aiffstartread(sox_format_t * ft)
           lsx_readw(ft, &release) ||           /* release loop */
           lsx_readw(ft, &releaseLoopBegin) ||  /* begin marker */
           lsx_readw(ft, &releaseLoopEnd))      /* end marker */
-        return SOX_EOF;
+	read_error();
       ft->oob.loops[0].type = sustain;
       ft->oob.loops[1].type = release;
 
@@ -254,24 +259,24 @@ int lsx_aiffstartread(sox_format_t * ft)
     }
     else if (strncmp(buf, "APPL", (size_t)4) == 0) {
       if (lsx_readdw(ft, &chunksize))
-        return SOX_EOF;
+	read_error();
       /* word-align chunksize in case it wasn't
        * done by writing application already.
        */
       chunksize += (chunksize % 2);
-      while(chunksize-- > 0)
+      while (chunksize-- > 0)
         if (lsx_readb(ft, &trash8))
-	  return SOX_EOF;
+	  read_error();
     }
     else if (strncmp(buf, "ALCH", (size_t)4) == 0) {
       /* I think this is bogus and gets grabbed by APPL */
       /* INST chunk */
       if (lsx_readdw(ft, &trash32) ||   /* ENVS - jeez! */
           lsx_readdw(ft, &chunksize))
-	return SOX_EOF;
+	read_error();
       while(chunksize-- > 0)
         if (lsx_readb(ft, &trash8))
-	  return SOX_EOF;
+	  read_error();
     }
     else if (strncmp(buf, "ANNO", (size_t)4) == 0) {
       rc = textChunk(&annotation, "Annotation:", ft);
@@ -347,8 +352,10 @@ int lsx_aiffstartread(sox_format_t * ft)
    */
   if (ft->seekable) {
     if (seekto > 0) {
-      if (lsx_seeki(ft, seekto, SEEK_SET))
+      if (lsx_seeki(ft, seekto, SEEK_SET)) {
+	lsx_fail_errno(ft,SOX_EHDR,"can't seek past header");
         return(SOX_EOF);
+      }
     } else {
       lsx_fail_errno(ft,SOX_EOF,"AIFF: no sound data on input file");
       return(SOX_EOF);
@@ -967,7 +974,7 @@ static double read_ieee_extended(sox_format_t * ft)
         if (lsx_readbuf(ft, buf, (size_t)10) != 10)
         {
                 lsx_fail_errno(ft,SOX_EOF,"EOF while reading IEEE extended number");
-                return(SOX_EOF);
+                return(NAN);
         }
         return ConvertFromIeeeExtended(buf);
 }
