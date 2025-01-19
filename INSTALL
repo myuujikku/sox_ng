@@ -3,8 +3,9 @@
 
 SoX should compile and run on any POSIX compatible system (Linux, BSD,
 Solaris, Xcode on Mac OS X, Cygwin on MS-Windows, etc.).  Some
-non-POSIX compilers (such as MSVC) are supported via the `CMake' build
-utility.  For other compilers/systems, it is often possible to
+non-POSIX compilers (such as MSVC) used to be supported via
+the `CMake' build utility - see older version if you are interested.
+For other compilers/systems, it is often possible to
 manually construct a custom `soxconfig.h' and `Makefile' for that
 system (the minimum requirements are 32-bit CPU, 64-bit FPU, C89
 compiler).
@@ -26,6 +27,7 @@ Lame MP3 encoder  http://lame.sourceforge.net           LGPL
 Twolame MP2 enc.  http://www.twolame.org                LGPL
 libltdl           http://www.gnu.org/software/libtool   LGPL
 MAD MP3 decoder   http://www.underbit.com/products/mad  GPL
+mpg123 decoder    http://mpg123.org                     LGPL
 MP3 ID3 tags      http://www.underbit.com/products/mad  GPL
 Magic             http://www.darwinsys.com/file         BSD
 Ogg Vorbis        http://www.vorbis.com                 BSD
@@ -54,12 +56,10 @@ To compile and install SoX (executables, libraries, manual pages) with
 a default configuration for your platform, run the following commands:
 
 	./configure
-	make -s
+	make
 	make install
 
-There should be no errors and few, if any, warnings during the `make
--s' stage.  Any warnings about pointer mismatch or conversion should
-be treated with deep suspicion.
+There should be no errors and one warning repeated twice about FENV_ACCESS.
 
 The `make install' command may require `root' priviliges; for example,
 on some systems, the following modification to the command is needed:

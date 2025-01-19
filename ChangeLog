@@ -4,6 +4,34 @@ Change History
 This file contains a list of all changes starting after the release of
 sox-11gamma, followed by a list of prior authors and features.
 
+sox_ng-14.5.0+git (unreleased)
+-----------------
+
+New features:
+  o Read NSP format files
+  o Read MSP2K (Akai sampler) format files
+  o Read and write DSF format and read DFF and WSD formats
+  o Add the DSD-related "dop" and "sdm" effects
+  o Add reading of Ogg FLAC files (with ffmpeg)
+  o SDS format is now autodetected
+  o AIFF format now supports ID3 tags
+  o The ID3 "TCOM" (Composer) tag is now supported
+  o Error messages have been harmonized. The best was
+    sox_ng WARN chorus: chorus: warning >>> gain-out can cause saturation
+  o wget, wget2 and curl are sought at runtime instead of at build time
+
+Bug fixes:
+  o The "stats" effect's Bit-depth values have been revised to reflect
+    what Bit-depth means and handle corner cases like -32768
+  o The manual has been extensively revised, detail on the meaning
+    of parameters added and undocumented flags documented
+  o Several effects now show their flow diagram in their usage output
+  o "echos" and "chorus" have never worked but now do what they say
+  o "echo" no longer has a limit of the length of the delay
+  o LD_LIBRARY_PATH is now respected when looking for plugins
+  o Read errors from short files are always detected and reported
+  o Write errors to audio files are always detected and reported
+  o No formats or effects are experimental or deprecated any more
 
 sox_ng-14.5.0.3	2025-01-05
 ---------------
