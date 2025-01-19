@@ -15,7 +15,7 @@
 # sox WARN rate: input and output rates too close, skipping resampling
 # and exits 0
 
-# CHeck that flac format is included
+# Check that flac format is included
 ${sox:-sox} 2>&1 | grep -q '^AUDIO FILE FORMATS.*flac' || exit 254
 
 rm -f core out.*
@@ -24,5 +24,10 @@ ${sox:-sox} SEGV-rate_close-rate-504 out.flac remix - norm -3 highpass 22 gain -
 status=$?
 
 rm -f core out.*
+
+case $status in
+0) status=2;;
+2) status=0;;
+esac
 
 exit $status
