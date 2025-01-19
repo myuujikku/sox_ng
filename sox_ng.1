@@ -2057,10 +2057,18 @@ option is not given, then the pseudo-random number generator used to
 generate the white noise will be `reseeded', i.e. the generated noise
 will be different on every invocation.
 .SP
+If the target precision is 1-bit, the \fBsdm\fR effect is applied
+automatically with default settings. Invoke it manually to control its
+options.
+.SP
 This effect should not be followed by any other effect that
 affects the audio.
 .SP
 See the \fBDithering\fR section above.
+.TP
+\fBdop\fR
+DSD over PCM.  1-bit DSD data is packed into 24-bit samples for
+transport over non-DSD-aware links.
 .TP
 \fBdownsample\fR [\fIfactor\fR(2)]
 Downsample the signal by an integer factor: Only the first of
@@ -3069,6 +3077,36 @@ Apply RIAA vinyl playback equalization.
 The sampling rate must be: 44\*d1, 48, 88\*d2, 96 or 192 kHz.
 .SP
 This effect supports the \fB\-\-plot\fR global option.
+.TP
+\fBsdm\fR [\fB\-f \fIfilter\fR] [\fB\-t \fIorder\fR] [\fB\-n \fInum\fR] [\fB-l \fIlatency\fR]
+Apply a 1-bit sigma-delta modulator producing DSD output.  The input
+should be previously upsampled, e.g. with the \fBrate\fR effect, to a
+high rate, 2\*d8224MHz for DSD64.  The \fB\-f\fR option selects the
+noise-shaping filter from the following list where the number indicates
+the order of the filter:
+.EX
+   clans-4      sdm-4
+   clans-5      sdm-5
+   clans-6      sdm-6
+   clans-7      sdm-7
+   clans-8      sdm-8
+.EE
+.TP
+\ 
+The noise filter may be combined with a partial trellis/viterbi search
+by supplying the following options:
+.RS
+.IP "\fB\-t \fIorder\fR"
+Trellis order, max 32.
+.IP "\fB\-n \fInum\fR"
+Number of paths to consider, max 32.
+.IP "\fB\-l \fIlatency\fR"
+Output latency, max 2048.
+.RE
+.TP
+\ 
+The result of using these parameters is hard to predict and can include
+high noise levels or instability.  Caution is advised.
 .TP
 \fBsilence \fR[\fB\-l\fR] \fIabove-periods\fR [\fIduration threshold\fR[\fBd\fR\^|\^\fB%\fR]
 [\fIbelow-periods duration threshold\fR[\fBd\fR\^|\^\fB%\fR]]

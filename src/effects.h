@@ -33,6 +33,7 @@
   EFFECT(delay)
   EFFECT(dft_filter) /* abstract */
   EFFECT(dither)
+  EFFECT(dop)
   EFFECT(downsample)
   EFFECT(earwax)
   EFFECT(echo)
@@ -67,6 +68,7 @@
   EFFECT(reverb)
   EFFECT(reverse)
   EFFECT(riaa)
+  EFFECT(sdm)
   EFFECT(silence)
   EFFECT(sinc)
 #ifdef HAVE_PNG

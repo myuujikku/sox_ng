@@ -26,6 +26,8 @@
   FORMAT(cvsd)
   FORMAT(cvu)
   FORMAT(dat)
+  FORMAT(dsdiff)
+  FORMAT(dsf)
   FORMAT(dvms)
   FORMAT(f4)
   FORMAT(f8)
@@ -61,6 +63,7 @@
   FORMAT(voc)
   FORMAT(vox)
   FORMAT(wav)
+  FORMAT(wsd)
   FORMAT(wve)
   FORMAT(xa)
 

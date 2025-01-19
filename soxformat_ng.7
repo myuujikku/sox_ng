@@ -365,6 +365,15 @@ SoX can only autodetect this type of file from its filename extension;
 if it is read from `standard input' (stdin) or from a file whose name
 does not end in `.dts', you will need to prefix it with `-t ffmpeg'.
 .TP
+.B .dff
+Direct Stream Digital Interchange File Format (DSDIFF), a format defined
+by Philips for storing 1-bit DSD data, used in SACD mastering and
+occasionally for online distribution.
+.TP
+\&\fB.dsf\fR, \fB.wsd\fR
+DSD Stream File, a format defined by Sony for storing 1-bit DSD data,
+commonly used for online distribution of audiophile recordings.
+.TP
 \&\fB.dvms\fR, \fB.vms\fR
 Used in Germany to compress speech audio for voice mail.
 A self-describing variant of
@@ -988,6 +997,9 @@ Windows Media Audio format.
 \&\fB.wsaud\fR (with ffmpeg)
 Westwood Studios audio format.
 .TP
+\&\fB.wsd\fR
+Wideband Single-bit Data, the same as \fB.dsf\fP but with a different header.
+.TP
 \&\fB.wtv\fR (with ffmpeg)
 Windows Television format.
 .TP
@@ -999,8 +1011,6 @@ the RIFF header is not necessarily preserved losslessly (though the audio is).
 .TP
 \&\fB.wve\fR (also with \fB\-t sndfile\fR)
 Psion 8-bit A-law.  Used on Psion SIBO PDAs (Series 3 and similar).
-This format is deprecated in SoX, but will continue to be used in
-libsndfile.
 .TP
 .B .xa
 Maxis XA files.

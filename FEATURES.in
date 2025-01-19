@@ -13,6 +13,7 @@ The current release handles the following audio file formats:
 * AVR files
 * CDDA (Compact Disc Digital Audio format)
 * CVS and VMS files (continuous variable slope)
+* DSD, DSF, DSDIFF and WSD files
 * Grandstream ring-tone files
 * GSM files
 * Macintosh HCOM files
@@ -149,10 +150,12 @@ The audio effects/tools included in this release are as follows:
 
 * Specialised filters/mixers
 ** deemph: ISO 908 CD de-emphasis (shelving) IIR filter
+** dop: DSD over PCM, packing 1-bit samples into 24-bit ones
 ** earwax: Process CD audio to best effect for headphone use
 ** noisered: Filter out noise from the audio
 ** oops: Out Of Phase Stereo (or `Karaoke') effect
 ** riaa: RIAA vinyl playback equalisation
+** sdm: Sigma-Delta Modulation for Direct Stream Digital format
 
 * Analysis `effects'
 ** noiseprof: Produce a DFT profile of the audio (use with noisered)
@@ -173,8 +176,6 @@ The audio effects/tools included in this release are as follows:
 ** downsample: Reduce sample rate by discarding samples
 ** fir: FFT convolution FIR filter using externally provided coefficients
 ** upsample: Increase sample rate by zero stuffing
-
-  + Experimental or incomplete effect; may change in future.
 
 Multiple audio files can be combined (and then further processed with
 effects) using any one of the following combiner methods:

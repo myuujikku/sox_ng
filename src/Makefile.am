@@ -85,7 +85,7 @@ libsox_ng_la_SOURCES = adpcms.c adpcms.h aiff.c aiff.h cvsd.c cvsd.h cvsdfilt.h 
 libsox_ng_la_SOURCES += \
 	band.h bend.c biquad.c biquad.h biquads.c chorus.c compand.c \
 	compandt.c compandt.h contrast.c dcshift.c delay.c dft_filter.c \
-	dft_filter.h dither.c dither.h downsample.c earwax.c \
+	dft_filter.h dither.c dither.h dop.c downsample.c earwax.c \
 	echo.c echos.c effects.c effects.h effects_i.c effects_i_dsp.c \
 	fade.c ffmpeg.c fft4g.c fft4g.h fifo.h fir.c firfit.c flanger.c gain.c \
 	hilbert.c input.c ladspa.h ladspa.c loudness.c mcompand.c \
@@ -93,6 +93,7 @@ libsox_ng_la_SOURCES += \
 	noisered.h output.c overdrive.c pad.c phaser.c rate.c \
 	rate_filters.h rate_half_fir.h rate_poly_fir0.h rate_poly_fir.h \
 	remix.c repeat.c reverb.c reverse.c silence.c sinc.c skeleff.c \
+	sdm.c sdm.h sdm_x86.h \
 	speed.c speexdsp.c splice.c stat.c stats.c stretch.c swap.c \
 	synth.c tempo.c tremolo.c trim.c upsample.c vad.c vol.c \
 	ignore-warning.h
@@ -143,7 +144,7 @@ libsox_ng_la_SOURCES += raw-fmt.c s1-fmt.c s2-fmt.c s3-fmt.c \
   lu-fmt.c 8svx.c aiff-fmt.c aifc-fmt.c au.c avr.c cdr.c cvsd-fmt.c \
   dvms-fmt.c dat.c hcom.c htk.c maud.c prc.c sf.c smp.c \
   sounder.c soundtool.c sphere.c tx16w.c voc.c vox-fmt.c ima-fmt.c adpcm.c adpcm.h \
-  id3.c id3.h \
+  id3.c id3.h dsf.c dsdiff.c \
   ima_rw.c ima_rw.h wav.c wve.c xa.c nulfile.c f4-fmt.c f8-fmt.c gsrt.c nsp.c
 
 libsox_ng_la_LIBADD += @GSM_LIBS@ @LIBGSM_LIBADD@
