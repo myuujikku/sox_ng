@@ -8,12 +8,26 @@ sox-11gamma, followed by a list of prior authors and features.
 sox_ng-14.5.1	2025-02-18
 -------------
 
+New features:
+
+  o Add reading of Ogg FLAC files (with ffmpeg)
+  o Error messages have been harmonized. The best was
+    sox_ng WARN chorus: chorus: warning >>> gain-out can cause saturation
+
 Bug fixes:
 
   o Make reading from ffmpeg work on Unix too.
     popen("rb") returns NULL with glibc (!)
   o Make reading from ffmpeg work by popen()ing "rb"
   o Make it build for Windows using MXE
+  o The manual has been extensively revised, detail on the meaning
+    of parameters added and undocumented flags documented
+  o Several effects now show their flow diagram in their usage output
+  o "echos" and "chorus" have never worked but now do what they say
+  o "echo" no longer has a limit of the length of the delay
+  o Read errors from short files are always detected and reported
+  o Write errors to audio files are always detected and reported
+  o No formats or effects are experimental or deprecated any more
 
 sox_ng-14.5.0	2024-12-06
 -------------
