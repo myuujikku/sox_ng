@@ -77,8 +77,10 @@ static int write_bits(sox_format_t * ft, INT32 *bits, int len)
      * then mask won't yet be 0.  */
     mask >>= 1;
     if ((mask == 0) || (i == len-1)) {
-      if (lsx_writeb(ft, data))
-        return SOX_EOF;
+      if (lsx_writeb(ft, data)) {
+        lsx_fail_errno(ft, SOX_EOF, "write error");
+	return SOX_EOF;
+      }
       data = 0;
       mask = 0x80;
     }
