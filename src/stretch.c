@@ -240,7 +240,7 @@ static int flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sample_t *obu
 
     if (p->state == output_state) {
       while (p->oindex < p->oshift && oindex < *osamp) {
-        float f;
+        double f;
         f = p->obuf[p->oindex++];
         SOX_SAMPLE_CLIP_COUNT(f, effp->clips);
         obuf[oindex++] = f;
@@ -289,7 +289,7 @@ static int drain(sox_effect_t * effp, sox_sample_t *obuf, size_t *osamp)
   }
 
   while (oindex<*osamp && p->oindex<p->index) {
-    float f = p->obuf[p->oindex++];
+    double f = p->obuf[p->oindex++];
     SOX_SAMPLE_CLIP_COUNT(f, effp->clips);
     obuf[oindex++] = f;
   }
