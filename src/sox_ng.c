@@ -21,6 +21,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+/* For S_IFDIR and S_IFMT in C89 */
+#define _XOPEN_SOURCE 500
+
 #include "sox_ng.h"
 #include "soxconfig.h"
 #include "util.h"
@@ -31,6 +34,10 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <time.h>
+
+#ifdef HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
 
 #if defined(HAVE_WIN32_GLOB_H)
   #include "win32-glob.h"
