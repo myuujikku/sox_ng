@@ -63,9 +63,9 @@ struct WaveHeader_ {
 static const unsigned char magic1[4] = {0, 0x06, 0x10, 0xF6};
 static const unsigned char magic2[4] = {0, 0x52, 0x00, 0x52};
 
-static char truncated[] = "file is truncated";
+static const char read_error_msg[] = "file is truncated";
 #define read_error() { \
-    lsx_fail_errno(ft, SOX_EOF, truncated); \
+    lsx_fail_errno(ft, SOX_EOF, read_error_msg); \
     return(SOX_EOF); \
 }
 
@@ -239,7 +239,7 @@ static size_t read_samples(sox_format_t * ft, sox_sample_t *buf, size_t len)
     return done;
 }
 
-static char write_error_msg[] = "write error";
+static const char write_error_msg[] = "write error";
 #define write_error() { \
     lsx_fail_errno(ft, SOX_EOF, write_error_msg); \
     return(SOX_EOF); \

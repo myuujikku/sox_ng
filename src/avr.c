@@ -65,9 +65,9 @@ static int startread(sox_format_t * ft)
   priv_t * avr = (priv_t *)ft->priv;
   int rc;
 
-  static char truncated[] = "file is truncated";
+  static const char read_error_msg[] = "file is truncated";
 #define read_error() { \
-    lsx_fail_errno(ft, SOX_EOF, truncated); \
+    lsx_fail_errno(ft, SOX_EOF, read_error_msg); \
     return(SOX_EOF); \
   }
 
@@ -139,7 +139,7 @@ static int startread(sox_format_t * ft)
   return(SOX_SUCCESS);
 }
 
-static char write_error_msg[] = "write error";
+static const char write_error_msg[] = "write error";
 #define write_error() { \
     lsx_fail_errno(ft, SOX_EOF, write_error_msg); \
     return(SOX_EOF); \

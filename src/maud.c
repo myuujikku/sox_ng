@@ -48,9 +48,9 @@ static int startread(sox_format_t * ft)
         uint16_t trash16;
         int rc;
 
-	static char truncated[] = "file is truncated in %.4s chunk";
+	static const char read_error_msg[] = "file is truncated in %.4s chunk";
 #define read_error() { \
-       lsx_fail_errno(ft, EOF, truncated, buf); \
+       lsx_fail_errno(ft, EOF, read_error_msg, buf); \
        return (SOX_EOF); \
 }
 
@@ -259,7 +259,7 @@ static int stopwrite(sox_format_t * ft)
         return(maudwriteheader(ft));
 }
 
-static char write_error_msg[] = "write error";
+static const char write_error_msg[] = "write error";
 #define write_error() { \
 	lsx_fail_errno(ft, SOX_EOF, write_error_msg); \
 	return SOX_EOF; \

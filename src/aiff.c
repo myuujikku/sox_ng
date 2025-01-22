@@ -69,9 +69,9 @@ int lsx_aiffstartread(sox_format_t * ft)
   uint32_t trash32;
 
   int rc;
-  static char truncated[] = "file is truncated in %.4s chunk";
+  static const char read_error_msg[] = "file is truncated in %.4s chunk";
 #define read_error() { \
-	lsx_fail_errno(ft,SOX_EOF, truncated, buf); \
+	lsx_fail_errno(ft,SOX_EOF, read_error_msg, buf); \
         return(SOX_EOF); \
 }
 

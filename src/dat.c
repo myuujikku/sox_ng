@@ -56,7 +56,7 @@ static int sox_datstartread(sox_format_t * ft)
     return (SOX_SUCCESS);
 }
 
-static char write_error_msg[] = "write error";
+static const char write_error_msg[] = "write error";
 #define write_error() { \
     lsx_fail_errno(ft, SOX_EOF, write_error_msg); \
     return (SOX_EOF); \
