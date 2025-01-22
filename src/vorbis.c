@@ -230,6 +230,7 @@ static int stopread(sox_format_t * ft)
 
   free(vb->buf);
   ov_clear(vb->vf);
+  free(vb->vf);
 
   return (SOX_SUCCESS);
 }
@@ -406,6 +407,7 @@ static int stopwrite(sox_format_t * ft)
   vorbis_block_clear(&ve->vb);
   vorbis_dsp_clear(&ve->vd);
   vorbis_info_clear(&ve->vi);
+  free(ve);
 
   return (SOX_SUCCESS);
 }
