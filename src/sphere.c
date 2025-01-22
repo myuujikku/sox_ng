@@ -144,7 +144,7 @@ static int start_read(sox_format_t * ft)
       bytes_per_sample << 3, (uint64_t)num_samples * channels, sox_true);
 }
 
-static char write_error_msg[] = "write error";
+static const char write_error_msg[] = "write error";
 #define write_error() { \
     lsx_fail_errno(ft, SOX_EOF, write_error_msg); \
     return SOX_EOF; \
