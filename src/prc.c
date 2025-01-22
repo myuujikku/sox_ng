@@ -115,9 +115,9 @@ static int prc_checkheader(sox_format_t * ft, char *head)
   return memcmp(head, prc_header, sizeof(prc_header)) == 0;
 }
 
-static char truncated[] = "file is truncated";
+static const char read_error_msg[] = "file is truncated";
 #define read_error() { \
-  lsx_fail_errno(ft, SOX_EOF, truncated); \
+  lsx_fail_errno(ft, SOX_EOF, read_error_msg); \
   return SOX_EOF; \
 }
 
@@ -312,7 +312,7 @@ static int stopread(sox_format_t * ft)
    if it is not, the unspecified size remains in the header
    (this is illegal). */
 
-static char write_error_msg[] = "write error";
+static const char write_error_msg[] = "write error";
 #define write_error() { \
   lsx_fail_errno(ft, SOX_EOF, write_error_msg); \
   return SOX_EOF; \

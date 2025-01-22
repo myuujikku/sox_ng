@@ -115,7 +115,7 @@ static char *wav_format_str(unsigned wFormatTag);
 
 static int wavwritehdr(sox_format_t *, int);
 
-static char write_error_msg[] = "write error";
+static const char write_error_msg[] = "write error";
 #define write_error() { \
     lsx_fail_errno(ft, SOX_EOF, write_error_msg); \
     return SOX_EOF; \
@@ -501,9 +501,9 @@ static int wavfail(sox_format_t * ft, const char *format)
     return SOX_EOF;
 }
 
-static char truncated[] = "file is truncated";
+static const char read_error_msg[] = "file is truncated";
 #define read_error() { \
-    lsx_fail_errno(ft, SOX_EOF, truncated); \
+    lsx_fail_errno(ft, SOX_EOF, read_error_msg); \
     return SOX_EOF; \
 }
 
