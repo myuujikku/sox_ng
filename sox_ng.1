@@ -843,11 +843,11 @@ Automatically invoke the
 .B gain
 effect to guard against clipping. E.g.
 .XE
-   sox_ng \-G infile \-b 16 outfile rate 44100 dither \-s
+   sox_ng \-G in.au \-b 16 out.au rate 44100 dither \-s
 .XX
 is shorthand for
 .XE
-   sox_ng infile \-b 16 outfile gain \-h rate 44100 gain \-rh dither \-s
+   sox_ng in.au \-b 16 out.au gain \-h rate 44100 gain \-rh dither \-s
 .XX
 See
 .BR \-V,
@@ -911,19 +911,18 @@ Automatically invoke the
 .B gain
 effect to guard against clipping and to normalize the audio. E.g.
 .XE
-   sox_ng \-\-norm infile \-b 16 outfile rate 44100 dither \-s
+   sox_ng \-\-norm in.au \-b 16 out.au rate 44100 dither \-s
 .XX
 is shorthand for
 .XE
-   sox_ng infile \-b 16 outfile gain \-h rate 44100 gain \-nh dither \-s
+   sox_ng in.au \-b 16 out.au gain \-h rate 44100 gain \-nh dither \-s
 .XX
 Optionally, the audio can be normalized to a given level, usually below 0 dBFS:
 .XE
-   sox_ng \-\-norm=\-3 infile outfile
+   sox_ng \-\-norm=\-3 in.au out.au
 .XX
-.SP
 See
-.BR \-V,
+.BR \-V ,
 .B \-G
 and the
 .B gain
@@ -1433,7 +1432,7 @@ as documented in the
 .B Output Files
 section.
 .XE
-   sox_ng infile.wav output.wav trim 0 30 : newfile : restart
+   sox_ng in.au out.au trim 0 30 : newfile : restart
 .XX
 .SS Common Notation And Parameters
 In the descriptions that follow,
@@ -1845,13 +1844,13 @@ the compander react more quickly to sudden volume changes.
 In the next example, \fBcompand\fR is used as a noise-gate for when the
 noise is at a lower level than the signal:
 .XE
-   play_ng infile compand .1,.2 \-inf,\-50.1,\-inf,\-50,\-50 0 \-90 .1
+   play_ng in.au compand .1,.2 \-inf,\-50.1,\-inf,\-50,\-50 0 \-90 .1
 .XX
 Here is another noise-gate, this time for when the
 noise is at a higher level than the signal (making it, in some ways,
 similar to a squelch effect):
 .XE
-   play_ng infile compand .1,.1 \-45.1,\-45,\-inf,0,\-inf 45 \-90 .1
+   play_ng in.au compand .1,.1 \-45.1,\-45,\-inf,0,\-inf 45 \-90 .1
 .XX
 This effect supports the \fB\-\-plot\fR global option (for the transfer function).
 .SP
@@ -2182,10 +2181,9 @@ given, the coefficients are read from the `standard input' (stdin);
 otherwise, coefficients may be given on the command line.
 Examples:
 .XE
-   sox_ng infile outfile fir 0.0195 \-0.082 0.234 0.891 \-0.145 0.043
-.XX
-.XE
-   sox_ng infile outfile fir coefs.txt
+   sox_ng in.au out.au fir .0195 \-.082 .234 .891 \-.145 .043
+
+   sox_ng in.au out.au fir coefs.txt
 .XX
 .ne 6
 with \f(CWcoefs.txt\fR containing
@@ -2196,7 +2194,6 @@ with \f(CWcoefs.txt\fR containing
      5.1031563346705155e\-01
     \-6.6502926320995331e\-02
 .XX
-.SP
 This effect supports the \fB\-\-plot\fR global option.
 .TP
 \fBfirfit\fR [\fIknots-file\fR\^|\^<\fIfreq gain\fR>]
@@ -2264,6 +2261,7 @@ Digital delay-line interpolation: \fBlinear\fR or \fBquadratic\fR.
 T}
 .TE
 .DT
+.SP
 \fBsine\fR, \fBtriangle\fR, \fBlinear\fR and \fBquadratic\fR can be abbreviated.
 .TP
 \fBgain \fR[\fB\-e\fR\^|\^\fB\-B\fR\^|\^\fB\-b\fR\^|\^\fB\-r\fR] [\fB\-n\fR] [\fB\-l\fR\^|\^\fB\-h\fR] [\fIgain-dB\fR(0)]
@@ -2339,11 +2337,11 @@ It is often used in conjunction with a negative
 so that the audio is normalized to a given level below 0dB.
 For example,
 .XE
-   sox_ng infile outfile gain \-n
+   sox_ng in.au out.au gain \-n
 .XX
 normalizes to 0dB, and
 .XE
-   sox_ng infile outfile gain \-n \-3
+   sox_ng in.au out.au gain \-n \-3
 .XX
 normalizes to \-3dB.
 .SP
@@ -2351,7 +2349,7 @@ The
 .B \-l
 option invokes a simple limiter. For example,
 .XE
-   sox_ng infile outfile gain \-l 6
+   sox_ng in.au out.au gain \-l 6
 .XX
 applies 6dB of gain but never clips.  Note that limiting more than a
 few dBs more than occasionally in a piece of audio is not recommended
@@ -2365,7 +2363,7 @@ The
 option is used to apply gain to provide headroom for subsequent
 processing.  For example, with
 .XE
-   sox_ng infile outfile gain \-h bass +6
+   sox_ng in.au out.au gain \-h bass +6
 .XX
 6dB of attenuation is applied prior to the bass boosting effect,
 ensuring that it does not clip.  Of course, with \fBbass\fR, it is
@@ -2375,7 +2373,7 @@ rate, dither), it is not always as clear.  Another advantage of using
 headroom is not used by subsequent effects, it can be reclaimed with
 \fBgain \-r\fR, for example:
 .XE
-   sox_ng infile outfile gain \-h bass +6 rate 44100 gain \-r
+   sox_ng in.au out.au gain \-h bass +6 rate 44100 gain \-r
 .XX
 The above effects chain guarantees never to clip nor amplify;
 it attenuates if necessary to prevent clipping, but by only as
@@ -2384,7 +2382,7 @@ much as is needed to do so.
 Output formatting (dithering and bit-depth reduction) also requires
 headroom which cannot be reclaimed, e.g.
 .XE
-   sox_ng infile outfile gain \-h bass +6 rate 44100 gain \-rh dither
+   sox_ng in.au out.au gain \-h bass +6 rate 44100 gain \-rh dither
 .XX
 Here, the second
 .B gain
@@ -4191,15 +4189,15 @@ parameter allows copying from the beginning of the audio.
 .SP
 For example,
 .XE
-   sox_ng infile outfile trim 0 10
+   sox_ng in.au out.au trim 0 10
 .XX
 copies the first ten seconds, while
 .XE
-   play_ng infile trim 12:34 =15:00 -2:00
+   play_ng in.au trim 12:34 =15:00 -2:00
 .XX
 and
 .XE
-   play_ng infile trim 12:34 2:26 -2:00
+   play_ng in.au trim 12:34 2:26 -2:00
 .XX
 both play from 12 minutes 34 seconds into the audio up to 15 minutes in
 (i.e. 2 minutes and 26 seconds long) then resume playing two
