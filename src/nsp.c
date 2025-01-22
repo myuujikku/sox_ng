@@ -46,7 +46,8 @@ int lsx_nspstartread(sox_format_t * ft)
   uint8_t trash8;
 
   /* FORM chunk */
-  if (lsx_reads(ft, buf, (size_t)8) == SOX_EOF || strncmp(buf, "FORMDS16", (size_t)8) != 0) {
+  if (lsx_readbuf(ft, buf, (size_t)8) != (size_t)8 || \
+      strncmp(buf, "FORMDS16", (size_t)8) != 0) {
     lsx_fail_errno(ft,SOX_EHDR,"header does not begin with magic word `FORMDS16'");
     return(SOX_EOF);
   }
@@ -54,7 +55,7 @@ int lsx_nspstartread(sox_format_t * ft)
     return(SOX_EOF);
 
   while (1) {
-    if (lsx_reads(ft, buf, (size_t)4) == SOX_EOF) {
+    if (lsx_readbuf(ft, buf, (size_t)4) != (size_t)4) {
       if (ssndsize > 0)
         break;
       else {
@@ -65,7 +66,7 @@ int lsx_nspstartread(sox_format_t * ft)
     if (strncmp(buf, "HEDR", (size_t)4) == 0) {
       /* HEDR chunk */
       if (lsx_readdw(ft, &chunksize) ||
-          lsx_reads(ft, date, (size_t)20) ||
+          lsx_readbuf(ft, date, (size_t)20) != (size_t)20 ||
           lsx_readdw(ft, &samplerate) ||
           lsx_readdw(ft, &datalength) ||
           lsx_readw(ft, &maxabschan[0]) ||
@@ -85,7 +86,7 @@ int lsx_nspstartread(sox_format_t * ft)
     } else if (strncmp(buf, "HDR8", (size_t)4) == 0) {
       /* HDR8 chunk */
       if (lsx_readdw(ft, &chunksize) ||
-          lsx_reads(ft, date, (size_t)20) ||
+          lsx_readbuf(ft, date, (size_t)20) != (size_t)20 ||
           lsx_readdw(ft, &samplerate) ||
           lsx_readdw(ft, &datalength) ||
           lsx_readw(ft, &maxabschan[0]) ||
@@ -116,7 +117,7 @@ int lsx_nspstartread(sox_format_t * ft)
       /* NOTE chunk */
       if (lsx_readdw(ft, &chunksize))
         return(SOX_EOF);
-      comment = lsx_malloc(chunksize * sizeof(char*));
+      comment = lsx_malloc(chunksize + 1);
       if (lsx_reads(ft, comment, (size_t)chunksize))
         return(SOX_EOF);
       if(strlen(comment) != 0)
