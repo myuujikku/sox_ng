@@ -541,8 +541,10 @@ static FILE * xfopen(char const * identifier, char const * mode, lsx_io_type * i
 #  endif
 # endif
     f = popen(identifier + 1, POPEN_MODE);
-    *io_type = lsx_io_pipe;
-    incr_pipe_size(f);
+    if (f) {
+      *io_type = lsx_io_pipe;
+      incr_pipe_size(f);
+    }
 #else
     lsx_fail("this build of SoX cannot open pipes");
 #endif
@@ -559,9 +561,13 @@ static FILE * xfopen(char const * identifier, char const * mode, lsx_io_type * i
     char * command = lsx_malloc(strlen(command_format) + strlen(identifier));
     sprintf(command, command_format, identifier);
     f = popen(command, POPEN_MODE);
-    incr_pipe_size(f);
+    if (f == NULL)
+        lsx_fail("cannot popen %s", command);
+    else {
+        incr_pipe_size(f);
+        *io_type = lsx_io_url;
+    }
     free(command);
-    *io_type = lsx_io_url;
 #else
     lsx_fail("this build of SoX cannot open URLs");
 #endif

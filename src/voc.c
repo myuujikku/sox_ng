@@ -236,8 +236,10 @@ static int startread(sox_format_t * ft)
   /* ANN:  read to skip the header, instead of lseek */
   /* this should allow use with pipes.... */
   for (ii = 22; ii < sbseek; ii++)
-    if (lsx_readb(ft, &uc))
+    if (lsx_readb(ft, &uc)) {
       lsx_fail_errno(ft, SOX_EHDR, "unexpected EOF in header");
+      return (SOX_EOF);
+    }
 
   v->rate = -1;
   v->block_remaining = 0;
@@ -293,6 +295,7 @@ static int startread(sox_format_t * ft)
       break;
     default:
       lsx_fail("Unknown format %d", v->format);
+      return (SOX_EOF);
       break;
   }
   ft->encoding.bits_per_sample = v->size;
