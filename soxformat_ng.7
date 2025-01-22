@@ -516,29 +516,27 @@ Meridian Lossless Packing format.
 \&\fB.mov\fR (with ffmpeg)
 MPEG-1 Systems / MPEG program stream format.
 .TP
-\&\fB.mp3\fR, \fB.mp2\fR (optional read with mad,
-optional write with liblame, also with \-t sndfile\fR or \fB\-t ffmpeg\fR)
-MP3 compressed audio (MPEG Layer 3) is a part of the
+\&\fB.mp3\fR, \fB.mp2\fR (optional, also with \-t sndfile\fR or \fB\-t ffmpeg\fR)
+MP2 and MP3 compressed audio (MPEG 1 Layers 2 and 3) are a part of the
 MPEG standards for audio and video compression whose patents have expired.
 It is a lossy compression format that achieves good compression rates
 with little quality loss.
 .SP
 When reading MP3 files, up to 28 bits of precision is stored although
-only 16 bits is reported to user.  This is to allow default behavior
-of writing 16 bit output files.  A user can specify a higher precision
-for the output file to prevent lossing this extra information.  MP3
-output files will use up to 24 bits of precision while encoding.
+only 16 bits are reported to user. This is to allow default behavior
+of writing 16-bit output files. You can specify a higher precision
+for the output file to prevent loss of this extra information.  MP3
+output files use up to 24 bits of precision while encoding.
 .SP
 MP3 compression parameters can be selected using SoX's \fB\-C\fR option
-as follows
-(note that the current syntax is subject to change):
+as follows:
 .SP
 The primary parameter to the LAME encoder is the bit rate. If the
 value of the \fB\-C\fR value is a positive integer, it's taken as
 the bitrate in kbps (e.g. if you specify 128, it uses 128 kbps).
 .SP
-The second most important parameter is probably "quality" (really
-performance), which allows balancing encoding speed vs. quality.
+The second most important parameter is "quality"
+which allows balancing encoding speed vs. quality.
 In LAME, 0 specifies highest quality but is very slow, while
 9 selects poor quality, but is fast. (5 is the default and 2 is
 recommended as a good trade-off for high quality encodes.)
@@ -550,17 +548,17 @@ of 2. There is one problem with this approach. We need 128 to specify
 of 0 you have to use .01 (or .99) to specify the highest quality
 (128.01 or 128.99).
 .SP
-LAME uses bitrate to specify a constant bitrate, but higher quality
+LAME uses bitrate to specify a constant bitrate but higher quality
 can be achieved using Variable Bit Rate (VBR). VBR quality (really
 size) is selected using a number from 0 to 9. Use a value of 0 for high
 quality, larger files, and 9 for smaller files of lower quality. 4 is
 the default.
 .SP
 In order to squeeze the selection of VBR into the the \fB\-C\fR value
-float we use negative numbers to select VRR. -4.2 would select default
+float we use negative numbers to select VBR. -4.2 would select default
 VBR encoding (size) with high quality (speed). One special case is 0,
 which is a valid VBR encoding parameter but not a valid bitrate.
-Compression value of 0 is always treated as a high quality vbr, as a
+Compression value of 0 is always treated as a high quality VBR, as a
 result both -0.2 and 0.2 are treated as highest quality VBR (size) and
 high quality (speed).
 .SP
