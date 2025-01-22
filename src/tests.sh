@@ -13,6 +13,9 @@ else
   EXEEXT=""
 fi
 
+# The timing tests do not succeed/fail and barf if /usr/bin/time isn't.
+timeio=false
+
 # Set options & allow user to override paths.  Useful for testing an
 # installed sox_ng.
 while [ $# -ne 0 ]; do
@@ -28,6 +31,10 @@ while [ $# -ne 0 ]; do
 
         -a)      # Perform each test up to 3 times with different #s of
         all=all  # channels; probably enough coverage without this though.
+        ;;
+
+        -t)
+        timeio=true
         ;;
 
         --bindir=*)
@@ -65,7 +72,6 @@ while [ $# -ne 0 ]; do
         shift
         srcdir=$1
         ;;
-
         *)
         echo "Unknown option"
         exit 1
@@ -271,9 +277,13 @@ rm output.u8
 
 echo "Checked $vectors vectors"
 
-channels=2
-samples=1e7
-timeIO s8 u8 s16 u16 s24 u24 s32 u32 f32 f64 au wav aiff aifc sph # FIXME?: caf flac dat
+
+if $timeio
+then
+  channels=2
+  samples=1e7
+  timeIO s8 u8 s16 u16 s24 u24 s32 u32 f32 f64 au wav aiff aifc sph # FIXME?: caf flac dat
+fi
 
 test -n "$skip" && echo "Skipped: $skip"
 
