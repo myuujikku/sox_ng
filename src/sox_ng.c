@@ -1469,34 +1469,26 @@ static char *fndup_with_count(const char *filename, size_t count)
         /* Look for %n. If found, replace with count.  Can specify an
          * option width of 1-9.
          */
-        if (*fn == '%')
+        if (fn[0] == '%' &&
+            (fn[1] == 'n' ||
+             (fn[1] >= '1' && fn[1] <= '9' && fn[2] == 'n')))
         {
             char width = 0;
+            char format[5];
+
             fn++;
             if (*fn >= '1' && *fn <= '9')
-            {
                 width = *fn++;
-            }
-            if (*fn == 'n')
-            {
-                char format[5];
+            /* *fn == 'n' */
+            found_marker = sox_true;
 
-                found_marker = sox_true;
-
-                if (width)
-                {
-					sprintf(format, "%%0%cd", width);
-                }
-				else
-				{
-                    strcpy(format, "%02d");
-				}
-
-                efn += sprintf(efn, format, count);
-                fn++;
-            }
+            if (width)
+                sprintf(format, "%%0%cd", width);
             else
-                *efn++ = *fn++;
+                strcpy(format, "%02d");
+
+            efn += sprintf(efn, format, count);
+            fn++;
         }
         else
             *efn++ = *fn++;
@@ -2051,8 +2043,8 @@ static void usage_effect(char const * name)
     for (i = 0; sox_effect_fns[i]; i++) {
       const sox_effect_handler_t *e = sox_effect_fns[i]();
       if (e && e->name && (!strcmp("all", name) || !strcmp(e->name, name))) {
-	if (first) first = sox_false;
-	else printf("\n");
+        if (first) first = sox_false;
+        else printf("\n");
         printf("%s %s\n", e->name, e->usage? e->usage : "");
         if (e->flags & SOX_EFF_INTERNAL)
           printf("`%s' is libSoX-only\n", e->name);
@@ -2131,7 +2123,7 @@ static void usage_format(char const * name)
       sox_format_handler_t const * f = sox_format_fns[i].fn();
       if (!(f->flags & SOX_FILE_PHONY)) {
         if (first) first = sox_false;
-	else printf("\n");
+        else printf("\n");
         usage_format1(f);
       }
     }
@@ -2397,8 +2389,8 @@ static char parse_gopts_and_fopts(file_t * f)
         break;
       case 21: play_rate_arg = lsx_strdup(optstate.arg);
                if (play_rate_arg[0] != '-')
-	           lsx_fail("--play-rate-arg must begin with `-')");
-	       break;
+                   lsx_fail("--play-rate-arg must begin with `-')");
+               break;
       case 22: no_clobber = sox_false; break;
       case 23: no_clobber = sox_true; break;
       case 24: sox_globals.use_threads = sox_true; break;
