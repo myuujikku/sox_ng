@@ -21,8 +21,11 @@
 #include <errno.h>
 #include <limits.h>
 
-int lsx_nspstartread(sox_format_t * ft);
-
+static const char read_error_msg[] = "file is truncated in %.4s chunk";
+#define read_error() { \
+        lsx_fail_errno(ft,SOX_EOF, read_error_msg, buf); \
+        return(SOX_EOF); \
+}
 int lsx_nspstartread(sox_format_t * ft)
 {
   char buf[8];
@@ -52,7 +55,7 @@ int lsx_nspstartread(sox_format_t * ft)
     return(SOX_EOF);
   }
   if (lsx_readdw(ft, &hchunksize))
-    return(SOX_EOF);
+    read_error();
 
   while (1) {
     if (lsx_readbuf(ft, buf, (size_t)4) != (size_t)4) {
@@ -71,7 +74,7 @@ int lsx_nspstartread(sox_format_t * ft)
           lsx_readdw(ft, &datalength) ||
           lsx_readw(ft, &maxabschan[0]) ||
           lsx_readw(ft, &maxabschan[1]))
-        return(SOX_EOF);
+        read_error();
       rate = (double)samplerate;
 
       /* Most likely there will only be 1 channel, but there can be 2 here */
@@ -97,7 +100,7 @@ int lsx_nspstartread(sox_format_t * ft)
           lsx_readw(ft, &maxabschan[5]) ||
           lsx_readw(ft, &maxabschan[6]) ||
           lsx_readw(ft, &maxabschan[7]))
-        return(SOX_EOF);
+        read_error();
       rate = (double)samplerate;
 
       /* Can be up to 8 channels */
@@ -116,19 +119,19 @@ int lsx_nspstartread(sox_format_t * ft)
       unsigned char nullc = 0;
       /* NOTE chunk */
       if (lsx_readdw(ft, &chunksize))
-        return(SOX_EOF);
+        read_error();
       comment = lsx_malloc(chunksize + 1);
       if (lsx_reads(ft, comment, (size_t)chunksize))
-        return(SOX_EOF);
+        read_error();
       if(strlen(comment) != 0)
         lsx_debug("NSP comment: %s", comment);
       free(comment);
       if (lsx_readb(ft, &nullc))
-        return(SOX_EOF);
+        read_error();
 
     } else if (strncmp(buf, "SDA_", (size_t)4) == 0) {
       if (lsx_readdw(ft, &chunksize))
-        return(SOX_EOF);
+        read_error();
       ssndsize = chunksize;
       /* if can't seek, just do sound now */
       if (!ft->seekable)
@@ -136,14 +139,14 @@ int lsx_nspstartread(sox_format_t * ft)
       /* else, seek to end of sound and hunt for more */
       seekto = lsx_tell(ft);
       if (lsx_seeki(ft, (off_t)chunksize, SEEK_CUR))
-        return(SOX_EOF);
+        read_error();
     } else {
       if (lsx_eof(ft))
         break;
       buf[4] = 0;
       lsx_debug("NSPstartread: ignoring `%s' chunk", buf);
       if (lsx_readdw(ft, &chunksize))
-        return(SOX_EOF);
+        read_error();
       if (lsx_eof(ft))
         break;
       /* Skip the chunk using lsx_readb() so we may read
@@ -159,8 +162,10 @@ int lsx_nspstartread(sox_format_t * ft)
 
   if (ft->seekable) {
     if (seekto > 0) {
-      if (lsx_seeki(ft, seekto, SEEK_SET))
+      if (lsx_seeki(ft, seekto, SEEK_SET)) {
+        lsx_fail_errno(ft,SOX_EOF,"cannot seek");
         return(SOX_EOF);
+      }
     } else {
       lsx_fail_errno(ft,SOX_EOF,"no sound data on input file");
       return(SOX_EOF);
