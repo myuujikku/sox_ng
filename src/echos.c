@@ -56,16 +56,26 @@ static int sox_echos_getopts(sox_effect_t * effp, int argc, char **argv)
         sscanf(argv[i++], "%f", &echos->in_gain);
         sscanf(argv[i++], "%f", &echos->out_gain);
         while (i < argc) {
+		float delay, decay;
                 /* Linux bug and it's cleaner. */
-                sscanf(argv[i++], "%f", &echos->delay[echos->num_delays]);
-                sscanf(argv[i++], "%f", &echos->decay[echos->num_delays]);
-                echos->num_delays++;
-                if ( echos->num_delays > MAX_ECHOS )
-                {
+                if (sscanf(argv[i], "%f", &delay) != 1) {
+                        lsx_fail("delay `%s' is not a number", argv[i]);
+                        return (SOX_EOF);
+                }
+		i++;
+                if (sscanf(argv[i], "%f", &decay) != 1) {
+                        lsx_fail("decay `%s' is not a number", argv[i]);
+                        return (SOX_EOF);
+                }
+		i++;
+                if ( echos->num_delays >= MAX_ECHOS ) {
                         lsx_fail("too many delays; use less than %i delays",
                                 MAX_ECHOS);
                         return (SOX_EOF);
                 }
+                echos->delay[echos->num_delays] = delay;
+                echos->decay[echos->num_delays] = decay;
+                echos->num_delays++;
         }
         echos->sumsamples = 0;
         return (SOX_SUCCESS);
