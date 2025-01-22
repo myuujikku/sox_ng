@@ -2557,7 +2557,8 @@ sections of the audio.
 On most systems, the two stages\*mprofiling and reduction\*mcan be combined
 using a pipe, e.g.
 .XE
-   sox_ng noisy.wav \-n trim 0 1 noiseprof | play_ng noisy.wav noisered
+   sox_ng noisy.wav \-n trim 0 1 noiseprof | \e
+       play_ng noisy.wav noisered
 .XX
 .TP
 \fBnorm\fR [\fIdB-level\fR]
@@ -2668,7 +2669,7 @@ and
 share the same fundamental algorithm; see the \fBtempo\fR
 effect for a description of the other parameters.
 .SP
-See
+See the \fBbend\fR, \fBspeed\fR and \fBtempo\fR effects.
 .TP
 \fBrate\fR [\fB\-q\fR\^|\^\fB\-l\fR\^|\^\fB\-m\fR\^|\^\fB\-h\fR\^|\^\fB\-v\fR] [override-options] \fIfrequency\fR]
 Change the audio sampling rate (i.e. resample the audio) to any given
