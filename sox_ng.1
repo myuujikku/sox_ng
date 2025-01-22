@@ -3034,13 +3034,16 @@ should be previously upsampled, e.g. with the \fBrate\fR effect, to a
 high rate, 2\*d8224MHz for DSD64.  The \fB\-f\fR option selects the
 noise-shaping filter from the following list where the number indicates
 the order of the filter:
-.XE
-   clans-4      sdm-4
-   clans-5      sdm-5
-   clans-6      sdm-6
-   clans-7      sdm-7
-   clans-8      sdm-8
-.XX
+.TS
+centre;
+l l.
+clans-4	sdm-4
+clans-5	sdm-5
+clans-6	sdm-6
+clans-7	sdm-7
+clans-8	sdm-8
+.TE
+.DT
 .TP
 \ 
 The noise filter may be combined with a partial trellis/viterbi search
@@ -3624,7 +3627,7 @@ sample in the audio),
 as follows:
 .TS
 center;
-lI lx .
+lI lx.
 Samples read	\fIn\fR\^\(mu\^\fIc\fR
 Length (seconds)	\fIn\fR\^\(di\^\fIr\fR
 Scaled by	See \fB\-s\fR below.
