@@ -73,7 +73,20 @@ while [ $# -ne 0 ]; do
         srcdir=$1
         ;;
         *)
-        echo "Unknown option"
+	{
+            echo "Usage: sh tests.sh [options]"
+	    echo "-v      Be verbose"
+	    echo "-a      Also run mono and stereo tests"
+	    echo "-t      Also run timing tests (cannot fail)"
+	    echo "-i path or --bindir=path"
+	    echo "        Where to find the sox executable"
+	    echo "-l path or --libdir=path"
+	    echo "        Where to find libsox"
+	    echo "-b path or --builddir=path"
+	    echo "        Where to find sox_sample_test"
+	    echo "-c path or --srcdir=path"
+	    echo "        Where to find test-comments (not used)"
+	} 1>&2
         exit 1
     esac
     shift
