@@ -39,15 +39,37 @@ static int sox_echo_getopts(sox_effect_t * effp, int argc, char **argv)
           return lsx_usage(effp);
 
         i = 0;
-        sscanf(argv[i++], "%f", &echo->in_gain);
-        sscanf(argv[i++], "%f", &echo->out_gain);
-        while (i < argc) {
-                if ( echo->num_delays >= MAX_ECHOS )
+        if (sscanf(argv[i], "%f", &echo->in_gain) != 1) {
+                lsx_fail("gain-in `%s` is not a number", argv[i]);
+		return (SOX_EOF);
+	}
+	i++;
+        if (sscanf(argv[i], "%f", &echo->out_gain) != 1) {
+                lsx_fail("gain-out `%s` is not a number", argv[i]);
+		return (SOX_EOF);
+	}
+	i++;
+        while (i < argc - 1) {
+		float delay, decay;
+
+                if (echo->num_delays >= MAX_ECHOS) {
                         lsx_fail("too many delays; use less than %i delays",
                                 MAX_ECHOS);
-                /* Linux bug and it's cleaner. */
-                sscanf(argv[i++], "%f", &echo->delay[echo->num_delays]);
-                sscanf(argv[i++], "%f", &echo->decay[echo->num_delays]);
+			return (SOX_EOF);
+		}
+                if (sscanf(argv[i], "%f", &delay) != 1) {
+			lsx_fail("delay `%s` is not a number", argv[i]);
+			return (SOX_EOF);
+		}
+		i++;
+                if (sscanf(argv[i], "%f", &decay) != 1) {
+			lsx_fail("decay `%s` is not a number", argv[i]);
+			return (SOX_EOF);
+		}
+		i++;
+
+		echo->delay[echo->num_delays] = delay;
+		echo->decay[echo->num_delays] = decay;
                 echo->num_delays++;
         }
         return (SOX_SUCCESS);
