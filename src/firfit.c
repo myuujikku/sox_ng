@@ -45,13 +45,17 @@ static int create(sox_effect_t * effp, int argc, char **argv)
     if (argc % 2) return lsx_usage(effp);
     for (i=0; i < argc - 1; i += 2) {
       lsx_revalloc(p->knots, p->num_knots + 1);
-      if (sscanf(argv[i], "%lf", &p->knots[p->num_knots].f) != 1)
+      if (sscanf(argv[i], "%lf", &p->knots[p->num_knots].f) != 1) {
 	lsx_fail("knot frequency '%s' is not a number", argv[argc]);
-      if (sscanf(argv[i+1], "%lf", &p->knots[p->num_knots].gain) != 1)
+	return SOX_EOF;
+      }
+      if (sscanf(argv[i+1], "%lf", &p->knots[p->num_knots].gain) != 1) {
 	lsx_fail("knot gain '%s' is not a number", argv[argc+1]);
+	return SOX_EOF;
+      }
       if (p->num_knots > 0 && p->knots[p->num_knots].f <= p->knots[p->num_knots - 1].f) {
 	lsx_fail("knot frequencies must be strictly increasing");
-	break;
+	return SOX_EOF;
       }
       p->num_knots++;
     }
@@ -114,7 +118,7 @@ static sox_bool read_knots(sox_effect_t * effp)
       if (num_converted == 2) {
         if (p->num_knots && p->knots[p->num_knots].f <= p->knots[p->num_knots - 1].f) {
           lsx_fail("knot frequencies must be strictly increasing");
-          break;
+	  return sox_false;
         }
         lsx_revalloc(p->knots, ++p->num_knots + 1);
       } else if (num_converted != 0)

@@ -556,8 +556,10 @@ static FILE * xfopen(char const * identifier, char const * mode, lsx_io_type * i
 #  endif
 # endif
     f = popen(identifier + 1, POPEN_MODE);
-    *io_type = lsx_io_pipe;
-    incr_pipe_size(f);
+    if (f) {
+      *io_type = lsx_io_pipe;
+      incr_pipe_size(f);
+    }
 #else
     lsx_fail("this build of SoX cannot open pipes");
 #endif
@@ -604,17 +606,22 @@ static FILE * xfopen(char const * identifier, char const * mode, lsx_io_type * i
 	    if (f && pclose(f) == 0) command_format = curl_command_format;
 	}
     }
-    if (!command_format)
+    if (!command_format) {
         lsx_fail("to read URLs Please install one of wget, wget2 and curl");
+	return NULL;
+    }
 
     command = lsx_malloc(strlen(command_format) + strlen(identifier));
 
     sprintf(command, command_format, identifier);
-    if (!(f = popen(command, POPEN_MODE)))
+    f = popen(command, POPEN_MODE);
+    if (f == NULL)
         lsx_fail("cannot popen %s", command);
-    incr_pipe_size(f);
+    else {
+        incr_pipe_size(f);
+        *io_type = lsx_io_url;
+    }
     free(command);
-    *io_type = lsx_io_url;
 #else
     lsx_fail("this build of SoX cannot open URLs");
 #endif

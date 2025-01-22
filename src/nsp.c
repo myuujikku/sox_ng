@@ -76,6 +76,7 @@ int lsx_nspstartread(sox_format_t * ft)
       /* Most likely there will only be 1 channel, but there can be 2 here */
       if (maxabschan[0] == 0xffff && maxabschan[1] == 0xffff) {
         lsx_fail_errno(ft,SOX_EHDR,"Channels A and B undefined");
+        return(SOX_EOF);
       } else if (maxabschan[0] == 0xffff || maxabschan[1] == 0xffff) {
         ft->signal.channels = 1;
       } else {
@@ -107,6 +108,7 @@ int lsx_nspstartread(sox_format_t * ft)
       }
       if (numchannels == 0) {
         lsx_fail_errno(ft,SOX_EHDR,"No channels defined");
+        return(SOX_EOF);
       }
       ft->signal.channels = numchannels;
     } else if (strncmp(buf, "NOTE", (size_t)4) == 0) {

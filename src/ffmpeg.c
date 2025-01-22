@@ -115,10 +115,11 @@ static int startread(sox_format_t * ft)
 #else
   ft->fp = popen(command, "r");
 #endif
-  if (ft->fp == NULL)
-    lsx_fail("could not create a pipe for ffmpeg");
-
   free(command);
+  if (ft->fp == NULL) {
+    lsx_fail("could not create a pipe for ffmpeg");
+    return SOX_EOF;
+  }
 
   return lsx_au_format_fn()->startread(ft);
 }
