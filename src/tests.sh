@@ -188,21 +188,24 @@ do_twochannel_formats () {
 
 do_singlechannel_formats () {
   format1=vox
-  convertToAndFrom vox s16 u16 s24 u24 s32 u32 f32 f64 dat au wav aiff aifc flac caf sox
+  convertToAndFrom vox s16 u16 s24 u24 s32 u32 f32 f64 dat au wav aiff aifc flac caf sox maud
 
   format1=ima
-  convertToAndFrom ima s16 u16 s24 u24 s32 u32 f32 f64 dat au aiff aifc flac caf # FIXME: wav
+  convertToAndFrom ima s16 u16 s24 u24 s32 u32 f32 f64 dat au aiff aifc flac caf maud # FIXME: wav
 
   format1=wavu8
-  convertToAndFrom smp s8 s1X s1N s1XN sndt sndr
+  convertToAndFrom smp s8 s1X s1N s1XN sndt sndr maud
   #(rate=50000; convertToAndFrom txw) || exit 1     # FIXME
   (rate=11025; convertToAndFrom hcom) || exit 1     # Fixed rates
 
   format1=wve
-  (rate=8000; convertToAndFrom al s16 u16 s32 f32 f64 dat) || exit 1 # Fixed rate
+  (rate=8000; convertToAndFrom al s16 u16 s32 f32 f64 dat maud) || exit 1 # Fixed rate
 
   format1=prc
-  (rate=8000; convertToAndFrom al s16 u16 s32 f32 f64 dat) || exit 1 # Fixed rate
+  (rate=8000; convertToAndFrom al s16 u16 s32 f32 f64 dat maud) || exit 1 # Fixed rate
+
+  format1=maud
+  (rate=8000; convertToAndFrom s16 u16 s32 f32 f64 dat) || exit 1 # Fixed rate
 }
 
 stderr_time () {
