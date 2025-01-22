@@ -13,6 +13,11 @@ rm -f core out.*
 ${sox:-sox} crash-fpe-voc out.wav
 status=$?
 
+if [ ! -f out.wav ]
+then
+    status=1
+fi
+
 rm -f core out.*
 
 exit $status
