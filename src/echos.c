@@ -16,20 +16,20 @@
 /* Instead of having a separate buffer for each delay, one huge buffer is
  * allocated and the individual delay lines are in it one after the other.
  * For delay i:
- * pointer[i] is the offset in delaybuf[] at which its buffer begins
+ * delay_buf[i] is the start of the echo's buffer
  * samples[i] is the size of its buffer, proportional to the delay time
- * counter[i] is the offset from delay_buf[pointer[i]] of the next sample
- *            to output, that was written its delay time ago, and is also
+ * counter[i] is the offset in delay_buf[i] of the next sample to output,
+ *            that was written its delay time ago, and is also
  *            where to write new incoming data to be regurgitated
  *            <delay> microseconds (== samples[i] samples) in the future.
  */
 typedef struct {
         int     *counter;
         int     num_delays;
-        double  *delay_buf;
+        double  **delay_buf;
         float   in_gain, out_gain;
         float   *delay, *decay;
-        ptrdiff_t *samples, *pointer;
+        ptrdiff_t *samples;
         size_t sumsamples;
 } priv_t;
 
@@ -73,7 +73,6 @@ static int sox_echos_getopts(sox_effect_t * effp, int argc, char **argv)
                 echos->delay[echos->num_delays - 1] = delay;
                 echos->decay[echos->num_delays - 1] = decay;
         }
-        echos->sumsamples = 0;
         return (SOX_SUCCESS);
 }
 
@@ -102,8 +101,9 @@ static int sox_echos_start(sox_effect_t * effp)
                 return (SOX_EOF);
         }
 	echos->counter = lsx_calloc(echos->num_delays, sizeof(*echos->counter));
-	echos->pointer = lsx_calloc(echos->num_delays, sizeof(*echos->pointer));
 	echos->samples = lsx_calloc(echos->num_delays, sizeof(*echos->samples));
+	echos->delay_buf = lsx_calloc(echos->num_delays, sizeof(*echos->delay_buf));
+        echos->sumsamples = 0;
         for ( i = 0; i < echos->num_delays; i++ ) {
                 echos->samples[i] = echos->delay[i] * effp->in_signal.rate / 1000.0;
                 if ( echos->samples[i] < 1 )
@@ -121,13 +121,12 @@ static int sox_echos_start(sox_effect_t * effp)
                     lsx_fail("decay must be less than 1.0!" );
                     return (SOX_EOF);
                 }
+		echos->delay_buf[i] = lsx_calloc(echos->samples[i],
+		                                 sizeof(*echos->delay_buf[i]));
+	        /* calloc() returns the memory already zeroed */
                 echos->counter[i] = 0;
-                echos->pointer[i] = echos->sumsamples;
                 echos->sumsamples += echos->samples[i];
         }
-        echos->delay_buf = lsx_calloc(echos->sumsamples,
-                                      sizeof(*echos->delay_buf));
-	/* calloc() returns the memory already zeroed */
         sum_in_volume = echos->in_gain;
         for ( i = 0; i < echos->num_delays; i++ )
                 sum_in_volume += echos->decay[i];
@@ -160,7 +159,7 @@ static int sox_echos_flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sam
                 /* Compute output first */
                 d_out = d_in * echos->in_gain;
                 for ( j = 0; j < echos->num_delays; j++ ) {
-                        d_out += echos->delay_buf[echos->counter[j] + echos->pointer[j]] * echos->decay[j];
+                        d_out += echos->delay_buf[j][echos->counter[j]] * echos->decay[j];
                 }
                 /* Adjust the output volume and size to 24 bit */
                 d_out = d_out * echos->out_gain;
@@ -168,10 +167,10 @@ static int sox_echos_flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sam
                 *obuf++ = out * 256;
                 /* Mix decay of delays and input */
                 for ( j = echos->num_delays - 1; j > 0; j-- ) {
-                        echos->delay_buf[echos->counter[j] + echos->pointer[j]] =
-                           echos->delay_buf[echos->counter[j-1] + echos->pointer[j-1]] + d_in;
+		    echos->delay_buf[j][echos->counter[j]] =
+		    echos->delay_buf[j-1][echos->counter[j-1]] + d_in;
                 }
-                echos->delay_buf[echos->counter[0] + echos->pointer[0]] = d_in;
+                echos->delay_buf[0][echos->counter[0]] = d_in;
                 /* Adjust the counters */
                 for ( j = 0; j < echos->num_delays; j++ )
                         echos->counter[j] =
@@ -197,7 +196,7 @@ static int sox_echos_drain(sox_effect_t * effp, sox_sample_t *obuf, size_t *osam
         while ( ( done < *osamp ) && ( done < echos->sumsamples ) ) {
                 d_out = 0;
                 for ( j = 0; j < echos->num_delays; j++ ) {
-                        d_out += echos->delay_buf[echos->counter[j] + echos->pointer[j]] * echos->decay[j];
+                        d_out += echos->delay_buf[j][echos->counter[j]] * echos->decay[j];
                 }
                 /* Adjust the output volume and size to 24 bit */
                 d_out = d_out * echos->out_gain;
@@ -205,10 +204,10 @@ static int sox_echos_drain(sox_effect_t * effp, sox_sample_t *obuf, size_t *osam
                 *obuf++ = out * 256;
                 /* Mix decay of delays and input */
                 for ( j = echos->num_delays - 1; j > 0; j-- ) {
-                        echos->delay_buf[echos->counter[j] + echos->pointer[j]] =
-                           echos->delay_buf[echos->counter[j-1] + echos->pointer[j-1]];
+                        echos->delay_buf[j][echos->counter[j]] =
+                        echos->delay_buf[j-1][echos->counter[j-1]];
                 }
-                echos->delay_buf[echos->counter[0] + echos->pointer[0]] = 0;
+                echos->delay_buf[0][echos->counter[0]] = 0;
                 /* Adjust the counters */
                 for ( j = 0; j < echos->num_delays; j++ )
                         echos->counter[j] =
@@ -230,10 +229,12 @@ static int sox_echos_drain(sox_effect_t * effp, sox_sample_t *obuf, size_t *osam
 static int sox_echos_stop(sox_effect_t * effp)
 {
         priv_t * echos = (priv_t *) effp->priv;
+	int i;
 
         free(echos->counter);
         free(echos->samples);
-        free(echos->pointer);
+	for (i=0; i<echos->num_delays; i++)
+	    free(echos->delay_buf[i]);
         free(echos->delay_buf);
         echos->delay_buf = NULL;
         return (SOX_SUCCESS);
