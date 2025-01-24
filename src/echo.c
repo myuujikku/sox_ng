@@ -10,7 +10,8 @@
 #include "sox_i.h"
 
 
-#define MAX_ECHOS 7     /* 24 bit x ( 1 + MAX_ECHOS ) = */
+/* This is rubbish because it uses doubles internally */
+#define MAX_ECHOS 255   /* 24 bit x ( 1 + MAX_ECHOS ) = */
                         /* 24 bit x 8 = 32 bit !!!      */
 
 /* Private data */
@@ -19,8 +20,8 @@ typedef struct {
         int     num_delays;
         double  *delay_buf;
         float   in_gain, out_gain;
-        float   delay[MAX_ECHOS], decay[MAX_ECHOS];
-        ptrdiff_t samples[MAX_ECHOS], maxsamples;
+        float   *delay, *decay;
+        ptrdiff_t *samples, maxsamples;
         size_t fade_out;
 } priv_t;
 
@@ -32,9 +33,10 @@ static int sox_echo_getopts(sox_effect_t * effp, int argc, char **argv)
         priv_t * echo = (priv_t *) effp->priv;
         int i;
 
-  --argc, ++argv;
         echo->num_delays = 0;
+        echo->delay = echo->decay = NULL;
 
+        --argc, ++argv;
         if ((argc < 4) || (argc % 2))
           return lsx_usage(effp);
 
@@ -52,11 +54,6 @@ static int sox_echo_getopts(sox_effect_t * effp, int argc, char **argv)
         while (i < argc - 1) {
 		float delay, decay;
 
-                if (echo->num_delays >= MAX_ECHOS) {
-                        lsx_fail("too many delays; use less than %i delays",
-                                MAX_ECHOS);
-			return (SOX_EOF);
-		}
                 if (sscanf(argv[i], "%f", &delay) != 1) {
 			lsx_fail("delay `%s` is not a number", argv[i]);
 			return (SOX_EOF);
@@ -68,10 +65,20 @@ static int sox_echo_getopts(sox_effect_t * effp, int argc, char **argv)
 		}
 		i++;
 
-		echo->delay[echo->num_delays] = delay;
-		echo->decay[echo->num_delays] = decay;
                 echo->num_delays++;
+		echo->delay = lsx_realloc_array(echo->delay, echo->num_delays,
+                                                sizeof(*echo->delay));
+		echo->decay = lsx_realloc_array(echo->decay, echo->num_delays,
+                                                sizeof(*echo->decay));
+		echo->delay[echo->num_delays - 1] = delay;
+		echo->decay[echo->num_delays - 1] = decay;
         }
+	/* This is not true because it uses doubles internally
+	if (echo->num_delays >= MAX_ECHOS) {
+		lsx_warn("more than %d echos may cause an integer overflow",
+			MAX_ECHOS);
+	}
+	*/
         return (SOX_SUCCESS);
 }
 
@@ -83,7 +90,6 @@ static int sox_echo_start(sox_effect_t * effp)
         priv_t * echo = (priv_t *) effp->priv;
         int i;
         float sum_in_volume;
-        long j;
 
         echo->maxsamples = 0;
         if ( echo->in_gain < 0.0 )
@@ -101,6 +107,7 @@ static int sox_echo_start(sox_effect_t * effp)
                 lsx_fail("gain-out must be positive!");
                 return (SOX_EOF);
         }
+	echo->samples = lsx_calloc(echo->num_delays, sizeof(*echo->samples));
         for ( i = 0; i < echo->num_delays; i++ ) {
                 echo->samples[i] = echo->delay[i] * effp->in_signal.rate / 1000.0;
                 if ( echo->samples[i] < 1 )
@@ -121,15 +128,15 @@ static int sox_echo_start(sox_effect_t * effp)
                 if ( echo->samples[i] > echo->maxsamples )
                         echo->maxsamples = echo->samples[i];
         }
-        echo->delay_buf = lsx_malloc(sizeof (double) * echo->maxsamples);
-        for ( j = 0; j < echo->maxsamples; ++j )
-                echo->delay_buf[j] = 0.0;
-        /* Be nice and check the hint with warning, if... */
-        sum_in_volume = 1.0;
+        echo->delay_buf = lsx_calloc(echo->maxsamples,
+                                     sizeof(*(echo->delay_buf)));
+	/* calloc() sets the memory to zero */
+        sum_in_volume = echo->in_gain;
         for ( i = 0; i < echo->num_delays; i++ )
                 sum_in_volume += echo->decay[i];
-        if ( sum_in_volume * echo->in_gain > 1.0 / echo->out_gain )
-                lsx_warn("gain-out can cause saturation of output");
+        if ( sum_in_volume * echo->out_gain > 1.0 )
+                lsx_warn("the output may saturate; a safe gain-out is %g",
+		         1.0 / sum_in_volume);
         echo->counter = 0;
         echo->fade_out = echo->maxsamples;
 
@@ -219,6 +226,9 @@ static int sox_echo_stop(sox_effect_t * effp)
 {
         priv_t * echo = (priv_t *) effp->priv;
 
+        free(echo->delay);
+        free(echo->decay);
+        free(echo->samples);
         free(echo->delay_buf);
         echo->delay_buf = NULL;
         return (SOX_SUCCESS);
