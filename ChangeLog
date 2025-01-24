@@ -13,6 +13,24 @@ New features:
   o Add reading of Ogg FLAC files (with ffmpeg)
   o Error messages have been harmonized. The best was
     sox_ng WARN chorus: chorus: warning >>> gain-out can cause saturation
+  o Remove echo(s)' limits on number/length of delays and range of gains/decays
+  o Make echos run 20% faster
+
+Bug fixes:
+  o The "stats" effect's Bit-depth values have been revised to reflect
+    what Bit-depth means and handle corner cases like -32768
+  o The manual has been extensively revised, detail on the meaning
+    of parameters added and undocumented flags documented
+  o Several effects now show their flow diagram in their usage output
+  o "echos" and "chorus" have never worked but now do what they say
+  o "echo" no longer has a limit of the length of the delay
+  o LD_LIBRARY_PATH is now respected when looking for plugins
+  o Read errors from short files are always detected and reported
+  o Write errors to audio files are always detected and reported
+  o No formats or effects are experimental or deprecated any more
+
+sox_ng-14.5.0.3	2025-01-05
+---------------
 
 Bug fixes:
 
