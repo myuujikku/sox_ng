@@ -85,21 +85,6 @@ static int sox_echos_start(sox_effect_t * effp)
         int i;
         float sum_in_volume;
 
-        if ( echos->in_gain < 0.0 )
-        {
-                lsx_fail("gain-in must be positive!");
-                return (SOX_EOF);
-        }
-        if ( echos->in_gain > 1.0 )
-        {
-                lsx_fail("gain-in must be less than 1.0!");
-                return (SOX_EOF);
-        }
-        if ( echos->out_gain < 0.0 )
-        {
-                lsx_fail("gain-out must be positive!");
-                return (SOX_EOF);
-        }
 	echos->counter = lsx_calloc(echos->num_delays, sizeof(*echos->counter));
 	echos->samples = lsx_calloc(echos->num_delays, sizeof(*echos->samples));
 	echos->delay_buf = lsx_calloc(echos->num_delays, sizeof(*echos->delay_buf));
@@ -108,17 +93,7 @@ static int sox_echos_start(sox_effect_t * effp)
                 echos->samples[i] = echos->delay[i] * effp->in_signal.rate / 1000.0;
                 if ( echos->samples[i] < 1 )
                 {
-                    lsx_fail("delay must be positive!");
-                    return (SOX_EOF);
-                }
-                if ( echos->decay[i] < 0.0 )
-                {
-                    lsx_fail("decay must be positive!" );
-                    return (SOX_EOF);
-                }
-                if ( echos->decay[i] > 1.0 )
-                {
-                    lsx_fail("decay must be less than 1.0!" );
+                    lsx_fail("delay is less than one sample");
                     return (SOX_EOF);
                 }
 		echos->delay_buf[i] = lsx_calloc(echos->samples[i],
@@ -130,9 +105,9 @@ static int sox_echos_start(sox_effect_t * effp)
         sum_in_volume = echos->in_gain;
         for ( i = 0; i < echos->num_delays; i++ )
                 sum_in_volume += echos->decay[i];
-        if ( sum_in_volume * echos->out_gain > 1.0 )
+        if ( fabsf(sum_in_volume * echos->out_gain) > 1.0 )
                 lsx_warn("the output may saturate; a safe gain-out is %g",
-                         1.0 / sum_in_volume);
+                         1.0 / fabsf(sum_in_volume));
 
         effp->out_signal.length = SOX_UNKNOWN_LEN; /* TODO: calculate actual length */
 
