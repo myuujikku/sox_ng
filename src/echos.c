@@ -149,13 +149,12 @@ static int sox_echos_flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sam
         priv_t * echos = (priv_t *) effp->priv;
         int j;
         float d_in, d_out;
-        sox_sample_t out;
         size_t len = min(*isamp, *osamp);
         *isamp = *osamp = len;
 
         while (len--) {
                 /* Store delays as 24-bit signed longs */
-                d_in = (float) *ibuf++ / 256;
+                d_in = (float) *ibuf++;
                 /* Compute output first */
                 d_out = d_in * echos->in_gain;
                 for ( j = 0; j < echos->num_delays; j++ ) {
@@ -163,8 +162,7 @@ static int sox_echos_flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sam
                 }
                 /* Adjust the output volume and size to 24 bit */
                 d_out = d_out * echos->out_gain;
-                out = SOX_24BIT_CLIP_COUNT((sox_sample_t) d_out, effp->clips);
-                *obuf++ = out * 256;
+                *obuf++ = SOX_ROUND_CLIP_COUNT(d_out, effp->clips);
                 /* Mix decay of delays and input */
                 for ( j = echos->num_delays - 1; j > 0; j-- ) {
 		    echos->delay_buf[j][echos->counter[j]] =
@@ -187,7 +185,6 @@ static int sox_echos_drain(sox_effect_t * effp, sox_sample_t *obuf, size_t *osam
 {
         priv_t * echos = (priv_t *) effp->priv;
         float d_out;
-        sox_sample_t out;
         int j;
         size_t done;
 
@@ -200,8 +197,7 @@ static int sox_echos_drain(sox_effect_t * effp, sox_sample_t *obuf, size_t *osam
                 }
                 /* Adjust the output volume and size to 24 bit */
                 d_out = d_out * echos->out_gain;
-                out = SOX_24BIT_CLIP_COUNT((sox_sample_t) d_out, effp->clips);
-                *obuf++ = out * 256;
+                *obuf++ = SOX_ROUND_CLIP_COUNT(d_out, effp->clips);
                 /* Mix decay of delays and input */
                 for ( j = echos->num_delays - 1; j > 0; j-- ) {
                         echos->delay_buf[j][echos->counter[j]] =
