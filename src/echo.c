@@ -87,37 +87,12 @@ static int sox_echo_start(sox_effect_t * effp)
         float sum_in_volume;
 
         echo->maxsamples = 0;
-        if ( echo->in_gain < 0.0 )
-        {
-                lsx_fail("gain-in must be positive!");
-                return (SOX_EOF);
-        }
-        if ( echo->in_gain > 1.0 )
-        {
-                lsx_fail("gain-in must be less than 1.0!");
-                return (SOX_EOF);
-        }
-        if ( echo->out_gain < 0.0 )
-        {
-                lsx_fail("gain-out must be positive!");
-                return (SOX_EOF);
-        }
 	echo->samples = lsx_calloc(echo->num_delays, sizeof(*echo->samples));
         for ( i = 0; i < echo->num_delays; i++ ) {
                 echo->samples[i] = echo->delay[i] * effp->in_signal.rate / 1000.0;
                 if ( echo->samples[i] < 1 )
                 {
-                    lsx_fail("delay must be positive!");
-                    return (SOX_EOF);
-                }
-                if ( echo->decay[i] < 0.0 )
-                {
-                    lsx_fail("decay must be positive!" );
-                    return (SOX_EOF);
-                }
-                if ( echo->decay[i] > 1.0 )
-                {
-                    lsx_fail("decay must be less than 1.0!" );
+                    lsx_fail("delay is less than one sample");
                     return (SOX_EOF);
                 }
                 if ( echo->samples[i] > echo->maxsamples )
@@ -129,9 +104,9 @@ static int sox_echo_start(sox_effect_t * effp)
         sum_in_volume = echo->in_gain;
         for ( i = 0; i < echo->num_delays; i++ )
                 sum_in_volume += echo->decay[i];
-        if ( sum_in_volume * echo->out_gain > 1.0 )
+        if ( fabsf(sum_in_volume * echo->out_gain) > 1.0 )
                 lsx_warn("the output may saturate; a safe gain-out is %g",
-		         1.0 / sum_in_volume);
+		         fabsf(1.0f / sum_in_volume));
         echo->counter = 0;
         echo->fade_out = echo->maxsamples;
 
