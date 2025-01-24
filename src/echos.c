@@ -12,7 +12,6 @@
 #include "sox_i.h"
 
 
-#define DELAY_BUFSIZ ( 50 * 50U * 1024 )
 #define MAX_ECHOS 7     /* 24 bit x ( 1 + MAX_ECHOS ) = */
                         /* 24 bit x 8 = 32 bit !!!      */
 
@@ -89,7 +88,6 @@ static int sox_echos_start(sox_effect_t * effp)
         priv_t * echos = (priv_t *) effp->priv;
         int i;
         float sum_in_volume;
-        unsigned long j;
 
         if ( echos->in_gain < 0.0 )
         {
@@ -113,12 +111,6 @@ static int sox_echos_start(sox_effect_t * effp)
                     lsx_fail("delay must be positive!");
                     return (SOX_EOF);
                 }
-                if ( echos->samples[i] > (ptrdiff_t)DELAY_BUFSIZ )
-                {
-                        lsx_fail("delay must be less than %g seconds!",
-                                DELAY_BUFSIZ / effp->in_signal.rate );
-                        return (SOX_EOF);
-                }
                 if ( echos->decay[i] < 0.0 )
                 {
                     lsx_fail("decay must be positive!" );
@@ -133,10 +125,9 @@ static int sox_echos_start(sox_effect_t * effp)
                 echos->pointer[i] = echos->sumsamples;
                 echos->sumsamples += echos->samples[i];
         }
-        echos->delay_buf = lsx_malloc(sizeof (double) * echos->sumsamples);
-        for ( j = 0; j < echos->sumsamples; ++j )
-                echos->delay_buf[j] = 0.0;
-        /* Be nice and check the hint with warning, if... */
+        echos->delay_buf = lsx_calloc(echos->sumsamples,
+                                      sizeof(*echos->delay_buf));
+	/* calloc() returns the memory already zeroed */
         sum_in_volume = 1.0;
         for ( i = 0; i < echos->num_delays; i++ )
                 sum_in_volume += echos->decay[i];
