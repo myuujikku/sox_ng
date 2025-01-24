@@ -25,9 +25,4 @@ status=$?
 
 rm -f core out.*
 
-case $status in
-0) status=2;;
-2) status=0;;
-esac
-
 exit $status
