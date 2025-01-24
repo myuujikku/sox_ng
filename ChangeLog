@@ -19,6 +19,8 @@ New features:
   o Error messages have been harmonized. The best was
     sox_ng WARN chorus: chorus: warning >>> gain-out can cause saturation
   o wget, wget2 and curl are sought at runtime instead of at build time
+  o Remove echo(s)' limits on number/length of delays and range of gains/decays
+  o Make echos run 20% faster
 
 Bug fixes:
   o The "stats" effect's Bit-depth values have been revised to reflect
