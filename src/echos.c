@@ -11,10 +11,6 @@
 
 #include "sox_i.h"
 
-
-#define MAX_ECHOS 7     /* 24 bit x ( 1 + MAX_ECHOS ) = */
-                        /* 24 bit x 8 = 32 bit !!!      */
-
 /* Private data */
 
 /* Instead of having a separate buffer for each delay, one huge buffer is
@@ -28,12 +24,12 @@
  *            <delay> microseconds (== samples[i] samples) in the future.
  */
 typedef struct {
-        int     counter[MAX_ECHOS];
+        int     *counter;
         int     num_delays;
         double  *delay_buf;
         float   in_gain, out_gain;
-        float   delay[MAX_ECHOS], decay[MAX_ECHOS];
-        ptrdiff_t samples[MAX_ECHOS], pointer[MAX_ECHOS];
+        float   *delay, *decay;
+        ptrdiff_t *samples, *pointer;
         size_t sumsamples;
 } priv_t;
 
@@ -46,6 +42,7 @@ static int sox_echos_getopts(sox_effect_t * effp, int argc, char **argv)
         int i;
 
         echos->num_delays = 0;
+        echos->delay = echos->decay = NULL;
 
         --argc, ++argv;
         if ((argc < 4) || (argc % 2))
@@ -56,7 +53,7 @@ static int sox_echos_getopts(sox_effect_t * effp, int argc, char **argv)
         sscanf(argv[i++], "%f", &echos->out_gain);
         while (i < argc) {
 		float delay, decay;
-                /* Linux bug and it's cleaner. */
+
                 if (sscanf(argv[i], "%f", &delay) != 1) {
                         lsx_fail("delay `%s' is not a number", argv[i]);
                         return (SOX_EOF);
@@ -67,14 +64,14 @@ static int sox_echos_getopts(sox_effect_t * effp, int argc, char **argv)
                         return (SOX_EOF);
                 }
 		i++;
-                if ( echos->num_delays >= MAX_ECHOS ) {
-                        lsx_fail("too many delays; use less than %i delays",
-                                MAX_ECHOS);
-                        return (SOX_EOF);
-                }
-                echos->delay[echos->num_delays] = delay;
-                echos->decay[echos->num_delays] = decay;
+
                 echos->num_delays++;
+		echos->delay = lsx_realloc_array(echos->delay, echos->num_delays,
+                                                sizeof(*echos->delay));
+		echos->decay = lsx_realloc_array(echos->decay, echos->num_delays,
+                                                sizeof(*echos->decay));
+                echos->delay[echos->num_delays - 1] = delay;
+                echos->decay[echos->num_delays - 1] = decay;
         }
         echos->sumsamples = 0;
         return (SOX_SUCCESS);
@@ -104,6 +101,9 @@ static int sox_echos_start(sox_effect_t * effp)
                 lsx_fail("gain-out must be positive!");
                 return (SOX_EOF);
         }
+	echos->counter = lsx_calloc(echos->num_delays, sizeof(*echos->counter));
+	echos->pointer = lsx_calloc(echos->num_delays, sizeof(*echos->pointer));
+	echos->samples = lsx_calloc(echos->num_delays, sizeof(*echos->samples));
         for ( i = 0; i < echos->num_delays; i++ ) {
                 echos->samples[i] = echos->delay[i] * effp->in_signal.rate / 1000.0;
                 if ( echos->samples[i] < 1 )
@@ -128,11 +128,12 @@ static int sox_echos_start(sox_effect_t * effp)
         echos->delay_buf = lsx_calloc(echos->sumsamples,
                                       sizeof(*echos->delay_buf));
 	/* calloc() returns the memory already zeroed */
-        sum_in_volume = 1.0;
+        sum_in_volume = echos->in_gain;
         for ( i = 0; i < echos->num_delays; i++ )
                 sum_in_volume += echos->decay[i];
-        if ( sum_in_volume * echos->in_gain > 1.0 / echos->out_gain )
-                lsx_warn("gain-out can cause saturation of output");
+        if ( sum_in_volume * echos->out_gain > 1.0 )
+                lsx_warn("the output may saturate; a safe gain-out is %g",
+                         1.0 / sum_in_volume);
 
         effp->out_signal.length = SOX_UNKNOWN_LEN; /* TODO: calculate actual length */
 
@@ -230,6 +231,9 @@ static int sox_echos_stop(sox_effect_t * effp)
 {
         priv_t * echos = (priv_t *) effp->priv;
 
+        free(echos->counter);
+        free(echos->samples);
+        free(echos->pointer);
         free(echos->delay_buf);
         echos->delay_buf = NULL;
         return (SOX_SUCCESS);
