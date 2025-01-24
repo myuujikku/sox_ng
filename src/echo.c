@@ -9,16 +9,17 @@
 
 #include "sox_i.h"
 
-
-/* This is rubbish because it uses doubles internally */
-#define MAX_ECHOS 255   /* 24 bit x ( 1 + MAX_ECHOS ) = */
-                        /* 24 bit x 8 = 32 bit !!!      */
+/*
+ * It's faster to use floats that sox_sample_t because the
+ * conversion to/from float to apply decay at every sample
+ * outweighs the advantage of the fixed-point arithmetic.
+ */
 
 /* Private data */
 typedef struct {
         int     counter;
         int     num_delays;
-        double  *delay_buf;
+        float   *delay_buf;
         float   in_gain, out_gain;
         float   *delay, *decay;
         ptrdiff_t *samples, maxsamples;
@@ -73,12 +74,6 @@ static int sox_echo_getopts(sox_effect_t * effp, int argc, char **argv)
 		echo->delay[echo->num_delays - 1] = delay;
 		echo->decay[echo->num_delays - 1] = decay;
         }
-	/* This is not true because it uses doubles internally
-	if (echo->num_delays >= MAX_ECHOS) {
-		lsx_warn("more than %d echos may cause an integer overflow",
-			MAX_ECHOS);
-	}
-	*/
         return (SOX_SUCCESS);
 }
 
@@ -154,14 +149,14 @@ static int sox_echo_flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_samp
 {
         priv_t * echo = (priv_t *) effp->priv;
         int j;
-        double d_in, d_out;
+        float d_in, d_out;
         sox_sample_t out;
         size_t len = min(*isamp, *osamp);
         *isamp = *osamp = len;
 
         while (len--) {
                 /* Store delays as 24-bit signed longs */
-                d_in = (double) *ibuf++ / 256;
+                d_in = (float) *ibuf++ / 256;
                 /* Compute output first */
                 d_out = d_in * echo->in_gain;
                 for ( j = 0; j < echo->num_delays; j++ ) {
@@ -188,7 +183,7 @@ static int sox_echo_flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_samp
 static int sox_echo_drain(sox_effect_t * effp, sox_sample_t *obuf, size_t *osamp)
 {
         priv_t * echo = (priv_t *) effp->priv;
-        double d_in, d_out;
+        float d_in, d_out;
         sox_sample_t out;
         int j;
         size_t done;
