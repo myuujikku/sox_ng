@@ -26,7 +26,7 @@
 typedef struct {
         int     *counter;
         int     num_delays;
-        double  **delay_buf;
+        float   **delay_buf;
         float   in_gain, out_gain;
         float   *delay, *decay;
         ptrdiff_t *samples;
@@ -148,14 +148,14 @@ static int sox_echos_flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sam
 {
         priv_t * echos = (priv_t *) effp->priv;
         int j;
-        double d_in, d_out;
+        float d_in, d_out;
         sox_sample_t out;
         size_t len = min(*isamp, *osamp);
         *isamp = *osamp = len;
 
         while (len--) {
                 /* Store delays as 24-bit signed longs */
-                d_in = (double) *ibuf++ / 256;
+                d_in = (float) *ibuf++ / 256;
                 /* Compute output first */
                 d_out = d_in * echos->in_gain;
                 for ( j = 0; j < echos->num_delays; j++ ) {
@@ -186,7 +186,7 @@ static int sox_echos_flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sam
 static int sox_echos_drain(sox_effect_t * effp, sox_sample_t *obuf, size_t *osamp)
 {
         priv_t * echos = (priv_t *) effp->priv;
-        double d_out;
+        float d_out;
         sox_sample_t out;
         int j;
         size_t done;
