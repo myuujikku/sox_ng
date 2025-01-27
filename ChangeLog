@@ -15,6 +15,7 @@ New features:
     sox_ng WARN chorus: chorus: warning >>> gain-out can cause saturation
   o Remove echo(s)' limits on number/length of delays and range of gains/decays
   o Make echos run 20% faster
+  o Make chorus work (it never has), now as documented in man and flow diagram
 
 Bug fixes:
   o The "stats" effect's Bit-depth values have been revised to reflect
