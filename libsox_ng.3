@@ -90,7 +90,7 @@ related to all file format handlers.
 .P
 \fBsox_open_read()\fR opens a file for reading whose name is
 the string pointed to by \fIpath\fR and associates a \fBsox_format_t\fR with it.
-A special name of "-" reads data from stdin.
+A special name of `\fB\-\fR' reads data from stdin.
 If \fIinfo\fR is not NULL, it specifies the data format of the input file
 and if \fIencoding\fR is not NULL it gives information already known
 about the sample encoding.
@@ -108,7 +108,7 @@ Currently, it relies on \fBsox_warn\fR to print information.
 .P
 \fBsox_open_write()\fR opens a file for writing whose name is
 the string pointed to by \fIpath\fR and associates a \fBsox_format_t\fR with it.
-A special name of "-" writes data to stdout.
+A special name of `\fB\-\fR' writes data to stdout.
 \fIinfo\fR specifies the data format of the output file.
 The \fIinfo\fR structure from an input format handler can be used
 to copy data using the same format.
@@ -132,10 +132,10 @@ if its value is not divisable by the number of channels,
 anything might happen.
 It returns the number of samples read or zero at the end of the file
 or if an error occurred.
-\fBsox_read\fR's return value does not distiguish between
+\fBsox_read()\fR's return value does not distiguish between
 the end of a file and an error
 but you can inspect \fBft->sox_errno\fR to tell the difference.
-It should be SOX_SUCCESS or SOX_EOF unless some other error
+It should be \fBSOX_SUCCESS\fR or \fBSOX_EOF\fR unless some other error
 has occurred previously;
 you can clear \fBft->sox_errno\fR to 0 beforehand to be sure.
 .P
@@ -155,7 +155,7 @@ It returns the actual number of samples encoded, zero if an error occurred.
 \fBsox_close()\fR dissociates a \fBsox_format_t\fR from its
 underlying file and set of functions.
 If the format handler was used for output, any buffered data is written first.
-It returns SOX_SUCCESS if everything went well
+It returns \fBSOX_SUCCESS\fR if everything went well
 or the return value from the format's \fBstopread\fR or \fBstopwrite\fR
 (probably \fBSOX_EOF\fR) otherwise and the precise reason for failure
 is passed to \fBsox_warn()\fR or \fBsox_fail()\fR to print the information.
@@ -237,7 +237,7 @@ to write applications using \fBlibsox_ng\fR and
 [7] TODO
 .SH INTERNALS
 SoX's formats and effects operate with an internal sample format of
-signed 32-bit integer.  The data processing routines are called with
+signed 32-bit integers.  The data processing routines are called with
 buffers of these samples and buffer sizes which refer to the number
 of samples processed, not the number of bytes.  File readers translate
 input samples to signed 32-bit integers and return the number of
@@ -300,21 +300,21 @@ has 6 routines:
 .TP 20
 startread
 Set up the format parameters, read in
-a data header or do anything else that needs to be done.
+a data header and do anything else that needs to be done.
 .TP 20
 read
 Given a buffer and a length,
 read up to that many samples, 
 transform them into signed long integers,
 and copy them into the buffer.
-it returns the number of samples actually read.
+It returns the number of samples actually read.
 .TP 20
 stopread
 Do what needs to be done when it has finished reading.
 .TP 20
 startwrite
 Set up the format parameters, maybe write out 
-a data header and any any other preliminaries for writing the format.
+a data header and any other preliminaries for writing the format.
 .TP 20
 write
 Given a buffer and a length,
@@ -406,7 +406,7 @@ details; basically, you use it like this:
 Copyright 1991\-2015 Lance Norskog, Chris Bagwell and sundry contributors.
 .SP
 This library is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License version 2.1
+it under the terms of the GNU General Public License version 2
 as published by the Free Software Foundation.
 .SP
 This library is distributed in the hope that it will be useful,
@@ -419,4 +419,4 @@ is distributed with the source code.
 .SH SEE ALSO
 .BR sox_ng (1),
 .BR soxformat_ng (7),
-\fBexample*.c\fR in the SoX source distribution.
+\fBsrc/example*.c\fR in the SoX source distribution.
