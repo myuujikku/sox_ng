@@ -268,3 +268,6 @@ installcheck: sox_sample_test
 	$(srcdir)/testall.sh --bindir=$(DESTDIR)${bindir} \
 		--libdir=$(DESTDIR)${libdir} \
 		--srcdir=${srcdir}
+
+check-am: sox_sample_test
+	sh tests.sh
