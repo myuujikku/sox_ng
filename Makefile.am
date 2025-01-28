@@ -18,8 +18,8 @@
 
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = lpc10 libgsm src
-DIST_SUBDIRS = lpc10 libgsm src msvc9 msvc10
+SUBDIRS = lpc10 libgsm src test
+DIST_SUBDIRS = lpc10 libgsm src msvc9 msvc10 test
 
 RM = rm -f
 
@@ -178,6 +178,3 @@ uninstall-hook:
 # Automatically update libtool script if it gets out-of-date
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status --recheck
-
-check-am:
-	cd test && sox=../../src/sox_ng sh check.sh -n
