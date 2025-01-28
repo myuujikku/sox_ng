@@ -22,6 +22,7 @@ New features:
   o Remove echo(s)' limits on number/length of delays and range of gains/decays
   o Make echos run 20% faster
   o Make chorus work (it never has), now as documented in man and flow diagram
+  o Add softvol effect, a software gain that avoids clipping and maybe rises
 
 Bug fixes:
   o The "stats" effect's Bit-depth values have been revised to reflect

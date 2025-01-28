@@ -3199,6 +3199,20 @@ instead of truncating it.
 .SP
 This effect supports the \fB\-\-plot\fR global option.
 .TP
+\fBsoftvol \fIvolume\fR [\fI\-D double_time\fR]
+The soft volume effect applies a simple multiplier to the audio
+ensuring that it does not clip. When a sample would have clipped
+has \sBsoftvol\fR been applied to it, the volume multiplier is
+automatically reduced to compensate and ensure the signal does not clip.
+.SP
+The \fB\-D\fR option says that the volume should slowly increase
+at a rate that makes it double every \fIdouble_time\fR seconds.
+\fB\-D\ 0\fR insists that the volume should not increase.
+The necessary maximum is a year.
+.SP
+\fBsoftvol\fR is a simple compander with the advantages of being
+fast and having no pre-echo.
+.TP
 \fBspectrogram \fR[\fIoptions\fR]
 Create a spectrogram of the audio. The audio is passed unmodified
 through the SoX processing chain.  This effect is optional\*mtype
@@ -3267,7 +3281,7 @@ printer.
 .RS
 .IP \fB\-x\ \fInum\fR
 Change the (maximum) width (X axis) of the spectrogram from its default
-value of 800 pixels to a given number between 100 and 200000.
+value of 800 pixels to a given number between 100 and a million.
 See \fB\-X\fR and \fB\-d\fR.
 .IP \fB\-X\ \fInum\fR
 X axis pixels per second; the default is auto-calculated to fit the
@@ -3293,7 +3307,7 @@ channels.  See
 for an alternative way of setting the spectrogram height.
 .IP \fB\-Y\ \fInum\fR
 Sets the target total height of the spectrogram(s).  The default value
-is 550 pixels and the maximum is 16384 or 200000 depending on your system's
+is 550 pixels and the maximum is 16384 or a million depending on your system's
 capabilities.  Using this option, and by default, SoX chooses a
 height for individual spectrogram channels that is one more than a
 power of two, so the actual total height may fall short of the given

@@ -71,6 +71,7 @@
   EFFECT(sdm)
   EFFECT(silence)
   EFFECT(sinc)
+  EFFECT(softvol)
 #ifdef HAVE_PNG
   EFFECT(spectrogram)
 #endif

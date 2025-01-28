@@ -123,6 +123,7 @@ The audio effects/tools included in this release are as follows:
 ** loudness: Gain control with ISO 226 loudness compensation
 ** mcompand: Multi-band compression/expansion/limiting
 ** norm: Normalise to 0dB (or other)
+** softvol: A software volume control that avoids clipping and maybe rises
 ** vol: Adjust audio volume
 
 * Editing effects
