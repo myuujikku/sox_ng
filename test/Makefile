@@ -1,2 +1,0 @@
-check:
-	sh check.sh

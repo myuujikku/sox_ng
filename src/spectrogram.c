@@ -49,12 +49,12 @@
 
 #define is_p2(x) !(x & (x - 1))
 
-#define MAX_X_SIZE 200000
+#define MAX_X_SIZE 1000000	/* Limit enforced by libpng */
 
 #if SSIZE_MAX < UINT32_MAX
 #define MAX_Y_SIZE 16384 /* avoid multiplication overflow on 32-bit systems */
 #else
-#define MAX_Y_SIZE 200000
+#define MAX_Y_SIZE 1000000	/* Limit enforced by libpng */
 #endif
 
 typedef enum {Window_Hann, Window_Hamming, Window_Bartlett, Window_Rectangular, Window_Kaiser, Window_Dolph} win_type_t;
