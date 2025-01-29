@@ -4050,7 +4050,9 @@ Puts each stage's output in a new output channel and is the default:
 Mixes the generated audio 50:50 with the input signal.
 .TP
 .B amod
-Amplitude-modulates (multiplies) the input signal by the synthesized one.
+Amplitude-modulates (multiplies) the input signal by the synthesized one
+considered as a value from 0 (for the most negative value)
+to 1 (for the most positive value).
 .TP
 .B fmod
 Multiplies the input signal with the synthesized one (ring modulation).
