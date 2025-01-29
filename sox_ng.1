@@ -3931,7 +3931,7 @@ See
 .B remix
 for an effect that allows arbitrary channel selection, ordering and mixing.
 .TP
-\fBsynth\fR [\fB\-j \fIkey\fR] [\fB\-n\fR] [\fIlength\fR [\fIoffset\fR [\fIphase\fR [\fIp1\fR [\fIp2\fR [\fIp3\fR]]]]]]
+\fBsynth\fR [\fB\-j \fIkey\fR] [\fB\-n\fR] [\fB\-V\fI time\fR] [\fIlength\fR [\fIoffset\fR [\fIphase\fR [\fIp1\fR [\fIp2\fR [\fIp3\fR]]]]]]
 {\fItype\fR [\fIcombine\fR] \:[[\fB%\fR]\fIfreq\fR[\fBk\fR][\fB:\fR\^|\^\fB+\fR\^|\^\fB/\fR\^|\^\fB\-\fR[\fB%\fR]\fIfreq2\fR[\fBk\fR]]] [\fIoffset\fR [\fIphase\fR [\fIp1\fR [\fIp2\fR [\fIp3\fR]]]]]}
 .SP
 \fBsynth\fR generates fixed or swept frequency audio tones
@@ -4123,6 +4123,18 @@ to 1 (for the most positive value).
 .TP
 .B fmod
 Multiplies the input signal with the synthesized one (ring modulation).
+.TP
+.B vdelay
+Uses the synthesized signal as the offset into a delayed version
+of the input signal.
+The synthesized signal's value is considered to be in seconds,
+and has a maximum value of one second.
+Negative velues and values grater than 1 are mapped cyclically
+into the delay buffer according to its length.
+The \fBvdelay\fR buffer length can be set in seconds by \fBsynth\fR's
+\fB\-V\fR option.
+It interpolates linearly between the input samples and
+can be used to create precision phaser, flanger and chorus effects.
 .RE
 .TP
 \ 

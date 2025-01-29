@@ -65,13 +65,16 @@ static lsx_enum_item const synth_type[] = {
   {0, 0}
 };
 
-typedef enum {synth_create, synth_mix, synth_amod, synth_fmod} combine_t;
+typedef enum {
+  synth_create, synth_mix, synth_amod, synth_fmod, synth_vdelay
+} combine_t;
 
 static lsx_enum_item const combine_type[] = {
   LSX_ENUM_ITEM(synth_, create)
   LSX_ENUM_ITEM(synth_, mix)
   LSX_ENUM_ITEM(synth_, amod)
   LSX_ENUM_ITEM(synth_, fmod)
+  LSX_ENUM_ITEM(synth_, vdelay)
   {0, 0}
 };
 
@@ -94,6 +97,8 @@ typedef struct {
 
   double * buffer;
   size_t buffer_len, pos;
+  sox_sample_t * vdelay_buffer;
+  size_t vdelay_len, vpos;
 } channel_t;
 
 
@@ -340,6 +345,14 @@ static int start(sox_effect_t * effp)
     channel_t *  chan = &p->channels[i];
     *chan = p->getopts_channels[i % p->getopts_nchannels];
     set_default_parameters(chan);
+
+    if (chan->combine == synth_vdelay) {
+     chan->vdelay_len = effp->in_signal.rate; /* one second */
+     chan->vdelay_buffer = lsx_calloc(chan->vdelay_len,
+                                      sizeof(*chan->vdelay_buffer));
+     chan->vpos = 0;
+    }
+
     if (chan->type == synth_pluck) {
       double min, max, frac, p2;
 
@@ -630,6 +643,17 @@ static int flow(sox_effect_t * effp, const sox_sample_t * ibuf, sox_sample_t * o
         case synth_mix   : synth_out = (synth_out * SOX_SAMPLE_MAX + synth_input) * .5; break;
         case synth_amod  : synth_out = (synth_out + 1) * synth_input * .5; break;
         case synth_fmod  : synth_out *=  synth_input; break;
+        case synth_vdelay: {
+	  size_t vlen = chan->vdelay_len;
+	  double sr = effp->in_signal.rate;
+	  chan->vdelay_buffer[chan->vpos] = synth_input;
+	  synth_out = chan->vdelay_buffer[
+	    (chan->vpos - lrint(synth_out * sr) + vlen) % vlen
+	  ];
+	  if (chan->vpos == vlen) chan->vpos=0;
+	  chan->vpos++;
+	}
+	break;
       }
       *obuf++ = synth_out < 0? synth_out * p->gain - .5 : synth_out * p->gain + .5;
     }
@@ -647,8 +671,11 @@ static int stop(sox_effect_t * effp)
   priv_t * p = (priv_t *) effp->priv;
   size_t i;
 
-  for (i = 0; i < p->number_of_channels; ++i)
+  for (i = 0; i < p->number_of_channels; ++i) {
     free(p->channels[i].buffer);
+    if (p->channels[i].combine == synth_vdelay)
+      free(p->channels[i].vdelay_buffer);
+  }
   free(p->channels);
   return SOX_SUCCESS;
 }
@@ -668,7 +695,7 @@ static int lsx_kill(sox_effect_t * effp)
 const sox_effect_handler_t *lsx_synth_effect_fn(void)
 {
   static sox_effect_handler_t handler = {
-    "synth", "[-j KEY] [-n] [length [offset [phase [p1 [p2 [p3]]]]]]] {type [combine] [[%]freq[k][:|+|/|-[%]freq2[k]] [offset [phase [p1 [p2 [p3]]]]]]}",
+    "synth", "[-j KEY] [-n] [-V time [length [offset [phase [p1 [p2 [p3]]]]]]] {type [combine] [[%]freq[k][:|+|/|-[%]freq2[k]] [offset [phase [p1 [p2 [p3]]]]]]}",
     SOX_EFF_MCHAN | SOX_EFF_LENGTH | SOX_EFF_GAIN,
     getopts, start, flow, 0, stop, lsx_kill, sizeof(priv_t)
   };
