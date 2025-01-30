@@ -99,6 +99,7 @@ typedef struct {
   size_t buffer_len, pos;
   double * vdelay_buffer;
   size_t vdelay_len, vpos;
+  float vdelay_fixed, vdelay_extra, vdelay_depth;
 } channel_t;
 
 
@@ -260,6 +261,31 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
         break;
     }
 
+    /* For combine type vdelay there may be three parameters to it:
+     * fixed delay, extra delay (effect depth) and depth (effect amplitude)
+     */
+    if (strcmp(argv[argn], "-V") == 0) {
+      if (chan->combine != synth_vdelay) {
+        lsx_fail("-V only applies to combine type `vdelay'");
+        return SOX_EOF;
+      }
+      if (++argn == argc) {
+vwhat:  lsx_fail("-V what?");
+        return SOX_EOF;
+      }
+      switch (sscanf(argv[argn], "%f,%f,%f", &chan->vdelay_fixed,
+                                             &chan->vdelay_extra,
+                                             &chan->vdelay_depth)) {
+      case 0: goto vwhat;
+        /* Supply default values for missing parameters */
+      case 1: chan->vdelay_extra = 0; goto case2;
+case2:case 2: chan->vdelay_depth = 1;
+      case 3: break;
+      }
+      if (++argn == argc)
+        break;
+    }
+
     /* read frequencies if given */
     if (!lsx_find_enum_text(argv[argn], synth_type, lsx_find_enum_item_case_sensitive) &&
         argv[argn][0] != '-') {
@@ -348,7 +374,10 @@ static int start(sox_effect_t * effp)
     set_default_parameters(chan);
 
     if (chan->combine == synth_vdelay) {
-     chan->vdelay_len = (chan->p1 + chan->p2) * sr + 1;
+     /* I don't know why you need two extra samples, but if you don't
+      * you get buffer wraparounds causing clicks. Larger values also work.
+      */
+     chan->vdelay_len = (chan->vdelay_fixed + chan->vdelay_extra) * sr + 2;
      chan->vdelay_buffer = lsx_calloc(chan->vdelay_len,
                                       sizeof(*chan->vdelay_buffer));
      chan->vpos = 0;
@@ -645,8 +674,9 @@ static int flow(sox_effect_t * effp, const sox_sample_t * ibuf, sox_sample_t * o
         case synth_amod  : synth_out = (synth_out + 1) * synth_input * .5; break;
         case synth_fmod  : synth_out *=  synth_input; break;
         case synth_vdelay: {
-          /* p1 is the constant delay,
-           * p2 the depth of the extra delay, both in secs
+          /* vdelay_fixed is the constant delay,
+           * vdelay_extra is the depth of the extra delay, both in secs
+           * vdelay_depth is the proportion of the delayed signal to add
            */
           size_t vlen = chan->vdelay_len;
           sox_rate_t sr = effp->in_signal.rate;
@@ -658,7 +688,7 @@ static int flow(sox_effect_t * effp, const sox_sample_t * ibuf, sox_sample_t * o
           /* Convert synth_out [-1 to 1] to 0 to 1, add the constant delay
            * and convert to the number of samples ago.
            */
-          offset = (chan->p1 + (chan->p2 * (synth_out + 1.0) / 2.0)) * sr;
+          offset = (chan->vdelay_fixed + (chan->vdelay_extra * ((synth_out + 1.0) / 2.0))) * sr;
           /* This should never happen */
           if (offset >= (double)chan->vdelay_len ||
               offset <= -(double)chan->vdelay_len)
@@ -671,13 +701,16 @@ static int flow(sox_effect_t * effp, const sox_sample_t * ibuf, sox_sample_t * o
           lindex = ((chan->vpos -  (int)ceil(offset)) + vlen) % vlen;
           rindex = ((chan->vpos - (int)trunc(offset)) + vlen) % vlen;
           if (lindex == rindex) {
-            synth_out = (synth_input + chan->vdelay_buffer[lindex]) / 2.0;
+            synth_out = (synth_input + chan->vdelay_depth *
+                         chan->vdelay_buffer[lindex]) /
+                        (1.0 + chan->vdelay_depth);
           } else {
             /* How far through the sample frame the FP offset is, 0-1 */
             double fraction = 1 - (offset - trunc(offset));
-            synth_out = (synth_input +
-                         chan->vdelay_buffer[lindex] * (1 - fraction) +
-                         chan->vdelay_buffer[rindex] * fraction) / 2.0;
+            synth_out = (synth_input + chan->vdelay_depth *
+                          (chan->vdelay_buffer[lindex] * (1 - fraction) +
+                           chan->vdelay_buffer[rindex] * fraction)) /
+                        (1.0 + chan->vdelay_depth);
           }
           if (++chan->vpos == vlen) chan->vpos=0;
         }
@@ -723,7 +756,7 @@ static int lsx_kill(sox_effect_t * effp)
 const sox_effect_handler_t *lsx_synth_effect_fn(void)
 {
   static sox_effect_handler_t handler = {
-    "synth", "[-j KEY] [-n] [-V time [length [offset [phase [p1 [p2 [p3]]]]]]] {type [combine] [[%]freq[k][:|+|/|-[%]freq2[k]] [offset [phase [p1 [p2 [p3]]]]]]}",
+    "synth", "[-j KEY] [-n] [length [offset [phase [p1 [p2 [p3]]]]]] {type [combine [-V fixed[,extra[,depth]]]] [[%]freq[k][:|+|/|-[%]freq2[k]] [offset [phase [p1 [p2 [p3]]]]]]}",
     SOX_EFF_MCHAN | SOX_EFF_LENGTH | SOX_EFF_GAIN,
     getopts, start, flow, 0, stop, lsx_kill, sizeof(priv_t)
   };
