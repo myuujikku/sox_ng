@@ -646,27 +646,39 @@ static int flow(sox_effect_t * effp, const sox_sample_t * ibuf, sox_sample_t * o
         case synth_fmod  : synth_out *=  synth_input; break;
         case synth_vdelay: {
           /* p1 is the constant delay,
-           * p2 the depth of the extra delay, both in secs */
+           * p2 the depth of the extra delay, both in secs
+           */
           size_t vlen = chan->vdelay_len;
           sox_rate_t sr = effp->in_signal.rate;
-          int offset;
+          double offset;        /* Floating-point offset from vpos */
+          int lindex, rindex;   /* Integral index before and after it */
 
           chan->vdelay_buffer[chan->vpos] = synth_input;
 
           /* Convert synth_out [-1 to 1] to 0 to 1, add the constant delay
            * and convert to the number of samples ago.
            */
-          offset = lrint((chan->p1 + (chan->p2 * (synth_out + 1.0) / 2.0)) * sr);
+          offset = (chan->p1 + (chan->p2 * (synth_out + 1.0) / 2.0)) * sr;
           /* This should never happen */
-          if (offset >= (int)chan->vdelay_len ||
-              offset <= -(int)chan->vdelay_len)
-            lsx_warn("vdelay's sample offset (%d) "
+          if (offset >= (double)chan->vdelay_len ||
+              offset <= -(double)chan->vdelay_len)
+            lsx_warn("vdelay's sample offset (%g) "
                      "exceeds the delay buffer size (%d)",
                      offset, (int)chan->vdelay_len);
 
-          synth_out = (synth_input + chan->vdelay_buffer[
-            (chan->vpos - offset + vlen) % vlen
-          ]) / 2.0;
+          /* For less noise, interpolate between the two samples
+           * either side of the floating-point sample offset */
+          lindex = ((chan->vpos -  (int)ceil(offset)) + vlen) % vlen;
+          rindex = ((chan->vpos - (int)trunc(offset)) + vlen) % vlen;
+          if (lindex == rindex) {
+            synth_out = (synth_input + chan->vdelay_buffer[lindex]) / 2.0;
+          } else {
+            /* How far through the sample frame the FP offset is, 0-1 */
+            double fraction = 1 - (offset - trunc(offset));
+            synth_out = (synth_input +
+                         chan->vdelay_buffer[lindex] * (1 - fraction) +
+                         chan->vdelay_buffer[rindex] * fraction) / 2.0;
+          }
           if (++chan->vpos == vlen) chan->vpos=0;
         }
         break;
