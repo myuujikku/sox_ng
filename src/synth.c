@@ -97,7 +97,7 @@ typedef struct {
 
   double * buffer;
   size_t buffer_len, pos;
-  sox_sample_t * vdelay_buffer;
+  double * vdelay_buffer;
   size_t vdelay_len, vpos;
 } channel_t;
 
@@ -328,6 +328,7 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
 static int start(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *)effp->priv;
+  sox_rate_t sr = effp->in_signal.rate;
   size_t i, j, k;
 
   p->samples_done = 0;
@@ -347,7 +348,7 @@ static int start(sox_effect_t * effp)
     set_default_parameters(chan);
 
     if (chan->combine == synth_vdelay) {
-     chan->vdelay_len = effp->in_signal.rate; /* one second */
+     chan->vdelay_len = (chan->p1 + chan->p2) * sr + 1;
      chan->vdelay_buffer = lsx_calloc(chan->vdelay_len,
                                       sizeof(*chan->vdelay_buffer));
      chan->vpos = 0;
@@ -644,16 +645,31 @@ static int flow(sox_effect_t * effp, const sox_sample_t * ibuf, sox_sample_t * o
         case synth_amod  : synth_out = (synth_out + 1) * synth_input * .5; break;
         case synth_fmod  : synth_out *=  synth_input; break;
         case synth_vdelay: {
-	  size_t vlen = chan->vdelay_len;
-	  double sr = effp->in_signal.rate;
-	  chan->vdelay_buffer[chan->vpos] = synth_input;
-	  synth_out = chan->vdelay_buffer[
-	    (chan->vpos - lrint(synth_out * sr) + vlen) % vlen
-	  ];
-	  if (chan->vpos == vlen) chan->vpos=0;
-	  chan->vpos++;
-	}
-	break;
+          /* p1 is the constant delay,
+           * p2 the depth of the extra delay, both in secs */
+          size_t vlen = chan->vdelay_len;
+          sox_rate_t sr = effp->in_signal.rate;
+          int offset;
+
+          chan->vdelay_buffer[chan->vpos] = synth_input;
+
+          /* Convert synth_out [-1 to 1] to 0 to 1, add the constant delay
+           * and convert to the number of samples ago.
+           */
+          offset = lrint((chan->p1 + (chan->p2 * (synth_out + 1.0) / 2.0)) * sr);
+          /* This should never happen */
+          if (offset >= (int)chan->vdelay_len ||
+              offset <= -(int)chan->vdelay_len)
+            lsx_warn("vdelay's sample offset (%d) "
+                     "exceeds the delay buffer size (%d)",
+                     offset, (int)chan->vdelay_len);
+
+          synth_out = (synth_input + chan->vdelay_buffer[
+            (chan->vpos - offset + vlen) % vlen
+          ]) / 2.0;
+          if (++chan->vpos == vlen) chan->vpos=0;
+        }
+        break;
       }
       *obuf++ = synth_out < 0? synth_out * p->gain - .5 : synth_out * p->gain + .5;
     }
