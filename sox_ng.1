@@ -165,11 +165,11 @@ audio data:
 .TP
 sample rate
 The sample rate in samples per second (`Hertz' or `Hz').
-Digital telephony traditionally uses a sample rate of 8000\ Hz (8\ kHz)
-though 16 and even 32\ kHz are becoming more common. Audio
-Compact Discs use 44100\ Hz (44\*d1\ kHz), Digital Audio Tape and many
-computer systems use 48\ kHz and professional audio systems often use
-96\ kHz.
+Digital telephony traditionally uses a sample rate of 8000Hz (8kHz)
+though 16 and even 32kHz are becoming more common. Audio
+Compact Discs use 44100Hz (44\*d1kHz), Digital Audio Tape and many
+computer systems use 48kHz and professional audio systems often use
+96kHz.
 .TP
 sample size
 The number of bits used to store each sample.  Today, 16-bit is
@@ -731,7 +731,7 @@ audio instead of affecting it such as \fBnoiseprof\fR, \fBstat\fR
 and \fBspectrogram\fR.
 .SP
 The sampling rate associated with a null file
-is by default 48\ kHz but, as with a normal
+is by default 48kHz but, as with a normal
 file, this can be overridden using format options
 such as \fB\-r\fR
 (see below).
@@ -1449,7 +1449,7 @@ several effects:
 .TP
 \fIfrequency\fR
 A frequency in Hz or, if followed by \fBk\fR, in kHz or,
-if preceded by \fB%\fR, in semitones relative to A (440\ Hz);
+if preceded by \fB%\fR, in semitones relative to A (440Hz);
 alternatively, scientific note names (e.g. E2) may be used.
 .TP
 \fIgain\fR
@@ -1603,8 +1603,8 @@ using a two-pole shelving filter with a response similar to that
 of a standard hifi's tone controls.  This is also
 known as shelving equalization.
 .SP
-\fIgain\fR gives the gain at 0\ Hz for \fBbass\fR or, for \fBtreble\fR,
-whichever is the lower of \(ap22\ kHz and the Nyquist frequency.
+\fIgain\fR gives the gain at 0Hz for \fBbass\fR or, for \fBtreble\fR,
+whichever is the lower of \(ap22kHz and the Nyquist frequency.
 Its useful range is about \-20 (for a large cut) to +20 (for a large boost).
 Beware of
 .B Clipping
@@ -1615,7 +1615,7 @@ The filter can be fine-tuned using the following optional parameters:
 \fIfrequency\fR sets the filter's central frequency and so can be
 used to extend or reduce the frequency range to be boosted or
 cut.
-The default values are 100\ Hz for \fBbass\fR and 3\ kHz for \fBtreble\fR.
+The default values are 100Hz for \fBbass\fR and 3kHz for \fBtreble\fR.
 .SP
 \fIwidth\fR
 determines how
