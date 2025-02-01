@@ -22,11 +22,11 @@
 /* Private data for effect */
 typedef struct {
   float softvol;
-  float max_softvol;	  /* Don't go beyond this value */
   float double_time;	  /* How long we take to double the volume */
   float mult_per_sample;  /* How much to multiply softvol by per sample frame
   			   * to make it double in double_time seconds
 			   */
+  sox_sample_t max_amp;	  /* Don't go beyond this value */
 } priv_t;
 
 /*
@@ -40,11 +40,13 @@ static int getopts(sox_effect_t * effp, int argc, char UNUSED **argv)
 
   p->softvol = 1.0;
   p->double_time = 0.0;
+  float headroom = 0.0;
 
+  /* One argument, the initial value, is mandatory */
   if (argc < 2) return lsx_usage(effp);
   if (sscanf(argv[1], "%f", &p->softvol) != 1 ||
-      p->softvol <= 0.0) {
-    lsx_fail("invalid number `%s'", argv[1]);
+      p->softvol < 0.0) {
+    lsx_fail("invalid volume `%s'", argv[1]);
     return SOX_EOF;
   }
   argv++; argc--;
@@ -52,11 +54,21 @@ static int getopts(sox_effect_t * effp, int argc, char UNUSED **argv)
   if (argc > 1) {
     if (sscanf(argv[1], "%f", &p->double_time) != 1 ||
 	p->double_time < 0.0) {
-      lsx_fail("invalid number `%s'", argv[1]);
+      lsx_fail("invalid doubling time `%s'", argv[1]);
       return SOX_EOF;
     }
     argv++; argc--;
   }
+
+  if (argc > 1) {
+    if (sscanf(argv[1], "%f", &headroom) != 1 ||
+        headroom < 0.0f) {
+      lsx_fail("invalid headroom `%s'", argv[1]);
+      return SOX_EOF;
+    }
+    argv++; argc--;
+  }
+  p->max_amp = SOX_SAMPLE_MAX * dB_to_linear(-headroom);
 
   if (argc > 1) return lsx_usage(effp);
 
@@ -70,17 +82,10 @@ static int getopts(sox_effect_t * effp, int argc, char UNUSED **argv)
 static int start(sox_effect_t * effp)
 {
   priv_t *p = (priv_t *)effp->priv;
-  int bits = effp->in_signal.precision;
-  /* If unknown, go for the most likely */
-  if (bits == 0) bits = 16;
 
   if (p->double_time != 0)
     p->mult_per_sample = pow(2.0, 1.0 /
                              (p->double_time * effp->in_signal.rate));
-
-  /* For a PCM signal of N bits, the amplitude is from 0 to (1<<(N-1))-1
-   * so the most we should multiply it by is 1 - (1/(1<<(bits-1))-1) */
-  p->max_softvol = 1.0f - (1.0f / (float) ((1u<<(bits-1))-1));
 
   return SOX_SUCCESS;
 }
@@ -105,22 +110,24 @@ static int flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sample_t *obu
   for (done = 0; done < len; done++)
   {
     unsigned chan;
-    float maxamp = 0.0;
-    unsigned clips = 0;
+    sox_sample_t maxamp;
 
+    /* What is the maximum amplitude over all channels? */
+    maxamp = 0;
     for (chan = 0; chan < chans; chan++) {
-      float amp = fabs(SOX_SAMPLE_TO_FLOAT_32BIT(iptr[chan], clips));
+      sox_sample_t amp = abs(iptr[chan]);
       if (amp > maxamp) maxamp = amp;
     }
-    if (clips) fprintf(stderr, "Clipped %u samples\n", clips);
 
-    if (maxamp * p->softvol > p->max_softvol) {
-      p->softvol = p->max_softvol / maxamp;
+    /* If it would exceed maximum volume, lower softvol so that it doesn't. */
+    if (maxamp * p->softvol > p->max_amp) {
+      p->softvol = p->max_amp / maxamp;
     }
 
     for (chan = 0; chan < chans; chan++)
       *optr++ = *iptr++ * p->softvol;
 
+    /* If we're slowly raising the volume, do so for the next sample frame */
     if (p->double_time != 0.0f)
       p->softvol *= p->mult_per_sample;
   }
@@ -166,7 +173,7 @@ static int lsx_kill(sox_effect_t UNUSED * effp)
 const sox_effect_handler_t *lsx_softvol_effect_fn(void)
 {
   static sox_effect_handler_t handler = {
-    "softvol", "volume [double_time]", SOX_EFF_MCHAN | SOX_EFF_GAIN,
+    "softvol", "volume [double_time [headroom]]", SOX_EFF_MCHAN | SOX_EFF_GAIN,
     getopts, start, flow, drain, stop, lsx_kill, sizeof(priv_t)
   };
   return &handler;

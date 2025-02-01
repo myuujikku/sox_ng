@@ -3215,18 +3215,24 @@ instead of truncating it.
 .SP
 This effect supports the \fB\-\-plot\fR global option.
 .TP
-\fBsoftvol \fIvolume\fR [\fIdouble_time\fR]
+\fBsoftvol \fIvolume\fR [\fIdouble_time\fR [\fIheadroom\fR]]
 The soft volume effect applies a simple multiplier to the audio
 ensuring that it does not clip. When a sample would have clipped
-has \fBsoftvol\fR been applied to it, the volume multiplier is
-automatically reduced to compensate and ensure the signal does not clip.
+the volume multiplier is automatically reduced to compensate.
 .SP
-The optional \fIdouble_time\fR option says that the volume should
-slowly increase at a rate that makes it double every \fIdouble_time\fR seconds.
-\fB0\fR insists that the volume should not increase.
+It is a simple compander with the advantages of being fast
+and having no pre- or post-echo.
 .SP
-\fBsoftvol\fR is a simple compander with the advantages of being
-fast and having no pre- or post-echo.
+\fIdouble_time\fR says that the volume should slowly increase at a rate
+that makes it double every \fIdouble_time\fR seconds.
+A good value for usual music is 10 and the default value of 0
+says that the volume should not increase automatically.
+.SP
+\fIheadroom\fR is in dB and limits the loudest amplitude to
+less than the 32-bit maximum.
+This may be necessary when the final bit-depth reduction and/or dithering
+make it clip.
+A value of 0.1 is sufficient down to a bit-depth of 8 with dithering.
 .TP
 \fBspectrogram \fR[\fIoptions\fR]
 Create a spectrogram of the audio. The audio is passed unmodified
