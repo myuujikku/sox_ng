@@ -37,8 +37,6 @@ typedef struct {
 static int getopts(sox_effect_t * effp, int argc, char UNUSED **argv)
 {
   priv_t *p = (priv_t *)effp->priv;
-  lsx_getopt_t optstate;
-  int c;
 
   p->softvol = 1.0;
   p->double_time = 0.0;
@@ -51,14 +49,16 @@ static int getopts(sox_effect_t * effp, int argc, char UNUSED **argv)
   }
   argv++; argc--;
 
-  lsx_getopt_init(argc, argv, "D:", NULL, lsx_getopt_flag_none, 1, &optstate);
-
-  while ((c = lsx_getopt(&optstate)) != -1) switch (c) {
-    GETOPT_NUMERIC(optstate, 'D', double_time, 0.0, 365.24*24*60*60)
-    default:
-      lsx_fail("invalid option `-%c'", optstate.opt);
-      return lsx_usage(effp);
+  if (argc > 1) {
+    if (sscanf(argv[1], "%f", &p->double_time) != 1 ||
+	p->double_time < 0.0) {
+      lsx_fail("invalid number `%s'", argv[1]);
+      return SOX_EOF;
+    }
+    argv++; argc--;
   }
+
+  if (argc > 1) return lsx_usage(effp);
 
   return SOX_SUCCESS;
 }
@@ -166,7 +166,7 @@ static int lsx_kill(sox_effect_t UNUSED * effp)
 const sox_effect_handler_t *lsx_softvol_effect_fn(void)
 {
   static sox_effect_handler_t handler = {
-    "softvol", "volume [-D double_time]", SOX_EFF_MCHAN | SOX_EFF_GAIN,
+    "softvol", "volume [double_time]", SOX_EFF_MCHAN | SOX_EFF_GAIN,
     getopts, start, flow, drain, stop, lsx_kill, sizeof(priv_t)
   };
   return &handler;
