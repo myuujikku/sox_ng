@@ -42,15 +42,17 @@ static int getopts(sox_effect_t * effp, int argc, char UNUSED **argv)
   p->double_time = 0.0;
   float headroom = 0.0;
 
-  /* One argument, the initial value, is mandatory */
-  if (argc < 2) return lsx_usage(effp);
-  if (sscanf(argv[1], "%f", &p->softvol) != 1 ||
-      p->softvol < 0.0) {
-    lsx_fail("invalid volume `%s'", argv[1]);
-    return SOX_EOF;
+  /* Initial value */
+  if (argc > 1) {
+    if (sscanf(argv[1], "%f", &p->softvol) != 1 ||
+        p->softvol < 0.0) {
+      lsx_fail("invalid volume multiplier `%s'", argv[1]);
+      return SOX_EOF;
+    }
   }
   argv++; argc--;
 
+  /* The time over which to double the volume in seconds */
   if (argc > 1) {
     if (sscanf(argv[1], "%f", &p->double_time) != 1 ||
 	p->double_time < 0.0) {
@@ -60,6 +62,7 @@ static int getopts(sox_effect_t * effp, int argc, char UNUSED **argv)
     argv++; argc--;
   }
 
+  /* Headroom to allow below SOX_SAMPLE_MAX in dB */
   if (argc > 1) {
     if (sscanf(argv[1], "%f", &headroom) != 1 ||
         headroom < 0.0f) {
@@ -173,7 +176,7 @@ static int lsx_kill(sox_effect_t UNUSED * effp)
 const sox_effect_handler_t *lsx_softvol_effect_fn(void)
 {
   static sox_effect_handler_t handler = {
-    "softvol", "volume [double_time [headroom]]", SOX_EFF_MCHAN | SOX_EFF_GAIN,
+    "softvol", "[volume [double-time [headroom]]]", SOX_EFF_MCHAN | SOX_EFF_GAIN,
     getopts, start, flow, drain, stop, lsx_kill, sizeof(priv_t)
   };
   return &handler;
