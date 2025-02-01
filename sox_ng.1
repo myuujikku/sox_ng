@@ -3931,7 +3931,7 @@ See
 for an effect that allows arbitrary channel selection, ordering and mixing.
 .TP
 \fBsynth\fR [\fB\-j \fIkey\fR] [\fB\-n\fR] [\fIlength\fR [\fIoffset\fR [\fIphase\fR [\fIp1\fR [\fIp2\fR [\fIp3\fR]]]]]]
-{\fItype\fR [\fIcombine\fR [\fB\-V\fR \fIfixed\fR[\fB,\fIextra\fR[\fB,\fIdepth\fR]]]] \:[[\fB%\fR]\fIfreq\fR[\fBk\fR][\fB:\fR\^|\^\fB+\fR\^|\^\fB/\fR\^|\^\fB\-\fR[\fB%\fR]\fIfreq2\fR[\fBk\fR]]] [\fIoffset\fR [\fIphase\fR [\fIp1\fR [\fIp2\fR [\fIp3\fR]]]]]}
+{\fItype\fR [\fIcombine\fR [\fB\-V\fR \fIfixed\fR[\fB,\fIextra\fR[\fB,\fImix\fR]]]] \:[[\fB%\fR]\fIfreq\fR[\fBk\fR][\fB:\fR\^|\^\fB+\fR\^|\^\fB/\fR\^|\^\fB\-\fR[\fB%\fR]\fIfreq2\fR[\fBk\fR]]] [\fIoffset\fR [\fIphase\fR [\fIp1\fR [\fIp2\fR [\fIp3\fR]]]]]}
 .SP
 \fBsynth\fR generates fixed or swept frequency audio tones
 with various wave shapes and wide-band noise of various colors.
@@ -4127,24 +4127,30 @@ Multiplies the input signal with the synthesized one (ring modulation).
 Mixes the input signal with the synthesized signal as the offset
 into a delayed version of the input.
 \fBvdelay\fR may be followed by a \fB\-V\fR option which sets
-the fixed delay and the variable part (default: 0) of the delay in seconds
-and \fIdepth\fR, the proportion of the delayed signal
-that is mixed with the original (default: 1.0).
+the fixed delay and the variable part (default: 0) of the delay in seconds.
+\fImix\fR sets the proportion of the original and delayed signals in the output
+from 0 for all input signal to 1 for all delayed signal
+with a default of 0\*d5 for half and half.
 .SP
 The synthesized signal's value from \-1 to +1 varies the delay
 from \fIfixed\fR seconds to \fIfixed\fR\ +\ (0\ to\ \fIextra\fR) seconds.
 \fIdepth\fR controls the proportion of the delayed signal that is mixed
 with the original, ranging from 0 to 1 with a default of 1.
-It interpolates linearly between the input samples and can be used
-to make precision phaser, flanger and chorus effects.
 .SP
-A classic chorus effect:
+It interpolates linearly between the input samples and can be used
+to make precision phaser, flanger and chorus-like effects, vibrato
+and frequency modulation (FM) synthesis (actually phase modulation,
+as used in the Yamaha DX7).
+.SP
+.ne 2
+A chorus-like effect:
 .XE
-   sox_ng solo.au -d synth sine vdelay .25 0 75 0.050 1
+   sox_ng solo.au -d synth sine vdelay -V 0.050 .25 0 75
 .XX
-A classic flanger:
+.ne 2
+A flanger:
 .XE
-   sox_ng solo.au -d synth sine vdelay 0 0 75 0.002 1
+   sox_ng solo.au -d synth triangle vdelay -V 0,0.002,.71 0.5 0 0
 .XX
 .RE
 .TP
