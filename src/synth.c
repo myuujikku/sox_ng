@@ -284,10 +284,16 @@ vwhat:  lsx_fail("-V what?");
                                              &chan->vdelay_mix)) {
       case 0: goto vwhat;
       case 1:
-        chan->vdelay_extra = 0; goto case2;
+	/* lsx_sscanf checks for the first arg being finite */
+        chan->vdelay_extra = 0;
+	goto case2;
       case 2:
-case2:  chan->vdelay_mix = 0.5;
-      case 3: break;
+case2:  if (!isfinite(chan->vdelay_extra)) goto vwhat;
+        chan->vdelay_mix = 0.5;
+	goto case3;
+      case 3:
+case3:  if (!isfinite(chan->vdelay_mix)) goto vwhat;
+        break;
       }
       if (++argn == argc)
         break;
