@@ -203,22 +203,22 @@ e.g. for music, the title, the author, etc.
 .SP
 One important use of audio file comments is to convey `Replay Gain'
 information.  SoX can apply Replay Gain automatically
-for formats that can contain comments but does not generate it
-but, by default, copies comments from the first input file
+for formats that contain comments but does not generate it.
+By default, SoX copies comments from the first input file
 to output files that support comments, so output files may contain
-Replay Gain information which is likely to be incorrect.
-This can be fixed when converting input files
-with \fB\-\-replaygain\fR enabled by removing all comments using
-\fB\-\-comment \(dq\(dq\fR or removing just the REPLAYGAIN comment
+Replay Gain information which is incorrect.
+This can be fixed, when converting input files
+with \fB\-\-replaygain\fR enabled, by removing all comments using
+\fB\-\-comment\ \(dq\(dq\fR or removing just the REPLAYGAIN comment
 with
 .XE
-soxi_ng -a in.au | grep -v REPLAYGAIN > in.comments
-sox_ng --replay-gain=track in.au --comment-file in.comments out.au
+soxi_ng -a in.au | grep -v REPLAYGAIN > comments
+sox_ng --replay-gain=track in.au --comment-file comments out.au
 .XX
 .SP
 .SS Determining and setting the File Format
 SoX uses several mechanisms to determine or set the
-format characteristics of an audio file.  Depending on the circumstances,
+format of an audio file.  Depending on the circumstances,
 individual characteristics may be determined or set using different mechanisms.
 .SP
 To determine the format of an input file, SoX uses, in order of
