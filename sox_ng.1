@@ -271,43 +271,6 @@ c8 c8 c.
 .TE
 .DT
 .SP
-On some systems, SoX may have more than one type of audio driver,
-e.g. ALSA and OSS or SUNAU and AO and
-they can have more than one audio device (a.k.a. `sound card').
-If more than one audio driver has been
-built into SoX and the default selected by SoX when recording or playing
-is not the one that is wanted, the
-.B AUDIODRIVER
-environment variable can be used to override the default.
-For example, on Unix systems:
-.XE
-   AUDIODRIVER=oss
-   export AUDIODRIVER
-   play_ng ...
-.XX
-may help or, on Microsoft Windows:
-.XE
-   set AUDIODRIVER=waveaudio
-.XX
-The \fBAUDIODEV\fR
-environment variable can be used to override the default audio device,
-e.g.
-.XE
-   AUDIODEV=/dev/dsp2
-   export AUDIODEV
-   play_ng ...
-   sox_ng ... \-t oss
-.XX
-or
-.XE
-   AUDIODEV=hw:soundwave,1,2
-   export AUDIODEV
-   play_ng ...
-   sox_ng ... \-t alsa
-.XX
-Note that the way of setting environment variables varies from system
-to system\*mfor some specific examples, see \fBSOX_OPTS\fR below.
-.SP
 When playing a file with a sample rate that is not supported by the
 audio output device, SoX automatically invokes the \fBrate\fR effect
 to perform the necessary sample rate conversion.  For
@@ -747,51 +710,9 @@ before the first effect name.
 .SP
 The
 .B SOX_OPTS
-environment variable can be used to provide alternative default values for
-SoX's global options.
-For example:
-.XE
-   SOX_OPTS="\-\-buffer 20000 \-\-play\-rate\-arg \-hs \-\-temp /mnt/temp"
-.XX
-Note that setting \fBSOX_OPTS\fR can create unwanted changes in
-the behaviour of scripts or other programs that invoke SoX.  \fBSOX_OPTS\fR
-might best be used for things (such as in the given example) that reflect the
-environment in which SoX is being run and enabling options such as
-.B \-\-no\-clobber
-by default might be handled better using a shell alias
-since that will not affect SoX's operation in scripts or when it is
-used by other programs.
-.SP
-One way to ensure that a script cannot be affected by SOX_OPTS is to
-clear SOX_OPTS at the start of the script, but this of course loses
-the benefit of SOX_OPTS carrying system-wide defaults.
-An alternative approach is to invoke SoX with explicit default
-option values, e.g.
-.XE
-   SOX_OPTS="\-V \-\-no-clobber"
-   ...
-   sox_ng \-V2 \-\-clobber $input $output ...
-.XX
-Note that the way to set environment variables varies from system
-to system. Here are some examples:
-.SP
-Most Unix shells:
-.XE
-   SOX_OPTS="\-V \-\-no-clobber"
-   export SOX_OPTS
-.XX
-Unix csh:
-.XE
-   setenv SOX_OPTS "\-V \-\-no-clobber"
-.XX
-MS-DOS/MS-Windows:
-.XE
-   set SOX_OPTS=\-V \-\-no-clobber
-.XX
-MS-Windows GUI: via Control Panel : System : Advanced : Environment
-Variables
-.SP
-Mac OS X GUI: Refer to Apple's Technical Q&A QA1067 document.
+environment variable can be used to
+provide alternative default values for SoX's global options.
+See \fBENVIRONMENT\fR (below).
 .TP
 \fB\-\-buffer\fR \fIbytes\fR, \fB\-\-input\-buffer\fR \fIbytes\fR
 Set the size in bytes of the buffers used for processing audio (default 8192).
@@ -904,7 +825,8 @@ when what you really meant was
    play_ng file1 file2 effect1 effect2 ...
 .XX
 then, without this option, file2 will be overwritten.  Hence, using
-this option is recommended. See \fBSOX_OPTS\fR above.
+this option is recommended and can be set in the \fBSOX_OPTS\fR
+environment variable (see \fBENVIRONMENT\fR below).
 .TP
 \fB\-\-norm\fR[\fB=\fIdB-level\fR]
 Automatically invoke the
@@ -932,7 +854,7 @@ effect.
 Selects a quality option to be used when the \fBrate\fR effect is invoked
 automatically when playing audio.  This option is typically set via the
 .B SOX_OPTS
-environment variable (see above)
+environment variable (see \fBENVIRONMENT\fR below)
 and its default value, when playing, is \fB\-l\fR (low quality but fast).
 See the \fBrate\fP effect for other alternatives.
 .TP
@@ -1019,7 +941,7 @@ SoX to play or record audio but can be disabled with \fB\-q\fR.
 Equivalent to \fB\-\-combine multiply\fR
 .TP
 \fB\-\-temp \fIdirectory\fR
-Specify that any temporary files should be created in the given direectory.
+Specify that any temporary files should be created in the given directory.
 This can be useful if there are permission or free space problems with the
 default location. In this case, using `\fB\-\-temp .\fR' (to use the
 current directory) is often a good solution.
@@ -4392,9 +4314,112 @@ See
 for a volume-changing effect with different capabilities and
 .B compand
 for a dynamic range compression/expansion/limiting effect.
+.SH ENVIRONMENT
+SoX reacts to the following environment variables.
+To set them on Unix with most shells, use, for example:
+.XE
+   AUDIODRIVER=oss
+   export AUDIODRIVER
+   play_ng ...
+.XX
+with Unix csh:
+.XE
+   setenv AUDIODRIVER oss
+.XX
+or, on Microsoft Windows:
+.XE
+   set AUDIODRIVER=waveaudio
+.XX
+MS-Windows GUI: via Control Panel : System : Advanced : Environment
+Variables
+.SP
+Mac OS X GUI: Refer to Apple's Technical Q&A QA1067 document.
+.TP
+\fBAUDIODRIVER\fR
+On some systems, SoX may have more than one type of audio driver,
+e.g. ALSA and OSS or SUNAU and AO and
+they can have more than one audio device (a.k.a. `sound card').
+If more than one audio driver has been
+built into SoX and the default selected by SoX when recording or playing
+is not the one that is wanted, the
+.B AUDIODRIVER
+environment variable can be used to override the default.
+For example, on Unix systems:
+.XE
+   AUDIODRIVER=oss
+   export AUDIODRIVER
+   play_ng ...
+.XX
+If it is unset, SoX tries to use, in order,
+\fBcoreaudio\fR, \fBpulseaudio\fR, \fBalsa\fR, \fBwaveaudio\fR,
+\fBsndio\fR, \fBoss\fR, \fBsunau\fR and \fBao\fR.
+.TP
+\fBAUDIODEV\fR
+Override the default audio device,
+e.g.
+.XE
+   AUDIODEV=/dev/dsp2
+   export AUDIODEV
+   play_ng ...
+   sox_ng ... \-t oss
+.XX
+or
+.XE
+   AUDIODEV=hw:soundwave,1,2
+   export AUDIODEV
+   play_ng ...
+   sox_ng ... \-t alsa
+.XX
+If AUDIODEV is unset and the audio driver is \fBoss\fR,
+SoX also responds to the standard environment variable
+\fBOSS_AUDIODEV\fR.
+.TP
+\fBLADSPA_PATH\fR
+A colon-separated list of directories in which to search for LADSPA plugins.
+The default depends on how SoX was built and is typically /usr/lib/ladspa or
+/usr/local/lib/ladspa.
+.TP
+\fBLD_LIBRARY_PATH\fR
+When searching for the dynamic libraries in which most effects and
+format handlers may be stored, according to how your SoX was built,
+look in this colon-separated list of directories before the default
+location.
+.TP
+\fBMIXERDEV\fR
+When playing a file, use the specified mixer device for the 'v' and 'V'
+volume control keys.
+.TP
+\fBSOX_OPTS\fR
+Provide alternative default values for SoX's global options.
+For example:
+.XE
+   SOX_OPTS="\-\-buffer 20000 \-\-play\-rate\-arg \-hs \-\-temp /mnt/temp"
+   export SOX_OPTS
+.XX
+Note that setting \fBSOX_OPTS\fR can create unwanted changes in
+the behaviour of scripts or other programs that invoke SoX.
+\fBSOX_OPTS\fR might best be used for things that reflect the
+environment in which SoX is being run and enabling options such as
+.B \-\-no\-clobber
+by default might be handled better using a shell alias
+since that will not affect SoX's operation in scripts or when it is
+used by other programs.
+.SP
+One way to ensure that scripts and programs cannot be affected 
+by \fBSOX_OPTS\fR is to clear \fBSOX_OPTS\fR at the start of the script,
+but this loses the benefit of \fBSOX_OPTS\fR carrying system-wide defaults.
+.TP
+\fBTEMP\fR and \fBTMP\fR
+On Windows, tmpfile() is broken \*m it creates the file in the root directory
+of the current drive instead of in a valid temporary directory \*m but if
+\fBTEMP\fR or \fBTMP\fR are set, it creates them in the directory indicated,
+otherwise in the current directory.
+To force use of tmpfile(), use \fB--temp \*(dq\*(dq\fR.
+.SP
+Alternatively, and on Unix, use \fB--temp\fR (see \fBGlobal Options\fR above).
 .SH EXIT STATUS
 SoX exits 0 when there is no error, 1 if there is a problem with the
-command-line parameters or 2 if an error occurs during file processing.
+command-line parameters or 2 if an error occurs during audio processing.
 .SH BUGS
 Please report any bugs found in this version of SoX to the mailing list
 <sox-ng@groups.io>.
