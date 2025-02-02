@@ -45,6 +45,40 @@ int lsx_strncasecmp(char const * s1, char const * s2, size_t n)
 #endif
 }
 
+/* A version of sscanf() that disallows infinites and NaNs.
+ * Infinities could in theory be useful, like for dB levels,
+ * but NaNs tend to provoke Floating Point Exceptions.
+ *
+ * Almost all uses of sscanf for floating point values start with %f or %lf
+ * with one " %lg" in dat.c (reading textual FP sample values)
+ * and one "%f,%f,%f" in synth.c, which can check for itself.
+ */
+#undef sscanf
+int lsx_sscanf(const char *str, const char *format, ...)
+{
+  va_list va, va2;
+  int retval;
+
+  va_start(va, format);
+  va_copy(va2, va);
+  retval = vsscanf(str, format, va);
+
+  /* float */
+  if (retval > 0 && format[0] == '%' && format[1] == 'f') {
+    float *ptr = va_arg(va2, float *);
+    if (!isfinite(*ptr)) retval = 0;
+  }
+
+  /* double */
+  if (retval > 0 && format[0] == '%' && format[1] == 'l' && format[2] == 'f') {
+    double *ptr = va_arg(va2, double *);
+    if (!isfinite(*ptr)) retval = 0;
+  }
+
+  va_end(va);
+  return retval;
+}
+
 sox_bool lsx_strends(char const * str, char const * end)
 {
   size_t str_len = strlen(str), end_len = strlen(end);
