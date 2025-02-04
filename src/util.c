@@ -53,7 +53,6 @@ int lsx_strncasecmp(char const * s1, char const * s2, size_t n)
  * with one " %lg" in dat.c (reading textual FP sample values)
  * and one "%f,%f,%f" in synth.c, which can check for itself.
  */
-#undef sscanf
 int lsx_sscanf(const char *str, const char *format, ...)
 {
   va_list va, va2;

@@ -22,6 +22,8 @@
 #include "soxconfig.h"
 
 #ifdef HAVE_SYS_TYPES_H
+/* Define this to get u_long, required by sys/soundcard.h on FreeBSD/OpenBSD */
+#define __BSD_VISIBLE 1
 #include <sys/types.h> /* For off_t not found in stdio.h */
 #endif
 
