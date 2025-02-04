@@ -42,9 +42,9 @@
 #define MAXCHANS 16
 
 /* sizeof(gsm_frame) */
-#define FRAMESIZE (size_t)33
+#define GSM_FRAMESIZE (size_t)33
 /* samples per gsm_frame */
-#define BLOCKSIZE 160
+#define GSM_BLOCKSIZE 160
 
 /* Private data */
 typedef struct {
@@ -83,9 +83,9 @@ static int gsmstart_rw(sox_format_t * ft, int w)
                         return (SOX_EOF);
                 }
         }
-        p->frames = lsx_malloc(p->channels*FRAMESIZE);
-        p->samples = lsx_malloc(BLOCKSIZE * (p->channels+1) * sizeof(gsm_signal));
-        p->sampleTop = p->samples + BLOCKSIZE*p->channels;
+        p->frames = lsx_malloc(p->channels*GSM_FRAMESIZE);
+        p->samples = lsx_malloc(GSM_BLOCKSIZE * (p->channels+1) * sizeof(gsm_signal));
+        p->sampleTop = p->samples + GSM_BLOCKSIZE*p->channels;
         p->samplePtr = (w)? p->samples : p->sampleTop;
         return (SOX_SUCCESS);
 }
@@ -124,8 +124,8 @@ static size_t sox_gsmread(sox_format_t * ft, sox_sample_t *buf, size_t samp)
 
                 if (done>=samp) break;
 
-                r = lsx_readbuf(ft, p->frames, p->channels * FRAMESIZE);
-                if (r != p->channels * FRAMESIZE)
+                r = lsx_readbuf(ft, p->frames, p->channels * GSM_FRAMESIZE);
+                if (r != p->channels * GSM_FRAMESIZE)
                   break;
 
                 p->samplePtr = p->samples;
@@ -134,14 +134,14 @@ static size_t sox_gsmread(sox_format_t * ft, sox_sample_t *buf, size_t samp)
                         gsm_signal *gsp;
 
                         gbuff = p->sampleTop;
-                        if (gsm_decode(p->handle[ch], p->frames + ch*FRAMESIZE, gbuff) < 0)
+                        if (gsm_decode(p->handle[ch], p->frames + ch*GSM_FRAMESIZE, gbuff) < 0)
                         {
                                 lsx_fail_errno(ft,errno,"error during decode");
                                 return (0);
                         }
 
                         gsp = p->samples + ch;
-                        for (i=0; i<BLOCKSIZE; i++) {
+                        for (i=0; i<GSM_BLOCKSIZE; i++) {
                                 *gsp = *gbuff++;
                                 gsp += chans;
                         }
@@ -169,13 +169,13 @@ static int gsmflush(sox_format_t * ft)
                 gsm_signal *gsp;
 
                 gsp = p->samples + ch;
-                for (i=0; i<BLOCKSIZE; i++) {
+                for (i=0; i<GSM_BLOCKSIZE; i++) {
                         gbuff[i] = *gsp;
                         gsp += chans;
                 }
                 gsm_encode(p->handle[ch], gbuff, p->frames);
-                r = lsx_writebuf(ft, p->frames, FRAMESIZE);
-                if (r != FRAMESIZE)
+                r = lsx_writebuf(ft, p->frames, GSM_FRAMESIZE);
+                if (r != GSM_FRAMESIZE)
                 {
                         lsx_fail_errno(ft,errno,"write error");
                         return(SOX_EOF);
