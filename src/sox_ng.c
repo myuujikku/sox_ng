@@ -21,8 +21,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-/* For S_IFDIR and S_IFMT in C89 */
-#define _XOPEN_SOURCE 500
+/* For S_IFDIR and S_IFMT in C89 you need to */
+/* #define _XOPEN_SOURCE 500 */
 
 #include "sox_ng.h"
 #include "soxconfig.h"
