@@ -5,7 +5,12 @@ There are already several test suites in sox's source directory
 as well as a test/ directory (which doesn't seem to work).
 
 This one is a regression test suite, most of which test CVE's against
-crafted audio files, each with its files in its own directory.
+crafted audio files, each with its files in its own directory in which
+there is a shell script "run" that exits
+    0 if the test succeeded,
+    2 if the test failed or SoX threw an unexpected error,
+    254 if the build of SoX does not include the feature under test, or
+other exit codes pinpoint causes of failure - see check.sh
 
 To run all the tests:
 
