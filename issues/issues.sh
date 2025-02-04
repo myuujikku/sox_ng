@@ -148,7 +148,7 @@ case "$1" in
     # /path/to/repo.git/
     # file:///path/to/repo.git/
 
-    if [ -d .git ]
+    if git remote 2>&1 > /dev/null
     then
 
 	remotes="$(git remote -v | grep '^origin')"
@@ -1046,7 +1046,7 @@ putissues() {
 		continue
 	    fi
 
-	    data='{'
+	    data='{'	# }
 	    data="$data,\"title\":$(ecma_quote -n "$title")"
 	    data="$data,\"body\":$(ecma_quote "$(tr -d '\r' < "$ftitle.md")")"
 	    if [ "$state" = closed ]
@@ -1151,7 +1151,7 @@ putissues() {
 
 	# Update the remote issue from the local one.
 
-	data="{"
+	data="{"	#}
 	rtitle="$(echo "$rissue_json" | $jq -r .title)"
 	if [ "$title" != "$rtitle"  ]
 	then data="$data,\"title\":$(ecma_quote -n "$title")"
@@ -1375,7 +1375,7 @@ putissues() {
 	    result="$(geturl DELETE "$apirepo/issues/$number" \
 		      "#$number '$rtitle': Failed to delete remote issue")"
 	else
-	    echo "#$number '$rtitle' would have been deleted with -D"
+	    : "#$number '$rtitle' would have been deleted with -D"
 	fi
 
 	# Remove the first item from the list of issues to delete
@@ -1473,7 +1473,7 @@ putissues() {
 
 	    test "$(cat "$ftitle"/number)" -ne "$number" && continue
 
-	    data="{"
+	    data="{"	# }
 	    title="$(cat "$ftitle"/title)"
 	    data="$data,\"title\":$(ecma_quote -n "$title")"
 	    data="$data,\"body\":$(ecma_quote "$(tr -d '\r' < "$ftitle".md)")"
@@ -1537,7 +1537,7 @@ putissues() {
 		data="$data,\"labels\":[$list]"
 	    fi
 
-	    data="$(echo "$data" | sed 's/^{,/{/;s/$/}/')"
+	    data="$(echo "$data" | sed 's/^{,/{/;s/$/}/')"	# }
 
 	    echo "#$number '$title': Filling in new issue"
 
