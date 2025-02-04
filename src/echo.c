@@ -90,17 +90,15 @@ static int sox_echo_start(sox_effect_t * effp)
 	echo->samples = lsx_calloc(echo->num_delays, sizeof(*echo->samples));
         for ( i = 0; i < echo->num_delays; i++ ) {
                 echo->samples[i] = echo->delay[i] * effp->in_signal.rate / 1000.0;
-                if ( echo->samples[i] < 1 )
-                {
-                    lsx_fail("delay is less than one sample");
-                    return (SOX_EOF);
-                }
                 if ( echo->samples[i] > echo->maxsamples )
                         echo->maxsamples = echo->samples[i];
         }
-        echo->delay_buf = lsx_calloc(echo->maxsamples,
-                                     sizeof(*(echo->delay_buf)));
-	/* calloc() sets the memory to zero */
+	echo->delay_buf = NULL;	/* Provoke segfault if accessed */
+	if (echo->maxsamples > 0) {
+                echo->delay_buf = lsx_calloc(echo->maxsamples,
+                                             sizeof(*(echo->delay_buf)));
+		/* calloc() sets the memory to zero */
+	}
         sum_in_volume = echo->in_gain;
         for ( i = 0; i < echo->num_delays; i++ )
                 sum_in_volume += echo->decay[i];
@@ -132,18 +130,26 @@ static int sox_echo_flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_samp
                 d_in = (float) *ibuf++;
                 /* Compute output first */
                 d_out = d_in * echo->in_gain;
-                for ( j = 0; j < echo->num_delays; j++ ) {
-                        d_out += echo->delay_buf[
-(echo->counter + echo->maxsamples - echo->samples[j]) % echo->maxsamples]
-                        * echo->decay[j];
-                }
+		if (echo->maxsamples == 0) {
+			for ( j = 0; j < echo->num_delays; j++ ) {
+				d_out += d_in * echo->decay[j];
+			}
+		} else {
+			for ( j = 0; j < echo->num_delays; j++ ) {
+				d_out += echo->delay_buf[
+	(echo->counter + echo->maxsamples - echo->samples[j]) % echo->maxsamples]
+				* echo->decay[j];
+			}
+		}
                 /* Adjust the output volume and size to 24 bit */
                 d_out = d_out * echo->out_gain;
                 *obuf++ = SOX_ROUND_CLIP_COUNT(d_out, effp->clips);
                 /* Store input in delay buffer */
-                echo->delay_buf[echo->counter] = d_in;
-                /* Adjust the counter */
-                echo->counter = ( echo->counter + 1 ) % echo->maxsamples;
+                if (echo->maxsamples > 0) {
+		        echo->delay_buf[echo->counter] = d_in;
+			/* Adjust the counter */
+			echo->counter = ( echo->counter + 1 ) % echo->maxsamples;
+		}
         }
         /* processed all samples */
         return (SOX_SUCCESS);
@@ -164,11 +170,13 @@ static int sox_echo_drain(sox_effect_t * effp, sox_sample_t *obuf, size_t *osamp
         while ( ( done < *osamp ) && ( done < echo->fade_out ) ) {
                 d_in = 0;
                 d_out = 0;
-                for ( j = 0; j < echo->num_delays; j++ ) {
-                        d_out += echo->delay_buf[
-(echo->counter + echo->maxsamples - echo->samples[j]) % echo->maxsamples]
-                        * echo->decay[j];
-                }
+		if (echo->maxsamples > 0) {
+		    for ( j = 0; j < echo->num_delays; j++ ) {
+			    d_out += echo->delay_buf[
+    (echo->counter + echo->maxsamples - echo->samples[j]) % echo->maxsamples]
+			    * echo->decay[j];
+		    }
+		}
                 /* Adjust the output volume and size to 24 bit */
                 d_out = d_out * echo->out_gain;
                 *obuf++ = SOX_ROUND_CLIP_COUNT(d_out, effp->clips);
