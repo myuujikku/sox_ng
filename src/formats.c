@@ -114,7 +114,11 @@ static char const * auto_detect_format(sox_format_t * ft, char const * ext)
                              ,  6,18, "\xFC\xDE\x02\x00\x4C\x61\x76\x63\x35\x39\x2E\x33\x37\x2E\x31\x30\x30\x00")
   CHECK(adts  , 0, 2, "\xFF\xF9"			  /* -write_mpeg2 */
                              ,  6,18, "\xFC\xDE\x02\x00\x4C\x61\x76\x63\x35\x39\x2E\x33\x37\x2E\x31\x30\x30\x00")
+  /* adx format starts with \x80\x00 but that gives false positives too often
+   * and makes "tests.sh" fail on bigendian hosts */
+#if 0
   CHECK(adx   , 0, 0, ""     , 0,  2, "\x80\x00") /* libavformat/adxdec.c */
+#endif
   CHECK(ape   , 0, 0, ""     , 0,  4, "MAC ")     /* libavformat/ape.c */
   CHECK(apm   ,20, 4, "vs12" , 0,  2, "\x00\x20") /* libavformat/apm.c */
   /* aptx is headerless and can only be autodetected by the filename extension */
