@@ -50,6 +50,7 @@ errs=/tmp/check$$
 $legend && cat << \EOF
 Legend
 OK   The test succeeded and sox succeeded or failed as it should
+FAIL The test ran but gave the wrong result.
 SUCC sox "succeeded" (exit 0) when it should have failed (exit 2)
 ABRT sox Aborted (core dumped)
 SEGV sox got a Segmentation fault (core dumped)
@@ -91,6 +92,7 @@ do
 	case $status in
 	0)   result=OK ;;
 	1)   result=ASAN ;;
+	2)   result=FAIL ;;
 	127) result=EXEC ;;
 	134) result=ABRT ;;
 	136) result=FPE ;;
@@ -102,7 +104,7 @@ do
 	esac
 	echo $result
 	rm $errs
-	if [ $status -ne 0 -a $status != 254 ]
+	if [ $status -ne 0 ] && [ $status -ne 254 ]
 	then
 	    endexit=$status
 	fi
