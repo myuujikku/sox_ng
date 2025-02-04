@@ -32,7 +32,6 @@ Bug fixes:
   o Several effects now show their flow diagram in their usage output
   o "echos" and "chorus" have never worked but now do what they say
   o "echo" no longer has a limit of the length of the delay
-  o LD_LIBRARY_PATH is now respected when looking for plugins
   o Read errors from short files are always detected and reported
   o Write errors to audio files are always detected and reported
   o No formats or effects are experimental or deprecated any more

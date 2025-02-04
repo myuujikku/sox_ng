@@ -1425,16 +1425,11 @@ int sox_format_init(void) /* Find & load format handlers.  */
   plugins_initted = sox_true;
 #ifdef HAVE_LIBLTDL
   {
-    char *ld_library_path = getenv("LD_LIBRARY_PATH");
     int error = lt_dlinit();
-
     if (error) {
       lsx_fail("lt_dlinit failed with %d error(s): %s", error, lt_dlerror());
       return SOX_EOF;
     }
-    if (ld_library_path && *ld_library_path)
-      if (lt_dlforeachfile(ld_library_path, init_format, NULL) == 0)
-        return SOX_SUCCESS;;
     lt_dlforeachfile(PKGLIBDIR, init_format, NULL);
   }
 #endif
