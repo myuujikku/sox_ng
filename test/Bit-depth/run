@@ -3,7 +3,7 @@
 # https://sourceforge.net/p/sox/bugs/267
 # https://sourceforge.net/p/sox/code/merge-requests/1
 
-make -s samples || exit 1
+make -s samples || exit 2
 
 status=0
 
@@ -18,7 +18,7 @@ testCase() {
     if [ "$got" != "$expected" ]
     then
 	echo "Expected $expected, got $got for $@"
-	status=1
+	status=2
     fi
 }
 
