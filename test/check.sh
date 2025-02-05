@@ -33,7 +33,7 @@ done
 args="$*"
 if [ -z "$args" ]
 then
-    args="$(ls)"
+    args="`ls`"
 fi
 
 # By default, check the sox in the source tree
