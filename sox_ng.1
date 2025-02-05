@@ -2014,17 +2014,19 @@ One mountain more, and:
 .XX
 .TP
 \fBechos \fIgain-in gain-out\fR <\fIdelay decay\fR>
-Add a sequence of echoes to the audio.
+.SP
+Echos stands for `Echo in Sequel' and adds a sequence of echoes to the audio.
+That is, the first echo takes the input,
+the second the input and the first echo,
+the third the input and the output of the second echo and so on.
+A single \fBechos\fR has the same effect as a single \fBecho\fR.
 Each
 .I "delay decay"
-pair gives the delay in milliseconds
+pair gives the delay in milliseconds (with a minimum of one sample)
 and the decay of that echo.
-Gain-out is the volume of the output.
-.SP
-Echos stands for `Echo in Sequel'; that is, the first echo
-takes the input, the second the input and the first echo,
-the third the input and the first and the second echoes and so on.
-A single \fBechos\fR has the same effect as a single \fBecho\fR.
+\fIGain-out\fR is a final volume multiplier applied to the sum of
+the input \(mu \fIgain-in\fR and the delays' outputs \(mu
+their respective decays.
 .SP
 For a flow diagram of how \fBechos\fR works,
 say \fBsox_ng \-\-help\-effect echos\fR.
