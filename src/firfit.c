@@ -226,7 +226,7 @@ sox_effect_handler_t const * lsx_firfit_effect_fn(void)
   static sox_effect_handler_t handler;
   handler = *lsx_dft_filter_effect_fn();
   handler.name = "firfit";
-  handler.usage = "[ knots-file | [ freq gain ... ] ]";
+  handler.usage = "[knots-file|<freq gain>]";
   handler.getopts = create;
   handler.start = start;
   handler.priv_size = sizeof(priv_t);
