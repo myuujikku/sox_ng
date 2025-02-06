@@ -22,6 +22,8 @@
 #include "sox_i.h"
 #include "dft_filter.h"
 
+#include <ctype.h>
+
 typedef struct {
   dft_filter_priv_t base;
   char const         * filename;
@@ -42,20 +44,31 @@ static int create(sox_effect_t * effp, int argc, char **argv)
   else if (argc == 1)
     p->filename = argv[0], --argc;
   else {
-    if (argc % 2) return lsx_usage(effp);
+    if (argc % 2) {
+      lsx_fail("odd number of arguments");
+      return SOX_EOF;
+    }
     for (i=0; i < argc - 1; i += 2) {
+      double value;
+      char *ptr;
+      int n;
+
       lsx_revalloc(p->knots, p->num_knots + 1);
-      if (sscanf(argv[i], "%lf", &p->knots[p->num_knots].f) != 1) {
-	lsx_fail("knot frequency '%s' is not a number", argv[argc]);
-	return SOX_EOF;
+      value = lsx_parse_frequency(argv[i], &ptr);
+      if (value < 0 || *ptr != '\0') {
+        lsx_fail("knot freq '%s' is not a valid frequency", argv[i]);
+        return SOX_EOF;
       }
-      if (sscanf(argv[i+1], "%lf", &p->knots[p->num_knots].gain) != 1) {
-	lsx_fail("knot gain '%s' is not a number", argv[argc+1]);
-	return SOX_EOF;
+      p->knots[p->num_knots].f = value;
+
+      if (sscanf(argv[i+1], "%lf%n", &p->knots[p->num_knots].gain, &n) != 1 ||
+          argv[i+1][n] != '\0') {
+        lsx_fail("knot gain '%s' is not a number", argv[i+1]);
+        return SOX_EOF;
       }
       if (p->num_knots > 0 && p->knots[p->num_knots].f <= p->knots[p->num_knots - 1].f) {
-	lsx_fail("knot frequencies must be strictly increasing");
-	return SOX_EOF;
+        lsx_fail("knot frequencies must be strictly increasing");
+        return SOX_EOF;
       }
       p->num_knots++;
     }
@@ -71,7 +84,7 @@ static double * make_filter(sox_effect_t * effp)
   double * log_freqs, * gains, * d, * work, * h;
   sox_rate_t rate = effp->in_signal.rate;
   int i, work_len;
-  
+
   lsx_valloc(log_freqs , p->num_knots);
   lsx_valloc(gains, p->num_knots);
   lsx_valloc(d  , p->num_knots);
@@ -87,7 +100,7 @@ static double * make_filter(sox_effect_t * effp)
 
   for (i = 0; i <= work_len; i += 2) {
     double f = rate * 0.5 * i / work_len;
-    double spl1 = f < max(p->knots[0].f, 1)? gains[0] : 
+    double spl1 = f < max(p->knots[0].f, 1)? gains[0] :
                   f > p->knots[p->num_knots - 1].f? gains[p->num_knots - 1] :
                   lsx_spline3(log_freqs, gains, d, p->num_knots, log(f));
     work[i] = dB_to_linear(spl1);
@@ -107,30 +120,84 @@ static sox_bool read_knots(sox_effect_t * effp)
   priv_t * p = (priv_t *) effp->priv;
   FILE * file = lsx_open_input_file(effp, p->filename, sox_true);
   sox_bool result = sox_false;
-  int num_converted = 1;
-  char c;
+  char line[82]; /* Line + \n + \0 */
+  unsigned line_no = 0;
 
-  if (file) {
-    lsx_valloc(p->knots, 1);
-    while (fscanf(file, " #%*[^\n]%c", &c) >= 0) {
-      num_converted = fscanf(file, "%lf %lf",
-          &p->knots[p->num_knots].f, &p->knots[p->num_knots].gain);
-      if (num_converted == 2) {
-        if (p->num_knots && p->knots[p->num_knots].f <= p->knots[p->num_knots - 1].f) {
-          lsx_fail("knot frequencies must be strictly increasing");
-	  return sox_false;
-        }
-        lsx_revalloc(p->knots, ++p->num_knots + 1);
-      } else if (num_converted != 0)
-        break;
+  if (!file) return sox_false;
+
+  while (fgets(line, sizeof(line), file) != NULL) {
+    char *linep, *endp;
+    double freq, gain;
+
+    linep = line;
+    line_no++;
+
+    /* Syntax:
+     * comments: white-space # anything \n
+     * frequency pair: white-space frequency white-space frequency \n
+     * Make sure CRLF is OK in case they import a knots file from DOS:
+     */
+
+    /* Skip comment lines */
+    {
+      char c;
+      if (sscanf(line, " #%*[^\n]%c", &c) == 1) continue;
     }
-    lsx_report("%i knots", p->num_knots);
-    if (feof(file) && num_converted != 1)
-      result = sox_true;
-    else lsx_fail("error reading knot file `%s', line number %u", p->filename, 1 + p->num_knots);
-    if (file != stdin)
-      fclose(file);
+
+    linep = line;
+    while (*linep && isspace(*linep)) linep++; /* Skip whitespace */
+
+    if (*linep == '\0') continue;              /* Ignore blank lines */
+
+more:
+    /* Convert the frequency */
+
+    /* Find the end of the first frequency and terminate it */
+    for (endp = linep; *endp && !isspace(*endp); endp++) ;
+    *endp = '\0';
+    freq = lsx_parse_frequency(linep, &endp);
+    if (freq < 0) {
+      lsx_fail("invalid knot frequency `%s'", linep);
+      break;
+    }
+    linep = endp + 1;
+
+    while (*linep && isspace(*linep)) linep++; /* Skip whitespace */
+
+    /* Convert the gain */
+    {
+      int n; char c;
+      if (sscanf(linep, "%lf%c%n", &gain, &c, &n) != 2 || !isspace(c)) {
+	lsx_fail("%s gain for freq %g",
+		 *linep ? "invalid" : "missing",
+		 freq);
+	break;
+      }
+      linep += n;
+    }
+
+    if (p->num_knots && freq <= p->knots[p->num_knots - 1].f) {
+      lsx_fail("knot frequencies must be strictly increasing");
+      break;
+    }
+
+    lsx_revalloc(p->knots, ++p->num_knots);
+    p->knots[p->num_knots - 1].f = freq;
+    p->knots[p->num_knots - 1].gain = gain;
+
+    /*
+     * The original firfit would read several pairs from one line.
+     * Be compatible but don't document it.
+     */
+    while (*linep && isspace(*linep)) linep++; /* Skip whitespace */
+    if (*linep) goto more;
   }
+  lsx_report("%i knots", p->num_knots);
+  if (feof(file))
+    result = sox_true;
+
+  if (file != stdin)
+    fclose(file);
   return result;
 }
 
