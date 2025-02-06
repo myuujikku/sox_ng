@@ -6,13 +6,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-static void usage()
+static void usage(void)
 {
-    fprintf(stderr, "Usage: %s [-b n] [sample_value] ...\n");
+    fprintf(stderr, "Usage: samples [-b n] [sample_value] ...\n");
     fprintf(stderr, "-b Set the number of bits to output per sample (default: 16)\n");
 }
 
-void
+int
 main(int argc, char **argv)
 {
     int bits = 16;
@@ -46,5 +46,5 @@ main(int argc, char **argv)
 	if (bits > 16) putchar((val >> 16) & 0xFF);
 	if (bits > 24) putchar((val >> 24) & 0xFF);
     }
-    exit(0);
+    return 0;
 }
