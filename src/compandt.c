@@ -61,6 +61,7 @@ sox_bool lsx_compandt_show(sox_compandt_t * t, sox_plot_t plot)
       "set ylabel 'Output level (dB)'\n"
       "set grid xtics ytics\n"
       "set key off\n"
+      "unset logscale\n"
       "plot '-' with lines\n");
     for (i = -199; i <= 0; ++i) {
       double in = i/2.;
