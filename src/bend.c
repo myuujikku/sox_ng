@@ -198,8 +198,7 @@ static int flow(sox_effect_t * effp, const sox_sample_t * ibuf,
       if (p->bends_pos != p->nbends && p->in_pos >= p->bends[p->bends_pos].start) {
         double progress = (double)(p->in_pos - p->bends[p->bends_pos].start) /
              p->bends[p->bends_pos].duration;
-        progress = 1 - cos(M_PI * progress);
-        progress *= p->bends[p->bends_pos].cents * (.5 / 1200);
+        progress *= p->bends[p->bends_pos].cents / 1200.0;
         pitchShift = p->shift * pow(2., progress);
       }
 
