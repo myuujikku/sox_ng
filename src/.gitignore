@@ -1,5 +1,3 @@
-Makefile
-Makefile.in
 sox_sample_test
 sox_sample_test.exe
 example?
@@ -7,12 +5,7 @@ example?.exe
 soxconfig.h.in
 soxconfig.h.in~
 soxconfig.h
-.deps
 stamp-h1
-.libs
-*.o
-*.lo
-*.la
 sox_ng
 sox_ng.exe
 play_ng
