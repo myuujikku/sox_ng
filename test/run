@@ -4,20 +4,17 @@
 
 # 14.4.2
 
+# sox_ng-14.5.0
+
 # Debian
 
 # 42b355
 
-rm -f core out.*
+rm -f core
 
 ${sox:-sox} 
 status=$?
 
-rm -f core out.*
-
-case "$status" in
-0) status=255;;
-2) status=0;;
-esac
+rm -f core
 
 exit $status
