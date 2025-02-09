@@ -209,30 +209,33 @@ static int sox_echo_stop(sox_effect_t * effp)
 
 const sox_effect_handler_t *lsx_echo_effect_fn(void)
 {
-  static char usage[] = "gain-in gain-out <delay decay>\n\
-                                 ___\n\
-  In--+------------------------>|   |\n\
-      |    _________  * gain-in |   |\n\
-      |   |         |           |   |\n\
-      +-->| delay 1 |---------->|   |\n\
-      |   |_________| * decay 1 |   |\n\
-      |    _________            | + |------------>Out\n\
-      |   |         |           |   | * gain-out\n\
-      +-->| delay 2 |---------->|   |\n\
-      |   |_________| * decay 2 |   |\n\
-      :    _________            |   |\n\
-      |   |         |           |   |\n\
-      +-->| delay n |---------->|___|\n\
-          |_________| * decay n\n\
-\n\
-         RANGE  DESCRIPTION\n\
-gain-in   0-1   Proportion of input signal delivered clean to adder\n\
-gain-out  0-1   Final volume adjustment\n\
-delay     0-    Delay in milliseconds\n\
-decay     0-1   Proportion of delayed signal delivered to adder";
+  static const char usage[] = "gain-in gain-out <delay decay>";
+  static char const * const extra_usage[] = {
+"                               ___",
+"In--+------------------------>|   |",
+"    |    _________  * gain-in |   |",
+"    |   |         |           |   |",
+"    +-->| delay 1 |---------->|   |",
+"    |   |_________| * decay 1 |   |",
+"    |    _________            | + |------------>Out",
+"    |   |         |           |   | * gain-out",
+"    +-->| delay 2 |---------->|   |",
+"    |   |_________| * decay 2 |   |",
+"    :    _________            |   |",
+"    |   |         |           |   |",
+"    +-->| delay n |---------->|___|",
+"        |_________| * decay n",
+"",
+"         RANGE  DESCRIPTION",
+"gain-in   0-1   Proportion of input signal delivered clean to adder",
+"gain-out  0-1   Final volume adjustment",
+"delay     0-    Delay in milliseconds",
+"decay     0-1   Proportion of delayed signal delivered to adder",
+    NULL
+  };
 
   static sox_effect_handler_t handler = {
-    "echo", usage, SOX_EFF_LENGTH | SOX_EFF_GAIN,
+    "echo", usage, extra_usage, SOX_EFF_LENGTH | SOX_EFF_GAIN,
     sox_echo_getopts,
     sox_echo_start,
     sox_echo_flow,

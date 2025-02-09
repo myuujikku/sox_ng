@@ -6,12 +6,6 @@
  *
  * FIXME: deprecate or remove the limiter in favour of compand.
  */
-#define vol_usage \
-  "GAIN [TYPE [LIMITERGAIN]]\n" \
-  "\t(default TYPE=amplitude: 1 is constant, < 0 change phase;\n" \
-  "\tTYPE=power 1 is constant; TYPE=dB: 0 is constant, +6 doubles ampl.)\n" \
-  "\tThe peak limiter has a gain much less than 1 (e.g. 0.05 or 0.02) and\n" \
-  "\tis only used on peaks (to prevent clipping); default is no limiter."
 
 #include "sox_i.h"
 
@@ -177,8 +171,21 @@ static int stop(sox_effect_t * effp)
 
 sox_effect_handler_t const * lsx_vol_effect_fn(void)
 {
+  static const char usage[] =
+    "gain [a|p|d(a) [limitergain]]";
+
+  static char const * const extra_usage[] = {
+"gain  amplitude  <1 attenuates, >1 amplifies, negative inverts",
+"      power      <1 attenuates, >1 amplifies, negative inverts",
+"      dB         <0 attenuates, >0 amplifies",
+"limitergain      Used on peaks to prevent clipping; its value should be",
+"                 much less than 1 (e.g. 0.02 or 0.05). The default is none.",
+    NULL
+  };
+
   static sox_effect_handler_t handler = {
-    "vol", vol_usage, SOX_EFF_MCHAN | SOX_EFF_GAIN, getopts, start, flow, 0, stop, 0, sizeof(priv_t)
+    "vol", usage, extra_usage, SOX_EFF_MCHAN | SOX_EFF_GAIN,
+    getopts, start, flow, 0, stop, 0, sizeof(priv_t)
   };
   return &handler;
 }

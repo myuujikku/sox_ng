@@ -911,36 +911,38 @@ static int end(sox_effect_t * effp)
 
 sox_effect_handler_t const * lsx_spectrogram_effect_fn(void)
 {
-  static char const usage[] = "\
-[options]\n\
-\t-x num\tX-axis size in pixels; default derived or 800\n\
-\t-X num\tX-axis pixels/second; default derived or 100\n\
-\t-y num\tY-axis size in pixels (per channel); slow if not 1 + 2^n\n\
-\t-Y num\tY-height total (i.e. not per channel); default 550\n\
-\t-z num\tZ-axis range in dB; default 120\n\
-\t-Z num\tZ-axis maximum in dBFS; default 0\n\
-\t-n\tSet Z-axis maximum to the brightest pixel\n\
-\t-q num\tZ-axis quantisation (0 - 249); default 249\n\
-\t-w name\tWindow: Hann(default)/Hamming/Bartlett/Rectangular/Kaiser/Dolph\n\
-\t-W num\tWindow adjust parameter (-10 - 10); applies only to Kaiser/Dolph\n\
-\t-s\tSlack overlap of windows\n\
-\t-a\tSuppress axis lines\n\
-\t-r\tRaw spectrogram; no axes or legends\n\
-\t-l\tLight background\n\
-\t-m\tMonochrome\n\
-\t-h\tHigh colour\n\
-\t-L\tPlot the frequency on logarithmic axis\n\
-\t-R L:H\tSpecify the frequency range (from L to H)\n\
-\t-p num\tPermute colours (1 - 6); default 1\n\
-\t-A\tAlternative, inferior, fixed colour-set (for compatibility only)\n\
-\t-t text\tTitle text\n\
-\t-c text\tComment text\n\
-\t-o text\tOutput file name; default `spectrogram.png'\n\
-\t-d time\tAudio duration to fit to X-axis; e.g. 1:00, 48\n\
-\t-S position\tStart the spectrogram at the given input position";
-  static sox_effect_handler_t handler = {"spectrogram", usage,
-    SOX_EFF_MODIFY, getopts,
-    start, flow, drain, end, 0, sizeof(priv_t)};
+  static char const usage[] = "[options]";
+  static char const * const extra_usage[] = {
+"-x num  X-axis size in pixels; default: derived or 800",
+"-X num  X-axis pixels/second; default: derived or 100",
+"-y num  Y-axis size in pixels per channel",
+"-Y num  Total height; default 550",
+"-z num  Z-axis range in dB; default 120",
+"-Z num  Z-axis maximum in dBFS; default 0",
+"-n      normalize: Set Z-axis maximum to the brightest pixel",
+"-q num  Z-axis quantisation (0-249); default 249",
+"-w name Window: Hann(default)/Hamming/Bartlett/Rectangular/Kaiser/Dolph",
+"-W num  Window adjust parameter (-10-10); applies only to Kaiser/Dolph",
+"-s      Slack overlap of windows",
+"-a      Suppress axis lines",
+"-r      Raw spectrogram; no axes or legends",
+"-l      Light background",
+"-m      Monochrome",
+"-h      High colour",
+"-L      Plot the frequency on logarithmic axis",
+"-R L:H  Specify the frequency range (from L to H)",
+"-p num  Permute colours (1-6); default 1",
+"-A      Alternative, inferior, fixed colour-set (for compatibility only)",
+"-t text Title text",
+"-c text Comment text",
+"-o text Output file name; default `spectrogram.png'",
+"-d time Audio duration to fit to the X-axis",
+"-S pos  Start the spectrogram at the given input time",
+    NULL
+  };
+  static sox_effect_handler_t handler = {
+    "spectrogram", usage, extra_usage, SOX_EFF_MODIFY,
+    getopts, start, flow, drain, end, 0, sizeof(priv_t)};
 
   return &handler;
 }

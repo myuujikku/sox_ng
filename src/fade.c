@@ -378,12 +378,22 @@ static double fade_gain(uint64_t index, uint64_t range, int type)
     return retval;
 }
 
+static const char usage[] =
+  "[type] fade-in-length [stop-position [fade-out-length]]";
+
+static char const * const extra_usage[] = {
+  "TYPE  DESCRIPTION",
+  "q     Quarter sine wave",
+  "h     Half sine wave",
+  "t     Linear (`triangular')",
+  "l     Logarithmic",
+  "p     Inverted parabola",
+  "Times are in hh:mm:ss.frac format.",
+  NULL
+};
+
 static sox_effect_handler_t sox_fade_effect = {
-  "fade",
-  "[ type ] fade-in-length [ stop-position [ fade-out-length ] ]\n"
-  "       Time is in hh:mm:ss.frac format.\n"
-  "       Fade type one of q, h, t, l or p.",
-  SOX_EFF_MCHAN | SOX_EFF_LENGTH,
+  "fade", usage, extra_usage, SOX_EFF_MCHAN | SOX_EFF_LENGTH,
   sox_fade_getopts,
   sox_fade_start,
   sox_fade_flow,

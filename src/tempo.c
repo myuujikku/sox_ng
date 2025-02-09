@@ -308,9 +308,24 @@ static int stop(sox_effect_t * effp)
 
 sox_effect_handler_t const * lsx_tempo_effect_fn(void)
 {
+  static const char usage[] =
+    "[-q] [-m|-s|-l] [factor [segment [search-ms [overlap-ms]]]]";
+
+  static char const * const extra_usage[] = {
+"-q      Use tree searches instead of linear ones",
+"-m      Optimize segment, search and overlap for music",
+"-s      Optimize segment, search and overlap for speech",
+"-l      Optimize segment, search and overlap for linear processing",
+"OPTION  RANGE DEFAULT DESCRIPTION",
+"factor          ?     Ratio of new tempo to old; >1 speeds up, <1 slows down",
+"segment        82     Segment size in milliseconds",
+"search         14.68  Audio length over which to search for overlap point",
+"overlap        12     Segment overlap length in milliseconds",
+    NULL
+  };
+
   static sox_effect_handler_t handler = {
-    "tempo", "[-q] [-m | -s | -l] factor [segment-ms [search-ms [overlap-ms]]]",
-    SOX_EFF_MCHAN | SOX_EFF_LENGTH,
+    "tempo", usage, extra_usage, SOX_EFF_MCHAN | SOX_EFF_LENGTH,
     getopts, start, flow, drain, stop, NULL, sizeof(priv_t)
   };
   return &handler;

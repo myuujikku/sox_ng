@@ -90,7 +90,8 @@ static int flow(sox_effect_t * effp, const sox_sample_t * ibuf,
 
 sox_effect_handler_t const *lsx_earwax_effect_fn(void)
 {
-  static sox_effect_handler_t handler = {"earwax", NULL, SOX_EFF_MCHAN,
+  static sox_effect_handler_t handler = {
+    "earwax", NULL, NULL, SOX_EFF_MCHAN,
     NULL, start, flow, NULL, NULL, NULL, sizeof(priv_t)};
   return &handler;
 }

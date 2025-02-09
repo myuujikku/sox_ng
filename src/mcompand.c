@@ -8,19 +8,6 @@
  * notice must be maintained.  Chris Bagwell And Nick Bailey are not
  * responsible for the consequences of using this software.
  *
- *
- * Usage:
- *   mcompand quoted_compand_args [crossover_frequency
- *      quoted_compand_args [...]]
- *
- *   quoted_compand_args are as for the compand effect:
- *
- *   attack1,decay1[,attack2,decay2...]
- *                  in-dB1,out-dB1[,in-dB2,out-dB2...]
- *                 [ gain [ initial-volume [ delay ] ] ]
- *
- *   Beware a variety of headroom (clipping) bugaboos.
- *
  * Implementation details:
  *   The input is divided into bands using 4th order Linkwitz-Riley IIRs.
  *   This is akin to the crossover of a loudspeaker, and results in flat
@@ -503,16 +490,15 @@ static int lsx_kill(sox_effect_t * effp)
 
 const sox_effect_handler_t *lsx_mcompand_effect_fn(void)
 {
+  static const char usage[] =
+    "quoted_compand_args {crossover_frequency[k] quoted_compand_args}";
+  static char const * const extra_usage[] = {
+    "quoted_compand_args are as for the compand effect:",
+    "\"<attack,decay> <in-dB,out-dB> [gain [initial-volume [delay]]]\"",
+    NULL
+  };
   static sox_effect_handler_t handler = {
-    "mcompand",
-    "quoted_compand_args [crossover_frequency[k] quoted_compand_args [...]]\n"
-    "\n"
-    "quoted_compand_args are as for the compand effect:\n"
-    "\n"
-    "  attack1,decay1[,attack2,decay2...]\n"
-    "                 in-dB1,out-dB1[,in-dB2,out-dB2...]\n"
-    "                [ gain [ initial-volume [ delay ] ] ]",
-    SOX_EFF_MCHAN | SOX_EFF_GAIN,
+    "mcompand", usage, extra_usage, SOX_EFF_MCHAN | SOX_EFF_GAIN,
     getopts, start, flow, drain, stop, lsx_kill, sizeof(priv_t)
   };
 

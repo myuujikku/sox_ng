@@ -318,21 +318,25 @@ const sox_effect_handler_t* lsx_speexdsp_effect_fn(void)
    * the 6 functions, then the function above can be deleted
    * and NULL used in place of the its name below.
    */
-  static char const usage[] = "\
-Uses the Speex DSP library to improve perceived sound quality.\n\
-If no options are specified, the -agc and -denoise features are enabled.\n\
-Options:\n\
--agc [target_level]    Enable automatic gain control, and optionally specify a\n\
-                       target volume level from 1-100 (default is 100).\n\
--denoise [max_dB]      Enable noise reduction, and optionally specify the max\n\
-                       attenuation (default is 15).\n\
--dereverb              Enable reverb reduction.\n\
--fps frames_per_second Specify the number of frames per second from 1-100\n\
-                       (default is 20).\n\
--spf samples_per_frame Specify the number of samples per frame. Default is to\n\
-                       use the -fps setting.";
+  static const char usage[] = "[options]";
+
+  static char const * const extra_usage[] = {
+"Use the Speex DSP library to improve perceived sound quality.",
+"-agc [target_level]    Enable automatic gain control and optionally specify",
+"                       a target volume level from 1-100. The default is 100.",
+"-denoise [max_dB]      Enable noise reduction and optionally specify",
+"                       the maximum attenuation. The default is 15.",
+"-dereverb              Enable reverb reduction.",
+"-fps frames_per_second Specify the number of frames per second from 1-100",
+"                       The default is 20.",
+"-spf samples_per_frame Specify the number of samples per frame.",
+"                       The default is to use the -fps setting.",
+"If no options are specified, the -agc and -denoise features are enabled.",
+    NULL
+  };
+
   static sox_effect_handler_t descriptor = {
-    "speexdsp", usage, SOX_EFF_PREC | SOX_EFF_GAIN,
+    "speexdsp", usage, extra_usage, SOX_EFF_PREC | SOX_EFF_GAIN,
     getopts, start, flow, drain, stop, NULL, sizeof(priv_t)
   };
 

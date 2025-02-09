@@ -175,8 +175,9 @@ static int lsx_kill(sox_effect_t UNUSED * effp)
  */
 const sox_effect_handler_t *lsx_softvol_effect_fn(void)
 {
+  static const char usage[] = "[volume [double-time [headroom]]]";
   static sox_effect_handler_t handler = {
-    "softvol", "[volume [double-time [headroom]]]", SOX_EFF_MCHAN | SOX_EFF_GAIN,
+    "softvol", usage, NULL, SOX_EFF_MCHAN | SOX_EFF_GAIN,
     getopts, start, flow, drain, stop, lsx_kill, sizeof(priv_t)
   };
   return &handler;

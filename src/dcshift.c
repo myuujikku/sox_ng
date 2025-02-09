@@ -162,11 +162,17 @@ static int sox_dcshift_stop(sox_effect_t * effp)
     return SOX_SUCCESS;
 }
 
+static const char usage[] = "shift [limitergain(none)]";
+
+static char const * const extra_usage[] = {
+   "limitergain should be much less than 1.0 (ie 0.05 or 0.02)",
+   "and is only used on peaks to prevent clipping.",
+   NULL
+};
+
 static sox_effect_handler_t sox_dcshift_effect = {
    "dcshift",
-   "shift [ limitergain ]\n"
-   "\tThe peak limiter has a gain much less than 1.0 (ie 0.05 or 0.02) which\n"
-   "\tis only used on peaks to prevent clipping. (default is no limiter)",
+   usage, extra_usage,
    SOX_EFF_MCHAN | SOX_EFF_GAIN,
    sox_dcshift_getopts,
    sox_dcshift_start,

@@ -1136,13 +1136,16 @@ static int stop(sox_effect_t *effp)
 
 const sox_effect_handler_t *lsx_sdm_effect_fn(void)
 {
+  static char const * const extra_usage[] = {
+    "-f       Noise-shaping filter",
+    "         Advanced options:",
+    "-t       Override trellis order",
+    "-n       Override number of trellis paths",
+    "-l       Override trellis latency",
+    NULL
+  };
   static sox_effect_handler_t handler = {
-    "sdm", "[-f filter] [-t order] [-n num] [-l latency]"
-    "\n  -f       Noise-shaping filter"
-    "\n           Advanced options:"
-    "\n  -t       Override trellis order"
-    "\n  -n       Override number of trellis paths"
-    "\n  -l       Override trellis latency",
+    "sdm", "[-f filter] [-t order] [-n num] [-l latency]", extra_usage,
     SOX_EFF_PREC, getopts, start, flow, drain, stop, 0, sizeof(sdm_effect_t),
   };
   return &handler;

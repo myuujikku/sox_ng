@@ -344,7 +344,7 @@ static int sox_stat_stop(sox_effect_t * effp)
 
 static sox_effect_handler_t sox_stat_effect = {
   "stat",
-  "[ -s N ] [ -rms ] [-freq] [ -v ] [ -d ] [ -a ]",
+  "[-s N] [-rms] [-freq] [-v] [-d] [-a]", NULL,
   SOX_EFF_MCHAN | SOX_EFF_MODIFY,
   sox_stat_getopts,
   sox_stat_start,
