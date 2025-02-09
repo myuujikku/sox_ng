@@ -262,26 +262,28 @@ static int lsx_kill(sox_effect_t * effp)
 
 sox_effect_handler_t const * lsx_compand_effect_fn(void)
 {
-  static char usage[] = "\
-attack1,decay1{,attack2,decay2} [soft-knee-dB:]in-dB1[,out-dB1]{,in-dB2,out-dB2} [gain [initial-volume-dB [delay]]]\n\
-  dB values are floating point or -inf'; times are in seconds.\n\
-\n\
-  Flow diagram for one channel:\n\
-           ____________      _______________\n\
-          |            |    |               |     ___\n\
-  In--+-->| integrator |--->| transfer func |--->|   |\n\
-      |   |____________|    |_______________|    |   | * gain\n\
-      |       _______                            | * |-------->Out\n\
-      |      |       |                           |   |\n\
-      +----->| delay |-------------------------->|___|\n\
-             |_______|\n\
-\n\
-Clipping can occur if the transfer function pushes things\n\
-too close to 0 dB.  In that case, use a negative gain\n\
-or reduce the output level of the transfer function.";
+  static const char usage[] =
+    "<attack,decay> [soft-knee-dB:]in-dB1[,out-dB1]{,in-dB2,out-dB2} [gain [initial-volume-dB [delay]]]";
+  static char const * const extra_usage[] = {
+"dB values are floating point or -inf'; times are in seconds.",
+"",
+"Flow diagram for one channel:",
+"         ____________      _______________",
+"        |            |    |               |     ___",
+"In--+-->| integrator |--->| transfer func |--->|   |",
+"    |   |____________|    |_______________|    |   | * gain",
+"    |       _______                            | * |-------->Out",
+"    |      |       |                           |   |",
+"    +----->| delay |-------------------------->|___|",
+"           |_______|",
+"",
+"Clipping can occur if the transfer function pushes things too close to 0 dB.",
+"In that case, use negative gain or reduce level of the transfer function.",
+    NULL
+  };
 
   static sox_effect_handler_t handler = {
-    "compand", usage, SOX_EFF_MCHAN | SOX_EFF_GAIN,
+    "compand", usage, extra_usage, SOX_EFF_MCHAN | SOX_EFF_GAIN,
     getopts, start, flow, drain, stop, lsx_kill, sizeof(priv_t)
   };
 

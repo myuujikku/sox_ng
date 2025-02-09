@@ -386,42 +386,45 @@ static int sox_chorus_stop (sox_effect_t * effp)
 
 const sox_effect_handler_t *lsx_chorus_effect_fn(void)
 {
-  static char const usage[] = "\
-gain-in gain-out <delay decay speed depth -s|-t>\n\
-                                                ___\n\
-  In---+-------------------------------------->|   |\n\
-       |     _________              * gain-in  |   |\n\
-       |    |         |                        |   |\n\
-       +--->| delay 1 |----------------------->|   |\n\
-       |    |_________|             * decay 1  |   |\n\
-       |         ^                             |   |\n\
-       :         | * depth 1                   |   |\n\
-       : +---------------+                     | + |------------>Out\n\
-       : | sine/triangle |<--speed 1           |   | * gain-out\n\
-       : +---------------+                     |   |\n\
-       |     _________                         |   |\n\
-       |    |         |                        |   |\n\
-       +--->| delay n |----------------------->|   |\n\
-            |_________|              * decay n |   |\n\
-                 ^                             |___|\n\
-                 | * depth n\n\
-         +---------------+\n\
-         | sine/triangle |<--speed n\n\
-         +---------------+\n\
-\n\
-         RANGE   DESCRIPTION\n\
-gain-in   0-1    Proportion of input delivered clean to adder\n\
-gain-out  0-     Final volume adjustment\n\
-delay    20-100  Fixed delay in milliseconds\n\
-decay     0-1    Proportion of delay's output delivered to adder\n\
-speed   0.1-5    Modulation frequency in Hz\n\
-depth     0-10   Additional variable delay in milliseconds\n\
--s               Modulate sinusoidally\n\
--t               Modulate triangularly";
+  static char const usage[] =
+"gain-in gain-out <delay decay speed depth -s|-t>";
+  static char const * const extra_usage[] = {
+"                                              ___",
+"In---+-------------------------------------->|   |",
+"     |     _________              * gain-in  |   |",
+"     |    |         |                        |   |",
+"     +--->| delay 1 |----------------------->|   |",
+"     |    |_________|             * decay 1  |   |",
+"     |         ^                             |   |",
+"     :         | * depth 1                   |   |",
+"     : +---------------+                     | + |------------>Out",
+"     : | sine/triangle |<--speed 1           |   | * gain-out",
+"     : +---------------+                     |   |",
+"     |     _________                         |   |",
+"     |    |         |                        |   |",
+"     +--->| delay n |----------------------->|   |",
+"          |_________|              * decay n |   |",
+"               ^                             |___|",
+"               | * depth n",
+"       +---------------+",
+"       | sine/triangle |<--speed n",
+"       +---------------+",
+"",
+"         RANGE   DESCRIPTION",
+"gain-in   0-1    Proportion of input delivered clean to adder",
+"gain-out  0-     Final volume adjustment",
+"delay    20-100  Fixed delay in milliseconds",
+"decay     0-1    Proportion of delay's output delivered to adder",
+"speed   0.1-5    Modulation frequency in Hz",
+"depth     0-10   Additional variable delay in milliseconds",
+"-s               Modulate sinusoidally",
+"-t               Modulate triangularly",
+          NULL
+	};
 
         static sox_effect_handler_t sox_chorus_effect = {
                 "chorus",
-                usage,
+                usage, extra_usage,
                 SOX_EFF_LENGTH | SOX_EFF_GAIN,
                 sox_chorus_getopts,
                 sox_chorus_start,

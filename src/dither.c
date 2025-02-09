@@ -419,17 +419,21 @@ static int flow(sox_effect_t * effp, const sox_sample_t * ibuf,
 
 sox_effect_handler_t const * lsx_dither_effect_fn(void)
 {
+  static const char usage[] = "[-S|-s|-f filter] [-a] [-p precision]";
+  static char const * const extra_usage[] = {
+    "(none)   Use TPDF",
+    "-S       Use sloped TPDF (without noise shaping)",
+    "-s       Shape noise (with shibata filter)",
+    "-f name  Set shaping filter to one of: lipshitz, f-weighted,",
+    "         modified-e-weighted, improved-e-weighted, gesemann,",
+    "         shibata, low-shibata, high-shibata.",
+    "-a       Automatically turn dithering on & off as needed (use with caution!)",
+    "-p bits  Override the target sample precision",
+    NULL
+  };
   static sox_effect_handler_t handler = {
-    "dither", "[-S|-s|-f filter] [-a] [-p precision]"
-    "\n  (none)   Use TPDF"
-    "\n  -S       Use sloped TPDF (without noise shaping)"
-    "\n  -s       Shape noise (with shibata filter)"
-    "\n  -f name  Set shaping filter to one of: lipshitz, f-weighted,"
-    "\n           modified-e-weighted, improved-e-weighted, gesemann,"
-    "\n           shibata, low-shibata, high-shibata."
-    "\n  -a       Automatically turn on & off dithering as needed (use with caution!)"
-    "\n  -p bits  Override the target sample precision",
-    SOX_EFF_PREC, getopts, start, flow, 0, 0, 0, sizeof(priv_t)
+    "dither", usage, extra_usage, SOX_EFF_PREC,
+    getopts, start, flow, NULL, NULL, 0, sizeof(priv_t)
   };
   return &handler;
 }

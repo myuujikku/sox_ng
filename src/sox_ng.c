@@ -633,7 +633,8 @@ static int combiner_stop(sox_effect_t *effp)
 
 static sox_effect_handler_t const * input_combiner_effect_fn(void)
 {
-  static sox_effect_handler_t handler = { "input", 0, SOX_EFF_MCHAN |
+  static sox_effect_handler_t handler = {
+    "input", NULL, NULL, SOX_EFF_MCHAN |
     SOX_EFF_MODIFY, 0, combiner_start, 0, combiner_drain,
     combiner_stop, 0, sizeof(input_combiner_t)
   };
@@ -681,8 +682,9 @@ static int output_flow(sox_effect_t *effp, sox_sample_t const * ibuf,
 
 static sox_effect_handler_t const * output_effect_fn(void)
 {
-  static sox_effect_handler_t handler = {"output", 0, SOX_EFF_MCHAN |
-    SOX_EFF_MODIFY | SOX_EFF_PREC, NULL, ostart, output_flow, NULL, NULL, NULL, 0
+  static sox_effect_handler_t handler = {"output", NULL, NULL,
+    SOX_EFF_MCHAN | SOX_EFF_MODIFY | SOX_EFF_PREC,
+    NULL, ostart, output_flow, NULL, NULL, NULL, 0
   };
   return &handler;
 }
@@ -2042,11 +2044,16 @@ static void usage_effect(char const * name)
     for (i = 0; sox_effect_fns[i]; i++) {
       const sox_effect_handler_t *e = sox_effect_fns[i]();
       if (e && e->name && (!strcmp("all", name) || !strcmp(e->name, name))) {
+	char const * * linep;
         if (first) first = sox_false;
         else printf("\n");
         printf("%s %s\n", e->name, e->usage? e->usage : "");
+	linep = (char const * *) e->extra_usage;
+	if (linep)
+	  while (*linep)
+	    printf("  %s\n", *linep++);
         if (e->flags & SOX_EFF_INTERNAL)
-          printf("`%s' is libSoX-only\n", e->name);
+          printf("  `%s' is libSoX-only\n", e->name);
       }
     }
   }
@@ -2176,22 +2183,22 @@ static struct lsx_option_t const long_options[] = {
   {"combine"         , lsx_option_arg_required, NULL, 0},
   {"comment-file"    , lsx_option_arg_required, NULL, 0},
   {"comment"         , lsx_option_arg_required, NULL, 0},
-  {"endian"          , lsx_option_arg_required, NULL, 0},
+  {"endian"          , lsx_option_arg_required, NULL, 0}, /* 5 */
   {"input-buffer"    , lsx_option_arg_required, NULL, 0},
   {"interactive"     , lsx_option_arg_none    , NULL, 0},
   {"help-effect"     , lsx_option_arg_required, NULL, 0},
   {"help-format"     , lsx_option_arg_required, NULL, 0},
-  {"no-glob"         , lsx_option_arg_none    , NULL, 0},
+  {"no-glob"         , lsx_option_arg_none    , NULL, 0}, /* 10 */
   {"plot"            , lsx_option_arg_required, NULL, 0},
   {"replay-gain"     , lsx_option_arg_required, NULL, 0},
   {"version"         , lsx_option_arg_none    , NULL, 0},
   {"output"          , lsx_option_arg_required, NULL, 0},
-  {"effects-file"    , lsx_option_arg_required, NULL, 0},
+  {"effects-file"    , lsx_option_arg_required, NULL, 0}, /* 25 */
   {"temp"            , lsx_option_arg_required, NULL, 0},
   {"single-threaded" , lsx_option_arg_none    , NULL, 0},
   {"ignore-length"   , lsx_option_arg_none    , NULL, 0},
   {"norm"            , lsx_option_arg_optional, NULL, 0},
-  {"magic"           , lsx_option_arg_none    , NULL, 0},
+  {"magic"           , lsx_option_arg_none    , NULL, 0}, /* 20 */
   {"play-rate-arg"   , lsx_option_arg_required, NULL, 0},
   {"clobber"         , lsx_option_arg_none    , NULL, 0},
   {"no-clobber"      , lsx_option_arg_none    , NULL, 0},

@@ -1595,6 +1595,7 @@ Effect handler information.
 struct sox_effect_handler_t {
   char const * name;  /**< Effect name */
   char const * usage; /**< Short explanation of parameters accepted by effect */
+  char const * const * extra_usage;           /**< Additional lines of usage */
   unsigned int flags; /**< Combination of SOX_EFF_* flags */
   sox_effect_handler_getopts getopts; /**< Called to parse command-line arguments (called once per effect). */
   sox_effect_handler_start start;     /**< Called to initialize effect (called once per flow). */

@@ -667,9 +667,11 @@ static int lsx_kill(sox_effect_t * effp)
 
 const sox_effect_handler_t *lsx_synth_effect_fn(void)
 {
+  static const char usage[] =
+    "[-j KEY] [-n] [length [offset [phase [p1 [p2 [p3]]]]]] {type [combine] [[%]freq[k][:|+|/|-[%]freq2[k]] [offset [phase [p1 [p2 [p3]]]]]]}";
+
   static sox_effect_handler_t handler = {
-    "synth", "[-j KEY] [-n] [length [offset [phase [p1 [p2 [p3]]]]]]] {type [combine] [[%]freq[k][:|+|/|-[%]freq2[k]] [offset [phase [p1 [p2 [p3]]]]]]}",
-    SOX_EFF_MCHAN | SOX_EFF_LENGTH | SOX_EFF_GAIN,
+    "synth", usage, NULL, SOX_EFF_MCHAN | SOX_EFF_LENGTH | SOX_EFF_GAIN,
     getopts, start, flow, 0, stop, lsx_kill, sizeof(priv_t)
   };
   return &handler;

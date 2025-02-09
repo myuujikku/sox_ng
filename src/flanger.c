@@ -235,35 +235,39 @@ static int stop(sox_effect_t * effp)
 
 sox_effect_handler_t const * lsx_flanger_effect_fn(void)
 {
-  static char const usage[] = "\
-delay depth regen width speed shape phase interp\n\
-(all optional)\n\
-              +----------------+\n\
-              |    * regen     |\n\
-             _V_     _______   |          ___\n\
-            |   |   |       |  |         |   |\n\
-      +---->| + |-->| delay |--+-------->|   |\n\
-      |     |___|   |_______|   * width  |   |\n\
-      |                 ^                |   |\n\
-  In  |                 | * depth        |   | Out\n\
-  --->+         +---------------+        | + |--->\n\
-      | speed-->| sine/triangle |        |   |\n\
-      |         +---------------+        |   |\n\
-      |                                  |   |\n\
-      +--------------------------------->|   |\n\
-                                         |___|\n\
-        RANGE DEFAULT DESCRIPTION\n\
-delay    0-30     0   base delay in milliseconds\n\
-depth    0-10     2   added swept delay in milliseconds\n\
-regen  -95-95     0   percentage regeneration (delayed signal feedback)\n\
-width    0-100   71   percentage of delayed signal mixed with original\n\
-speed 0.01-10   0.5   sweeps per second (Hz) \n\
-shape    s|t    sin   swept wave shape: sine|triangle\n\
-phase    0-100   25   swept wave percentage phase-shift for multi-channel\n\
-                      flange; 0 = 100 = same phase on each channel\n\
-interp   l|q    lin   delay-line interpolation: linear|quadratic";
+  static const char usage[] =
+"[delay [depth [regen [width [speed [shape [phase [interp]]]]]]]";
+  static char const * const extra_usage[] = {
+"(all optional)",
+"            +----------------+",
+"            |    * regen     |",
+"           _V_     _______   |          ___",
+"          |   |   |       |  |         |   |",
+"    +---->| + |-->| delay |--+-------->|   |",
+"    |     |___|   |_______|   * width  |   |",
+"    |                 ^                |   |",
+"In  |                 | * depth        |   | Out",
+"--->+         +---------------+        | + |--->",
+"    | speed-->| sine/triangle |        |   |",
+"    |         +---------------+        |   |",
+"    |                                  |   |",
+"    +--------------------------------->|   |",
+"                                       |___|",
+"        RANGE DEFAULT DESCRIPTION",
+"delay    0-30     0   base delay in milliseconds",
+"depth    0-10     2   added swept delay in milliseconds",
+"regen  -95-95     0   percentage regeneration (delayed signal feedback)",
+"width    0-100   71   percentage of delayed signal mixed with original",
+"speed 0.01-10   0.5   sweeps per second (Hz)",
+"shape    s|t    sin   swept wave shape: sine|triangle",
+"phase    0-100   25   swept wave percentage phase-shift for multi-channel",
+"                      flange; 0 = 100 = same phase on each channel",
+"interp   l|q    lin   delay-line interpolation: linear|quadratic",
+    NULL
+  };
+
   static sox_effect_handler_t handler = {
-    "flanger", usage, SOX_EFF_MCHAN,
+    "flanger", usage, extra_usage, SOX_EFF_MCHAN,
     getopts, start, flow, NULL, stop, NULL, sizeof(priv_t)};
 
   return &handler;

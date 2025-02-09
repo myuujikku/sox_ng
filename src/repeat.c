@@ -107,7 +107,8 @@ static int stop(sox_effect_t * effp)
 
 sox_effect_handler_t const * lsx_repeat_effect_fn(void)
 {
-  static sox_effect_handler_t effect = {"repeat", "[count (1)]",
+  static sox_effect_handler_t effect = {
+    "repeat", "[count(1)]", NULL,
     SOX_EFF_MCHAN | SOX_EFF_LENGTH | SOX_EFF_MODIFY,
     create, start, flow, drain, stop, NULL, sizeof(priv_t)};
   return &effect;

@@ -299,29 +299,32 @@ static int stop(sox_effect_t * effp)
 
 sox_effect_handler_t const * lsx_vad_effect_fn(void)
 {
-  static char const usage[] = "[options]\n\
-\n\
-FLAG DESCRIPTION                  DEFAULT   MIN   MAX\n\
--t   trigger-level                7         0.1   20\n\
--T   trigger-time-constant        0.25 s    0.01   1\n\
--s   search-time                  1 s       0.1    4\n\
--g   allowed-gap                  0.25 s    0.1    1\n\
--p   pre-trigger-time             0 s       0      4\n\
-Advanced options:\n\
--b   noise-est-boot-time          0.35 s    0.1   10\n\
--N   noise-est-time-constant-up   0.1 s     0.1   10\n\
--n   noise-est-time-constant-down 0.01 s    0.001  0.1\n\
--r   noise-reduction-amount       1.35      0      2\n\
--f   measurement-frequency        20 Hz     5     50\n\
--m   measurement-duration         0.1 s     0.01   1\n\
--M   measurement-time-constant    0.4 s     0.1    1\n\
--h   high-pass-filter             50 Hz     10\n\
--l   low-pass-filter              6000 Hz   1000\n\
--H   high-pass-lifter             150 Hz    10\n\
--L   low-pass-lifter              2000 Hz   1000";
+  static char const usage[] = "[options]";
 
-  static sox_effect_handler_t handler = {"vad", usage,
-    SOX_EFF_MCHAN | SOX_EFF_LENGTH | SOX_EFF_MODIFY,
+  static char const * const extra_usage[] = {
+"FLAG RANGE   DEFAULT  DESCRIPTION",
+"-t   0.1-20    7      trigger level",
+"-T   0.01-1    0.25   trigger time constant",
+"-s   0.1-4     1      search time",
+"-g   0.1-1     0.25   allowed gap",
+"-p   0-4       0      pre-trigger time",
+"Advanced options:",
+"-b   0.1-10    0.35   noise estimate boot time",
+"-N   0.1-10    0.1    noise estimate time constant up",
+"-n   0.001-0.1 0.01   noise estimate time constant down",
+"-r   0-2       1.35   noise reduction amount",
+"-f   5-50      20     measurement frequency",
+"-m   0.01-1    0.1    measurement duration",
+"-M   0.1-1     0.4    measurement time constant",
+"-h   10-       50     high-pass filter frequency",
+"-l   1000-     6000   low-pass filter frequency",
+"-H   10-       150    high-pass lifter frequency",
+"-L   1000-     2000   low-pass lifter frequency",
+    NULL
+  };
+
+  static sox_effect_handler_t handler = {
+    "vad", usage, extra_usage, SOX_EFF_MCHAN | SOX_EFF_LENGTH | SOX_EFF_MODIFY,
     create, start, flowTrigger, drain, stop, NULL, sizeof(priv_t)
   };
 

@@ -291,7 +291,9 @@ static int stop(sox_effect_t * effp)
 sox_effect_handler_t const * lsx_stats_effect_fn(void)
 {
   static sox_effect_handler_t handler = {
-    "stats", "[-b bits|-x bits|-s scale] [-w window-time]", SOX_EFF_MODIFY,
+    "stats",
+    "[-b bits|-x bits|-s scale] [-w window-time]", NULL,
+    SOX_EFF_MODIFY,
     getopts, start, flow, drain, stop, NULL, sizeof(priv_t)};
   return &handler;
 }

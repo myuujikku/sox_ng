@@ -395,7 +395,7 @@ static int start(sox_effect_t * effp)
 #define BIQUAD_EFFECT(name,group,usage,flags) \
 sox_effect_handler_t const * lsx_##name##_effect_fn(void) { \
   static sox_effect_handler_t handler = { \
-    #name, usage, flags, \
+    #name, usage, NULL, flags, \
     group##_getopts, start, lsx_biquad_flow, 0, 0, 0, sizeof(biquad_t)\
   }; \
   return &handler; \

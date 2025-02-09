@@ -104,38 +104,35 @@ static int stop(sox_effect_t * effp)
 
 sox_effect_handler_t const * lsx_phaser_effect_fn(void)
 {
-  static char usage[] = "\
-gain-in gain-out delay decay speed -s|-t\n\
-\n\
-     * gain-in  ___  * gain-out\n\
-  In---------->|   |-----------> Out\n\
-               | + | * decay\n\
-               |___|<-----------+\n\
-                 |    _______   |\n\
-                 |   |       |  |\n\
-                 +-->| delay |--+\n\
-                     |_______|\n\
-                         ^\n\
-                         |\n\
-                 +---------------+\n\
-         speed-->| sine/triangle |\n\
-                 +---------------+\n\
-\n\
-           RANGE  DEFAULT  DESCRIPTION\n\
-  gain-in   0-1     0.4    Proportion of input delivered to output and delay\n\
-  decay     0-1     0.4    Proportion of delay that is fed back\n\
-  gain-out  0-      0.74   Final output volume adjustment\n\
-  delay     0-5     3.0    Delay in milliseconds\n\
-  speed   0.1-2     0.5    Modulation speed in Hz\n\
-  -s                       Sinusoidal modulation\n\
-  -t                       Triangular modulation\n\
-\n\
-Hint:  in-gain < (1 - decay * decay)\n\
-      out-gain < (1 - decay) / gain-in";
+  static const char usage[] = "gain-in gain-out delay decay speed -s|-t";
+  static char const * const extra_usage[] = {
+"              ___",
+"In ---------->|   |------------> Out",
+"    * gain-in | + | * gain-out",
+"         +--->|___|",
+"         |      |",
+" * decay |   ___v___",
+"         |  |       |   +---------------+",
+"         +--| delay |<--| sine/triangle |<-- speed",
+"            |_______|   +---------------+",
+"",
+"         RANGE  DEFAULT  DESCRIPTION",
+"gain-in   0-1     0.4    Proportion of input delivered to output and delay",
+"decay     0-1     0.4    Proportion of delay that is fed back",
+"gain-out  0-      0.74   Final output volume adjustment",
+"delay     0-5     3.0    Delay in milliseconds",
+"speed   0.1-2     0.5    Modulation speed in Hz",
+"-s                       Sinusoidal modulation",
+"-t                       Triangular modulation",
+"",
+"Hint:  in-gain < (1 - decay * decay)",
+"      out-gain < (1 - decay) / gain-in",
+    NULL
+  };
 
   static sox_effect_handler_t handler = {
-    "phaser", usage, SOX_EFF_LENGTH | SOX_EFF_GAIN, getopts,
-    start, flow, NULL, stop, NULL, sizeof(priv_t)
+    "phaser", usage, extra_usage, SOX_EFF_LENGTH | SOX_EFF_GAIN,
+    getopts, start, flow, NULL, stop, NULL, sizeof(priv_t)
   };
 
   return &handler;

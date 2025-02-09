@@ -287,14 +287,21 @@ static int lsx_kill(sox_effect_t * effp)
 
 sox_effect_handler_t const * lsx_splice_effect_fn(void)
 {
+  static const char usage[] =
+    "[-h|-t|-q] {position[,excess[,leeway]]}";
+
+  static char const * const extra_usage[] = {
+"-h        Half sine fade (default); constant gain",
+"-t        Triangular (linear) fade; constant gain",
+"-q        Quarter sine fade; constant power",
+"position  The length of part 1, including the excess",
+"excess    At the end of part 1 and the start of part2 (default 0.005)",
+"leeway    Before part2 (default 0.005; set to 0 for cross-fade)",
+    NULL
+  };
+
   static sox_effect_handler_t handler = {
-    "splice", "[-h|-t|-q] {position[,excess[,leeway]]}"
-    "\n  -h        Half sine fade (default); constant gain (for correlated audio)"
-    "\n  -t        Triangular (linear) fade; constant gain (for correlated audio)"
-    "\n  -q        Quarter sine fade; constant power (for correlated audio e.g. x-fade)"
-    "\n  position  The length of part 1 (including the excess)"
-    "\n  excess    At the end of part 1 & the start of part2 (default 0.005)"
-    "\n  leeway    Before part2 (default 0.005; set to 0 for cross-fade)",
+    "splice", usage, extra_usage,
     SOX_EFF_MCHAN | SOX_EFF_LENGTH,
     create, start, flow, drain, stop, lsx_kill, sizeof(priv_t)
   };

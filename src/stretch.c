@@ -311,11 +311,21 @@ static int stop(sox_effect_t * effp)
 
 const sox_effect_handler_t *lsx_stretch_effect_fn(void)
 {
+  static const char usage[] = "[factor [window [fade [shift [fading]]]]]";
+
+  static char const * const extra_usage[] = {
+"OPTION RANGE DEFAULT DESCRIPTION",
+"factor  0-      1    Change in length; >1 lengthens, <1 shortens",
+"window         20    Length of the crossfading window in milliseconds",
+"fade     l      l    Can only be `l' for `linear'",
+"shift   0-1     ?    Shift ratio. The default depends on factor",
+"fading  0-.5    ?    Fading ratio: how much of each window is cross-faded",
+"                     The default value depends on factor and shift",
+    NULL
+  };
+
   static const sox_effect_handler_t handler = {
-    "stretch",
-    "factor [window fade shift fading]\n"
-    "       (expansion, frame in ms, lin/..., unit<1.0, unit<0.5)\n"
-    "       (defaults: 1.0 20 lin ...)",
+    "stretch", usage, extra_usage,
     SOX_EFF_LENGTH,
     getopts, start, flow, drain, stop, NULL, sizeof(priv_t)
   };

@@ -213,33 +213,36 @@ static int sox_echos_stop(sox_effect_t * effp)
 
 const sox_effect_handler_t *lsx_echos_effect_fn(void)
 {
-  static char usage[] = "gain-in gain-out delay decay <delay decay>\n\
-                                                           ___\n\
-   In--+--------+-------------------+-------------------->|   |\n\
-       |        |                   |           * gain-in |   |\n\
-   ____v___    _v_     ________    _v_     ________       |   |\n\
-  |        |  |   |   |        |  |   |   |        |      |   |\n\
-  | delay1 |  | + |-->| delay2 |  | + |-->| delayN |      |   |\n\
-  |________|  |___|   |________|  |___|   |________|      |   | * gain-out\n\
-       |        ^          |        ^          |          | + |------------>\n\
-       |        |          |        |          |          |   |         Out\n\
-       |        |          |        |          +--------->|   |\n\
-       |        |          |        |           * decay N |   |\n\
-       |        |          +--------+-------------------->|   |\n\
-       |        |                               * decay 2 |   |\n\
-       +--------+---------------------------------------->|   |\n\
-                                                * decay 1 |___|\n\
-         RANGE  DESCRIPTION\n\
-gain-in   0-1   Proportion of input signal delivered clean to adder\n\
-gain-out  0-    Final volume adjustment\n\
-delay     0-    Delay in milliseconds\n\
-decay     0-1   Proportion of delayed signal delivered to adder\n\
-\n\
-When decay is close to 1.0, the samples can clip and the output can saturate.\n\
-Hint: gain-out < 1 / (gain-in * ( 1 + decay1 + ... + decayN ))";
+  static const char usage[] = "gain-in gain-out delay decay <delay decay>";
+  static char const * const extra_usage[] = {
+"                                                         ___",
+" In--+--------+-------------------+-------------------->|   |",
+"     |        |                   |           * gain-in |   |",
+" ____v___    _v_     ________    _v_     ________       |   |",
+"|        |  |   |   |        |  |   |   |        |      |   |",
+"| delay1 |  | + |-->| delay2 |  | + |-->| delayN |      |   |",
+"|________|  |___|   |________|  |___|   |________|      |   | * gain-out",
+"     |        ^          |        ^          |          | + |------------>",
+"     |        |          |        |          |          |   |         Out",
+"     |        |          |        |          +--------->|   |",
+"     |        |          |        |           * decay N |   |",
+"     |        |          +--------+-------------------->|   |",
+"     |        |                               * decay 2 |   |",
+"     +--------+---------------------------------------->|   |",
+"                                              * decay 1 |___|",
+"         RANGE  DESCRIPTION",
+"gain-in   0-1   Proportion of input signal delivered clean to adder",
+"gain-out  0-    Final volume adjustment",
+"delay     0-    Delay in milliseconds",
+"decay     0-1   Proportion of delayed signal delivered to adder",
+"",
+"When decay is close to 1.0, samples can clip and the output can saturate.",
+"Hint: gain-out < 1 / (gain-in * ( 1 + decay1 + ... + decayN ))",
+    NULL
+  };
 
   static sox_effect_handler_t handler = {
-    "echos", usage, SOX_EFF_LENGTH | SOX_EFF_GAIN,
+    "echos", usage, extra_usage, SOX_EFF_LENGTH | SOX_EFF_GAIN,
     sox_echos_getopts,
     sox_echos_start, sox_echos_flow, sox_echos_drain, sox_echos_stop,
     NULL, sizeof(priv_t)

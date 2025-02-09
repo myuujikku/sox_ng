@@ -320,11 +320,14 @@ static int lsx_kill(sox_effect_t * effp)
   return SOX_SUCCESS;
 }
 
+static const char usage[] =
+"[-f frame-rate(25)] [-o over-sample(16)] {start(+),cents,end(+)}";
+
 sox_effect_handler_t const *lsx_bend_effect_fn(void)
 {
   static sox_effect_handler_t handler = {
-    "bend", "[-f frame-rate(25)] [-o over-sample(16)] {start(+),cents,end(+)}",
-    0, create, start, flow, 0, stop, lsx_kill, sizeof(priv_t)
+    "bend", usage, NULL, 0,
+    create, start, flow, NULL, stop, lsx_kill, sizeof(priv_t)
   };
   return &handler;
 }
