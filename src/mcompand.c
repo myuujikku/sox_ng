@@ -175,8 +175,7 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
 
   /* how many bands? */
   if (! (argc&1)) {
-    lsx_fail("mcompand accepts only an odd number of arguments:\argc"
-            "  mcompand quoted_compand_args [crossover_freq quoted_compand_args [...]]");
+    lsx_fail("mcompand accepts only an odd number of arguments");
     return SOX_EOF;
   }
   c->nBands = (argc+1)>>1;
