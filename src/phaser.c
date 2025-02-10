@@ -36,11 +36,11 @@ static int getopts(sox_effect_t * effp, int argc, char * * argv)
 
   --argc, ++argv;
   do { /* break-able block */
-    NUMERIC_PARAMETER(in_gain  , .0, 1)
-    NUMERIC_PARAMETER(out_gain , .0, 1e9)
-    NUMERIC_PARAMETER(delay_ms , .0, 5)
+    NUMERIC_PARAMETER(in_gain  , -1, 1)
+    NUMERIC_PARAMETER(out_gain , .0, INFINITY)
+    NUMERIC_PARAMETER(delay_ms , .0, INFINITY)
     NUMERIC_PARAMETER(decay    , .0, .99)
-    NUMERIC_PARAMETER(mod_speed, .1, 2)
+    NUMERIC_PARAMETER(mod_speed, .0, INFINITY)
   } while (0);
 
   if (argc && sscanf(*argv, "-%1[st]%c", chars, chars + 1) == 1) {
@@ -48,6 +48,18 @@ static int getopts(sox_effect_t * effp, int argc, char * * argv)
     --argc, ++argv;
   }
 
+  if (!isfinite(p->out_gain)) {
+    lsx_warn("warning: gain-out cannot be infinite");
+    return SOX_EOF;
+  }
+  if (!isfinite(p->delay_ms)) {
+    lsx_warn("warning: delays cannot be infinite");
+    return SOX_EOF;
+  }
+  if (!isfinite(p->mod_speed) || p->mod_speed <= 0.0) {
+    lsx_warn("warning: modulation speeds cannot be infinite or zero");
+    return SOX_EOF;
+  }
   if (p->in_gain > (1 - p->decay * p->decay))
     lsx_warn("warning: gain-in might cause clipping");
   if (p->in_gain / (1 - p->decay) > 1 / p->out_gain)
@@ -61,6 +73,10 @@ static int start(sox_effect_t * effp)
   priv_t * p = (priv_t *) effp->priv;
 
   p->delay_buf_len = p->delay_ms * .001 * effp->in_signal.rate + .5;
+  if (p->delay_buf_len <= 0) {
+    lsx_fail("The delay must be at least one sample");
+    return SOX_EOF;
+  }
   p->delay_buf = lsx_calloc(p->delay_buf_len, sizeof(*p->delay_buf));
 
   p->mod_buf_len = effp->in_signal.rate / p->mod_speed + .5;
@@ -117,11 +133,11 @@ sox_effect_handler_t const * lsx_phaser_effect_fn(void)
 "            |_______|   +---------------+",
 "",
 "         RANGE  DEFAULT  DESCRIPTION",
-"gain-in   0-1     0.4    Proportion of input delivered to output and delay",
-"decay     0-1     0.4    Proportion of delay that is fed back",
+"gain-in  -1-1     0.4    Proportion of input delivered to output and delay",
+"decay     0-0.99  0.4    Proportion of delay that is fed back",
 "gain-out  0-      0.74   Final output volume adjustment",
-"delay     0-5     3.0    Delay in milliseconds",
-"speed   0.1-2     0.5    Modulation speed in Hz",
+"delay     0-      3.0    Delay in milliseconds",
+"speed     0-      0.5    Modulation speed in Hz",
 "-s                       Sinusoidal modulation",
 "-t                       Triangular modulation",
 "",
