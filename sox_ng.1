@@ -1643,13 +1643,15 @@ varies by a sinusoidal or triangular modulation.
 See [3] for further discussion of the chorus effect.
 .SP
 The parameters for each chorus give its fixed delay in milliseconds,
-the volume of the delayed output w.r.t. to the input,
-the frequency in Hz of the modulation, the depth of the
-modulation in milliseconds \- each delay ranges from
+the volume of the delayed output,
+the frequency in Hz of the modulation,
+the depth of the modulation in milliseconds \- each delay ranges from
 the fixed \fIdelay\fR to \fIdelay\fR\ \(pl\ \fIdepth\fR \-
 and whether the modulation is sinusoidal (\fB\-s\fR) or triangular (\fB\-t\fR).
 \fIGain-out\fR is then applied to the sum of the input scaled by \fIgain-in\fP
 and the outputs from the delays scaled by their \fIdecay\fRs.
+.SP
+For internal reasons, there is a limit of 256 chorus stages.
 .SP
 For a flow diagram of how \fBchorus\fR works,
 say \fBsox_ng \-\-help\-effect chorus\fR.
