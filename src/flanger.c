@@ -35,10 +35,10 @@ typedef struct {
   interp_t   interpolation;
 
   /* Delay buffers */
-  double *   delay_bufs[MAX_CHANNELS];
+  double **  delay_bufs;
   size_t  delay_buf_length;
   size_t  delay_buf_pos;
-  double     delay_last[MAX_CHANNELS];
+  double  *  delay_last;
 
   /* Low Frequency Oscillator */
   float *    lfo;
@@ -118,10 +118,8 @@ static int start(sox_effect_t * effp)
   priv_t * f = (priv_t *) effp->priv;
   int c, channels = effp->in_signal.channels;
 
-  if (channels > MAX_CHANNELS) {
-    lsx_fail("Can not operate with more than %i channels", MAX_CHANNELS);
-    return SOX_EOF;
-  }
+  lsx_valloc(f->delay_bufs, channels);
+  lsx_valloc(f->delay_last, channels);
 
   /* Balance output: */
   f->in_gain = 1 / (1 + f->delay_gain);
@@ -223,7 +221,8 @@ static int stop(sox_effect_t * effp)
 
   for (c = 0; c < channels; ++c)
     free(f->delay_bufs[c]);
-
+  free(f->delay_bufs);
+  free(f->delay_last);
   free(f->lfo);
 
   memset(f, 0, sizeof(*f));
