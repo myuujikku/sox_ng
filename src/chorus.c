@@ -26,7 +26,7 @@
 #include "sox_i.h"
 
 /** the maximum number of stages in a chorus */
-#define MAX_STAGE_COUNT  7
+#define MAX_STAGE_COUNT  SCALING_FACTOR
 
 /** the number of parameter for a chorus stage */
 #define PARAM_COUNT_PER_STAGE 5
@@ -34,8 +34,8 @@
 /** the number of global chorus parameters */
 #define FIXED_PARAM_COUNT    2
 
-/** the downscaling factor for the samples in the delay line (to
- * prevent overflow); must be a power of 2 */
+/** the downscaling factor for the samples in the delay line
+ * to prevent overflow; best if it's a power of 2 */
 #define SCALING_FACTOR 256
 
 /** the function for checking for a clipped sample in the resolution
@@ -86,7 +86,7 @@ typedef struct {
 
         /* all stages of that effect */
         sox_uint64_t    stage_count;
-        chorus_stage_t  stage[MAX_STAGE_COUNT];
+        chorus_stage_t  *stage;
 
         /* remaining samples for drain phase */
         sox_uint64_t    remaining_samples;
@@ -116,43 +116,62 @@ static int sox_chorus_getopts (sox_effect_t *effp,
         argc--;
         argv++;
 
-        /* there must be at least one stage and at most
-         * MAX_STAGE_COUNT and all stages must have parameters */
-        if ((argc < FIXED_PARAM_COUNT + PARAM_COUNT_PER_STAGE)
-            || ((argc - FIXED_PARAM_COUNT) % PARAM_COUNT_PER_STAGE != 0)
-            || (argc > (MAX_STAGE_COUNT * PARAM_COUNT_PER_STAGE
-                        + FIXED_PARAM_COUNT))) {
+        /* there must be at least one stage
+         * and all stages must have parameters */
+        if ( argc < FIXED_PARAM_COUNT + PARAM_COUNT_PER_STAGE
+            || (argc - FIXED_PARAM_COUNT) % PARAM_COUNT_PER_STAGE != 0) {
             return lsx_usage(effp);
         }
 
         /* read the global parameters gain_in and gain_out */
         do {
             chorus_priv_t* p = chorus;
-            NUMERIC_PARAMETER(gain_in, 0.0, 1.0);
-            NUMERIC_PARAMETER(gain_out, 0.0, 1.0);
+            NUMERIC_PARAMETER(gain_in, -1.0, 1.0);
+            NUMERIC_PARAMETER(gain_out,-1.0, 1.0);
         } while (0);
 
         /* read all stages */
         chorus->stage_count = 0;
 
         do {
-            chorus_stage_t *p = &chorus->stage[chorus->stage_count];
-            NUMERIC_PARAMETER(delay, 20.0, 100.0);
-            NUMERIC_PARAMETER(decay,  0.0,   1.0);
-            NUMERIC_PARAMETER(speed,  0.1,   5.0);
-            NUMERIC_PARAMETER(depth,  0.0,  10.0);
+            chorus_stage_t *p;
+
+	    lsx_revalloc(chorus->stage, chorus->stage_count + 1);
+	    p = &chorus->stage[chorus->stage_count];
+
+            NUMERIC_PARAMETER(delay,  0.0, INFINITY);
+            NUMERIC_PARAMETER(decay, -1.0,   1.0);
+            NUMERIC_PARAMETER(speed,  0.0, INFINITY);
+            NUMERIC_PARAMETER(depth,  0.0, INFINITY);
             TEXTUAL_PARAMETER(wave_type, modulation_kind_map);
+	    if (p->delay < 0 || !isfinite(p->delay)) {
+	      lsx_fail("delays cannot be negative or infinite");
+	      return SOX_EOF;
+	    }
+	    if (p->speed <= 0 || !isfinite(p->speed)) {
+	      lsx_fail("speeds cannot be zero, negative or infinite");
+	      return SOX_EOF;
+	    }
+	    if (p->depth < 0 || !isfinite(p->depth)) {
+	      lsx_fail("depths cannot be negative or infinite");
+	      return SOX_EOF;
+	    }
             /* normalize time parameters to seconds */
             p->delay /= 1000.0;
             p->depth /= 1000.0;
             chorus->stage_count++;
-        } while (chorus->stage_count < MAX_STAGE_COUNT);
+        } while (argc > 0 && chorus->stage_count < MAX_STAGE_COUNT);
+
+	if (argc > 0) {
+	    lsx_fail("there is a maximum of %d chorus stages", MAX_STAGE_COUNT);
+	    return SOX_EOF;
+	}
 
         /* issue warning about possible clipping when parameters are
          * above some threshold */
-        total_volume = gain_in;
+        total_volume = chorus->gain_in;
 
-        for (i = 0;  i < chorus->stage_count;  i++) {
+        for (i = 0; i < chorus->stage_count; i++) {
             total_volume += chorus->stage[i].decay;
         }
 
@@ -181,6 +200,7 @@ static int sox_chorus_start (sox_effect_t *effp)
 
         for (i = 0;  i < chorus->stage_count;  i++) {
                 chorus_stage_t *stage = &chorus->stage[i];
+
                 stage->depth_sample_count =
                     stage->depth * effp->in_signal.rate;
 
@@ -188,6 +208,10 @@ static int sox_chorus_start (sox_effect_t *effp)
                 stage->delay_line_index = 0;
                 stage->delay_line_length =
                     (stage->delay + stage->depth) * effp->in_signal.rate;
+		if (stage->delay_line_length < 1) {
+		    lsx_fail("delay line length plus depth must be at least one sample");
+		    return SOX_EOF;
+		}
                 stage->delay_line =
                     lsx_calloc(stage->delay_line_length,
                                sizeof(chorus_delay_sample_t));
@@ -390,16 +414,16 @@ const sox_effect_handler_t *lsx_chorus_effect_fn(void)
 "       | sine/triangle |<--speed n",
 "       +---------------+",
 "",
-"         RANGE   DESCRIPTION",
-"gain-in   0-1    Proportion of input delivered clean to adder",
-"gain-out  0-     Final volume adjustment",
-"delay    20-100  Fixed delay in milliseconds",
-"decay     0-1    Proportion of delay's output delivered to adder",
-"speed   0.1-5    Modulation frequency in Hz",
-"depth     0-10   Additional variable delay in milliseconds",
-"-s               Modulate sinusoidally",
-"-t               Modulate triangularly",
-"Hint: out-gain <= 1 / ( gain-in + decay 1 + ... + decay n )
+"         RANGE TYPICAL DESCRIPTION",
+"gain-in  -1-1          Proportion of input delivered clean to the adder",
+"gain-out -1-1          Final volume adjustment",
+"delay     0-    40-60  Fixed delay in milliseconds",
+"decay    -1-1          Proportion of delay's output delivered to the adder",
+"speed     0-    0.25   Modulation frequency in Hz",
+"depth     0-      2    Additional variable delay in milliseconds",
+"-s                     Modulate sinusoidally",
+"-t                     Modulate triangularly",
+"Hint: out-gain <= 1 / ( gain-in + decay 1 + ... + decay n )",
           NULL
 	};
 
