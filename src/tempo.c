@@ -227,6 +227,10 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
     default: lsx_fail("unknown option `-%c'", optstate.opt); return lsx_usage(effp);
   }
   argc -= optstate.ind, argv += optstate.ind;
+  if (argc < 1) {	/* The "factor" parameter is obbligatory */
+    lsx_usage(effp);
+    return SOX_EOF;
+  }
   do {                    /* break-able block */
     NUMERIC_PARAMETER(factor      ,0.1 , 100 )
     NUMERIC_PARAMETER(segment_ms  , 10 , 120)
@@ -309,7 +313,7 @@ static int stop(sox_effect_t * effp)
 sox_effect_handler_t const * lsx_tempo_effect_fn(void)
 {
   static const char usage[] =
-    "[-q] [-m|-s|-l] [factor [segment [search-ms [overlap-ms]]]]";
+    "[-q] [-m|-s|-l] factor [segment [search [overlap]]]";
 
   static char const * const extra_usage[] = {
 "-q      Use tree searches instead of linear ones",
