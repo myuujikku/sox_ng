@@ -17,27 +17,6 @@
  * of (delay + depth) and each of the apparent delays reads from that,
  *
  * The delay i is controlled by a sine or triangle modulation i ( 1 <= i <= n).
- *
- * Usage:
- *   chorus gain-in gain-out delay-1 decay-1 speed-1 depth-1 -s1|t1 [
- *       delay-2 decay-2 speed-2 depth-2 -s2|-t2 ... ]
- *
- * Where:
- *   gain-in, decay-1 ... decay-n :  0.0 ... 1.0      volume
- *   gain-out :  0.0 ...      volume
- *   delay-1 ... delay-n :  20.0 ... 100.0 msec
- *   speed-1 ... speed-n :  0.1 ... 5.0 Hz       modulation 1 ... n
- *   depth-1 ... depth-n :  0.0 ... 10.0 msec    modulated delay 1 ... n
- *   -s1 ... -sn : modulation by sine 1 ... n
- *   -t1 ... -tn : modulation by triangle 1 ... n
- *
- * Note:
- *   when decay is close to 1.0, the samples can begin clipping and the output
- *   can saturate!
- *
- * Hint:
- *   1 / out-gain < gain-in ( 1 + decay-1 + ... + decay-n )
- *
  */
 
 /*
@@ -171,14 +150,15 @@ static int sox_chorus_getopts (sox_effect_t *effp,
 
         /* issue warning about possible clipping when parameters are
          * above some threshold */
-        total_volume = 1.0;
+        total_volume = gain_in;
 
         for (i = 0;  i < chorus->stage_count;  i++) {
             total_volume += chorus->stage[i].decay;
         }
 
-        if (chorus->gain_in * total_volume > 1.0 / chorus->gain_out) {
-            lsx_warn("gain-out can cause saturation or clipping of output");
+        if (total_volume * chorus->gain_out > 1.0) {
+            lsx_warn("the output may saturate; a safe gain-out is %g",
+                     fabsf(1.0f / total_volume));
         }
 
         return (SOX_SUCCESS);
@@ -419,6 +399,7 @@ const sox_effect_handler_t *lsx_chorus_effect_fn(void)
 "depth     0-10   Additional variable delay in milliseconds",
 "-s               Modulate sinusoidally",
 "-t               Modulate triangularly",
+"Hint: out-gain <= 1 / ( gain-in + decay 1 + ... + decay n )
           NULL
 	};
 
