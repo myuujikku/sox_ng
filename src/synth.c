@@ -80,7 +80,7 @@ static lsx_enum_item const combine_type[] = {
 
 
 
-typedef enum {Linear, Square, Exp, Exp_cycle} sweep_t;
+typedef enum {Linear, Square, Exp, Exp_cycle} sweep_t;	/* :+/- */
 
 typedef struct {
   /* options */
@@ -266,7 +266,7 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
     }
 
     /* For combine type vdelay there may be three parameters to it:
-     * fixed delay, extra delay (effect depth) and depth (effect amplitude)
+     * fixed delay, extra delay (effect depth) and mix (effect amplitude)
      */
     if (strcmp(argv[argn], "-V") == 0) {
       if (chan->combine != synth_vdelay) {
@@ -769,10 +769,39 @@ static int lsx_kill(sox_effect_t * effp)
 const sox_effect_handler_t *lsx_synth_effect_fn(void)
 {
   static const char usage[] =
-    "[-j KEY] [-n] [length [offset [phase [p1 [p2 [p3]]]]]] {type [combine [-V fixed[,extra[,mix]]]] [[%]freq[k][:|+|/|-[%]freq2[k]] [offset [phase [p1 [p2 [p3]]]]]]}";
+    "[-j key] [-n] [length [offset [phase [p1 [p2 [p3]]]]]] {type [combine [-V fixed[,extra[,mix]]]] [[%]freq[k][:|+|/|-[%]freq2[k]] [offset [phase [p1 [p2 [p3]]]]]]}";
+  static const char * const extra_usage[] = {
+"-j key  Retune scientific note names to `key' semitones higher",
+"-n      Don't normalize the output volume",
+"length  How many seconds of audio to make? Default: input length; 0: infinite",
+"offset  DC offset -100-100; the rest is normalized to a max of +/-1",
+"types:       phase  p1                  p2                 p3",
+"  sine       0-100  -                   -                  -",
+"  square     0-100  High % (50)         -                  -",
+"  triangle   0-100  Rising % (50)       -                  -",
+"  sawtooth   0-100  -                   -                  -",
+"  trapezium  0-100  Start high (10)     End high (50)      Start low (60)",
+"  exp        0-100  Peak position (50)  Range in 2dB (50)  -",
+"  white        -    -                   -                  -",
+"  tpdf         -    -                   -                  -",
+"  pink         -    -                   -                  -",
+"  brown        -    -                   -                  -",
+"  pluck       (*)   sustain (40)        Tone control 1     Tone control 2",
+"  (*) If non-zero, uses a different kind of random number generator",
+"combine:",
+"  create  Add a new channel (the default)",
+"  mix     Mix 50:50 with the input",
+"  amod    Multiply input by synth wave considered as being 0 to 1",
+"  fmod    Multiply input by synth wave considered as being -1 to 1",
+"  vdelay  [-V fixed,extra,mix] Synth wave offsets into a delay from",
+"          fixed to fixed+extra seconds. mix=0: all input; mix=1: all delay",
+"freq?freq2  : = linear sweep; + = frequency is proportional to time squared;",
+"            / = exponential;  - = stepped exponential",
+    NULL
+  };
 
   static sox_effect_handler_t handler = {
-    "synth", usage, NULL, SOX_EFF_MCHAN | SOX_EFF_LENGTH | SOX_EFF_GAIN,
+    "synth", usage, extra_usage, SOX_EFF_MCHAN | SOX_EFF_LENGTH | SOX_EFF_GAIN,
     getopts, start, flow, 0, stop, lsx_kill, sizeof(priv_t)
   };
   return &handler;
