@@ -228,6 +228,10 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
     default: lsx_fail("unknown option `-%c'", optstate.opt); return lsx_usage(effp);
   }
   argc -= optstate.ind, argv += optstate.ind;
+  if (argc < 1) {	/* The "factor" parameter is obbligatory */
+    lsx_usage(effp);
+    return SOX_EOF;
+  }
   do {                    /* break-able block */
     NUMERIC_PARAMETER(factor      ,0.1 , 100 )
     NUMERIC_PARAMETER(segment_ms  , 10 , 120)
