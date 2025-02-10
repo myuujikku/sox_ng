@@ -58,6 +58,10 @@ static int sox_echos_getopts(sox_effect_t * effp, int argc, char **argv)
                         lsx_fail("delay `%s' is not a number", argv[i]);
                         return (SOX_EOF);
                 }
+                if (delay < 0 || !isfinite(delay)) {
+                        lsx_fail("delays cannot be negative or infinite");
+                        return (SOX_EOF);
+                }
 		i++;
                 if (sscanf(argv[i], "%f", &decay) != 1) {
                         lsx_fail("decay `%s' is not a number", argv[i]);
