@@ -230,11 +230,11 @@ const sox_effect_handler_t *lsx_echo_effect_fn(void)
 "    +-->| delay n |---------->|___|",
 "        |_________| * decay n",
 "",
-"         RANGE  DESCRIPTION",
-"gain-in   0-1   Proportion of input signal delivered clean to adder",
-"gain-out  0-1   Final volume adjustment",
-"delay     0-    Delay in milliseconds",
-"decay     0-1   Proportion of delayed signal delivered to adder",
+"           RANGE   DESCRIPTION",
+"gain-in  -inf-inf  Proportion of input signal delivered clean to adder",
+"gain-out -inf-inf  Final volume adjustment",
+"delay       0-inf  Delay in milliseconds",
+"decay    -inf-inf  Proportion of delayed signal delivered to adder",
     NULL
   };
 
