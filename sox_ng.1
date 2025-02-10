@@ -2166,17 +2166,17 @@ center;
 cI cI cI lI
 cI c c lx.
 \ 	Range	Default	Description
-delay	0\-30	0	Base delay in milliseconds
-depth	0\-10	2	Added swept delay in milliseconds
-regen	\-95\-95	0	T{
+delay	0\-	0	Base delay in milliseconds
+depth	0\-	2	Added swept delay in milliseconds
+regen	\-99\-99	0	T{
 .na
 Percentage of regeneration (delayed signal feedback)
 T}
-width	0\-100	71	T{
+width	-inf\-inf	71	T{
 .na
 Percentage of delayed signal mixed with original
 T}
-speed	0\*d01\-10	0\*d5	Sweeps per second (Hz)
+speed	0\-	0\*d5	Sweeps per second (Hz)
 shape	\ 	sin	Swept wave shape: \fBsine\fR or \fBtriangle\fR
 phase	0\-100	25	T{
 .na
@@ -2188,6 +2188,16 @@ interp	\ 	lin	T{
 Digital delay-line interpolation: \fBlinear\fR or \fBquadratic\fR.
 T}
 .TE
+The input and the delay's output are mixed and balanced so that they
+do not clip, so a \fIwidth\fR of 50 gives 50:50 mixing; to obtain only
+the delayed output and none of the input, specify \fIwidth\fR as \fBinf\fR.
+.SP
+Despite containing a delay, \fBflanger\fR does not extend the length
+of the signal so if you also want the last dregs of the delayed output 
+and feedback, \fBpad\fR the signal beforehand.
+.SP
+For a flow diagram of how \fBflanger\fR works,
+say \fBsox_ng \-\-help\-effect flanger\fR.
 .DT
 .SP
 \fBsine\fR, \fBtriangle\fR, \fBlinear\fR and \fBquadratic\fR can be abbreviated.
