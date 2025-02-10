@@ -70,11 +70,11 @@ static int getopts(sox_effect_t * effp, int argc, char *argv[])
   p->channel_phase= 25;
 
   do { /* break-able block */
-    NUMERIC_PARAMETER(delay_min    , 0   , 30 )
-    NUMERIC_PARAMETER(delay_depth  , 0   , 10 )
-    NUMERIC_PARAMETER(feedback_gain,-95  , 95 )
-    NUMERIC_PARAMETER(delay_gain   , 0   , 100)
-    NUMERIC_PARAMETER(speed        , 0.01, 10 )
+    NUMERIC_PARAMETER(delay_min    , 0   , INFINITY )
+    NUMERIC_PARAMETER(delay_depth  , 0   , INFINITY )
+    NUMERIC_PARAMETER(feedback_gain,-99  , 99 )
+    NUMERIC_PARAMETER(delay_gain   ,-INFINITY, INFINITY )
+    NUMERIC_PARAMETER(speed        , 0   , INFINITY )
     TEXTUAL_PARAMETER(wave_shape, lsx_get_wave_enum())
     NUMERIC_PARAMETER(channel_phase, 0   , 100)
     TEXTUAL_PARAMETER(interpolation, interp_enum)
@@ -122,8 +122,13 @@ static int start(sox_effect_t * effp)
   lsx_valloc(f->delay_last, channels);
 
   /* Balance output: */
-  f->in_gain = 1 / (1 + f->delay_gain);
-  f->delay_gain  /= 1 + f->delay_gain;
+  if (!isfinite(f->delay_gain)) {
+    f->in_gain = 0;
+    f->delay_gain = (f->delay_gain > 0) ? 1 : -1;
+  } else {
+    f->in_gain = 1 / (1 + f->delay_gain);
+    f->delay_gain  /= 1 + f->delay_gain;
+  }
 
   /* Balance feedback loop: */
   f->delay_gain *= 1 - fabs(f->feedback_gain);
@@ -240,27 +245,27 @@ sox_effect_handler_t const * lsx_flanger_effect_fn(void)
 "(all optional)",
 "            +----------------+",
 "            |    * regen     |",
-"           _V_     _______   |          ___",
-"          |   |   |       |  |         |   |",
-"    +---->| + |-->| delay |--+-------->|   |",
-"    |     |___|   |_______|   * width  |   |",
-"    |                 ^                |   |",
-"In  |                 | * depth        |   | Out",
-"--->+         +---------------+        | + |--->",
-"    | speed-->| sine/triangle |        |   |",
-"    |         +---------------+        |   |",
-"    |                                  |   |",
-"    +--------------------------------->|   |",
-"                                       |___|",
+"           _V_     _______   |            ___",
+"          |   |   |       |  |           |   |",
+"    +---->| + |-->| delay |--+---------->|   |",
+"    |     |___|   |_______| * width/100  |   |",
+"    |                 ^                  |   |",
+"In  |                 | * depth          |   |               Out",
+"--->+         +---------------+          | + |------------------>",
+"    | speed-->| sine/triangle |          |   | / (1 + width/100)",
+"    |         +---------------+          |   |",
+"    |                                    |   |",
+"    +----------------------------------->|   |",
+"                                         |___|",
 "        RANGE DEFAULT DESCRIPTION",
-"delay    0-30     0   base delay in milliseconds",
-"depth    0-10     2   added swept delay in milliseconds",
-"regen  -95-95     0   percentage regeneration (delayed signal feedback)",
-"width    0-100   71   percentage of delayed signal mixed with original",
-"speed 0.01-10   0.5   sweeps per second (Hz)",
+"delay    0-       0   base delay in milliseconds",
+"depth    0-       2   added swept delay in milliseconds",
+"regen  -99-99     0   percentage regeneration (delayed signal feedback)",
+"width -inf-inf   71   percentage of delayed signal mixed with original",
+"speed    0-     0.5   sweeps per second (Hz)",
 "shape    s|t    sin   swept wave shape: sine|triangle",
-"phase    0-100   25   swept wave percentage phase-shift for multi-channel",
-"                      flange; 0 = 100 = same phase on each channel",
+"phase    0-100   25   swept wave percentage phase-shift in multi-channel flange",
+"                      0 = 100 = same phase on each channel",
 "interp   l|q    lin   delay-line interpolation: linear|quadratic",
     NULL
   };
