@@ -65,13 +65,13 @@ int lsx_sscanf(const char *str, const char *format, ...)
   /* float */
   if (retval > 0 && format[0] == '%' && format[1] == 'f') {
     float *ptr = va_arg(va2, float *);
-    if (!isfinite(*ptr)) retval = 0;
+    if (isnan(*ptr)) retval = 0;
   }
 
   /* double */
   if (retval > 0 && format[0] == '%' && format[1] == 'l' && format[2] == 'f') {
     double *ptr = va_arg(va2, double *);
-    if (!isfinite(*ptr)) retval = 0;
+    if (isnan(*ptr)) retval = 0;
   }
 
   va_end(va);
