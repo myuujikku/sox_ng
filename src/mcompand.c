@@ -139,7 +139,6 @@ static int parse_subarg(char *s, char **subargv, size_t *subargc) {
     {
       lsx_fail("Wrong number of parameters for the compander effect within mcompand; usage:\n"
   "\tattack1,decay1{,attack2,decay2} [soft-knee-dB:]in-dB1[,out-dB1]{,in-dB2,out-dB2} [gain [initial-volume-dB [delay]]]\n"
-  "\twhere {} means optional and repeatable and [] means optional.\n"
   "\tdB values are floating point or -inf'; times are in seconds.");
       return (SOX_EOF);
     } else
