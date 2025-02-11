@@ -20,7 +20,6 @@ New features:
     sox_ng WARN chorus: chorus: warning >>> gain-out can cause saturation
   o wget, wget2 and curl are sought at runtime instead of at build time
   o Make echos run 20% faster
-  o Make chorus work (it never has), now as documented in man and flow diagram
   o Add "softvol" effect, a software gain that avoids clipping and maybe rises
   o synth: Add "vdelay" combine method to phase-modulate by the synth wave
   o Remove the limit on the number of echo/echos stages (was 7)
