@@ -15,7 +15,6 @@ New features:
     sox_ng WARN chorus: chorus: warning >>> gain-out can cause saturation
   o Remove echo(s)' limits on number/length of delays and range of gains/decays
   o Make echos run 20% faster
-  o Make chorus work (it never has), now as documented in man and flow diagram
   o Remove the limit on the number of echo/echos stages (was 7)
   o Remove the limit on the number of channels that phaser can handle (was 4)
   o Raise the limit on the number of chorus stages from 7 to 256
