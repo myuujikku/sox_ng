@@ -2451,22 +2451,27 @@ parameters are specified between double quotes and the crossover
 frequency for that band is given by \fIcrossover-freq\fR; these can be
 repeated to create multiple bands.
 .SP
-For example, the following (one long) command shows how multi-band
-companding is typically used in FM radio:
+The following examples approximate Dolby A compression and decompression,
+as used for tape noise reduction in professional recording studios:
 .XE
-.ne 8
-   play_ng track1.wav gain \-3 sinc 8000\- 29 100 mcompand \\
-	\(dq0.005,0.1 \-47,\-40,\-34,\-34,\-17,\-33\(dq 100 \\
-	\(dq0.003,0.05 \-47,\-40,\-34,\-34,\-17,\-33\(dq 400 \\
-	\(dq0.000625,0.0125 \-47,\-40,\-34,\-34,\-15,\-33\(dq 1600 \\
-	\(dq0.0001,0.025 \-47,\-40,\-34,\-34,\-31,\-31,\-0,\-30\(dq 6400 \\
-	\(dq0,0.025 \-38,\-31,\-28,\-28,\-0,\-25\(dq \\
-	gain 15 highpass 22 highpass 22 sinc \-n 255 \-b 16 \-17500 \\
-	gain 9 lowpass \-1 17801
+.ne 6
+# Dolby A compressor
+sox_ng in.au dolbyA.au mcompand \
+    ".1,.1 4:-56,-46,-36,-26,-26,-20,-17,-15,-9,-9" 80 \
+    ".1,.1 4:-56,-46,-36,-26,-26,-20,-17,-15,-9,-9" 3k \
+    ".1,.1 4:-56,-46,-36,-26,-26,-20,-17,-15,-9,-9" 9k \
+    ".1,.1 4:-56,-41,-36,-21,-26,-23,-17,-14,-9,-9"
+
+.ne 6
+# Dolby A decompressor
+sox_ng dolbyA.au out.au mcompand \
+    ".1,.1 4:-46,-56,-26,-36,-20,-26,-15,-17,-9,-9" 80 \
+    ".1,.1 4:-46,-56,-26,-36,-20,-26,-15,-17,-9,-9" 3k \
+    ".1,.1 4:-46,-56,-26,-36,-20,-26,-15,-17,-9,-9" 9k \
+    ".1,.1 4:-41,-56,-21,-36,-23,-26,-14,-17,-9,-9"
 .XX
-The audio file is played with a simulated FM radio sound (or broadcast
-signal condition if the low-pass filter at the end is skipped)
-set up with US-style 75\(*ms pre-emphasis.
+Real Dolby A probably compands each channel separately
+but that is left as an exercise to interested readers.
 .SP
 See also
 .B compand
