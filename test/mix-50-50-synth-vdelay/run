@@ -1,22 +1,22 @@
 #! /bin/sh
 
-# Check 50:50 mix is a no-op for --combine mix
+# Check 50:50 mix is a no-op for "synth vdelay"
 
 set -e
 
 # See if this sox has "synth vdelay"
 ${sox:-sox} --help-effect synth | grep -q fixed || exit 254
 
-rm -f audio.wav out.wav
+rm -f sweep.wav out.wav
 
 status=0
 
-${sox:-sox} -D -n -b 16 -e signed audio.wav synth 10 sine 27.5-14080
+${sox:-sox} -D -n -b 16 -e signed sweep.wav synth 10 sine 27.5/14080
 # vdelay's defaults are 0,0,0.5, the no-op we require.
 # synth vdelay doesn't drain yet but may one day so trim it too.
-${sox:-sox} -D audio.wav out.wav synth sine vdelay trim 0 10
-cmp -s audio.wav out.wav || status=2
+${sox:-sox} -D sweep.wav out.wav synth sine vdelay trim 0 10
+cmp -s sweep.wav out.wav || status=2
 
-rm audio.wav out.wav
+rm sweep.wav out.wav
 
 exit $status

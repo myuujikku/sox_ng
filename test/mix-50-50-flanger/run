@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# Check 50:50 mix is a no-op for --combine mix
+# Check 50:50 mix is a no-op for the flanger
 
 set -e
 
@@ -8,7 +8,7 @@ rm -f audio.wav out.wav
 
 status=0
 
-${sox:-sox} -D -n -b 16 -e signed audio.wav synth 10 sine 27.5-14080 \
+${sox:-sox} -D -n -b 16 -e signed audio.wav synth 10 sine 27.5/14080 \
                                   fade l 0 36.91 36.91 trim 0 10
 ${sox:-sox} -D audio.wav out.wav flanger 0 0 0 50
 cmp -s audio.wav out.wav || status=2
