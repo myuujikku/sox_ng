@@ -1677,8 +1677,8 @@ A fuller-sounding chorus (with three additional delays):
 	 60 0.32 0.4 2.3 \-t 40 0.3 0.3 1.3 \-s
 .XX
 .TP
-\fBcompand \fIattack1\fB,\fIdecay1\fR{\fB,\fIattack2\fB,\fIdecay2\fR}
-[\fIsoft-knee-dB\fB:\fR]\fIin-dB1\fR[\fB,\fIout-dB1\fR]{\fB,\fIin-dB2\fB,\fIout-dB2\fR}
+\fBcompand \fIattack1\fB,\fIdecay1\fR{\fB,\fIattack\fB,\fIdecay\fR}
+[\fIsoft-knee-dB\fB:\fR]\fIin-dB1\fR[\fB,\fIout-dB1\fR]{\fB,\fIin-dB\fB,\fIout-dB\fR}
 .br
 [\fIgain\fR [\fIinitial-volume-dB\fR [\fIdelay\fR]]]
 .SP
@@ -1739,6 +1739,9 @@ before being fed to the volume adjuster.  Specifying a delay
 approximately equal to the attack/decay times allows the compander to
 operate in a predictive rather than a reactive mode.
 A typical value is 0\*d2 seconds.
+.SP
+For a flow diagram of how \fBcompand\fR works,
+say \fBsox_ng \-\-help\-effect compand\fR.
 .TS
 center;
 c8 c8 c.
@@ -1778,9 +1781,6 @@ similar to a squelch effect):
    play_ng in.au compand .1,.1 \-45.1,\-45,\-inf,0,\-inf 45 \-90 .1
 .XX
 This effect supports the \fB\-\-plot\fR global option (for the transfer function).
-.SP
-For a flow diagram of how \fBcompand\fR works,
-say \fBsox_ng \-\-help\-effect compand\fR.
 .SP
 See
 .B mcompand
@@ -2425,10 +2425,14 @@ effect.
 Apply a low-pass filter.
 See the description of the \fBhighpass\fR effect for details.
 .TP
-\fBmcompand\fR <\fB\(dq\fR\fIattack1\fB,\fIdecay1\fR{\fB,\fIattack2\fB,\fIdecay2\fR}
-[\fIsoft-knee-dB\fB:\fR]\fIin-dB1\fR[\fB,\fIout-dB1\fR]{\fB,\fIin-dB2\fB,\fIout-dB2\fR}
+\fBmcompand\fR \fB\(dq\fIcompand-args\fB\(dq\fR {\fIfrequency \fB\(dq\fIcompand-args\fB\(dq\fR}
+.SP
+The quoted \fIcompand-args\fR are as for the \fBcompand\fR effect:
 .br
-[\fIgain\fR [\fIinitial-volume-dB\fR [\fIdelay\fR]]]\fB\(dq\fR {\fIcrossover-freq\fR[\fBk\fR]>
+\fIattack1\fB,\fIdecay1\fR{\fB,\fIattack\fB,\fIdecay\fR}
+[\fIsoft-knee-dB\fB:\fR]\fIin-dB1\fR[\fB,\fIout-dB1\fR]{\fB,\fIin-dB\fB,\fIout-dB\fR}
+.br
+[\fIgain\fR [\fIinitial-volume-dB\fR [\fIdelay\fR]]]
 .SP
 The multi-band compander is similar to the single-band compander but the
 audio is first divided into bands using Linkwitz-Riley crossover filters
@@ -2452,8 +2456,8 @@ companding is typically used in FM radio:
 	gain 9 lowpass \-1 17801
 .XX
 The audio file is played with a simulated FM radio sound (or broadcast
-signal condition if the low-pass filter at the end is skipped).
-Note that the pipeline is set up with US-style 75\(*ms pre-emphasis.
+signal condition if the low-pass filter at the end is skipped)
+set up with US-style 75\(*ms pre-emphasis.
 .SP
 See 
 .B compand
@@ -3096,7 +3100,8 @@ given directly with \fB\-b\fR.
 .SP
 The default transition bandwidth of 5% of the total band can be
 overridden with \fB\-t\fR (and \fItbw\fR in Hertz); alternatively, the
-number of filter taps can be given directly with \fB\-n\fR.
+number of filter taps can be given directly with \fB\-n\fR and is
+limited to the range of 11\-32767.
 .SP
 If both \fIfreqHP\fR and \fIfreqLP\fR are given, a \fB\-t\fR or
 \fB\-n\fR option given to the left of the frequencies applies to both
