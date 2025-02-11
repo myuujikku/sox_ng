@@ -4,15 +4,14 @@
 
 set -e
 
-rm -f audio.wav out.wav
+rm -f sweep.wav out.wav
 
 status=0
 
-${sox:-sox} -D -n -b 16 -e signed audio.wav synth 10 sine 27.5-14080 \
-                                  fade l 0 36.91 36.91 trim 0 10
-${sox:-sox} -D -m audio.wav audio.wav out.wav
-cmp -s audio.wav out.wav || status=2
+${sox:-sox} -D -n -b 16 -e signed sweep.wav synth 10 sine 27.5/14080
+${sox:-sox} -D --combine mix sweep.wav sweep.wav out.wav
+cmp -s sweep.wav out.wav || status=2
 
-rm -f audio.wav out.wav
+rm sweep.wav out.wav
 
 exit $status

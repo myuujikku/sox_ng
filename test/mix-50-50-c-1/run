@@ -1,21 +1,22 @@
 #! /bin/sh
 
-# Check 50:50 mix is a no-op for --combine mix
+# Check 50:50 mix is a no-op for -c 1
 
-set -e
-
-rm -f audio.wav audio2.wav out.wav
+rm -f sweep.wav sweep2.wav out.wav
 
 status=0
 
-${sox:-sox} -D -n -b 16 -e signed audio.wav synth 10 sine 27.5-14080 \
-                                  fade l 0 36.91 36.91 trim 0 10
-${sox:-sox} -D -M audio.wav audio.wav audio2.wav
+# Generate a swept sine wave
+${sox:-sox} -D -n -b 16 -e signed sweep.wav synth 10 sine 27.5/14080 || status=254
 
-${sox:-sox} -D audio2.wav -c 1 out.wav
+# Make a stereo version of it
+${sox:-sox} -D -M sweep.wav sweep.wav sweep2.wav || status=254
 
-cmp -s audio.wav out.wav || status=2
+# Mix it with itself with --combine mix
+${sox:-sox} -D sweep2.wav -c 1 out.wav || status=254
 
-rm audio.wav audio2.wav out.wav
+cmp -s sweep.wav out.wav || status=2
+
+rm -f sweep.wav sweep2.wav out.wav
 
 exit $status
