@@ -1737,8 +1737,8 @@ A fuller sounding chorus (with three additional delays):
 	 60 0.32 0.4 2.3 \-t 40 0.3 0.3 1.3 \-s
 .XX
 .TP
-\fBcompand \fIattack1\fB,\fIdecay1\fR{\fB,\fIattack2\fB,\fIdecay2\fR}
-[\fIsoft-knee-dB\fB:\fR]\fIin-dB1\fR[\fB,\fIout-dB1\fR]{\fB,\fIin-dB2\fB,\fIout-dB2\fR}
+\fBcompand \fIattack1\fB,\fIdecay1\fR{\fB,\fIattack\fB,\fIdecay\fR}
+[\fIsoft-knee-dB\fB:\fR]\fIin-dB1\fR[\fB,\fIout-dB1\fR]{\fB,\fIin-dB\fB,\fIout-dB\fR}
 .br
 [\fIgain\fR [\fIinitial-volume-dB\fR [\fIdelay\fR]]]
 .SP
@@ -2434,10 +2434,14 @@ effect.
 Apply a low-pass filter.
 See the description of the \fBhighpass\fR effect for details.
 .TP
-\fBmcompand\fR \(dq\fIattack1\fB,\fIdecay1\fR{\fB,\fIattack2\fB,\fIdecay2\fR}
-[\fIsoft-knee-dB\fB:\fR]\fIin-dB1\fR[\fB,\fIout-dB1\fR]{\fB,\fIin-dB2\fB,\fIout-dB2\fR}
+\fBmcompand\fR \fB\(dq\fIcompand-args\fB\(dq\fR {\fIfrequency \fB\(dq\fIcompand-args\fB\(dq\fR}
++.SP
++The quoted \fIcompand-args\fR are as for the \fBcompand\fR effect:
 .br
-[\fIgain\fR [\fIinitial-volume-dB\fR [\fIdelay\fR]]]\(dq {\fIcrossover-freq\fR[\fBk\fR] \(dqattack1,...\(dq}
+\fIattack1\fB,\fIdecay1\fR{\fB,\fIattack\fB,\fIdecay\fR}
+[\fIsoft-knee-dB\fB:\fR]\fIin-dB1\fR[\fB,\fIout-dB1\fR]{\fB,\fIin-dB\fB,\fIout-dB\fR}
+.br
+[\fIgain\fR [\fIinitial-volume-dB\fR [\fIdelay\fR]]]
 .SP
 The multi-band compander is similar to the single-band compander but the
 audio is first divided into bands using Linkwitz-Riley cross-over filters
@@ -2461,8 +2465,8 @@ companding is typically used in FM radio:
 	gain 9 lowpass \-1 17801
 .XX
 The audio file is played with a simulated FM radio sound (or broadcast
-signal condition if the lowpass filter at the end is skipped).
-Note that the pipeline is set up with US-style 75us pre-emphasis.
+signal condition if the low-pass filter at the end is skipped)
+set up with US-style 75\(*ms pre-emphasis.
 .SP
 See also
 .B compand
@@ -3099,7 +3103,8 @@ given directly with \fB\-b\fR.
 .SP
 The default transition band-width of 5% of the total band can be
 overridden with \fB\-t\fR (and \fItbw\fR in Hertz); alternatively, the
-number of filter taps can be given directly with \fB\-n\fR.
+number of filter taps can be given directly with \fB\-n\fR and is
+limited to the range of 11\-32767.
 .SP
 If both \fIfreqHP\fR and \fIfreqLP\fR are given, then a \fB\-t\fR or
 \fB\-n\fR option given to the left of the frequencies applies to both
