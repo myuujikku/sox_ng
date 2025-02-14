@@ -84,7 +84,6 @@ typedef struct {
   double     * shared, * * shared_ptr;
 
   /* Per-channel work area */
-  int        WORK;  /* Start of work area is marked by this dummy variable. */
   uint64_t   skip;
   int        dft_size, step_size, block_steps, block_num, rows, cols, read;
   int        x_size, end, end_min, last_end;
@@ -340,8 +339,6 @@ static int start(sox_effect_t * effp)
   double actual, duration = 0.0, start_time = 0.0,
          pixels_per_sec = p->pixels_per_sec;
   uint64_t d;
-
-  memset(&p->WORK, 0, sizeof(*p) - field_offset(priv_t, WORK));
 
   if (p->duration_str) {
     lsx_parsesamples(effp->in_signal.rate, p->duration_str, &d, 't');
