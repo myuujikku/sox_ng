@@ -894,6 +894,9 @@ error: png_destroy_write_struct(&png, &png_info);
   free(p->dft_buf);
   free(p->window);
   free(p->magnitudes);
+#if HAVE_FFTW
+  fftw_destroy_plan(p->fftw_plan);
+#endif
   return SOX_SUCCESS;
 }
 
@@ -903,6 +906,9 @@ static int end(sox_effect_t * effp)
   if (effp->flow == 0)
     return stop(effp);
   free(p->dBfs);
+#if HAVE_FFTW
+  if (p->fftw_plan) fftw_destroy_plan(p->fftw_plan);
+#endif
   return SOX_SUCCESS;
 }
 
