@@ -49,13 +49,8 @@
 
 #define is_p2(x) !(x & (x - 1))
 
-#define MAX_X_SIZE 1000000	/* Limit enforced by libpng */
-
-#if SSIZE_MAX < UINT32_MAX
-#define MAX_Y_SIZE 16384 /* avoid multiplication overflow on 32-bit systems */
-#else
-#define MAX_Y_SIZE 1000000	/* Limit enforced by libpng */
-#endif
+#define MAX_X_SIZE 1000000	/* Limits enforced by libpng */
+#define MAX_Y_SIZE 1000000
 
 typedef enum {Window_Hann, Window_Hamming, Window_Bartlett, Window_Rectangular, Window_Kaiser, Window_Dolph} win_type_t;
 static lsx_enum_item const window_options[] = {
@@ -93,11 +88,48 @@ typedef struct {
   double     * window;          /* [dft_size + 1] */
   double     block_norm, max;
   double     * magnitudes;      /* [dft_size / 2 + 1] */
-  float      * dBfs;
+  float      *** tiles;
+  unsigned   tile_rows;         /* number of tiles per column */
 #if HAVE_FFTW
   fftw_plan  fftw_plan;		/* Used if FFT_type == FFT_fftw */
 #endif
 } priv_t;
+
+/*
+ * Keeping a simple square array for the spectrogram values causes the
+ * computer to thrash when the spectrogram data is larger than the size
+ * of the RAM because it is written column by column and read row by row.
+ * With the simple layout, the inner loop one of the image-scanning loop
+ * accesses one float out of every row or one out of every column which
+ * keeps the entire working set swapped into RAM all the time.
+ * The strategy here avoids that by storing the spectrogram's pixel values
+ * in such a way that a single VM page covers a square tile of the final image
+ * so only one column of pixel tiles (or one row) has to be kept in RAM
+ * at a time.  The speedup is unmeasurable because one thrashing process
+ * makes the entire system grind to a halt.
+ */
+
+#define PAGE_SIZE 4096
+#define TILE_HEIGHT 32  /* = sqrt(PAGE_SIZE / sizeof(float)) */
+#define TILE_WIDTH  32  /* = sqrt(PAGE_SIZE / sizeof(float)) */
+
+/* Macro for accessing image data. (unsigned) to ensure * and / are shifts */
+#define pdBfs(p,row,col) (p->tiles[(unsigned)(col) / TILE_WIDTH]\
+                                  [(unsigned)(row) / TILE_HEIGHT]\
+                                  [((unsigned)(row) % TILE_HEIGHT) * TILE_WIDTH\
+                                   + (unsigned)(col) % TILE_WIDTH])
+static void free_tiles(priv_t *p)
+{
+  unsigned tile_col, tile_row;
+  unsigned tile_cols = (p->cols + TILE_WIDTH - 1) / TILE_WIDTH;
+
+  for (tile_col = 0; tile_col < tile_cols; tile_col++) {
+    for (tile_row = 0; tile_row < p->tile_rows; tile_row++)
+      free(p->tiles[tile_col][tile_row]);
+    free(p->tiles[tile_col]);
+  }
+  free(p->tiles);
+}
 
 #define secs(cols) \
   ((double)(cols) * p->step_size * p->block_steps / effp->in_signal.rate)
@@ -186,7 +218,6 @@ static int parse_range (const char *s, int *a, int *b) {
   }
 }
 
-
 static int getopts(sox_effect_t * effp, int argc, char **argv)
 {
   priv_t * p = (priv_t *)effp->priv;
@@ -274,7 +305,6 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
   }
   return optstate.ind !=argc || p->win_type == INT_MAX? lsx_usage(effp) : SOX_SUCCESS;
 }
-
 
 
 static double make_window(priv_t * p, int end)
@@ -420,6 +450,8 @@ static int start(sox_effect_t * effp)
   lsx_debug("step_size=%i block_steps=%i", p->step_size, p->block_steps);
   p->max = -p->dB_range;
   p->read = (p->step_size - p->dft_size) / 2;
+  p->tile_rows = (p->rows + TILE_HEIGHT - 1) / TILE_HEIGHT;
+
   return SOX_SUCCESS;
 }
 
@@ -434,12 +466,22 @@ static int do_column(sox_effect_t * effp)
       lsx_report("PNG truncated at %g seconds", secs(p->cols));
     return p->truncate? SOX_EOF : SOX_SUCCESS;
   }
+
+  /* Do we need to allocate another column of tiles? */
+  if (p->cols % TILE_WIDTH == 0) {
+    unsigned tile_col_index = p->cols / TILE_WIDTH;
+    unsigned i;
+
+    lsx_revalloc(p->tiles, p->cols / TILE_WIDTH + 1);
+    lsx_valloc(p->tiles[tile_col_index], p->rows);
+    for (i = 0; i < p->tile_rows; i++)
+      p->tiles[tile_col_index][i] = lsx_malloc(PAGE_SIZE);
+  }
   ++p->cols;
-  p->dBfs = lsx_realloc(p->dBfs, p->cols * p->rows * sizeof(*p->dBfs));
-    /* FIXME: allocate in larger steps (for several columns) */
+
   for (row = 0; row < p->rows; ++row) {
     double dBfs = 10 * log10(p->magnitudes[row] * p->block_norm);
-    p->dBfs[(p->cols - 1) * p->rows + row] = dBfs + p->gain;
+    pdBfs(p, row, p->cols - 1) = dBfs + p->gain;
     p->max = max(dBfs, p->max);
   }
   memset(p->magnitudes, 0, p->rows * sizeof(*p->magnitudes));
@@ -686,7 +728,7 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
   int         c_rows   = p->rows * chans + chans - 1;
   int         rows     = p->raw? c_rows : below + c_rows + 30 + 20 * !!p->title;
   int         cols     = p->raw? p->cols : left + p->cols + between + spectrum_width + right;
-  png_byte *  pixels   = lsx_malloc(cols * rows * sizeof(*pixels));
+  png_byte *  pixels;
   png_color   palette[256];
   int         tick_len = 3 - p->no_axes;
   float       autogain = 0.0;	/* Is changed if the -n flag was supplied */
@@ -711,6 +753,7 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
   font = lsx_malloc(font_len);
   assert(uncompress(font, &font_len, fixed, sizeof(fixed)-1) == Z_OK);
   make_palette(p, palette);
+  lsx_valloc(pixels, cols * rows);
   memset(pixels, Background, cols * rows * sizeof(*pixels));
 
   /* Spectrogram */
@@ -731,11 +774,11 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
       int row, base;
 
       if (p->normalize) {
-	float *fp = q->dBfs;
-	int i;
+	int row, col;
 
-	for (i = p->rows * p->cols; i > 0; i--)
-	  *fp++ += autogain;
+	for (row=p->rows; row >=0; row--)
+	  for (col=p->cols; col >=0; col--)
+	    pdBfs(q, row, col) += autogain;
       }
 
       base = !p->raw * below + (chans - 1 - chan) * (p->rows + 1);
@@ -749,14 +792,14 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
 	  freq = (float)row * lin_scale_factor + p->low_freq;
 	}
 	/* dBfsi: index into dBfs[] corresponding to frequency at this row */
-	dBfsi = (freq*p->rows)/nyquist_freq;
+	dBfsi = (freq * p->rows) / nyquist_freq;
 	/* It is possible that upper freq > Nyquist freq: deal with that */
 	if (dBfsi >= p->rows) {
-	  dBfsi = p->rows-1;
+	  dBfsi = p->rows - 1;
 	}
 	for (col = 0; col < p->cols; ++col) {
 	  pixel(!p->raw * left + col, base + row) =
-	    colour(p, q->dBfs[col*p->rows + dBfsi]);
+	    colour(p, pdBfs(q, dBfsi, col));
 	}
 	/* Y-axis lines */
 	if (!p->raw && !p->no_axes) {
@@ -989,7 +1032,7 @@ error:
     free(png_rows);
   }
   free(pixels);
-  free(p->dBfs);
+  free_tiles(p);
   free(p->buf);
   free(p->dft_buf);
   free(p->window);
@@ -1005,7 +1048,7 @@ static int end(sox_effect_t * effp)
   priv_t *p = (priv_t *)effp->priv;
   if (effp->flow == 0)
     return stop(effp);
-  free(p->dBfs);
+  free_tiles(p);
 #if HAVE_FFTW
   if (p->fftw_plan) fftw_destroy_plan(p->fftw_plan);
 #endif
