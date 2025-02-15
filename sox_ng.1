@@ -3891,7 +3891,7 @@ See
 for an effect that allows arbitrary channel selection, ordering and mixing.
 .TP
 \fBsynth\fR [\fB\-j \fIkey\fR] [\fB\-n\fR] [\fIlength\fR [\fIoffset\fR [\fIphase\fR [\fIp1\fR [\fIp2\fR [\fIp3\fR]]]]]]
-{\fItype\fR [\fIcombine\fR [\fB\-V\fR \fIfixed\fR[\fB,\fIextra\fR[\fB,\fImix\fR]]]] \:[[\fB%\fR]\fIfreq\fR[\fBk\fR][\fB:\fR\^|\^\fB+\fR\^|\^\fB/\fR\^|\^\fB\-\fR[\fB%\fR]\fIfreq2\fR[\fBk\fR]]] [\fIoffset\fR [\fIphase\fR [\fIp1\fR [\fIp2\fR [\fIp3\fR]]]]]}
+{\fItype\fR [\fIcombine\fR \fIfixed\fR[\fB,\fIextra\fR[\fB,\fImix\fR]]] \:[[\fB%\fR]\fIfreq\fR[\fBk\fR][\fB:\fR\^|\^\fB+\fR\^|\^\fB/\fR\^|\^\fB\-\fR[\fB%\fR]\fIfreq2\fR[\fBk\fR]]] [\fIoffset\fR [\fIphase\fR [\fIp1\fR [\fIp2\fR [\fIp3\fR]]]]]}
 .SP
 \fBsynth\fR generates fixed or swept frequency audio tones
 with various wave shapes and wide-band noise of various colors.
@@ -4084,13 +4084,13 @@ to 1 (for the most positive value).
 Multiplies the input signal with the synthesized one (ring modulation).
 .TP
 .B vdelay
-Mixes the input signal with the synthesized signal as the offset
-into a delayed version of the input.
-\fBvdelay\fR may be followed by a \fB\-V\fR option which sets
-the fixed delay and the variable part (default: 0) of the delay in seconds.
-\fImix\fR sets the proportion of the original and delayed signals in the output
-from 0 for all input signal to 1 for all delayed signal
-with a default of 0\*d5 for half and half.
+Mixes the input signal with a delayed version of it
+using the synthesized signal to modulate the depth of the delay.
+The following three-part option specifies
+the fixed and additional parts of the delay in milliseconds
+and the percentage of the delayed signal in the output
+from 0 for all input signal to 100 for all delayed signal
+with a default of half and half.
 .SP
 The synthesized signal's value from \-1 to +1 varies the delay
 from \fIfixed\fR seconds to \fIfixed\fR\ +\ (0\ to\ \fIextra\fR) seconds.

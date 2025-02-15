@@ -265,16 +265,12 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
         break;
     }
 
-    /* For combine type vdelay there may be three parameters to it:
-     * fixed delay, extra delay (effect depth) and mix (effect amplitude)
+    /* Combine type vdelay it followed by a three-part parameter giving the
+     * fixed delay, extra delay (effect depth) and mix.
      */
-    if (strcmp(argv[argn], "-V") == 0) {
-      if (chan->combine != synth_vdelay) {
-        lsx_fail("-V only applies to combine type `vdelay'");
-        return SOX_EOF;
-      }
-      if (++argn == argc) {
-vwhat:  lsx_fail("-V what?");
+    if (chan->combine == synth_vdelay) {
+      if (argn == argc) {
+vwhat:  lsx_fail("vdelay what?");
         return SOX_EOF;
       }
 
@@ -284,20 +280,36 @@ vwhat:  lsx_fail("-V what?");
                                              &chan->vdelay_mix)) {
       case 0: goto vwhat;
       case 1:
-	/* lsx_sscanf checks for the first arg being finite */
+	if (!isfinite(chan->vdelay_fixed)) goto vwhat;
+	if (chan->vdelay_fixed < 0) {
+          lsx_fail("fixed vdelay cannot be negative");
+          return SOX_EOF;
+	}
         chan->vdelay_extra = 0;
 	goto case2;
       case 2:
 case2:  if (!isfinite(chan->vdelay_extra)) goto vwhat;
-        chan->vdelay_mix = 0.5;
+	if (chan->vdelay_extra < 0) {
+          lsx_fail("extra vdelay cannot be negative");
+          return SOX_EOF;
+	}
+        chan->vdelay_mix = 50;
 	goto case3;
       case 3:
 case3:  if (!isfinite(chan->vdelay_mix)) goto vwhat;
+	if (chan->vdelay_mix < 0 || chan->vdelay_mix > 100) {
+          lsx_fail("vdelay's mix must be from 0 to 100");
+          return SOX_EOF;
+	}
         break;
       }
       if (++argn == argc)
         break;
     }
+    /* Convert from ms to s and % to proportion */
+    chan->vdelay_fixed /= 1000;
+    chan->vdelay_extra /= 1000;
+    chan->vdelay_mix /= 100;
 
     /* read frequencies if given */
     if (!lsx_find_enum_text(argv[argn], synth_type, lsx_find_enum_item_case_sensitive) &&
@@ -769,7 +781,7 @@ static int lsx_kill(sox_effect_t * effp)
 const sox_effect_handler_t *lsx_synth_effect_fn(void)
 {
   static const char usage[] =
-    "[-j key] [-n] [length [offset [phase [p1 [p2 [p3]]]]]] {type [combine [-V fixed[,extra[,mix]]]] [[%]freq[k][:|+|/|-[%]freq2[k]] [offset [phase [p1 [p2 [p3]]]]]]}";
+    "[-j key] [-n] [length [offset [phase [p1 [p2 [p3]]]]]] {type [combine [fixed[,extra[,mix]]]] [[%]freq[k][:|+|/|-[%]freq2[k]] [offset [phase [p1 [p2 [p3]]]]]]}";
   static const char * const extra_usage[] = {
 "-j key  Retune scientific note names to `key' semitones higher",
 "-n      Don't normalize the output volume",
@@ -793,8 +805,8 @@ const sox_effect_handler_t *lsx_synth_effect_fn(void)
 "  mix     Mix 50:50 with the input",
 "  amod    Multiply input by synth wave considered as being 0 to 1",
 "  fmod    Multiply input by synth wave considered as being -1 to 1",
-"  vdelay  [-V fixed,extra,mix] Synth wave offsets into a delay from",
-"          fixed to fixed+extra seconds. mix=0: all input; mix=1: all delay",
+"  vdelay  fixed[,extra[,mix]] Synth wave offsets into a delay from",
+"          fixed to fixed+extra(0) ms. mix=0: all input; mix=100: all delay",
 "freq?freq2  : = linear sweep; + = frequency is proportional to time squared;",
 "            / = exponential;  - = stepped exponential",
     NULL
