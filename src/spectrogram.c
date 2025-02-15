@@ -426,7 +426,7 @@ static int start(sox_effect_t * effp)
 static int do_column(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *)effp->priv;
-  int i;
+  int row;
 
   if (p->cols == p->x_size) {
     p->truncated = sox_true;
@@ -437,9 +437,9 @@ static int do_column(sox_effect_t * effp)
   ++p->cols;
   p->dBfs = lsx_realloc(p->dBfs, p->cols * p->rows * sizeof(*p->dBfs));
     /* FIXME: allocate in larger steps (for several columns) */
-  for (i = 0; i < p->rows; ++i) {
-    double dBfs = 10 * log10(p->magnitudes[i] * p->block_norm);
-    p->dBfs[(p->cols - 1) * p->rows + i] = dBfs + p->gain;
+  for (row = 0; row < p->rows; ++row) {
+    double dBfs = 10 * log10(p->magnitudes[row] * p->block_norm);
+    p->dBfs[(p->cols - 1) * p->rows + row] = dBfs + p->gain;
     p->max = max(dBfs, p->max);
   }
   memset(p->magnitudes, 0, p->rows * sizeof(*p->magnitudes));
@@ -681,20 +681,14 @@ static int axis(double to, int max_steps, double * limit, char * * prefix)
 static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
 {
   priv_t *    p        = (priv_t *) effp->priv;
-  FILE *      file;
   uLong       font_len = 96 * font_y;
   int         chans    = effp->in_signal.channels;
   int         c_rows   = p->rows * chans + chans - 1;
   int         rows     = p->raw? c_rows : below + c_rows + 30 + 20 * !!p->title;
   int         cols     = p->raw? p->cols : left + p->cols + between + spectrum_width + right;
   png_byte *  pixels   = lsx_malloc(cols * rows * sizeof(*pixels));
-  png_bytepp  png_rows = lsx_malloc(rows * sizeof(*png_rows));
-  png_structp png      = png_create_write_struct(PNG_LIBPNG_VER_STRING, 0, 0,0);
-  png_infop   png_info = png_create_info_struct(png);
   png_color   palette[256];
-  int         i, j, k, base, step, tick_len = 3 - p->no_axes;
-  char        text[200], * prefix;
-  double      limit;
+  int         tick_len = 3 - p->no_axes;
   float       autogain = 0.0;	/* Is changed if the -n flag was supplied */
 
   float log10_low_freq, log10_high_freq;
@@ -713,28 +707,11 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
   log10_high_freq = log10f((float)p->high_freq);
 
   free(p->shared);
-  if (p->using_stdout) {
-    SET_BINARY_MODE(stdout);
-    file = stdout;
-  } else {
-    file = lsx_fopen(p->out_name, "wb");
-    if (!file) {
-      lsx_fail("failed to create `%s': %s", p->out_name, strerror(errno));
-      goto error;
-    }
-  }
   lsx_debug("signal-max=%g", p->max);
   font = lsx_malloc(font_len);
   assert(uncompress(font, &font_len, fixed, sizeof(fixed)-1) == Z_OK);
   make_palette(p, palette);
   memset(pixels, Background, cols * rows * sizeof(*pixels));
-  png_init_io(png, file);
-  png_set_PLTE(png, png_info, palette, fixed_palette + p->spectrum_points);
-  png_set_IHDR(png, png_info, (png_uint_32)cols, (png_uint_32)rows, 8,
-      PNG_COLOR_TYPE_PALETTE, PNG_INTERLACE_NONE,
-      PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
-  for (j = 0; j < rows; ++j)               /* Put (0,0) at bottom-left of PNG */
-    png_rows[rows - 1 - j] = (png_bytep)(pixels + j * cols);
 
   /* Spectrogram */
 
@@ -744,150 +721,273 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
      */
     autogain = -p->max;
 
-  for (k = 0; k < chans; ++k) {
-    int freq, dBfsi;
-    float log_scale_factor = (log10_high_freq- log10_low_freq)/(float)p->rows;
-    float lin_scale_factor = (p->high_freq-p->low_freq)/(float)p->rows;
-    priv_t * q = (priv_t *)(effp - effp->flow + k)->priv;
+  {
+    int chan;
 
-    if (p->normalize) {
-      float *fp = q->dBfs;
-      for (i = p->rows * p->cols; i > 0; i--)
-	*fp++ += autogain;
+    for (chan = 0; chan < chans; ++chan) {
+      float log_scale_factor = (log10_high_freq- log10_low_freq)/(float)p->rows;
+      float lin_scale_factor = (p->high_freq-p->low_freq)/(float)p->rows;
+      priv_t * q = (priv_t *)(effp - effp->flow + chan)->priv;
+      int row, base;
+
+      if (p->normalize) {
+	float *fp = q->dBfs;
+	int i;
+
+	for (i = p->rows * p->cols; i > 0; i--)
+	  *fp++ += autogain;
+      }
+
+      base = !p->raw * below + (chans - 1 - chan) * (p->rows + 1);
+
+      for (row = 0; row < p->rows; ++row) {
+	int dBfsi, col, freq;
+
+	if (p->log10_axis) {
+	  freq = (int)powf(10.0, (float)row * log_scale_factor + log10_low_freq);
+	} else {
+	  freq = (float)row * lin_scale_factor + p->low_freq;
+	}
+	/* dBfsi: index into dBfs[] corresponding to frequency at this row */
+	dBfsi = (freq*p->rows)/nyquist_freq;
+	/* It is possible that upper freq > Nyquist freq: deal with that */
+	if (dBfsi >= p->rows) {
+	  dBfsi = p->rows-1;
+	}
+	for (col = 0; col < p->cols; ++col) {
+	  pixel(!p->raw * left + col, base + row) =
+	    colour(p, q->dBfs[col*p->rows + dBfsi]);
+	}
+	/* Y-axis lines */
+	if (!p->raw && !p->no_axes) {
+	  pixel(left - 1, base + row) = Grid;
+	  pixel(left + p->cols, base + row) = Grid;
+	}
+      }
+      if (!p->raw && !p->no_axes) {
+	int x;
+
+	/* X-axis lines */
+        for (x = -1; x <= p->cols; ++x) {
+	  pixel(left + x, base - 1) = Grid;
+	  pixel(left + x, base + p->rows) = Grid;
+	}
+      }
     }
-
-    base = !p->raw * below + (chans - 1 - k) * (p->rows + 1);
-
-    for (j = 0; j < p->rows; ++j) {
-      if (p->log10_axis) {
-        freq = (int)powf (10.0, (float)j * log_scale_factor + log10_low_freq);
-      } else {
-        freq = (float)j * lin_scale_factor + p->low_freq;
-      }
-      /* dBfsi: the index into dBfs[] corresponding to frequency at row j */
-      dBfsi  = (freq*p->rows)/nyquist_freq;
-      /* It is possible that upper freq > nyquist freq: deal with that */
-      if (dBfsi >= p->rows) {
-        dBfsi = p->rows-1;
-      }
-      for (i = 0; i < p->cols; ++i) {
-        pixel(!p->raw * left + i, base + j) = colour(p, q->dBfs[i*p->rows + dBfsi]);
-      }
-      if (!p->raw && !p->no_axes)                                 /* Y-axis lines */
-        pixel(left - 1, base + j) = pixel(left + p->cols, base + j) = Grid;
-    }
-    if (!p->raw && !p->no_axes) for (i = -1; i <= p->cols; ++i)   /* X-axis lines */
-      pixel(left + i, base - 1) = pixel(left + i, base + p->rows) = Grid;
   }
 
   if (!p->raw) {
-    if (p->title && (i = (int)strlen(p->title) * font_X) < cols + 1) /* Title */
-      print_at((cols - i) / 2, rows - font_y, Text, p->title);
+    if (p->title) {
+      int width = (int)strlen(p->title) * font_X;
+      if (width < cols + 1) /* Title */
+        print_at((cols - width) / 2, rows - font_y, Text, p->title);
+    }
 
     if ((int)strlen(p->comment) * font_X < cols + 1)     /* Footer comment */
       print_at(1, font_y, Text, p->comment);
 
-    /* X-axis */
-    step = axis(secs(p->cols), p->cols / (font_X * 9 / 2), &limit, &prefix);
-    sprintf(text, "Time (%.1ss)", prefix);               /* Axis label */
-    print_at(left + (p->cols - font_X * (int)strlen(text)) / 2, 24, Text, text);
-    for (i = 0; i <= limit; i += step) {
-      int y, x = limit? (double)i / limit * p->cols + .5 : 0;
-      for (y = 0; y < tick_len; ++y)                     /* Ticks */
-        pixel(left-1+x, below-1-y) = pixel(left-1+x, below+c_rows+y) = Grid;
-      if (step == 5 && (i%10))
-        continue;
-      sprintf(text, "%g", .1 * i);                       /* Tick labels */
-      x = left + x - 3 * strlen(text);
-      print_at(x, below - 6, Labels, text);
-      print_at(x, below + c_rows + 14, Labels, text);
-    }
+    {
+      int label_width;
 
-    /* Y-axis */
-    if (p->log10_axis) {
-      /* Log Y axis ticks and labels */
+      /* X-axis */
+      {
+	int step;
+	double dstep;
+	double limit;
+	char *prefix;
+	char text[16];
 
-      int x,y;
-      int start_decade = (int)log10_low_freq;
-      int end_decade = (int)log10_high_freq;
-      float log_scale = (float)p->rows/(log10_high_freq - log10_low_freq);
+	dstep = step =
+	  axis(secs(p->cols), p->cols / (font_X * 9 / 2), &limit, &prefix);
+	sprintf(text, "Time (%.1ss)", prefix);               /* Axis label */
+	print_at(left + (p->cols - font_X * (int)strlen(text)) / 2, 24, Text, text);
+	{ int i, di;
+	  for (i = 0, di = 0; i <= limit; i += step, di += dstep) {
+	    int x = limit? di / limit * p->cols + .5 : 0;
+	    int y;
 
-      print_up(10, below + (c_rows - font_X * (int)strlen(text)) / 2, Text, "Frequency (Hz)");
-
-      for (k = 0; k < chans; ++k) {
-        base = below + k * (p->rows + 1);
-	/* Label 10^n decades in view */
-        for (i = start_decade; i <= end_decade; i++) {
-          int f = (int)powf(10.0,(float)i);
-          y = ( (float)i-log10_low_freq)*log_scale;
-          if (y>=0) {
-            sprintf(text, i?"%5i":"   DC",  f);          /* Tick label (left) */
-            print_at(left - 4 - font_X * 5, base + y + 5, Labels, text);
-            sprintf(text, i?"%i":"DC",  f);              /* Tick label (right) */
-            print_at(left + p->cols + 6, base + y + 5, Labels, text);
-          }
-
-          /* intra-decade tick marks */
-          for (j = 0; j < 10; j++) {
-            y = (log10f((float)(f + j*f))-log10_low_freq)*log_scale;
-            if (y>0 && y < p->rows) {
-              for (x = 0; x < tick_len; ++x) {
-                pixel(left-1-x, base+y) = pixel(left+p->cols+x, base+y) = Grid;
-              }
-            }
-          }
-
-        }
-
+	    for (y = 0; y < tick_len; ++y) {                   /* Ticks */
+	      pixel(left-1+x, below-1-y) = Grid;
+	      pixel(left-1+x, below+c_rows+y) = Grid;
+	    }
+	    if (step == 5 && (i%10))
+	      continue;
+	    sprintf(text, "%g", .1 * di);     /* Tick labels */
+	    x = left + x - 3 * strlen(text);
+	    print_at(x, below - 6, Labels, text);
+	    print_at(x, below + c_rows + 14, Labels, text);
+	  }
+	}
+	/* Used subsequently to position the vertical text of the Y axis */
+	label_width = font_X * strlen(text);
       }
-    } else {
-      /* Linear Y axis ticks and labels */
-      step = axis(p->high_freq - p->low_freq,
-        (p->rows - 1) / ((font_y * 3 + 1) >> 1), &limit, &prefix);
-      sprintf(text, "Frequency (%.1sHz)", prefix);         /* Axis label */
-      print_up(10, below + (c_rows - font_X * (int)strlen(text)) / 2, Text, text);
-      for (k = 0; k < chans; ++k) {
-        base = below + k * (p->rows + 1);
-        for (i = 0; i <= limit; i += step) {
-          int f = p->low_freq/100 + i;                     /* Frequency in 100Hz units */
-          int x, y = limit? (double)i / limit * (p->rows - 1) + .5 : 0;
-          for (x = 0; x < tick_len; ++x)                   /* Ticks */
-            pixel(left-1-x, base+y) = pixel(left+p->cols+x, base+y) = Grid;
-          if ((step == 5 && (i%10)) || (!i && k && chans > 1))
-            continue;
 
-          sprintf(text, f?"%5g":"   DC", .1 * f);          /* Tick labels */
-          print_at(left - 4 - font_X * 5, base + y + 5, Labels, text);
-          sprintf(text, f?"%g":"DC", .1 * f);
-          print_at(left + p->cols + 6, base + y + 5, Labels, text);
-        }
+      /* Y-axis */
+      if (p->log10_axis) {
+	/* Log Y axis ticks and labels */
+	int start_decade = (int)log10_low_freq;
+	int end_decade = (int)log10_high_freq;
+	float log_scale = (float)p->rows / (log10_high_freq - log10_low_freq);
+
+	print_up(10, below + (c_rows - label_width) / 2, Text, "Frequency (Hz)");
+
+	{
+	  int chan;
+
+	  for (chan = 0; chan < chans; ++chan) {
+	    int base = below + chan * (p->rows + 1);
+	    int i;
+	    float fi;
+
+	    /* Label 10^n decades in view */
+	    for (fi = i = start_decade; i <= end_decade; i++, fi++) {
+	      int f = (int)powf(10.0, fi);
+
+	      {
+		int y = (fi - log10_low_freq) * log_scale;
+
+		if (y >= 0) {
+		  char text[16];
+		  sprintf(text, i ? "%5i" : "   DC", f);  /* Tick label (left) */
+		  print_at(left - 4 - font_X * 5, base + y + 5, Labels, text);
+		  sprintf(text, i ? "%i" : "DC",  f);     /* Tick label (right) */
+		  print_at(left + p->cols + 6, base + y + 5, Labels, text);
+		}
+	      }
+
+	      /* intra-decade tick marks */
+	      {
+	        int j;
+
+		for (j = 1; j <= 10; j++) {
+		  int y = (log10f((float)(j * f)) - log10_low_freq) * log_scale;
+
+		  if (y > 0 && y < p->rows) {
+		    int x;
+
+		    for (x = 0; x < tick_len; ++x) {
+		      pixel(left - 1 - x, base + y) = Grid;
+		      pixel(left + p->cols + x, base + y) = Grid;
+		    }
+		  }
+		}
+	      }
+	    }
+	  }
+	}
+      } else {
+	/* Linear Y axis ticks and labels */
+	double limit;
+	char *prefix;
+        char text[16]; /* exactly! */
+	int step;
+	double dstep;
+
+	dstep = step = axis(p->high_freq - p->low_freq,
+			    (p->rows - 1) / ((font_y * 3 + 1) >> 1),
+			    &limit, &prefix);
+	sprintf(text, "Frequency (%.1sHz)", prefix);         /* Axis label */
+	print_up(10, below + (c_rows - font_X * strlen(text)) / 2, Text, text);
+	{ int chan;
+	  for (chan = 0; chan < chans; ++chan) {
+	    int base = below + chan * (p->rows + 1);
+	    int i;
+	    double di;
+
+	    for (di = i = 0; i <= limit; i += step, di += dstep) {
+	      int f = p->low_freq/100 + i;       /* Frequency in 100Hz units */
+	      int y = limit ? di / limit * (p->rows - 1) + .5 : 0;
+	      int x;
+
+	      for (x = 0; x < tick_len; ++x) {                 /* Ticks */
+		pixel(left - 1 - x, base + y) = Grid;
+	        pixel(left + p->cols + x, base + y) = Grid;
+	      }
+	      if ((step == 5 && (i % 10)) || (!i && chan && chans > 1))
+		continue;
+
+	      sprintf(text, f?"%5g":"   DC", .1 * f);         /* Tick labels */
+	      print_at(left - 4 - font_X * 5, base + y + 5, Labels, text);
+	      sprintf(text, f?"%g":"DC", .1 * f);
+	      print_at(left + p->cols + 6, base + y + 5, Labels, text);
+	    }
+	  }
+	}
       }
     }
-
 
     /* Z-axis */
-    k = min(400, c_rows);
-    base = below + (c_rows - k) / 2;
-    print_at(cols - right - 2 - font_X, base - 13, Text, "dBFS");/* Axis label */
-    for (j = 0; j < k; ++j) {                            /* Spectrum */
-      png_byte b = colour(p, p->dB_range * (j / (k - 1.) - 1));
-      for (i = 0; i < spectrum_width; ++i)
-        pixel(cols - right - 1 - i, base + j) = b;
-    }
-    step = 10 * ceil(p->dB_range / 10. * (font_y + 2) / (k - 1));
-    for (i = 0; i <= p->dB_range; i += step) {           /* (Tick) labels */
-      int y = (double)i / p->dB_range * (k - 1) + .5;
-      sprintf(text, "%+i", i - p->gain - p->dB_range - (int)(autogain+0.5));
-      print_at(cols - right + 1, base + y + 5, Labels, text);
+    {
+      int step; double dstep;
+      int k;
+
+      k = min(400, c_rows);
+      int base = below + (c_rows - k) / 2;
+      print_at(cols - right - 2 - font_X, base - 13, Text, "dBFS");/* Axis label */
+      {
+        int y;
+
+	for (y = 0; y < k; ++y) {                          /* Spectrum */
+	  png_byte b = colour(p, p->dB_range * (y / (k - 1.) - 1));
+	  int x;
+
+	  for (x = 0; x < spectrum_width; ++x)
+	    pixel(cols - right - 1 - x, base + y) = b;
+	}
+      }
+      dstep = step = 10 * ceil(p->dB_range / 10. * (font_y + 2) / (k - 1));
+      {
+        int i; double di;
+
+	/* (Tick) labels */
+	for (di = i = 0; i <= p->dB_range; i += step, di += dstep) {
+          char text[16];
+	  int y = di / p->dB_range * (k - 1) + .5;
+
+	  sprintf(text, "%+i", i - p->gain - p->dB_range - (int)(autogain+0.5));
+	  print_at(cols - right + 1, base + y + 5, Labels, text);
+	}
+      }
     }
   }
   free(font);
-  png_set_rows(png, png_info, png_rows);
-  png_write_png(png, png_info, PNG_TRANSFORM_IDENTITY, NULL);
-  if (!p->using_stdout)
-    fclose(file);
-error: png_destroy_write_struct(&png, &png_info);
-  free(png_rows);
+
+  /* Create the PNG */
+  {
+    png_structp png;
+    png_infop   png_info;
+    png_bytepp  png_rows = lsx_malloc(rows * sizeof(*png_rows));
+    FILE *      file;
+
+    if (p->using_stdout) {
+      SET_BINARY_MODE(stdout);
+      file = stdout;
+    } else {
+      file = lsx_fopen(p->out_name, "wb");
+      if (!file) {
+	lsx_fail("failed to create `%s': %s", p->out_name, strerror(errno));
+	goto error;
+      }
+    }
+    png = png_create_write_struct(PNG_LIBPNG_VER_STRING, 0, 0,0);
+    png_info = png_create_info_struct(png);
+    png_init_io(png, file);
+    png_set_PLTE(png, png_info, palette, fixed_palette + p->spectrum_points);
+    png_set_IHDR(png, png_info, (png_uint_32)cols, (png_uint_32)rows, 8,
+	PNG_COLOR_TYPE_PALETTE, PNG_INTERLACE_NONE,
+	PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
+    { int row;
+      for (row = 0; row < rows; ++row)    /* Put (0,0) at bottom-left of PNG */
+	png_rows[rows - 1 - row] = (png_bytep)(pixels + row * cols);
+    }
+    png_set_rows(png, png_info, png_rows);
+    png_write_png(png, png_info, PNG_TRANSFORM_IDENTITY, NULL);
+    png_destroy_write_struct(&png, &png_info);
+    if (!p->using_stdout)
+      fclose(file);
+error:
+    free(png_rows);
+  }
   free(pixels);
   free(p->dBfs);
   free(p->buf);
