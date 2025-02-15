@@ -207,7 +207,7 @@ static int sox_chorus_start (sox_effect_t *effp)
                 /* delay line */
                 stage->delay_line_index = 0;
                 stage->delay_line_length =
-                    (stage->delay + stage->depth) * effp->in_signal.rate;
+                    ceil((stage->delay + stage->depth) * effp->in_signal.rate);
 		if (stage->delay_line_length < 1) {
 		    lsx_fail("delay line length plus depth must be at least one sample");
 		    return SOX_EOF;
@@ -279,11 +279,11 @@ static int sox_chorus_flow_or_drain (sox_effect_t *effp,
                  * when adding up many delay lines */
                 const chorus_delay_sample_t d_in =
                     (is_drain
-                     ? 0.0
+                     ? 0
                      : (chorus_delay_sample_t) *ibuf++ / SCALING_FACTOR);
 
                 /* Compute output */
-                chorus_delay_sample_t d_out = (float) d_in * chorus->gain_in;
+                chorus_delay_sample_t d_out = d_in * chorus->gain_in;
 
                 for (i = 0; i < chorus->stage_count; i++) {
                     chorus_stage_t *stage = &chorus->stage[i];
