@@ -5,26 +5,30 @@ This file contains a list of all changes starting after the release of
 sox-11gamma, followed by a list of prior authors and features.
 
 
-$ox_ng-14.4.4	2024-09-14
+sox_ng-14.4.4	2025-02-18
 -------------
-
-New features:
-
-  o Americanize the spelling in the manual page
 
 Bug fixes:
 
+  o Fix "silence" not to add a random selection of fragments at the end
   o Fix coreaudio device name truncation on MacOS X
   o Fix delay buffer full flag assigned during drain
+  o Read mono 8-bit MAUD files with an odd number of samples
+  o Multi-channel LADSPA plugins now work
+  o When date read from a pipe is short, report stats for what there was
+  o Detect and report read errors from short audio files
+  o Detect and report write errors to audio files
+  o When an fatal error is detected, stop and exit non-zero in all cases
   o Revert "fix" to "Floating point exception in startwrite()" which caused
     playing with -t ao to play only the first part of an audio file.
     The original bug was hard to reproduce on Fedora; most of them say
     "sox FAIL sox: `vgacpy3.voc' premature EOF: Numerical result out of range"
-  o Now works on Haiku and with the ucrt and Sun C libraries
+  o Make it work on Haiku and with the ucrt and Sun C libraries
   o Fix more compiler warnings and errors
+  o Correct the manual and make its mcompand example work
 
 
-$ox_ng-14.4.3.1	2024-09-14
+sox_ng-14.4.3.1	2024-09-14
 ---------------
 
 New features:
@@ -39,7 +43,7 @@ Bug fixes:
   o Correct the mailing list's address
 
 
-$ox_ng-14.4.3	2024-09-01
+sox_ng-14.4.3	2024-09-01
 -------------
 
 New features:
@@ -60,11 +64,11 @@ Bug fixes:
   o floating point exception in startwrite()
   o wavpack check errors
   o writing hcom files on bigendian systems
-  O Fixes for memory leaks and a double free()s
+  o Fixes for memory leaks and a double free()s
   o It now compiles under C99 and on AIX
   o Support for uClibc and builds with other non-glibc C libraries
   o Various build system fixes from the software distributions
-j o Spelling errors are fixed
+  o Spelling errors are fixed
   o It now builds on AIX, FreeBSD, OpenBSD and Solaris
   o Almost all compiler warnings are fixed
 
