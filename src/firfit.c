@@ -145,7 +145,7 @@ static sox_bool read_knots(sox_effect_t * effp)
     }
 
     linep = line;
-    while (*linep && isspace(*linep)) linep++; /* Skip whitespace */
+    while (*linep && isspace((int)*linep)) linep++; /* Skip whitespace */
 
     if (*linep == '\0') continue;              /* Ignore blank lines */
 
@@ -153,7 +153,7 @@ more:
     /* Convert the frequency */
 
     /* Find the end of the first frequency and terminate it */
-    for (endp = linep; *endp && !isspace(*endp); endp++) ;
+    for (endp = linep; *endp && !isspace((int)*endp); endp++) ;
     *endp = '\0';
     freq = lsx_parse_frequency(linep, &endp);
     if (freq < 0) {
@@ -162,12 +162,12 @@ more:
     }
     linep = endp + 1;
 
-    while (*linep && isspace(*linep)) linep++; /* Skip whitespace */
+    while (*linep && isspace((int)*linep)) linep++; /* Skip whitespace */
 
     /* Convert the gain */
     {
       int n; char c;
-      if (sscanf(linep, "%lf%c%n", &gain, &c, &n) != 2 || !isspace(c)) {
+      if (sscanf(linep, "%lf%c%n", &gain, &c, &n) != 2 || !isspace((int)c)) {
 	lsx_fail("%s gain for freq %g",
 		 *linep ? "invalid" : "missing",
 		 freq);
@@ -189,7 +189,7 @@ more:
      * The original firfit would read several pairs from one line.
      * Be compatible but don't document it.
      */
-    while (*linep && isspace(*linep)) linep++; /* Skip whitespace */
+    while (*linep && isspace((int)*linep)) linep++; /* Skip whitespace */
     if (*linep) goto more;
   }
   lsx_report("%i knots", p->num_knots);
