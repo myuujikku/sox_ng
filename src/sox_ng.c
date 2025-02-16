@@ -2997,7 +2997,9 @@ int main(int argc, char **argv)
     set_replay_gain(files[i]->ft->oob.comments, files[i]);
 
   signal(SIGINT, SIG_DFL);
+#ifndef _WIN32
   signal(SIGPIPE, SIG_IGN);
+#endif
 
   /* Loop through the rest of the arguments looking for effects */
   add_eff_chain();
