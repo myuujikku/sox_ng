@@ -78,6 +78,8 @@ do
 	    fi
 	    # cfarm185 takes 3m09 to run CVE-2019-8357 so max 4m
 	    ulimit -t 240
+	    # Stop CVE-2019-853[47] from taking forever on 64-bit machines.
+            ulimit -v 1048576
 	    sh run
 	) > $errs 2>&1
 	status=$?
