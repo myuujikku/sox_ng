@@ -39,7 +39,7 @@
 #include <string.h>
 #include <errno.h>
 
-#include <opusfile.h>
+#include <opus/opusfile.h>
 
 #define DEF_BUF_LEN 4096
 
