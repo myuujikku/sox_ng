@@ -1294,8 +1294,11 @@ static int kbhit(void)
 #define kbhit() 0
 #endif
 
+#if defined(HAVE_SOUNDCARD_H) || defined(HAVE_AUDIOIO_H)
+# include <sys/ioctl.h>
+#endif
+
 #ifdef HAVE_SOUNDCARD_H
-#include <sys/ioctl.h>
 static void adjust_volume(int delta)
 {
   char * from_env = getenv("MIXERDEV");
