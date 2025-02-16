@@ -2,12 +2,14 @@ Change History
 --------------
 
 This file contains a list of all changes starting after the release of
-sox-11gamma, followed by a list of prior authors and features.
+sox-11gamma.
+
 
 sox_ng-14.5.0+git (unreleased)
 -----------------
 
 New features:
+
   o Read NSP format files
   o Read MSP2K (Akai sampler) format files
   o Read and write DSF format and read DFF and WSD formats
@@ -26,24 +28,30 @@ New features:
   o Remove the limit on the number of channels that phaser can handle (was 4)
   o Raise the limit on the number of chorus stages from 7 to 256
   o Remove unnecessary limits on arguments of echo,echos,chorus,phaser,flanger
+  o Add flow diagrams to --help-effect echo, echos, chorus and phaser
 
 Bug fixes:
+
   o The "stats" effect's Bit-depth values have been revised to reflect
     what Bit-depth means and handle corner cases like -32768
-  o The manual has been extensively revised, detail on the meaning
-    of parameters added and undocumented flags documented
   o Revise all effects' usage messages to the same format and more helpful
-  o Several effects now show their flow diagram in their usage output
   o "echos" and "chorus" have never worked but now do what they say
   o "bend"'s logarithmic frequency curve is more closely logarithmic
+  o Fix "silence" not to add a random selection of fragments at the end
   o "silence" no longer outputs a random selection of fragments at the end
-  o "fitfit" now understands frequencies like "10k"
-  o Read errors from short files are always detected and reported
-  o Write errors to audio files are always detected and reported
+  o Make "fitfit" understand frequencies like "10k"
+  o Read mono 8-bit MAUD files with an odd number of samples
+  o Handle unknown odd-sized chunks in AIFF files
+  o Detect and report read errors from short audio files
+  o Detect and report drite errors to audio files
+  o When date read from a pipe is short, report stats for what there was
+  o When an fatal error is detected, stop and exit non-zero in all cases
   o No formats or effects are experimental or deprecated any more
+  o Multi-channel LADSPA plugins now work
   o The LD_LIBRARY_PATH change has been reverted (it bombed on Solaris)
   o "ffmpeg"'s ADX format is no longer autodetected (too many false positives)
-  o Reject paramemter values of "NaN" instead of dumping core
+  o Reject parameter values of "NaN" instead of dumping core
+  o Correct the manual and make its mcompand example work
 
 sox_ng-14.5.0.3	2025-01-05
 ---------------
