@@ -88,10 +88,36 @@ static int flow(sox_effect_t * effp, const sox_sample_t * ibuf,
 
 /* No drain: preserve audio file length; it's only 32 samples anyway. */
 
+static char const * extra_usage[] = {
+"                         Input",
+"                   Left         Right",
+"                __________   __________",
+"               |          | |          |",
+"           .---|  Hh,0(f) | |  Hh,0(f) |---.",
+"          /    |__________| |__________|    \\",
+"         /                \\ /                \\",
+"        /                  X                  \\",
+"       /                  / \\                  \\",
+"  ____V_____   __________V   V__________   _____V____",
+" |          | |          |   |          | |          |",
+" | Hh,30(f) | | Hh,330(f)|   | Hh,330(f)| | Hh,30(f) |",
+" |__________| |__________|   |__________| |__________|",
+"      \\     ___      /           \\      ___     /",
+"       \\   /   \\    /    _____    \\    /   \\   /",
+"        `->| + |<--'    /     \\    `-->| + |<-'",
+"           \\___/      _/       \\_      \\___/",
+"               \\     / \\       / \\     /",
+"                `--->| |       | |<---'",
+"                     \\_/       \\_/",
+"",
+"                       Headphones",
+  NULL
+};
+
 sox_effect_handler_t const *lsx_earwax_effect_fn(void)
 {
   static sox_effect_handler_t handler = {
-    "earwax", NULL, NULL, SOX_EFF_MCHAN,
+    "earwax", NULL, extra_usage, SOX_EFF_MCHAN,
     NULL, start, flow, NULL, NULL, NULL, sizeof(priv_t)};
   return &handler;
 }
