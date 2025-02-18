@@ -10,37 +10,36 @@ sox_ng-14.5.1	2025-02-18
 
 New features:
 
-  o Support Unicode on Windows for filenames and command-line arguments
+  o On Windows, support Unicode filenames and command-line arguments
   o Automatically read Ogg FLAC (.oga) files with ffmpeg
   o Remove echo(s)' limits on number/length of delays and range of gains/decays
-  o Remove the limit on the number of echo/echos stages (was 7)
-  o Remove the limit on the number of channels that phaser can handle (was 4)
-  o Raise the limit on the number of chorus stages from 7 to 256
-  o Remove limits on arguments of echo,echos,chorus,phaser,flanger
-  o Raise spectrogram size limit to 1Mx1M and don't thrash for large files
-  o Standardize error messages. The best was:
-    sox_ng WARN chorus: chorus: warning >>> gain-out can cause saturation
-  o Make --help-effect show the ranges and meanings of all parameters
-    and diagrams for chorus compand earwax echo echos flanger phaser
+  o Remove the limit on the number of echo/echos stages (it was 7)
+  o Remove "channels"' limit on the number of channels (it was 4)
+  o Raise "chorus"' limit on the number of stages from 7 to 256
+  o Remove limits on arguments' ranges for echo echos chorus phaser flanger
+  o Raise "spectrogram" size limit to 1Mx1M and make it need much less RAM
+  o Standardize the format of error messages
+  o Make "--help-effect" show the range and meaning of all parameters
+    and add diagrams for chorus compand earwax echo echos flanger phaser
 
 Bug fixes:
-  o The "stats" effect's Bit-depth values have been revised to reflect
-    what Bit-depth means and handle corner cases like -32768
-  o The manual has been extensively revised, detail on the meaning
-    of parameters added and undocumented flags documented
-  o Revise all effects' usage messages to the same format and more helpful
+  o Revise the manual, explain the meaning of all parameters, document
+    undocumented options and change the "mcompand" example to one that works
+  o Change "stats" Bit-depth values to reflect what they really means
+  o Revise all effects' usage messages to a standard format
   o Several effects now show their flow diagram in their usage output
-  o "echos" and "chorus" have never worked but now do what they say
-  o "bend"'s logarithmic frequency curve is more closely logarithmic
-  o "silence" no longer outputs a random selection of fragments at the end
-  o "fitfit" now understands frequencies like "10k"
-  o Read errors from short files are always detected and reported
-  o Write errors to audio files are always detected and reported
-  o No formats or effects are experimental or deprecated any more
+  o Make "echos" and "chorus" work (they never have)
+  o Make "bend"'s logarithmic frequency curve more logarithmic
+  o Stop "silence" from appending a random selection of audio fragments
+  o Make "fitfit" understand frequencies like "10k"
+  o Detect and report read errors from truncated audio files
+  o Detect and report errors when writing audio files
+  o Check that "tempo" has at least one parameter instead of looping forever
+  o Remove the "experimental" and "deprecated" status of formats and effects
+  o No longer autodetect "ffmpeg"'s ADX format (too many false positives)
+  o Reject parameter values of "NaN" instead of dumping core
+  o Finish processing the audio data if the process feeding a pipe dies
   o The LD_LIBRARY_PATH change has been reverted (it bombed on Solaris)
-  o "ffmpeg"'s ADX format is no longer autodetected (too many false positives)
-  o Reject paramemter values of "NaN" instead of dumping core
-  o If the process feeding a pipe dies, finish processing the partial data
 
 sox_ng-14.5.0.3	2025-01-05
 ---------------
