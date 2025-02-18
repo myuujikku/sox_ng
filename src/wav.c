@@ -1329,7 +1329,9 @@ static int startwrite(sox_format_t * ft)
         case WAVE_FORMAT_IMA_ADPCM:
             lsx_ima_init_table();
         /* intentional case fallthru! */
+	    goto wave_format_adpcm;
         case WAVE_FORMAT_ADPCM:
+wave_format_adpcm:
             /* #channels already range-checked for overflow in wavwritehdr() */
             for (ch=0; ch<ft->signal.channels; ch++)
                 wav->state[ch] = 0;

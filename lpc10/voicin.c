@@ -34,7 +34,7 @@ $Log: voicin.c,v $
 #include "f2c.h"
 
 #ifdef P_R_O_T_O_T_Y_P_E_S
-extern int voicin_(integer *vwin, real *inbuf, real *lpbuf, integer *buflim, integer *half, real *minamd, real *maxamd, integer *mintau, real *ivrc, integer *obound, integer *voibuf, integer *af, struct lpc10_encoder_state *st);
+extern int voicin_(integer *vwin, real *inbuf, real *lpbuf, integer *buflim, integer *half, real *minamd, real *maxamd, integer *mintau, real *ivrc, integer *obound, integer *voibuf, struct lpc10_encoder_state *st);
 /* comlen contrl_ 12 */
 /*:ref: vparms_ 14 14 4 6 6 4 4 6 4 4 4 4 6 6 6 6 */
 #endif
@@ -179,7 +179,6 @@ extern struct {
 /*  OBOUND    - Onset boundary descriptions */
 /*             Indices 1 through 3 read if (HALF .NE. 1), otherwise untouched.
 */
-/*  AF        - The analysis frame number */
 /* Output: */
 /*  VOIBUF(2,0:AF) - Buffer of voicing decisions */
 /*              Index (HALF,3) written. */
@@ -239,7 +238,7 @@ s*/
 /* Subroutine */ int voicin_(integer *vwin, real *inbuf, real *
 	lpbuf, integer *buflim, integer *half, real *minamd, real *maxamd, 
 	integer *mintau, real *ivrc, integer *obound, integer *voibuf, 
-	integer *af, struct lpc10_encoder_state *st)
+	struct lpc10_encoder_state *st)
 {
     /* Initialized data */
 

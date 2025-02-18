@@ -582,7 +582,6 @@ void lsx_plot_fir(double * h, int num_points, sox_rate_t rate, sox_plot_t type, 
 #endif
 
 #if defined lrint32
-#define _ dest[i] = lrint32(src[i]), ++i,
 #pragma STDC FENV_ACCESS ON
 
 static void rint_clip(sox_sample_t * const dest, double const * const src,
@@ -604,7 +603,14 @@ void lsx_save_samples(sox_sample_t * const dest, double const * const src,
   size_t i;
   feclearexcept(FE_INVALID);
   for (i = 0; i < (n & ~7);) {
-    _ _ _ _ _ _ _ _ 0;
+    dest[i] = lrint32(src[i]), ++i,
+    dest[i] = lrint32(src[i]), ++i,
+    dest[i] = lrint32(src[i]), ++i,
+    dest[i] = lrint32(src[i]), ++i,
+    dest[i] = lrint32(src[i]), ++i,
+    dest[i] = lrint32(src[i]), ++i,
+    dest[i] = lrint32(src[i]), ++i,
+    dest[i] = lrint32(src[i]), ++i;
     if (fetestexcept(FE_INVALID)) {
       feclearexcept(FE_INVALID);
       rint_clip(dest, src, i - 8, i, clips);
@@ -622,7 +628,6 @@ void lsx_load_samples(double * const dest, sox_sample_t const * const src,
 }
 
 #pragma STDC FENV_ACCESS OFF
-#undef _
 #else
 
 void lsx_save_samples(sox_sample_t * const dest, double const * const src,

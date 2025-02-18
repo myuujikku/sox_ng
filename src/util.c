@@ -121,8 +121,8 @@ char const * lsx_sigfigs3(double number)
   unsigned a, b, c;
   sprintf(string[n = (n+1) & 15], "%#.3g", number);
   switch (sscanf(string[n], "%u.%ue%u", &a, &b, &c)) {
-    case 2: if (b) return string[n]; /* Can fall through */
-    case 1: c = 2; break;
+    case 2: if (b) return string[n]; /* Can fall through */ goto one;
+    case 1: one: c = 2; break;
     case 3: a = 100*a + b; break;
   }
   if (c < array_length(symbols) * 3 - 3) switch (c%3) {

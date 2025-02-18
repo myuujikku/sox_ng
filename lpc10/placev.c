@@ -26,7 +26,7 @@ $Log: placev.c,v $
 #include "f2c.h"
 
 #ifdef P_R_O_T_O_T_Y_P_E_S
-extern int placev_(integer *osbuf, integer *osptr, integer *oslen, integer *obound, integer *vwin, integer *af, integer *lframe, integer *minwin, integer *maxwin, integer *dvwinl, integer *dvwinh);
+extern int placev_(integer *osbuf, integer *osptr, integer *obound, integer *vwin, integer *af, integer *lframe, integer *minwin, integer *maxwin, integer *dvwinl);
 #endif
 
 /* ****************************************************************** */
@@ -90,9 +90,9 @@ extern int placev_(integer *osbuf, integer *osptr, integer *oslen, integer *obou
 
 /* This subroutine has no local state. */
 
-/* Subroutine */ int placev_(integer *osbuf, integer *osptr, integer *oslen, 
+/* Subroutine */ int placev_(integer *osbuf, integer *osptr,
 	integer *obound, integer *vwin, integer *af, integer *lframe, integer 
-	*minwin, integer *maxwin, integer *dvwinl, integer *dvwinh)
+	*minwin, integer *maxwin, integer *dvwinl)
 {
     /* System generated locals */
     integer i__1, i__2;
