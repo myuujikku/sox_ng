@@ -396,7 +396,7 @@ int lsx_parse_note(char const * text, char * * end_ptr)
     result = (int)(5/3. * (*text++ - 'A') + 9.5) % 12 - 9;
     if (*text == 'b') {--result; ++text;}
     else if (*text == '#') {++result; ++text;}
-    if (isdigit((unsigned char)*text))
+    if (isdigit((int)*text))
       result += 12 * (*text++ - '4'); 
   }
   *end_ptr = (char *)text;

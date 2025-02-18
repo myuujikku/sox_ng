@@ -26,9 +26,9 @@ int lsx_strcasecmp(const char * s1, const char * s2)
 #elif defined(_MSC_VER)
   return _stricmp(s1, s2);
 #else
-  while (*s1 && (toupper(*s1) == toupper(*s2)))
+  while (*s1 && (toupper((int)*s1) == toupper((int)*s2)))
     s1++, s2++;
-  return toupper(*s1) - toupper(*s2);
+  return toupper((int)*s1) - toupper((int)*s2);
 #endif
 }
 
@@ -39,9 +39,9 @@ int lsx_strncasecmp(char const * s1, char const * s2, size_t n)
 #elif defined(_MSC_VER)
   return _strnicmp(s1, s2, n);
 #else
-  while (--n && *s1 && (toupper(*s1) == toupper(*s2)))
+  while (--n && *s1 && (toupper((int)*s1) == toupper((int)*s2)))
     s1++, s2++;
-  return toupper(*s1) - toupper(*s2);
+  return toupper((int)*s1) - toupper((int)*s2);
 #endif
 }
 

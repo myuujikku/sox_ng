@@ -1,7 +1,7 @@
 #! /bin/sh
 
 # https://sourceforge.net/p/sox/bugs/363
-# sox segfaults when parsing CLI options
+# sox gets SIGSEGV when parsing CLI options
 
 # 14.4.2
 
