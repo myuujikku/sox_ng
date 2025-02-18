@@ -10,15 +10,18 @@ sox_ng-14.5.1	2025-02-18
 
 New features:
 
-  o Add reading of Ogg FLAC files (with ffmpeg)
-  o Error messages have been harmonized. The best was
-    sox_ng WARN chorus: chorus: warning >>> gain-out can cause saturation
+  o Support Unicode on Windows for filenames and command-line arguments
+  o Automatically read Ogg FLAC (.oga) files with ffmpeg
   o Remove echo(s)' limits on number/length of delays and range of gains/decays
-  o Make echos run 20% faster
   o Remove the limit on the number of echo/echos stages (was 7)
   o Remove the limit on the number of channels that phaser can handle (was 4)
   o Raise the limit on the number of chorus stages from 7 to 256
-  o Remove unnecessary limits on arguments of echo,echos,chorus,phaser,flanger
+  o Remove limits on arguments of echo,echos,chorus,phaser,flanger
+  o Raise spectrogram size limit to 1Mx1M and don't thrash for large files
+  o Standardize error messages. The best was:
+    sox_ng WARN chorus: chorus: warning >>> gain-out can cause saturation
+  o Make --help-effect show the ranges and meanings of all parameters
+    and diagrams for chorus compand earwax echo echos flanger phaser
 
 Bug fixes:
   o The "stats" effect's Bit-depth values have been revised to reflect
@@ -37,6 +40,7 @@ Bug fixes:
   o The LD_LIBRARY_PATH change has been reverted (it bombed on Solaris)
   o "ffmpeg"'s ADX format is no longer autodetected (too many false positives)
   o Reject paramemter values of "NaN" instead of dumping core
+  o If the process feeding a pipe dies, finish processing the partial data
 
 sox_ng-14.5.0.3	2025-01-05
 ---------------
