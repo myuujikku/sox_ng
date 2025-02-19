@@ -38,7 +38,7 @@ extern int analys_(real *speech, integer *voice, integer *pitch, real *rms, real
 /* comlen contrl_ 12 */
 /*:ref: preemp_ 14 5 6 6 4 6 6 */
 /*:ref: onset_ 14 7 6 4 4 4 4 4 4 */
-/*:ref: placev_ 14 11 4 4 4 4 4 4 4 4 4 4 4 */
+/*:ref: placev_ 14 11 4 4 4 4 4 4 4 4 4 */
 /*:ref: lpfilt_ 14 4 6 6 4 4 */
 /*:ref: ivfilt_ 14 5 6 6 4 4 6 */
 /*:ref: tbdm_ 14 8 6 4 4 4 6 4 4 4 */
@@ -74,7 +74,6 @@ static integer c__3 = 3;
 static integer c__90 = 90;
 static integer c__156 = 156;
 static integer c__307 = 307;
-static integer c__462 = 462;
 static integer c__312 = 312;
 static integer c__60 = 60;
 static integer c__1 = 1;
@@ -223,9 +222,9 @@ static integer c__1 = 1;
     integer *osptr;
     extern /* Subroutine */ int placea_(integer *, integer *
 	    , integer *, integer *, integer *, integer *, integer *, integer *
-	    , integer *), dcbias_(integer *, real *, real *), placev_(integer 
-	    *, integer *, integer *, integer *, integer *, integer *, integer 
-	    *, integer *, integer *, integer *, integer *);
+	    , integer *), dcbias_(integer *, real *, real *), placev_(integer
+	    *, integer *, integer *, integer *, integer *, integer
+	    *, integer *, integer *, integer *);
     integer ipitch;
     integer *obound;
     extern /* Subroutine */ int preemp_(real *, real *, integer *, real *, 
@@ -518,8 +517,8 @@ n */
 
 /* 	MAXOSP = MAX( MAXOSP, OSPTR ) */
 
-    placev_(osbuf, osptr, &c__10, &obound[2], vwin, &c__3, &contrl_1.lframe, 
-	    &c__90, &c__156, &c__307, &c__462);
+    placev_(osbuf, osptr, &obound[2], vwin, &c__3, &contrl_1.lframe,
+	    &c__90, &c__156, &c__307);
 /*        The Pitch Extraction algorithm estimates the pitch for a frame 
 */
 /*   of speech by locating the minimum of the average magnitude difference
