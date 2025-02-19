@@ -24,8 +24,8 @@
 /* For S_IFDIR and S_IFMT in C89 you need to */
 /* #define _XOPEN_SOURCE 500 */
 
-#include "sox_ng.h"
 #include "soxconfig.h"
+#include "sox_ng.h"
 #include "util.h"
 #include "win32-unicode.h"
 
