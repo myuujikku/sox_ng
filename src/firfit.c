@@ -121,7 +121,6 @@ static sox_bool read_knots(sox_effect_t * effp)
   FILE * file = lsx_open_input_file(effp, p->filename, sox_true);
   sox_bool result = sox_false;
   char line[82]; /* Line + \n + \0 */
-  unsigned line_no = 0;
 
   if (!file) return sox_false;
 
@@ -130,7 +129,6 @@ static sox_bool read_knots(sox_effect_t * effp)
     double freq, gain;
 
     linep = line;
-    line_no++;
 
     /* Syntax:
      * comments: white-space # anything \n
