@@ -30,8 +30,6 @@
 #include <assert.h>
 #include <string.h>
 
-#define calloc     lsx_calloc
-#define malloc     lsx_malloc
 #define raw_coef_t double
 
 #if 0 /* For float32 version, as used in foobar */
@@ -56,7 +54,7 @@ static sample_t * prepare_coefs(raw_coef_t const * coefs, int num_coefs,
     int num_phases, int interp_order, int multiplier)
 {
   int i, j, length = num_coefs4 * num_phases;
-  sample_t * result = malloc(length * (interp_order + 1) * sizeof(*result));
+  sample_t * result = lsx_malloc(length * (interp_order + 1) * sizeof(*result));
   double fm1 = coefs[0], f1 = 0, f2 = 0;
 
   for (i = num_coefs4 - 1; i >= 0; --i)
@@ -235,7 +233,7 @@ static int dft_stage_init(
       return SOX_EINVAL;
     }
 
-    f->coefs = calloc(dft_length, sizeof(*f->coefs));
+    f->coefs = lsx_calloc(dft_length, sizeof(*f->coefs));
     for (i = 0; i < num_taps; ++i)
       f->coefs[(i + dft_length - num_taps + 1) & (dft_length - 1)]
         = h[i] / dft_length * 2 * L;
@@ -351,7 +349,7 @@ static int rate_init(
   if (!p->num_stages)
     return SOX_SUCCESS;
 
-  p->stages = calloc(p->num_stages + 1, sizeof(*p->stages));
+  p->stages = lsx_calloc(p->num_stages + 1, sizeof(*p->stages));
   for (i = 0; i < p->num_stages; ++i)
     p->stages[i].shared = shared;
 
@@ -503,7 +501,7 @@ static void rate_flush(rate_t * p)
   uint64_t samples_out = p->samples_in / p->factor + .5;
   size_t remaining = samples_out > p->samples_out ?
       (size_t)(samples_out - p->samples_out) : 0;
-  sample_t * buff = calloc(1024, sizeof(*buff));
+  sample_t * buff = lsx_calloc(1024, sizeof(*buff));
 
   if (remaining > 0) {
     while ((size_t)fifo_occupancy(fifo) < remaining) {
