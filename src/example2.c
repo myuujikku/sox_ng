@@ -22,10 +22,13 @@
 #endif
 
 #include "sox_ng.h"
-#include "util.h"
+#include <stdlib.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <math.h>
 #include <assert.h>
+
+#define max(a,b) ((a) > (b) ? (a) : (b))
 
 /*
  * Reads input file and displays a few seconds of wave-form, starting from
