@@ -22,9 +22,11 @@
 #endif
 
 #include "sox_ng.h"
-#include "util.h"
+#include "stdlib.h"
 #include <stdio.h>
 #include <assert.h>
+
+#define min(a,b) ((a) < (b) ? (a) : (b))
 
 /*
  * Example of a custom output message handler.

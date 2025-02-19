@@ -22,7 +22,7 @@
 #endif
 
 #include "sox_ng.h"
-#include "util.h"
+#include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
 
