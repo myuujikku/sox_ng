@@ -155,7 +155,7 @@ AC_ARG_ENABLE(stack-protector,
     [enable_ssp=auto])
 
 case "$enable_ssp" in # (( for editors' bracket-matching
-    yes|no|all|strong|auto) echo enable_ssp=$enable_ssp;;
+    yes|no|all|strong|auto) ;;
     *) AC_MSG_ERROR([invalid value $enable_ssp for --enable-stack-protector]) ;;
 esac
 
