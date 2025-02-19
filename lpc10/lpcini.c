@@ -194,7 +194,7 @@ struct {
    otherwise return pointer to new structure. */
 
 struct lpc10_encoder_state *
-create_lpc10_encoder_state()
+create_lpc10_encoder_state(void)
 {
     struct lpc10_encoder_state *st;
 
@@ -305,7 +305,7 @@ void init_lpc10_encoder_state(struct lpc10_encoder_state *st)
    otherwise return pointer to new structure. */
 
 struct lpc10_decoder_state *
-create_lpc10_decoder_state()
+create_lpc10_decoder_state(void)
 {
     struct lpc10_decoder_state *st;
 
