@@ -228,26 +228,22 @@ static unsigned read_cardinal(sox_format_t * ft)
   unsigned a;
   uint8_t byte;
 
-  if (lsx_readb(ft, &byte) == SOX_EOF)
-    read_error();
+  if (lsx_readb(ft, &byte)) return SOX_EOF;
   lsx_debug_more("Cardinal byte 1: %x", byte);
   a = byte;
   if (!(a & 1))
     a >>= 1;
   else {
-    if (lsx_readb(ft, &byte) == SOX_EOF)
-      read_error();
+    if (lsx_readb(ft, &byte)) return SOX_EOF;
     lsx_debug_more("Cardinal byte 2: %x", byte);
     a |= byte << 8;
     if (!(a & 2))
       a >>= 2;
     else if (!(a & 4)) {
-      if (lsx_readb(ft, &byte) == SOX_EOF)
-        read_error();
+      if (lsx_readb(ft, &byte)) return SOX_EOF;
       lsx_debug_more("Cardinal byte 3: %x", byte);
       a |= byte << 16;
-      if (lsx_readb(ft, &byte) == SOX_EOF)
-        read_error();
+      if (lsx_readb(ft, &byte)) return SOX_EOF;
       lsx_debug_more("Cardinal byte 4: %x", byte);
       a |= byte << 24;
       a >>= 3;
