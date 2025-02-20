@@ -264,7 +264,7 @@ static int startwrite(sox_format_t * ft)
     /* dummy numbers, just for place holder, real header is written
        at end of processing, since byte count is needed */
 
-    if (lsx_writebuf(ft, &WH, (size_t) 32))
+    if (lsx_writebuf(ft, &WH, (size_t) 32) != 32)
       write_error();
     sk->bytes_out = 32;
     return(SOX_SUCCESS);

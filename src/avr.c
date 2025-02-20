@@ -248,7 +248,7 @@ static int startwrite(sox_format_t * ft)
 
       /* ext */
       lsx_writebuf(ft, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
-                   sizeof(avr->ext)) ||
+                   sizeof(avr->ext)) != sizeof(avr->ext) ||
 
       /* user */
       lsx_writebuf(ft,
