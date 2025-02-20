@@ -20,6 +20,8 @@
 # - id            Unique number in all issues on forgejo
 # - username      Who created the issue
 # - created_at    When it was created
+# - updated_at    When it was last updated on the server
+#                 The format of *_at is "2025-02-11T00:41:06Z"
 #
 # It requires all issues to have different titles because
 # that's what it indexes them by, and new issues won't have a number yet.
@@ -27,17 +29,18 @@
 # could be possible by sorting them by number and doing new issues last.
 #
 # putissues is chatty and its output to stdout is one line for each change.
-# Errors go to stderr, so if you need it to be silent, >/dev/null
+# Errors go to stderr, so if you need it to be silent except for errors >/dev/null
 #
 # It can be run from the top directory or in the issues/ directory,
-# which both makes it work when run as issues/getissues.sh and
-# if you're working in issues/ you can create issues/issues and it will
+# which make it work both when run as issues/getissues.sh and
+# if you're working in issues/ with a directory issues/issues; it will
 # download them therein to avoid cluttering the working directory and
-# as an easy way of keeping a copy of what it outputs as you develop
-# by mving issues/ to some other name.
+# as an easy way of keeping a copy the proper output if you're working on it
+# by moving issues/ to some other name.
+# The -o option tells it to use a different directory.
 #
 # The site, owner and repo default to the remote origin of the git
-# directory you're in, can be specified as codeberg.org/sox_ng/issues
+# directory you're in, can be specified as codeberg.org/sox_ng/sox_ng
 # or the individual components can be overridden by the -s -o and -r flags.
 #
 # This is really two programs that share many subroutines:
@@ -65,11 +68,13 @@
 # Documentation for the codeberg issues API is at
 # https://codeberg.org/api/swagger#/issue
 #
-#	Martin Guy <martinwguy@gmail.com>, July-November 2024
+#       Martin Guy <martinwguy@gmail.com>, July-November 2024
 
 # TODO:
 # - If a URL transfer failed due to bad network connectivity, retry it.
-# - When creating new issues from local, fill in creation date and username
+# - When creating new issues from local, fill in creation date and username.
+#   You can't set or change the remote creation date, but it your clocks are
+#   synchronized it will be the same within a second or two.
 
 # For function-local variables, bash, dash and ksh have "local";
 # ksh has "typeset"
@@ -78,7 +83,7 @@ test -n "$KSH_VERSION" && alias local=typeset
 # dash's built-in "echo" always interprets backslash sequences
 # so replace it with the more portable "printf".
 # For issue bodies or json, don't call printf which may be an external command
-# because that limits the size of the argument to 128K or whatver.
+# because that limits the size of the argument to 128K or whatever.
 # If you know you don't want a trailing newline, use echo_n
 
 echo() {
@@ -115,6 +120,7 @@ usage() {
     echo '         (valid only with putissues)'
     echo '-O       Only fetch open issues (valid only with getissues)'
     echo '-U       Show the URLs that curl is putting to (for debugging)'
+    echo '-J       Dump the remote issue list to issues.json (for debugging)'
   } 1>&2
 }
 
@@ -189,6 +195,7 @@ transfer=	# wget or curl
 issuesdir=issues
 username=
 password=
+dumpissues=false
 
 while [ $# -gt 0 ]
 do
@@ -198,6 +205,7 @@ do
     -D) allow_delete=true; shift ;;
     -O) open_only=true; shift;;
     -U) debug_URLs=true; shift ;;
+    -J) dumpissues=true; shift ;;
     -c) transfer=curl; shift ;;
     -w) transfer=wget; shift ;;
 
@@ -447,7 +455,7 @@ geturl() {
     case $transfer in
     curl) command="curl --fail --silent --compressed -S -L --location-trusted \
 			-H Accept:application/json -X $method" ;;
-    wget) command="wget -nv -O - --compression=gzip \
+    wget) command="wget -q -O - --compression=gzip \
 			--header Accept:application/json" ;;
     esac
 
@@ -722,6 +730,11 @@ fetchissues() {
     # Forgejo includes pull requests in the issues. Ignore them.
     rissues_json="$(echo "$rissues_json" | \
 		    $jq 'del(.[] | select(.pull_request != null))')"
+
+    if $dumpissues
+    then
+	echo "$rissues_json" | eval "$(echo "$jq" | sed 's/ -c//')" > issues.json
+    fi
 }
 
 # Write remote issues into the local directory
@@ -746,7 +759,7 @@ getissues() {
     local url
 
     # Remove any previously produced output
-    for a in *.md
+    for a in *.md .*.md
     do
 	# Guard against issues whose title ends in .md
 	test -d "$a" && continue
@@ -779,7 +792,7 @@ getissues() {
 	# Check for duplicate titles
 	if [ -f "$ftitle".md ]
 	then
-	    echo "Ignoring another issue with the same title: $ftitle"
+	    echo "Ignoring issue $number with the same title as $(cat "$ftitle"/number): '$ftitle'"
 	    continue
 	fi
 	# Some issue bodies have all \n and others have all \r\n. Go figure.
@@ -803,6 +816,7 @@ getissues() {
 	    id="$(echo "$issue" | $jq -r .id)"; echo "$id" > id
 	    echo "$issue" | $jq -r .state > state
 	    echo "$issue" | $jq -r .created_at > created_at
+	    echo "$issue" | $jq -r .updated_at > updated_at
 	    echo "$issue" | $jq -r .user.username > username
 
 	    # Items that may be present
@@ -928,7 +942,7 @@ putissues() {
 	    if echo "$ftitle" | grep -q '/:\\"'
 	    then echo "Warning: On Windows, characters /\\:\" are invalid in ${ftitle}.md" 1>&2
 	    fi
-	    echo "$title" > "$ftitle"/title
+	    $dryrun || echo "$title" > "$ftitle"/title
 	fi
 	if [ -f "$ftitle"/number ]
 	then number="$(cat "$ftitle"/number)"
@@ -941,7 +955,7 @@ putissues() {
 	if [ -f "$ftitle/state" ]
 	then state="$(cat "$ftitle"/state)"
 	else state=open
-	     echo open > "$ftitle"/state
+	     $dryrun || echo open > "$ftitle"/state
 	fi
 	if [ -f "$ftitle/milestone" ]
 	then milestone="$(cat "$ftitle"/milestone)"
@@ -1098,6 +1112,7 @@ putissues() {
 		echo "$id" > "$ftitle"/id
 	    echo "$result" | $jq -r .user.login > "$ftitle"/username
 	    echo "$result" | $jq -r .created_at > "$ftitle"/created_at
+	    echo "$result" | $jq -r .updated_at > "$ftitle"/updated_at
 
 	    # You have to create the issue and then add attachments to it
 	    if [ -d "$ftitle"/assets ]
@@ -1113,6 +1128,8 @@ putissues() {
 			      "#$number '$title': Failed to attach '$name'")"
 		done
 	    fi
+
+	    echo "https://$site/$owner/$repo/issues/$number"
 
 	    continue
 	fi
@@ -1131,6 +1148,8 @@ putissues() {
 	then
 	    # The local issue has a number
 	    # but the issue doesn't exist on the remote server.
+	    # This probably means we are updating an old copy
+	    # of the repository that we pulled from.
 	    # We can't create a new issue with a specified number
 	    # so remember it and create them all afterwards.
 	    new_issue_nums="$new_issue_nums $number"
@@ -1147,9 +1166,21 @@ putissues() {
 	    continue
 	fi
 
-	body="$(tr -d '\r' < "$ftitle".md)"
+	# Make sure older local copies don't overwrite issues that have been
+	# updated on the server.
+
+	if [ -f "$ftitle"/updated_at ] && \
+	   [ "$(cat "$ftitle"/updated_at)" != \
+	     "$(echo "$rissue_json" | $jq -r ".updated_at")" ]
+	then
+	    echo "Remote issue '$ftitle' has been updated since we got it" 1>&2
+	    echo "Here: '$(cat "$ftitle"/updated_at)' There: '$(echo "$rissue_json" | $jq -r ".updated_at")'" 1>&2
+	    continue
+	fi
 
 	# Update the remote issue from the local one.
+
+	body="$(tr -d '\r' < "$ftitle".md)"
 
 	data="{"	#}
 	rtitle="$(echo "$rissue_json" | $jq -r .title)"
