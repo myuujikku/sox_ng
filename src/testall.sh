@@ -52,9 +52,18 @@ t() {
 	opts="$*"
 
 	echo "Format: $format   Options: $opts"
-	LD_LIBRARY_PATH=${libdir} ${bindir}/sox_ng${EXEEXT} ${srcdir}/monkey.wav $opts /tmp/monkey.$format $effect
-	LD_LIBRARY_PATH=${libdir} ${bindir}/sox_ng${EXEEXT} $opts /tmp/monkey.$format /tmp/monkey1.wav  $effect
+	LD_LIBRARY_PATH=${libdir} ${bindir}/sox_ng${EXEEXT} ${srcdir}/monkey.wav $opts /tmp/monkey.$format $effect || {
+		status=$?
+		echo Test to $format $opts $effect failed. 1>&2
+	}
+	LD_LIBRARY_PATH=${libdir} ${bindir}/sox_ng${EXEEXT} $opts /tmp/monkey.$format /tmp/monkey1.wav  $effect || {
+		status=$?
+		echo Test from $format $opts $effect failed. 1>&2
+	}
 }
+
+status=0
+
 t 8svx
 t aiff
 t aifc
