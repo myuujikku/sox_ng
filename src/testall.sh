@@ -69,21 +69,23 @@ t aiff
 t aifc
 t au 
 t avr -e unsigned-integer
-t cdr
+t cdr -r 44100 -c 2
 t cvs
 t dat
 t hcom -r 22050
 t maud
-t prc
-t prc -e signed-integer
+t prc -r 8000		# a-law by default
+t prc -r 8000 -e ima-adpcm
 t sf 
 t smp
 t sndt 
-t txw
-t ub -r 8130
+t txw -r 50000
+t ub -r 8130 -c 1
 t vms
 t voc
 t vox -r 8130
 t wav
-t wve
+t wve -r 8000
 t wav -e gsm-full-rate
+
+exit $status
