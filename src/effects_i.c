@@ -96,7 +96,13 @@ void lsx_generate_wave_table(
         }
       default: break;
     }
+
+    /* Converting a floating point type to an signed integral type truncates
+     * towards zero, which would compress the two halves of the wave
+     * towards zero creating distortion, so compensate.
+     */
     d += d < 0? -0.5 : +0.5;
+
     switch (data_type)
     {
       case SOX_SHORT:
@@ -105,11 +111,19 @@ void lsx_generate_wave_table(
           *sp++ = (short)d;
           table = sp;
           continue;
+
         }
       case SOX_INT:
         {
           int *ip = table;
           *ip++ = (int)d;
+          table = ip;
+          continue;
+        }
+      case SOX_SAMPLE:
+        {
+          int *ip = table;
+          *ip++ = (sox_sample_t)d;
           table = ip;
           continue;
         }

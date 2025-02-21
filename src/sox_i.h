@@ -40,7 +40,7 @@
 #define RANQD1 ranqd1(sox_globals.ranqd1)
 #define DRANQD1 dranqd1(sox_globals.ranqd1)
 
-typedef enum {SOX_SHORT, SOX_INT, SOX_FLOAT, SOX_DOUBLE} sox_data_t;
+typedef enum {SOX_SHORT, SOX_INT, SOX_FLOAT, SOX_DOUBLE, SOX_SAMPLE} sox_data_t;
 typedef enum {SOX_WAVE_SINE, SOX_WAVE_TRIANGLE} lsx_wave_t;
 lsx_enum_item const * lsx_get_wave_enum(void);
 

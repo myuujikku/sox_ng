@@ -494,6 +494,9 @@ typedef sox_uint32_t sox_uint24_t;
 Client API:
 Native SoX audio sample type (alias for sox_int32_t).
 */
+/* If this ever changes to a floating point type,
+ * move case SOX_SAMPLE in lsx_generate_wave_table()
+ */
 typedef sox_int32_t sox_sample_t;
 
 /**
