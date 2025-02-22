@@ -263,8 +263,8 @@ char * lsx_usage_lines(char * * usage, char const * const * lines, size_t n);
   d = strtod(*argv, &end_ptr); \
   if (end_ptr != *argv) { \
     if (d < min || d > max || *end_ptr != '\0') {\
-      lsx_fail("parameter `%s' must be between %g and %g", #name, (double)min, (double)max); \
-      return lsx_usage(effp); \
+      lsx_fail("parameter `%s' must be from %g to %g", #name, (double)min, (double)max); \
+      return SOX_EOF; \
     } \
     p->name = d; \
     --argc, ++argv; \
@@ -285,8 +285,8 @@ char * lsx_usage_lines(char * * usage, char const * const * lines, size_t n);
   char * end_ptr; \
   double d = strtod(state.arg, &end_ptr); \
   if (end_ptr == state.arg || d < min || d > max || *end_ptr != '\0') {\
-    lsx_fail("parameter `%s' must be between %g and %g", #name, (double)min, (double)max); \
-    return lsx_usage(effp); \
+    lsx_fail("parameter `%s' must be from %g to %g", #name, (double)min, (double)max); \
+    return SOX_EOF; \
   } \
   name = d; \
   break; \

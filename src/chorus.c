@@ -53,7 +53,7 @@
  *   can saturate!
  *
  * Hint:
- *   1 / out-gain < gain-in ( 1 + decay-1 + ... + decay-n )
+ *   1 / gain-out < gain-in ( 1 + decay-1 + ... + decay-n )
  *
 */
 
@@ -76,7 +76,7 @@ typedef struct {
         int     counter;
         long    phase[MAX_CHORUS];
         float   *chorusbuf;
-        float   in_gain, out_gain;
+        float   gain_in, gain_out;
         float   delay[MAX_CHORUS], decay[MAX_CHORUS];
         float   speed[MAX_CHORUS], depth[MAX_CHORUS];
         long    length[MAX_CHORUS];
@@ -101,8 +101,8 @@ static int sox_chorus_getopts(sox_effect_t * effp, int argc, char **argv)
         if ( ( argc < 7 ) || (( argc - 2 ) % 5 ) )
           return lsx_usage(effp);
 
-        sscanf(argv[i++], "%f", &chorus->in_gain);
-        sscanf(argv[i++], "%f", &chorus->out_gain);
+        sscanf(argv[i++], "%f", &chorus->gain_in);
+        sscanf(argv[i++], "%f", &chorus->gain_out);
         while ( i < argc ) {
                 if ( chorus->num_chorus > MAX_CHORUS )
                 {
@@ -136,17 +136,17 @@ static int sox_chorus_start(sox_effect_t * effp)
 
         chorus->maxsamples = 0;
 
-        if ( chorus->in_gain < 0.0 )
+        if ( chorus->gain_in < 0.0 )
         {
                 lsx_fail("chorus: gain-in must be positive!");
                 return (SOX_EOF);
         }
-        if ( chorus->in_gain > 1.0 )
+        if ( chorus->gain_in > 1.0 )
         {
                 lsx_fail("chorus: gain-in must be less than 1.0!");
                 return (SOX_EOF);
         }
-        if ( chorus->out_gain < 0.0 )
+        if ( chorus->gain_out < 0.0 )
         {
                 lsx_fail("chorus: gain-out must be positive!");
                 return (SOX_EOF);
@@ -218,7 +218,7 @@ static int sox_chorus_start(sox_effect_t * effp)
         sum_in_volume = 1.0;
         for ( i = 0; i < chorus->num_chorus; i++ )
                 sum_in_volume += chorus->decay[i];
-        if ( chorus->in_gain * ( sum_in_volume ) > 1.0 / chorus->out_gain )
+        if ( chorus->gain_in * ( sum_in_volume ) > 1.0 / chorus->gain_out )
         lsx_warn("chorus: warning >>> gain-out can cause saturation or clipping of output <<<");
 
 
@@ -252,13 +252,13 @@ static int sox_chorus_flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sa
                 /* Store delays as 24-bit signed longs */
                 d_in = (float) *ibuf++ / 256;
                 /* Compute output first */
-                d_out = d_in * chorus->in_gain;
+                d_out = d_in * chorus->gain_in;
                 for ( i = 0; i < chorus->num_chorus; i++ )
                         d_out += chorus->chorusbuf[(chorus->maxsamples +
                         chorus->counter - chorus->lookup_tab[i][chorus->phase[i]]) %
                         chorus->maxsamples] * chorus->decay[i];
                 /* Adjust the output volume and size to 24 bit */
-                d_out = d_out * chorus->out_gain;
+                d_out = d_out * chorus->gain_out;
                 out = SOX_24BIT_CLIP_COUNT((sox_sample_t) d_out, effp->clips);
                 *obuf++ = out * 256;
                 /* Mix decay of delay and input */
@@ -295,7 +295,7 @@ static int sox_chorus_drain(sox_effect_t * effp, sox_sample_t *obuf, size_t *osa
                 chorus->counter - chorus->lookup_tab[i][chorus->phase[i]]) %
                 chorus->maxsamples] * chorus->decay[i];
                 /* Adjust the output volume and size to 24 bit */
-                d_out = d_out * chorus->out_gain;
+                d_out = d_out * chorus->gain_out;
                 out = SOX_24BIT_CLIP_COUNT((sox_sample_t) d_out, effp->clips);
                 *obuf++ = out * 256;
                 /* Mix decay of delay and input */
