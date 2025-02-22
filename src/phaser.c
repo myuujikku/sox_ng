@@ -114,7 +114,7 @@ sox_effect_handler_t const * lsx_phaser_effect_fn(void)
 {
   static const char usage[] = "gain-in gain-out delay decay speed -s|-t";
   static char const * const extra_usage[] = {
-"              ___",
+"               ___",
 "In ---------->|   |------------> Out",
 "    * gain-in | + | * gain-out",
 "         +--->|___|",
