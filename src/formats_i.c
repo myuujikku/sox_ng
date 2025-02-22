@@ -129,6 +129,45 @@ size_t lsx_readbuf(sox_format_t * ft, void *buf, size_t len)
   return ret;
 }
 
+/* Stuff a buffer of characters back up the input stream,
+ * a similar idea to stdio's ungetc().
+ * read(a) read(b) unread(b) unread(a) should be a no-op
+ * and a following read should return a then b,
+ * so if there is already pending input, add the new characters
+ * before the existing ones.
+ *
+ * Always succeeds.
+ */
+void lsx_unreadbuf(sox_format_t * ft, void *buf, size_t len)
+{
+  /* If there is no pending buffer, allocate it afresh */
+  if (ft->pending_count == 0) {
+    ft->pending_buffer = lsx_malloc(len);
+    memcpy(ft->pending_buffer, buf, len);
+    ft->pending_bytes = ft->pending_buffer;
+    ft->pending_count = len;
+  } else {
+    /* If there are already some bytes waiting to be returned,
+     * add the new stuff before the existing ones.
+     */
+    /* Is there already room for them? */
+    if ((size_t)(ft->pending_bytes - ft->pending_buffer) <= len) {
+      memcpy(ft->pending_bytes -= len, buf, len);
+      ft->pending_count += len;
+    } else {
+      /* No? Dump the old buffer and make a new one
+       * with the new bytes at the start and the old ones after them.
+       */
+      sox_uint8_t *new_buffer = lsx_malloc(ft->pending_count + len);
+      memcpy(new_buffer, buf, len);
+      memcpy(new_buffer + len, ft->pending_bytes, ft->pending_count);
+      free(ft->pending_buffer);
+      ft->pending_buffer = new_buffer;
+      ft->pending_bytes += len;
+    }
+  }
+}
+
 /* Read in a buffer of data of length len bytes and rewind the stream.
  * Returns number of bytes read. Unlike lsx_readbuf, it always tries to
  * read the number of bytes that were requested.
@@ -254,7 +293,9 @@ void lsx_clearerr(sox_format_t * ft)
 
 int lsx_unreadb(sox_format_t * ft, unsigned b)
 {
-  return ungetc((int)b, ft->fp);
+  unsigned char buf = b;
+  lsx_unreadbuf(ft, &buf, 1);
+  return b;
 }
 
 /* Implements traditional fseek() behavior.  Meant to abstract out
@@ -429,18 +470,13 @@ static uint8_t const cswap[256] = {
   size_t lsx_read_ ## type ## _buf( \
       sox_format_t * ft, ctype *buf, size_t len) \
   { \
-    int n, bytesread, nread, spill; \
+    int n, bytesread, nread; \
     sox_uint8_t *rawbuf = (sox_uint8_t*)buf; \
-    for (n = 0; n < ft->spill_size; n++) \
-      rawbuf[n] = ft->spill[n]; \
-    bytesread = lsx_readbuf(ft, rawbuf + ft->spill_size, len * size - ft->spill_size) + ft->spill_size; \
+    bytesread = lsx_readbuf(ft, rawbuf, len * size); \
     nread = bytesread / size; \
     for (n = 0; n < nread; n++) \
       twiddle(buf[n], type); \
-    spill = bytesread - nread * size; \
-    for (n = 0; n < spill; n++) \
-      ft->spill[n] = rawbuf[nread * size + n]; \
-    ft->spill_size = spill; \
+    lsx_unreadbuf(ft, rawbuf + nread * size, bytesread - nread * size); \
     return nread; \
   }
 
@@ -455,18 +491,13 @@ static uint8_t const cswap[256] = {
   size_t lsx_read_ ## type ## _buf( \
       sox_format_t * ft, ctype *buf, size_t len) \
   { \
-    int n, bytesread, nread, spill; \
+    int n, bytesread, nread; \
     uint8_t *data = lsx_malloc(size * len); \
-    for (n = 0; n < ft->spill_size; n++) \
-      data[n] = ft->spill[n]; \
-    bytesread = lsx_readbuf(ft, data + ft->spill_size, len * size - ft->spill_size) + ft->spill_size; \
+    bytesread = lsx_readbuf(ft, data, len * size); \
     nread = bytesread / size; \
     for (n = 0; n < nread; n++) \
       buf[n] = sox_unpack ## size(data + n * size); \
-    spill = bytesread - nread * size; \
-    for (n = 0; n < spill; n++) \
-      ft->spill[n] = data[nread * size + n]; \
-    ft->spill_size = spill; \
+    lsx_unreadbuf(ft, data + nread * size, bytesread - nread * size); \
     free(data); \
     return nread; \
   }
