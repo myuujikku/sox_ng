@@ -60,7 +60,7 @@ static int sox_echo_getopts(sox_effect_t * effp, int argc, char **argv)
 			return (SOX_EOF);
 		}
                 if (delay < 0 || !isfinite(delay)) {
-			lsx_fail("delays cannot be negative or infinite");
+			lsx_fail("delays must be positive");
 			return (SOX_EOF);
 		}
 		i++;

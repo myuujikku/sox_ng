@@ -37,10 +37,10 @@ static int getopts(sox_effect_t * effp, int argc, char * * argv)
   --argc, ++argv;
   do { /* break-able block */
     NUMERIC_PARAMETER(gain_in  , -1, 1)
-    NUMERIC_PARAMETER(gain_out , .0, INFINITY)
-    NUMERIC_PARAMETER(delay    , .0, INFINITY)
-    NUMERIC_PARAMETER(decay    , .0, .99)
-    NUMERIC_PARAMETER(speed    , .0, INFINITY)
+    NUMERIC_PARAMETER(gain_out , -1, 1)
+    NUMERIC_PARAMETER(delay    ,  0, 1000)
+    NUMERIC_PARAMETER(decay    ,  0, 1)
+    NUMERIC_PARAMETER(speed    ,  0, 192000)
   } while (0);
 
   if (argc && sscanf(*argv, "-%1[st]%c", chars, chars + 1) == 1) {
@@ -48,18 +48,6 @@ static int getopts(sox_effect_t * effp, int argc, char * * argv)
     --argc, ++argv;
   }
 
-  if (!isfinite(p->gain_out)) {
-    lsx_warn("warning: gain-out cannot be infinite");
-    return SOX_EOF;
-  }
-  if (!isfinite(p->delay)) {
-    lsx_warn("warning: delays cannot be infinite");
-    return SOX_EOF;
-  }
-  if (!isfinite(p->speed) || p->speed <= 0.0) {
-    lsx_warn("warning: modulation speeds cannot be infinite or zero");
-    return SOX_EOF;
-  }
   if (p->gain_in > (1 - p->decay * p->decay))
     lsx_warn("warning: gain-in might cause clipping");
   if (p->gain_in / (1 - p->decay) > 1 / p->gain_out)
@@ -72,14 +60,18 @@ static int start(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *) effp->priv;
 
-  p->delay_buf_len = p->delay * .001 * effp->in_signal.rate + .5;
-  if (p->delay_buf_len <= 0) {
-    lsx_fail("The delay must be at least one sample");
+  p->delay_buf_len = p->delay * .001 * effp->in_signal.rate;
+  if (p->delay_buf_len < 1) {
+    lsx_fail("delay can't be less than %g", 1000 / effp->in_signal.rate);
     return SOX_EOF;
   }
   p->delay_buf = lsx_calloc(p->delay_buf_len, sizeof(*p->delay_buf));
 
-  p->mod_buf_len = effp->in_signal.rate / p->speed + .5;
+  p->mod_buf_len = effp->in_signal.rate / p->speed;
+  if (p->mod_buf_len < 1) {
+    lsx_fail("speed can't be more than %g", effp->in_signal.rate);
+    return SOX_EOF;
+  }
   p->mod_buf = lsx_malloc(p->mod_buf_len * sizeof(*p->mod_buf));
   lsx_generate_wave_table(p->mod_type, SOX_INT, p->mod_buf, p->mod_buf_len,
       1., (double)p->delay_buf_len, M_PI_2);
@@ -134,10 +126,10 @@ sox_effect_handler_t const * lsx_phaser_effect_fn(void)
 "",
 "         RANGE  DEFAULT  DESCRIPTION",
 "gain-in  -1-1     0.4    Proportion of input delivered to output and delay",
-"gain-out  0-      0.74   Final output volume adjustment",
-"delay     0-      3.0    Delay in milliseconds",
-"decay     0-0.99  0.4    Proportion of delay that is fed back",
-"speed     0-      0.5    Modulation speed in Hz",
+"gain-out -1-1     0.74   Final output volume adjustment",
+"delay     0-1000   3     Delay in milliseconds",
+"decay    -1-1     0.4    Proportion of delay that is fed back",
+"speed     0-192k  0.5    Modulation speed (no more than the sample rate)",
 "-s                       Sinusoidal modulation",
 "-t                       Triangular modulation",
 "",

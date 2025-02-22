@@ -139,23 +139,12 @@ static int sox_chorus_getopts (sox_effect_t *effp,
 	    lsx_revalloc(chorus->stage, chorus->stage_count + 1);
 	    p = &chorus->stage[chorus->stage_count];
 
-            NUMERIC_PARAMETER(delay,  0.0, INFINITY);
-            NUMERIC_PARAMETER(decay, -1.0, 1.0);
-            NUMERIC_PARAMETER(speed,  0.0, INFINITY);
-            NUMERIC_PARAMETER(depth,  0.0, INFINITY);
+            NUMERIC_PARAMETER(delay,  0, 1000);
+            NUMERIC_PARAMETER(decay, -1, 1);
+            NUMERIC_PARAMETER(speed,  0, 192000);
+            NUMERIC_PARAMETER(depth,  0, 1000);
             TEXTUAL_PARAMETER(wave_type, modulation_kind_map);
-	    if (p->delay < 0 || !isfinite(p->delay)) {
-	      lsx_fail("delays cannot be negative or infinite");
-	      return SOX_EOF;
-	    }
-	    if (p->speed <= 0 || !isfinite(p->speed)) {
-	      lsx_fail("speeds cannot be zero, negative or infinite");
-	      return SOX_EOF;
-	    }
-	    if (p->depth < 0 || !isfinite(p->depth)) {
-	      lsx_fail("depths cannot be negative or infinite");
-	      return SOX_EOF;
-	    }
+
             /* normalize time parameters to seconds */
             p->delay /= 1000.0;
             p->depth /= 1000.0;
@@ -196,8 +185,6 @@ static int sox_chorus_start (sox_effect_t *effp)
         chorus_priv_t *chorus = (chorus_priv_t *) effp->priv;
         sox_uint64_t i;
 
-        chorus->remaining_samples = 0;
-
         for (i = 0;  i < chorus->stage_count;  i++) {
                 chorus_stage_t *stage = &chorus->stage[i];
 
@@ -205,11 +192,11 @@ static int sox_chorus_start (sox_effect_t *effp)
                     stage->depth * effp->in_signal.rate;
 
                 /* delay line */
-                stage->delay_line_index = 0;
                 stage->delay_line_length =
                     ceil((stage->delay + stage->depth) * effp->in_signal.rate);
 		if (stage->delay_line_length < 1) {
-		    lsx_fail("delay line length plus depth must be at least one sample");
+		    lsx_fail("delay can't be less than %g milliseconds",
+			     1000 / effp->in_signal.rate);
 		    return SOX_EOF;
 		}
                 stage->delay_line =
@@ -217,8 +204,11 @@ static int sox_chorus_start (sox_effect_t *effp)
                                sizeof(chorus_delay_sample_t));
 
                 /* modulation wave table */
-                stage->wave_index = 0;
                 stage->wave_length = effp->in_signal.rate / stage->speed;
+		if (stage->wave_length < 1) {
+		    lsx_fail("speed can't be more than the sample rate");
+		    return SOX_EOF;
+		}
                 stage->wave_table =
                     lsx_malloc(stage->wave_length * sizeof(int));
                 lsx_generate_wave_table(stage->wave_type, SOX_INT,
@@ -415,12 +405,12 @@ const sox_effect_handler_t *lsx_chorus_effect_fn(void)
 "       +---------------+",
 "",
 "         RANGE TYPICAL DESCRIPTION",
-"gain-in  -1-1          Proportion of input delivered clean to the adder",
-"gain-out -1-1          Final volume adjustment",
-"delay     0-    40-60  Fixed delay in milliseconds",
-"decay    -1-1          Proportion of delay's output delivered to the adder",
-"speed     0-    0.25   Modulation frequency in Hz",
-"depth     0-      2    Additional variable delay in milliseconds",
+"gain-in  -1-1    0.5   Proportion of input delivered clean to the adder",
+"gain-out -1-1     1    Final volume adjustment",
+"delay   0-1000  40-60  Fixed delay in milliseconds",
+"decay    -1-1    0.5   Proportion of delay's output delivered to the adder",
+"speed   0-192k   0.25  Modulation frequency (no more than the sample rate)",
+"depth   0-1000    2    Additional variable delay in milliseconds",
 "-s                     Modulate sinusoidally",
 "-t                     Modulate triangularly",
 "Hint: gain-out <= 1 / ( gain-in + decay 1 + ... + decay n )",

@@ -59,7 +59,7 @@ static int sox_echos_getopts(sox_effect_t * effp, int argc, char **argv)
                         return (SOX_EOF);
                 }
                 if (delay < 0 || !isfinite(delay)) {
-                        lsx_fail("delays cannot be negative or infinite");
+                        lsx_fail("delays must be positive");
                         return (SOX_EOF);
                 }
 		i++;
@@ -95,9 +95,9 @@ static int sox_echos_start(sox_effect_t * effp)
         echos->sumsamples = 0;
         for ( i = 0; i < echos->num_delays; i++ ) {
                 echos->samples[i] = echos->delay[i] * effp->in_signal.rate / 1000.0;
-                if ( echos->samples[i] < 1 )
-                {
-                    lsx_fail("delay is less than one sample");
+                if ( echos->samples[i] < 1 ) {
+                    lsx_fail("delays can't be less than %g milliseconds",
+		             1000 / effp->in_signal.rate);
                     return (SOX_EOF);
                 }
 		echos->delay_buf[i] = lsx_calloc(echos->samples[i],
