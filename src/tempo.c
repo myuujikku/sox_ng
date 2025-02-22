@@ -175,7 +175,7 @@ static void tempo_setup(tempo_t * t,
   t->overlap &= ~7; /* Make divisible by 8 for loop optimisation */
   if (t->overlap * 2 > t->segment)
     t->overlap -= 8;
-  t->overlap_buf = lsx_malloc(t->overlap * t->channels * sizeof(*t->overlap_buf));
+  lsx_valloc(t->overlap_buf, t->overlap * t->channels);
   max_skip = ceil(factor * (t->segment - t->overlap));
   t->process_size = max(max_skip + t->overlap, t->segment) + t->search;
   memset(fifo_reserve(&t->input_fifo, t->search / 2), 0, (t->search / 2) * t->channels * sizeof(float));
@@ -340,9 +340,10 @@ sox_effect_handler_t const * lsx_tempo_effect_fn(void)
 static int pitch_getopts(sox_effect_t * effp, int argc, char **argv)
 {
   double d;
-  char dummy, arg[100], **argv2 = lsx_malloc(argc * sizeof(*argv2));
+  char dummy, arg[100], **argv2;
   int result, pos = (argc > 1 && !strcmp(argv[1], "-q"))? 2 : 1;
 
+  lsx_valloc(argv2, argc);
   if (argc <= pos || sscanf(argv[pos], "%lf %c", &d, &dummy) != 1)
     return lsx_usage(effp);
 

@@ -266,7 +266,7 @@ static int setup(sox_format_t *ft, int is_input)
   ac->bufrd = 0;
   ac->bufwr = 0;
   ac->bufrdavail = 0;
-  ac->buf = lsx_malloc(ac->bufsize * sizeof(float));
+  lsx_valloc(ac->buf, ac->bufsize);
 
   buf_size = sox_globals.bufsiz / sizeof(sox_sample_t) * sizeof(float);
   property_size = sizeof(buf_size);

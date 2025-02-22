@@ -190,7 +190,7 @@ static int start(sox_effect_t* effp)
     p->buffer_opos = p->buffer_end;
     effp->out_signal.precision = 16;
 
-    p->buffer = lsx_malloc(p->buffer_end * sizeof(p->buffer[0]));
+    lsx_valloc(p->buffer, p->buffer_end);
 
     p->sps = speex_preprocess_state_init((int)p->buffer_end, (int)(effp->in_signal.rate + .5));
     if (!p->sps)

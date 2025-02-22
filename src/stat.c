@@ -107,8 +107,8 @@ static int sox_stat_start(sox_effect_t * effp)
 
   if (stat->fft) {
     stat->fft_offset = 0;
-    stat->re_in = lsx_malloc(sizeof(float) * stat->fft_size);
-    stat->re_out = lsx_malloc(sizeof(float) * (stat->fft_size / 2 + 1));
+    lsx_valloc(stat->re_in, stat->fft_size);
+    lsx_valloc(stat->re_out, stat->fft_size / 2 + 1);
   }
 
   return SOX_SUCCESS;
@@ -145,7 +145,7 @@ static int sox_stat_flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_samp
   if (stat->fft_average) {
       samples = (stat->fft_size / 2);
       ffa = effp->in_signal.rate / samples;
-      re_average = lsx_malloc(sizeof(float) * (int)samples);
+      lsx_valloc(re_average, samples);
   }
 
   if (len) {

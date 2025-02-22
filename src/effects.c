@@ -53,6 +53,7 @@ static int default_getopts(sox_effect_t * effp, int argc, char **argv UNUSED)
 sox_effect_t * sox_create_effect(sox_effect_handler_t const * eh)
 {
   sox_effect_t * effp = lsx_calloc(1, sizeof(*effp));
+
   effp->obuf = NULL;
 
   effp->global_info = sox_get_effects_globals();
@@ -73,7 +74,9 @@ int sox_effect_options(sox_effect_t *effp, int argc, char * const argv[])
 {
   int result;
 
-  char * * argv2 = lsx_malloc((argc + 1) * sizeof(*argv2));
+  char * * argv2;
+
+  lsx_valloc(argv2, argc + 1);
   argv2[0] = (char *)effp->handler.name;
   memcpy(argv2 + 1, argv, argc * sizeof(*argv2));
   result = effp->handler.getopts(effp, argc + 1, argv2);
@@ -405,8 +408,7 @@ int sox_flow_effects(sox_effects_chain_t * chain, int (* callback)(sox_bool all_
 
   for (e = 0; e < chain->length; ++e) {
     sox_effect_t *effp = chain->effects[e];
-    effp->obuf =
-        lsx_realloc(effp->obuf, sox_globals.bufsiz * sizeof(*effp->obuf));
+    lsx_revalloc(effp->obuf, sox_globals.bufsiz);
       /* Memory will be freed by sox_delete_effect() later. */
       /* Possibly there was already a buffer, if this is a used effect;
          it may still contain samples in that case. */
@@ -418,7 +420,7 @@ int sox_flow_effects(sox_effects_chain_t * chain, int (* callback)(sox_bool all_
     max_flows = max(max_flows, effp->flows);
   }
   if (max_flows > 1) /* might need interleave buffer */
-    chain->il_buf = lsx_malloc(sox_globals.bufsiz * sizeof(sox_sample_t));
+    lsx_valloc(chain->il_buf, sox_globals.bufsiz);
   else
     chain->il_buf = NULL;
 

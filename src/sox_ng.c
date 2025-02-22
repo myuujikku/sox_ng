@@ -528,15 +528,15 @@ static int combiner_start(sox_effect_t *effp)
     progress_to_next_input_file(files[current_input], effp);
   else {
     ws = 0;
-    z->ibuf = lsx_malloc(input_count * sizeof(*z->ibuf));
+    lsx_valloc(z->ibuf, input_count);
     for (i = 0; i < input_count; i++) {
-      z->ibuf[i] = lsx_malloc(sox_globals.bufsiz * sizeof(sox_sample_t));
+      lsx_valloc(z->ibuf[i], sox_globals.bufsiz);
       progress_to_next_input_file(files[i], effp);
       ws = max(ws, input_wide_samples);
     }
     input_wide_samples = ws; /* Output length is that of longest input file. */
   }
-  z->ilen = lsx_malloc(input_count * sizeof(*z->ilen));
+  lsx_valloc(z->ilen, input_count);
   return SOX_SUCCESS;
 }
 
@@ -1871,7 +1871,7 @@ static void display_supported_formats(void)
     while (*names++)
       formats++;
   }
-  format_list = lsx_malloc(formats * sizeof(*format_list));
+  lsx_valloc(format_list, formats);
 
   printf("AUDIO FILE FORMATS:");
   for (i = formats = 0; sox_format_fns[i].fn; ++i) {
@@ -2608,7 +2608,7 @@ static int add_file(file_t const * const opts, char const * const filename)
   if (!filename)
     usage("missing filename"); /* No return */
   f->filename = lsx_strdup(filename);
-  files = lsx_realloc(files, (file_count + 1) * sizeof(*files));
+  lsx_revalloc(files, file_count + 1);
   files[file_count++] = f;
   return 0;
 }
@@ -3115,7 +3115,7 @@ static void lsx_init_commandline_arguments(int *argc, char ***argv)
     exit(-1);
   }
 
-  *argv = (char**) lsx_malloc(sizeof(char*) * nArgs);
+  lsx_valloc(*argv, nArgs);
   *argc = nArgs;
 
   for(i = 0; i < nArgs; i++)

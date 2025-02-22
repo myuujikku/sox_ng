@@ -70,10 +70,8 @@ static int sox_echos_getopts(sox_effect_t * effp, int argc, char **argv)
 		i++;
 
                 echos->num_delays++;
-		echos->delay = lsx_realloc_array(echos->delay, echos->num_delays,
-                                                sizeof(*echos->delay));
-		echos->decay = lsx_realloc_array(echos->decay, echos->num_delays,
-                                                sizeof(*echos->decay));
+		lsx_revalloc(echos->delay, echos->num_delays);
+		lsx_revalloc(echos->decay, echos->num_delays);
                 echos->delay[echos->num_delays - 1] = delay;
                 echos->decay[echos->num_delays - 1] = decay;
         }

@@ -71,10 +71,8 @@ static int sox_echo_getopts(sox_effect_t * effp, int argc, char **argv)
 		i++;
 
                 echo->num_delays++;
-		echo->delay = lsx_realloc_array(echo->delay, echo->num_delays,
-                                                sizeof(*echo->delay));
-		echo->decay = lsx_realloc_array(echo->decay, echo->num_delays,
-                                                sizeof(*echo->decay));
+		lsx_revalloc(echo->delay, echo->num_delays);
+		lsx_revalloc(echo->decay, echo->num_delays);
 		echo->delay[echo->num_delays - 1] = delay;
 		echo->decay[echo->num_delays - 1] = decay;
         }

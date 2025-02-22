@@ -72,7 +72,7 @@ static int start(sox_effect_t * effp)
     lsx_fail("speed can't be more than %g", effp->in_signal.rate);
     return SOX_EOF;
   }
-  p->mod_buf = lsx_malloc(p->mod_buf_len * sizeof(*p->mod_buf));
+  lsx_valloc(p->mod_buf, p->mod_buf_len);
   lsx_generate_wave_table(p->mod_type, SOX_INT, p->mod_buf, p->mod_buf_len,
       1., (double)p->delay_buf_len, M_PI_2);
 

@@ -339,7 +339,7 @@ size_t sox_num_comments(sox_comments_t comments)
 void sox_append_comment(sox_comments_t * comments, char const * comment)
 {
   size_t n = sox_num_comments(*comments);
-  *comments = lsx_realloc(*comments, (n + 2) * sizeof(**comments));
+  lsx_revalloc(*comments, n + 2);
   assert(comment);
   (*comments)[n++] = lsx_strdup(comment);
   (*comments)[n] = 0;
@@ -351,7 +351,10 @@ void sox_append_comments(sox_comments_t * comments, char const * comment)
   if (comment) {
     while ((end = strchr(comment, '\n'))) {
       size_t len = end - comment;
-      char * c = lsx_malloc((len + 1) * sizeof(*c));
+      char * c;
+
+      lsx_valloc(c, len + 1);
+
       strncpy(c, comment, len);
       c[len] = '\0';
       sox_append_comment(comments, c);

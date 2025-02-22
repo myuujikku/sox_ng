@@ -90,7 +90,9 @@ typedef struct {
 void lsx_prepare_spline3(double const * x, double const * y, int n,
     double start_1d, double end_1d, double * y_2d)
 {
-  double p, qn, sig, un, * u = lsx_malloc((n - 1) * sizeof(*u));
+  double p, qn, sig, un, * u;
+
+  lsx_valloc(u, n - 1);
   int i;
 
   if (start_1d == HUGE_VAL)
@@ -192,8 +194,8 @@ static sox_bool update_fft_cache(int len)
     if (len > fft_len) {
       int old_n = fft_len;
       fft_len = len;
-      lsx_fft_br = lsx_realloc(lsx_fft_br, dft_br_len(fft_len) * sizeof(*lsx_fft_br));
-      lsx_fft_sc = lsx_realloc(lsx_fft_sc, dft_sc_len(fft_len) * sizeof(*lsx_fft_sc));
+      lsx_revalloc(lsx_fft_br, dft_br_len(fft_len));
+      lsx_revalloc(lsx_fft_sc, dft_sc_len(fft_len));
       if (!old_n)
         lsx_fft_br[0] = 0;
       return sox_true;
@@ -240,7 +242,9 @@ void lsx_power_spectrum(int n, double const * in, double * out)
 void lsx_power_spectrum_f(int n, float const * in, float * out)
 {
   int i;
-  double * work = lsx_malloc(n * sizeof(*work));
+  double * work;
+
+  lsx_valloc(work, n);
   for (i = 0; i< n; ++i) work[i] = in[i];
   lsx_safe_rdft(n, 1, work);
   out[0] = sqr(work[0]);
@@ -360,9 +364,6 @@ double * lsx_make_lpf(int num_taps, double Fc, double beta, double rho,
   assert(Fc >= 0 && Fc <= 1);
   lsx_debug("make_lpf(n=%i Fc=%.7g β=%g ρ=%g dc-norm=%i scale=%g)", num_taps, Fc, beta, rho, dc_norm, scale);
 
-  if (!h)
-    return NULL;
-
   for (i = 0; i <= m / 2; ++i) {
     double z = i - .5 * m, x = z * M_PI, y = z * mult1;
     h[i] = x? sin(Fc * x) / x : Fc;
@@ -426,7 +427,7 @@ void lsx_fir_to_phase(double * * h, int * len, int * post_len, double phase)
   for (i = *len, work_len = 2 * 2 * 8; i > 1; work_len <<= 1, i >>= 1);
 
   work = lsx_calloc((size_t)work_len + 2, sizeof(*work)); /* +2: (UN)PACK */
-  pi_wraps = lsx_malloc((((size_t)work_len + 2) / 2) * sizeof(*pi_wraps));
+  lsx_valloc(pi_wraps, (work_len + 2) / 2);
 
   memcpy(work, *h, *len * sizeof(*work));
   lsx_safe_rdft(work_len, 1, work); /* Cepstral: */
@@ -497,7 +498,7 @@ void lsx_fir_to_phase(double * * h, int * len, int * post_len, double phase)
     begin = peak - (begin & ~3);
     end   = peak + 1 + ((end + 3) & ~3);
     *len = end - begin;
-    *h = lsx_realloc(*h, *len * sizeof(**h));
+    lsx_revalloc(*h, *len);
   }
   for (i = 0; i < *len; ++i) (*h)[i] =
     work[(begin + (phase > 50 ? *len - 1 - i : i) + work_len) & (work_len - 1)];
@@ -514,7 +515,10 @@ void lsx_plot_fir(double * h, int num_points, sox_rate_t rate, sox_plot_t type, 
   int i, N = lsx_set_dft_length(num_points);
   if (type == sox_plot_gnuplot) {
     double * h1 = lsx_calloc(N, sizeof(*h1));
-    double * H = lsx_malloc((N / 2 + 1) * sizeof(*H));
+    double * H;
+
+    lsx_valloc(H, N / 2 + 1);
+
     memcpy(h1, h, sizeof(*h1) * num_points);
     lsx_power_spectrum(N, h1, H);
     printf(

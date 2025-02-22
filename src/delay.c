@@ -47,7 +47,7 @@ static int create(sox_effect_t * effp, int argc, char * * argv)
   --argc, ++argv;
   p->argc = argc;
   p->args = lsx_calloc(p->argc, sizeof(*p->args));
-  p->max_delay = lsx_malloc(sizeof(*p->max_delay));
+  lsx_valloc(p->max_delay, 1);
   for (i = 0; i < p->argc; ++i) {
     char const * next = lsx_parseposition(0., p->args[i].str = lsx_strdup(argv[i]), NULL, (uint64_t)0, (uint64_t)0, '=');
     if (!next || *next) {
@@ -102,7 +102,7 @@ static int start(sox_effect_t * effp)
     p->buffer_size = p->args[effp->flow].delay;
   p->buffer_index = p->delay = p->pre_pad = 0;
   p->pad = max_delay - p->buffer_size;
-  p->buffer = lsx_malloc(p->buffer_size * sizeof(*p->buffer));
+  lsx_valloc(p->buffer, p->buffer_size);
   p->drain_started = sox_false;
   return SOX_SUCCESS;
 }

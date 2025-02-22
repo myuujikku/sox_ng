@@ -84,9 +84,9 @@ static int sox_mcompand_getopts_1(comp_band_t * l, size_t n, char **argv)
       }
 
       rates = 1 + commas/2;
-      l->attackRate = lsx_malloc(sizeof(double) * rates);
-      l->decayRate  = lsx_malloc(sizeof(double) * rates);
-      l->volume = lsx_malloc(sizeof(double) * rates);
+      lsx_valloc(l->attackRate, rates);
+      lsx_valloc(l->decayRate, rates);
+      lsx_valloc(l->volume, rates);
       l->expectedChannels = rates;
       l->delay_buf = NULL;
 
@@ -349,15 +349,15 @@ static int flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sample_t *obu
   double out;
 
   if (c->band_buf_len < len) {
-    c->band_buf1 = lsx_realloc(c->band_buf1,len*sizeof(sox_sample_t));
-    c->band_buf2 = lsx_realloc(c->band_buf2,len*sizeof(sox_sample_t));
-    c->band_buf3 = lsx_realloc(c->band_buf3,len*sizeof(sox_sample_t));
+    lsx_revalloc(c->band_buf1, len);
+    lsx_revalloc(c->band_buf2, len);
+    lsx_revalloc(c->band_buf3, len);
     c->band_buf_len = len;
   }
 
   len -= len % effp->out_signal.channels;
 
-  ibuf_copy = lsx_malloc(*isamp * sizeof(sox_sample_t));
+  lsx_valloc(ibuf_copy, *isamp);
   memcpy(ibuf_copy, ibuf, *isamp * sizeof(sox_sample_t));
 
   /* split ibuf into bands using filters, pipe each band through sox_mcompand_flow_1, then add back together and write to obuf */

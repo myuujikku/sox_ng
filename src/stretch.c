@@ -135,7 +135,7 @@ static int start(sox_effect_t * effp)
   p->segment = (int)(effp->out_signal.rate * 0.001 * p->window);
   /* start in the middle of an input to avoid initial fading... */
   p->index = p->segment / 2;
-  p->ibuf = lsx_malloc(p->segment * sizeof(sox_sample_t));
+  lsx_valloc(p->ibuf, p->segment);
 
   /* the shift ratio deal with the longest of ishift/oshift
      hence ishift<=segment and oshift<=segment. */
@@ -150,9 +150,9 @@ static int start(sox_effect_t * effp)
   assert(p->oshift <= p->segment);
 
   p->oindex = p->index; /* start as synchronized */
-  p->obuf = lsx_malloc(p->segment * sizeof(double));
+  lsx_valloc(p->obuf, p->segment);
   p->overlap = (int)(p->fading * p->segment);
-  p->fade_coefs = lsx_malloc(p->overlap * sizeof(double));
+  lsx_valloc(p->fade_coefs, p->overlap);
 
   /* initialize buffers */
   for (i = 0; i<p->segment; i++)

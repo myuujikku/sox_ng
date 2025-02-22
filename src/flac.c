@@ -169,7 +169,7 @@ static FLAC__StreamDecoderWriteStatus decoder_write_callback(FLAC__StreamDecoder
   if (actual > p->number_of_requested_samples) {
     size_t to_stash = actual - p->number_of_requested_samples;
 
-    p->leftover_buf = lsx_malloc(to_stash * sizeof(sox_sample_t));
+    lsx_valloc(p->leftover_buf, to_stash);
     p->number_of_leftover_samples = to_stash;
     nsamples = p->number_of_requested_samples / p->channels;
 
@@ -528,7 +528,7 @@ static size_t write_samples(sox_format_t * const ft, sox_sample_t const * const 
   if (p->number_of_samples < len) {
     p->number_of_samples = len;
     free(p->decoded_samples);
-    p->decoded_samples = lsx_malloc(p->number_of_samples * sizeof(FLAC__int32));
+    lsx_valloc(p->decoded_samples, p->number_of_samples);
   }
 
   for (i = 0; i < len; ++i) {

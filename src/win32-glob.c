@@ -120,7 +120,7 @@ glob(
 
     if (err == 0)
     {
-        pglob->gl_pathv = malloc((entries + 1) * sizeof(char*));
+        lsx_valloc(pglob->gl_pathv, entries + 1);
         if (pglob->gl_pathv)
         {
             pglob->gl_pathc = entries;

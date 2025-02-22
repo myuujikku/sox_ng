@@ -209,8 +209,7 @@ static int sox_chorus_start (sox_effect_t *effp)
 		    lsx_fail("speed can't be more than the sample rate");
 		    return SOX_EOF;
 		}
-                stage->wave_table =
-                    lsx_malloc(stage->wave_length * sizeof(int));
+                lsx_valloc(stage->wave_table, stage->wave_length);
                 lsx_generate_wave_table(stage->wave_type, SOX_INT,
                                         stage->wave_table,
                                         stage->wave_length,

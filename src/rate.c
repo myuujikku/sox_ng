@@ -52,8 +52,10 @@ static sample_t * prepare_coefs(raw_coef_t const * coefs, int num_coefs,
     int num_phases, int interp_order, int multiplier)
 {
   int i, j, length = num_coefs4 * num_phases;
-  sample_t * result = lsx_malloc(length * (interp_order + 1) * sizeof(*result));
+  sample_t * result;
   double fm1 = coefs[0], f1 = 0, f2 = 0;
+
+  lsx_valloc(result, length * (interp_order + 1));
 
   for (i = num_coefs4 - 1; i >= 0; --i)
     for (j = num_phases - 1; j >= 0; --j) {

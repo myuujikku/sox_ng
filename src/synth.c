@@ -250,7 +250,7 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
       lsx_fail("no type given");
       return SOX_EOF;
     }
-    p->getopts_channels = lsx_realloc(p->getopts_channels, sizeof(*p->getopts_channels) * (p->getopts_nchannels + 1));
+    lsx_revalloc(p->getopts_channels, p->getopts_nchannels + 1);
     chan = &p->getopts_channels[p->getopts_nchannels++];
     memcpy(chan, &master, sizeof(*chan));
     chan->type = enum_p->value;

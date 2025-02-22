@@ -334,8 +334,11 @@ static double make_window(priv_t * p, int end)
 
 static double * rdft_init(size_t n)
 {
-  double * q = lsx_malloc(2 * (n / 2 + 1) * n * sizeof(*q)), * p = q;
+  double * q, *p;
   size_t i, j;
+
+  lsx_valloc(q,  2 * (n / 2 + 1) * n * sizeof(*q));
+  p = q;
   for (j = 0; j <= n / 2; ++j) for (i = 0; i < n; ++i)
     *p++ = cos(2 * M_PI * j * i / n), *p++ = sin(2 * M_PI * j * i / n);
   return q;
@@ -999,9 +1002,10 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
   {
     png_structp png;
     png_infop   png_info;
-    png_bytepp  png_rows = lsx_malloc(rows * sizeof(*png_rows));
+    png_bytepp  png_rows;
     FILE *      file;
 
+    lsx_valloc(png_rows, rows);
     if (p->using_stdout) {
       SET_BINARY_MODE(stdout);
       file = stdout;

@@ -42,7 +42,7 @@ char *win32_utf16_to_utf8(const wchar_t *input)
   int BuffSize = 0, Result = 0;
 
   BuffSize = WideCharToMultiByte(CP_UTF8, 0, input, -1, NULL, 0, NULL, NULL);
-  Buffer = (char*) lsx_malloc(sizeof(char) * BuffSize);
+  lsx_valloc(Buffer, BuffSize);
   Result = WideCharToMultiByte(CP_UTF8, 0, input, -1, Buffer, BuffSize, NULL, NULL);
 
   return ((Result > 0) && (Result <= BuffSize)) ? Buffer : NULL;
@@ -54,7 +54,7 @@ wchar_t *win32_utf8_to_utf16(const char *input)
   int BuffSize = 0, Result = 0;
 
   BuffSize = MultiByteToWideChar(CP_UTF8, 0, input, -1, NULL, 0);
-  Buffer = (wchar_t*) lsx_malloc(sizeof(wchar_t) * BuffSize);
+  lsx_valloc(Buffer, BuffSize);
   Result = MultiByteToWideChar(CP_UTF8, 0, input, -1, Buffer, BuffSize);
 
   return ((Result > 0) && (Result <= BuffSize)) ? Buffer : NULL;

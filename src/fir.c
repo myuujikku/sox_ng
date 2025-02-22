@@ -40,7 +40,7 @@ static int create(sox_effect_t * effp, int argc, char * * argv)
     p->filename = argv[0], --argc;
   else for (; argc && sscanf(*argv, "%lf%c", &d, &c) == 1; --argc, ++argv) {
     p->n++;
-    p->h = lsx_realloc(p->h, p->n * sizeof(*p->h));
+    lsx_revalloc(p->h, p->n);
     p->h[p->n - 1] = d;
   }
   return argc? lsx_usage(effp) : SOX_SUCCESS;
@@ -64,7 +64,7 @@ static int start(sox_effect_t * effp)
         if ((i = fscanf(file, "%lf", &d)) > 0) {
           /* found a coefficient value */
           p->n++;
-          p->h = lsx_realloc(p->h, p->n * sizeof(*p->h));
+	  lsx_revalloc(p->h, p->n);
           p->h[p->n - 1] = d;
         } else break; /* either EOF, or something went wrong
                          (read or syntax error) */

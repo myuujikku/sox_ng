@@ -79,7 +79,7 @@ int main(int argc, char * argv[])
   /* Make sure that this is at a `wide sample' boundary: */
   block_size -= block_size % in->signal.channels;
   /* Allocate a block of memory to store the block of audio samples: */
-  buf = malloc(sizeof(sox_sample_t) * block_size);
+  lsx_valloc(buf, block_size);
   assert(buf);
 
   /* This example program requires that the audio has precisely 2 channels: */

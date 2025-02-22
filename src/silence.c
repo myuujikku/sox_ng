@@ -246,7 +246,7 @@ static int sox_silence_start(sox_effect_t * effp)
      */
     silence->window_size = (effp->in_signal.rate / 50) * 
         effp->in_signal.channels;
-    silence->window = lsx_malloc(silence->window_size * sizeof(double));
+    lsx_valloc(silence->window, silence->window_size);
 
     clear_rms(effp);
 
@@ -271,12 +271,12 @@ static int sox_silence_start(sox_effect_t * effp)
     else
         silence->mode = SILENCE_COPY;
 
-    silence->start_holdoff = lsx_malloc(sizeof(sox_sample_t)*silence->start_duration);
+    lsx_valloc(silence->start_holdoff, silence->start_duration);
     silence->start_holdoff_offset = 0;
     silence->start_holdoff_end = 0;
     silence->start_found_periods = 0;
 
-    silence->stop_holdoff = lsx_malloc(sizeof(sox_sample_t)*silence->stop_duration);
+    lsx_valloc(silence->stop_holdoff, silence->stop_duration);
     silence->stop_holdoff_offset = 0;
     silence->stop_holdoff_end = 0;
     silence->stop_found_periods = 0;

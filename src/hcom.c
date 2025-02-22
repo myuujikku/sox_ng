@@ -153,7 +153,7 @@ static int startread(sox_format_t * ft)
         ft->signal.channels = 1;
 
         /* Allocate memory for the dictionary */
-        p->dictionary = lsx_malloc(511 * sizeof(dictent));
+        lsx_valloc(p->dictionary, 511);
 
         /* Read dictionary */
         for(i = 0; i < dictsize; i++) {

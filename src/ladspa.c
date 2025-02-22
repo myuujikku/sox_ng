@@ -162,8 +162,8 @@ static int sox_ladspa_getopts(sox_effect_t *effp, int argc, char **argv)
 
   /* Scan the ports for inputs and outputs */
   l_st->control = lsx_calloc(l_st->desc->PortCount, sizeof(LADSPA_Data));
-  l_st->inputs = lsx_malloc(l_st->desc->PortCount * sizeof(unsigned long));
-  l_st->outputs = lsx_malloc(l_st->desc->PortCount * sizeof(unsigned long));
+  lsx_valloc(l_st->inputs,  l_st->desc->PortCount);
+  lsx_valloc(l_st->outputs, l_st->desc->PortCount);
 
   for (i = 0; i < l_st->desc->PortCount; i++) {
     const LADSPA_PortDescriptor port = l_st->desc->PortDescriptors[i];
@@ -414,7 +414,7 @@ static int sox_ladspa_drain(sox_effect_t * effp, sox_sample_t *obuf, size_t *osa
 
   /* feed some silence at the end to push the rest of the data out */
   isamp = l_st->out_latency * effp->in_signal.channels;
-  ibuf = lsx_calloc(isamp, sizeof(sox_sample_t));
+  ibuf = lsx_calloc(isamp, sizeof(*ibuf));
 
   do {
     dsamp = min(l_st->out_latency * effp->out_signal.channels,

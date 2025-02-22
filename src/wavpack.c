@@ -137,9 +137,10 @@ static size_t write_samples(sox_format_t * ft, const sox_sample_t * buf, size_t 
 {
   priv_t * p = (priv_t *)ft->priv;
   size_t i;
-  int32_t * obuf = lsx_malloc(len * sizeof(*obuf));
+  int32_t * obuf;
   int result;
 
+  lsx_valloc(obuf, len);
   for (i = 0; i < len; ++i) switch (ft->encoding.bits_per_sample) {
     SOX_SAMPLE_LOCALS;
     case  8: obuf[i] = SOX_SAMPLE_TO_SIGNED_8BIT(buf[i], ft->clips); break;

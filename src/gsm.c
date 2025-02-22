@@ -84,7 +84,7 @@ static int gsmstart_rw(sox_format_t * ft, int w)
                 }
         }
         p->frames = lsx_malloc(p->channels*GSM_FRAMESIZE);
-        p->samples = lsx_malloc(GSM_BLOCKSIZE * (p->channels+1) * sizeof(gsm_signal));
+        lsx_valloc(p->samples, GSM_BLOCKSIZE * (p->channels+1));
         p->sampleTop = p->samples + GSM_BLOCKSIZE*p->channels;
         p->samplePtr = (w)? p->samples : p->sampleTop;
         return (SOX_SUCCESS);
