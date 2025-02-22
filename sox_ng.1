@@ -2163,43 +2163,25 @@ approximates the response of a carbon microphone telephone.
 .SP
 This effect supports the \fB\-\-plot\fR global option.
 .TP
-\fBflanger\fR [\fIdelay \fR[\fIdepth \fR[\fIregen \fR[\fIwidth \fR[\fIspeed \fR[\fIshape \fR[\fIphase \fR[\fIinterp\fR]]]]]]]]
+\fBflanger\fR [\fIdelay(0) \fR[\fIdepth\fR(2) [\fIregen\fR(0) [\fIwidth\fR(71) [\fIspeed\fR(0\*d5) [\fIshape(sine) \fR[\fIphase(25) \fR[\fIinterp(linear)\fR]]]]]]]]
 Apply a flanging effect to the audio.
 See [3] for a detailed description of flanging.
-.ne 15
-.TS
-center;
-cI cI cI lI
-cI c c lx.
-\ 	Range	Default	Description
-delay	0\-	0	Base delay in milliseconds
-depth	0\-	2	Added swept delay in milliseconds
-regen	\-100\-100	0	T{
-.na
-Percentage of regeneration (delayed signal feedback)
-T}
-width	\-100\-100	71	T{
-.na
-Percentage of delayed signal mixed with original
-T}
-speed	0\-	0\*d5	Sweeps per second (Hz)
-shape	s|t	sin	Swept wave shape: \fBsine\fR or \fBtriangle\fR
-phase	0\-100	25	T{
-.na
-Swept wave percentage phase shift for multichannel flange;
-0 = 100 = same phase on each channel.
-T}
-interp	\ 	lin	T{
-.na
-Digital delay-line interpolation: \fBlinear\fR or \fBquadratic\fR.
-T}
-.TE
-The input and the delay's output are mixed and balanced so that they
-do not clip, so a \fIwidth\fR of 50 gives 50:50 mixing; to obtain only
+.SP
+The parameters give the base delay and the added swept delay in milliseconds,
+the percentage of regeneration (the delayed signal feedback),
+\fIwidth\fR the percentage of delayed signal that is mixed with the original,
+\fIspeed\fR the number of sweeps per second,
+the shape of the swept wave (\fBsine\fR or \fBtriangle\fR),
+the percentage of phase shift of the swept wave in multichannel flanges
+(0 = 100 = the same phase on each channel) and
+the type of digital delay line interpolation (\fBlinear\fR or \fBquadratic\fR).
+.SP
+The input and the delay's output are mixed and balanced so they
+don't clip, so a \fIwidth\fR of 50 gives 50:50 mixing; to obtain only
 the delayed output and none of the input, specify \fIwidth\fR as \fBinf\fR.
 .SP
 Despite containing a delay, \fBflanger\fR does not extend the length
-of the signal so if you also want the last dregs of the delayed output 
+of the signal so, if you also want the last dregs of the delayed output
 and feedback, \fBpad\fR the signal beforehand.
 .SP
 For a flow diagram of how \fBflanger\fR works,

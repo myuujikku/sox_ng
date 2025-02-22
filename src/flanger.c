@@ -244,7 +244,7 @@ sox_effect_handler_t const * lsx_flanger_effect_fn(void)
   static const char usage[] =
 "[delay [depth [regen [width [speed [shape [phase [interp]]]]]]]";
   static char const * const extra_usage[] = {
-"(all optional)",
+"",
 "            +----------------+",
 "            |    * regen     |",
 "           _V_     _______   |            ___",
@@ -263,10 +263,10 @@ sox_effect_handler_t const * lsx_flanger_effect_fn(void)
 "delay  0-1000    0    base delay in milliseconds",
 "depth  0-1000    2    added swept delay in milliseconds",
 "regen -100-100   0    percentage regeneration (delayed signal feedback)",
-"width -100-100  71    percentage of delayed signal mixed with original",
-"speed   0-192k  0.5   sweeps per second (Hz)",
+"width -100-100   71   percentage of delayed signal mixed with original",
+"speed   0-192k  0.5   sweeps per second (no more than the sample rate)",
 "shape    s|t    sine  swept wave shape: sine|triangle",
-"phase    0-100  25    percent phase shift of swept wave in multichannel flange",
+"phase   0-100    25   percent phase shift of swept wave in multichannel flange",
 "                      0 = 100 = same phase on each channel",
 "interp   l|q  linear  delay-line interpolation: linear|quadratic",
     NULL
