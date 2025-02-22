@@ -121,7 +121,7 @@ static int create(sox_effect_t * effp, int argc, char * * argv)
     return SOX_EOF;
   }
   p->num_out_channels = argc;
-  p->out_specs = lsx_calloc(p->num_out_channels, sizeof(*p->out_specs));
+  lsx_vcalloc(p->out_specs, p->num_out_channels);
   return parse(effp, argv, 1); /* No channels yet; parse with dummy */
 }
 
@@ -224,7 +224,7 @@ static int channels_start(sox_effect_t * effp)
       p->num_out_channels : effp->out_signal.channels;
   unsigned i, j;
 
-  p->out_specs = lsx_calloc(num_out_channels, sizeof(*p->out_specs));
+  lsx_vcalloc(p->out_specs, num_out_channels);
   if (effp->in_signal.channels == num_out_channels)
     return SOX_EFF_NULL;
 

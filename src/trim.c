@@ -41,7 +41,7 @@ static int parse(sox_effect_t *effp, int argc, char **argv)
   unsigned int i;
   --argc, ++argv;
   p->num_pos = argc;
-  lsx_Calloc(p->pos, p->num_pos);
+  lsx_vcalloc(p->pos, p->num_pos);
   for (i = 0; i < p->num_pos; i++) {
     const char *arg = argv[i];
     p->pos[i].argstr = lsx_strdup(arg);

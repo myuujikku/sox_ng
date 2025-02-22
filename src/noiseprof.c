@@ -77,12 +77,12 @@ static int sox_noiseprof_start(sox_effect_t * effp)
     return SOX_EOF;
   }
 
-  data->chandata = lsx_calloc(channels, sizeof(*(data->chandata)));
+  lsx_vcalloc(data->chandata, channels);
   data->bufdata = 0;
   for (i = 0; i < channels; i ++) {
-    data->chandata[i].sum = lsx_calloc(FREQCOUNT, sizeof(float));
-    data->chandata[i].profilecount = lsx_calloc(FREQCOUNT, sizeof(int));
-    data->chandata[i].window = lsx_calloc(WINDOWSIZE, sizeof(float));
+    lsx_vcalloc(data->chandata[i].sum, FREQCOUNT);
+    lsx_vcalloc(data->chandata[i].profilecount, FREQCOUNT);
+    lsx_vcalloc(data->chandata[i].window, WINDOWSIZE);
   }
 
   return SOX_SUCCESS;
@@ -90,8 +90,10 @@ static int sox_noiseprof_start(sox_effect_t * effp)
 
 /* Collect statistics from the complete window on channel chan. */
 static void collect_data(chandata_t* chan) {
-    float *out = lsx_calloc(FREQCOUNT, sizeof(float));
+    float *out;
     int i;
+
+    lsx_vcalloc(out, FREQCOUNT);
 
     lsx_power_spectrum_f(WINDOWSIZE, chan->window, out);
 

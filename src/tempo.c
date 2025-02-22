@@ -149,7 +149,9 @@ static void tempo_flush(tempo_t * t)
   uint64_t samples_out = t->samples_in / t->factor + .5;
   size_t remaining = samples_out > t->samples_out ?
       (size_t)(samples_out - t->samples_out) : 0;
-  float * buff = lsx_calloc(128 * t->channels, sizeof(*buff));
+  float * buff;
+
+  lsx_vcalloc(buff, 128 * t->channels);
 
   if (remaining > 0) {
     while (fifo_occupancy(&t->output_fifo) < remaining) {

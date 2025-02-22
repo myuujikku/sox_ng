@@ -422,10 +422,10 @@ static int start(sox_effect_t * effp)
   }
 
   /* Now that dft_size is set, allocate variable-sized elements of priv_t */
-  p->buf        = lsx_calloc(p->dft_size, sizeof(*p->buf));
-  p->dft_buf    = lsx_calloc(p->dft_size, sizeof(*p->dft_buf));
-  p->window     = lsx_calloc(p->dft_size + 1, sizeof(*p->window));
-  p->magnitudes = lsx_calloc(p->dft_size / 2 + 1, sizeof(*p->magnitudes));
+  lsx_vcalloc(p->buf, p->dft_size);
+  lsx_vcalloc(p->dft_buf, p->dft_size);
+  lsx_vcalloc(p->window, p->dft_size + 1);
+  lsx_vcalloc(p->magnitudes, p->dft_size / 2 + 1);
 
   /* Initialize the FFT routine */
 #if HAVE_FFTW
@@ -560,10 +560,12 @@ static int drain(sox_effect_t * effp, sox_sample_t * obuf_, size_t * osamp)
   priv_t * p = (priv_t *)effp->priv;
 
   if (!p->truncated) {
-    sox_sample_t * ibuf = lsx_calloc(p->dft_size, sizeof(*ibuf));
-    sox_sample_t * obuf = lsx_calloc(p->dft_size, sizeof(*obuf));
+    sox_sample_t * ibuf, * obuf;
     size_t isamp = (p->dft_size - p->step_size) / 2;
     int left_over = (isamp + p->read) % p->step_size;
+
+    lsx_vcalloc(ibuf, p->dft_size);
+    lsx_vcalloc(obuf, p->dft_size);
 
     if (left_over >= p->step_size >> 1)
       isamp += p->step_size - left_over;

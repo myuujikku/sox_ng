@@ -95,7 +95,7 @@ static double * make_filter(sox_effect_t * effp)
   lsx_prepare_spline3(log_freqs, gains, p->num_knots, HUGE_VAL, HUGE_VAL, d);
 
   for (work_len = 8192; work_len < rate / 2; work_len <<= 1);
-  work = lsx_calloc(work_len + 2, sizeof(*work));
+  lsx_vcalloc(work, work_len + 2);
   lsx_valloc(h, p->n);
 
   for (i = 0; i <= work_len; i += 2) {

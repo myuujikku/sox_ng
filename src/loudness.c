@@ -74,8 +74,8 @@ static double * make_filter(int n, double start, double delta, double rate)
   lsx_prepare_spline3(fs, spl, (int)LEN, HUGE_VAL, HUGE_VAL, d);
 
   for (work_len = 8192; work_len < rate / 2; work_len <<= 1);
-  work = lsx_calloc(work_len, sizeof(*work));
-  h = lsx_calloc(n, sizeof(*h));
+  lsx_vcalloc(work, work_len);
+  lsx_vcalloc(h, n);
 
   for (i = 0; i <= work_len / 2; ++i) {
     double f = rate * i / work_len;

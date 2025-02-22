@@ -28,7 +28,7 @@ void lsx_set_dft_filter(dft_filter_t *f, double *h, int n, int post_peak)
   f->num_taps = n;
   f->post_peak = post_peak;
   f->dft_length = lsx_set_dft_length(f->num_taps);
-  f->coefs = lsx_calloc(f->dft_length, sizeof(*f->coefs));
+  lsx_vcalloc(f->coefs, f->dft_length);
   for (i = 0; i < f->num_taps; ++i)
     f->coefs[(i + f->dft_length - f->num_taps + 1) & (f->dft_length - 1)] = h[i] / f->dft_length * 2;
   lsx_safe_rdft(f->dft_length, 1, f->coefs);
@@ -101,7 +101,9 @@ static int drain(sox_effect_t * effp, sox_sample_t * obuf, size_t * osamp)
   static size_t isamp = 0;
   size_t remaining = p->samples_in > p->samples_out ?
       (size_t)(p->samples_in - p->samples_out) : 0;
-  double * buff = lsx_calloc(1024, sizeof(*buff));
+  double * buff;
+
+  lsx_vcalloc(buff, 1024);
 
   if (remaining > 0) {
     while ((size_t)fifo_occupancy(&p->output_fifo) < remaining) {

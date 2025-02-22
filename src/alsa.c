@@ -354,6 +354,7 @@ static int stop_write(sox_format_t * ft)
   priv_t * p = (priv_t *)ft->priv;
   size_t n = ft->signal.channels * p->period, npad = n - (ft->olength % n);
   sox_sample_t * buf = lsx_calloc(npad, sizeof(*buf)); /* silent samples */
+  lsx_vcalloc(buf, npad); /* silent samples */
 
   if (npad != n)                      /* pad to hardware period: */
     write_(ft, buf, npad);

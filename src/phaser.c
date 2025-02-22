@@ -65,7 +65,7 @@ static int start(sox_effect_t * effp)
     lsx_fail("delay can't be less than %g", 1000 / effp->in_signal.rate);
     return SOX_EOF;
   }
-  p->delay_buf = lsx_calloc(p->delay_buf_len, sizeof(*p->delay_buf));
+  lsx_vcalloc(p->delay_buf, p->delay_buf_len);
 
   p->mod_buf_len = effp->in_signal.rate / p->speed;
   if (p->mod_buf_len < 1) {

@@ -233,7 +233,7 @@ static int dft_stage_init(
       return SOX_EINVAL;
     }
 
-    f->coefs = lsx_calloc(dft_length, sizeof(*f->coefs));
+    lsx_vcalloc(f->coefs, dft_length);
     for (i = 0; i < num_taps; ++i)
       f->coefs[(i + dft_length - num_taps + 1) & (dft_length - 1)]
         = h[i] / dft_length * 2 * L;
@@ -349,7 +349,7 @@ static int rate_init(
   if (!p->num_stages)
     return SOX_SUCCESS;
 
-  p->stages = lsx_calloc(p->num_stages + 1, sizeof(*p->stages));
+  lsx_vcalloc(p->stages, p->num_stages + 1);
   for (i = 0; i < p->num_stages; ++i)
     p->stages[i].shared = shared;
 
@@ -501,7 +501,9 @@ static void rate_flush(rate_t * p)
   uint64_t samples_out = p->samples_in / p->factor + .5;
   size_t remaining = samples_out > p->samples_out ?
       (size_t)(samples_out - p->samples_out) : 0;
-  sample_t * buff = lsx_calloc(1024, sizeof(*buff));
+  sample_t * buff;
+
+  lsx_vcalloc(buff, 1024);
 
   if (remaining > 0) {
     while ((size_t)fifo_occupancy(fifo) < remaining) {

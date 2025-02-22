@@ -174,7 +174,7 @@ static int create(sox_effect_t * effp, int argc, char * * argv)
     else if (!strcmp(*argv, "-h")) p->fade_type = Cosine_2  , --argc, ++argv;
   }
   p->nsplices = argc;
-  p->splices = lsx_calloc(p->nsplices, sizeof(*p->splices));
+  lsx_vcalloc(p->splices, p->nsplices);
   return parse(effp, argv, 1e5); /* No rate yet; parse with dummy */
 }
 
@@ -184,7 +184,7 @@ static int start(sox_effect_t * effp)
   unsigned i;
 
   parse(effp, 0, effp->in_signal.rate); /* Re-parse now rate is known */
-  p->buffer = lsx_calloc(p->max_buffer_size * effp->in_signal.channels, sizeof(*p->buffer));
+  lsx_vcalloc(p->buffer, p->max_buffer_size * effp->in_signal.channels);
   p->in_pos = p->buffer_pos = p->splices_pos = 0;
   p->state = p->splices_pos != p->nsplices && p->in_pos == p->splices[p->splices_pos].start;
   effp->out_signal.length = SOX_UNKNOWN_LEN; /* depends on input data */

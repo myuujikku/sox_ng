@@ -140,7 +140,7 @@ static int start(sox_effect_t * effp)
   ++f->delay_buf_length;  /* Need 0 to n, i.e. n + 1. */
   ++f->delay_buf_length;  /* Quadratic interpolator needs one more. */
   for (c = 0; c < channels; ++c)
-    f->delay_bufs[c] = lsx_calloc(f->delay_buf_length, sizeof(*f->delay_bufs[0]));
+    lsx_vcalloc(f->delay_bufs[c], f->delay_buf_length);
 
   /* Create the LFO lookup table: */
   f->lfo_length = effp->in_signal.rate / f->speed;
@@ -148,7 +148,7 @@ static int start(sox_effect_t * effp)
     lsx_fail("speed can't be more that the sample rate");
     return SOX_EOF;
   }
-  f->lfo = lsx_calloc(f->lfo_length, sizeof(*f->lfo));
+  lsx_vcalloc(f->lfo, f->lfo_length);
   lsx_generate_wave_table(
       f->wave_shape,
       SOX_FLOAT,

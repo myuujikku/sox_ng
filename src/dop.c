@@ -43,7 +43,7 @@ static int dop_start(sox_effect_t *eff)
 
   eff->out_signal.precision = 24;
 
-  p->buf = lsx_calloc(eff->out_signal.channels, sizeof(*p->buf));
+  lsx_vcalloc(p->buf, eff->out_signal.channels);
   p->marker = DOP_MARKER;
 
   return SOX_SUCCESS;

@@ -47,6 +47,7 @@ static int create(sox_effect_t * effp, int argc, char * * argv)
   --argc, ++argv;
   p->argc = argc;
   p->args = lsx_calloc(p->argc, sizeof(*p->args));
+  lsx_vcalloc(p->args, p->argc);
   lsx_valloc(p->max_delay, 1);
   for (i = 0; i < p->argc; ++i) {
     char const * next = lsx_parseposition(0., p->args[i].str = lsx_strdup(argv[i]), NULL, (uint64_t)0, (uint64_t)0, '=');

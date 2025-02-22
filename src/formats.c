@@ -394,7 +394,7 @@ char * lsx_cat_comments(sox_comments_t comments)
   if (p) while (*p)
     len += strlen(*p++) + 1;
 
-  result = lsx_calloc(len? len : 1, sizeof(*result));
+  lsx_vcalloc(result, len? len : 1);
 
   if ((p = comments) && *p) {
     strcpy(result, *p);

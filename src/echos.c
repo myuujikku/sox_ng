@@ -87,9 +87,9 @@ static int sox_echos_start(sox_effect_t * effp)
         int i;
         float sum_in_volume;
 
-	echos->counter = lsx_calloc(echos->num_delays, sizeof(*echos->counter));
-	echos->samples = lsx_calloc(echos->num_delays, sizeof(*echos->samples));
-	echos->delay_buf = lsx_calloc(echos->num_delays, sizeof(*echos->delay_buf));
+	lsx_vcalloc(echos->counter, echos->num_delays);
+	lsx_vcalloc(echos->samples, echos->num_delays);
+	lsx_vcalloc(echos->delay_buf, echos->num_delays);
         echos->sumsamples = 0;
         for ( i = 0; i < echos->num_delays; i++ ) {
                 echos->samples[i] = echos->delay[i] * effp->in_signal.rate / 1000.0;

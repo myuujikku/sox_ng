@@ -359,10 +359,12 @@ double * lsx_make_lpf(int num_taps, double Fc, double beta, double rho,
     double scale, sox_bool dc_norm)
 {
   int i, m = num_taps - 1;
-  double * h = calloc(num_taps, sizeof(*h)), sum = 0;
+  double * h, sum = 0;
   double mult = scale / lsx_bessel_I_0(beta), mult1 = 1 / (.5 * m + rho);
   assert(Fc >= 0 && Fc <= 1);
   lsx_debug("make_lpf(n=%i Fc=%.7g β=%g ρ=%g dc-norm=%i scale=%g)", num_taps, Fc, beta, rho, dc_norm, scale);
+
+  lsx_vcalloc(h, num_taps);
 
   for (i = 0; i <= m / 2; ++i) {
     double z = i - .5 * m, x = z * M_PI, y = z * mult1;
@@ -426,7 +428,7 @@ void lsx_fir_to_phase(double * * h, int * len, int * post_len, double phase)
 
   for (i = *len, work_len = 2 * 2 * 8; i > 1; work_len <<= 1, i >>= 1);
 
-  work = lsx_calloc((size_t)work_len + 2, sizeof(*work)); /* +2: (UN)PACK */
+  lsx_vcalloc(work, work_len + 2); /* +2: (UN)PACK */
   lsx_valloc(pi_wraps, (work_len + 2) / 2);
 
   memcpy(work, *h, *len * sizeof(*work));
@@ -514,9 +516,9 @@ void lsx_plot_fir(double * h, int num_points, sox_rate_t rate, sox_plot_t type, 
 {
   int i, N = lsx_set_dft_length(num_points);
   if (type == sox_plot_gnuplot) {
-    double * h1 = lsx_calloc(N, sizeof(*h1));
-    double * H;
+    double * h1, *H;
 
+    lsx_vcalloc(h1, N);
     lsx_valloc(H, N / 2 + 1);
 
     memcpy(h1, h, sizeof(*h1) * num_points);

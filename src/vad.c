@@ -116,18 +116,18 @@ static int start(sox_effect_t * effp)
 
   p->samplesLen_ns =
     fixedPreTriggerLen_ns + searchPreTriggerLen_ns + p->measureLen_ns;
-  lsx_Calloc(p->samples, p->samplesLen_ns);
+  lsx_vcalloc(p->samples, p->samplesLen_ns);
 
-  lsx_Calloc(p->channels, effp->in_signal.channels);
+  lsx_vcalloc(p->channels, effp->in_signal.channels);
   for (i = 0; i < effp->in_signal.channels; ++i) {
     channel_t * c = &p->channels[i];
-    lsx_Calloc(c->dftBuf, p->dftLen_ws);
-    lsx_Calloc(c->spectrum, p->dftLen_ws);
-    lsx_Calloc(c->noiseSpectrum, p->dftLen_ws);
-    lsx_Calloc(c->measures, p->measuresLen);
+    lsx_vcalloc(c->dftBuf, p->dftLen_ws);
+    lsx_vcalloc(c->spectrum, p->dftLen_ws);
+    lsx_vcalloc(c->noiseSpectrum, p->dftLen_ws);
+    lsx_vcalloc(c->measures, p->measuresLen);
   }
 
-  lsx_Calloc(p->spectrumWindow, p->measureLen_ws);
+  lsx_vcalloc(p->spectrumWindow, p->measureLen_ws);
   for (i = 0; i < p->measureLen_ws; ++i)
     p->spectrumWindow[i] = -2./ SOX_SAMPLE_MIN / sqrt((double)p->measureLen_ws);
   lsx_apply_hann(p->spectrumWindow, (int)p->measureLen_ws);
@@ -137,7 +137,7 @@ static int start(sox_effect_t * effp)
   p->spectrumEnd = p->lpFilterFreq / effp->in_signal.rate * p->dftLen_ws + .5;
   p->spectrumEnd = min(p->spectrumEnd, p->dftLen_ws / 2);
 
-  lsx_Calloc(p->cepstrumWindow, p->spectrumEnd - p->spectrumStart);
+  lsx_vcalloc(p->cepstrumWindow, p->spectrumEnd - p->spectrumStart);
   for (i = 0; i < p->spectrumEnd - p->spectrumStart; ++i)
     p->cepstrumWindow[i] = 2 / sqrt((double)p->spectrumEnd - p->spectrumStart);
   lsx_apply_hann(p->cepstrumWindow,(int)(p->spectrumEnd - p->spectrumStart));

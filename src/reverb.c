@@ -69,13 +69,15 @@ static void filter_array_create(filter_array_t * p, double rate,
   {
     filter_t * pcomb = &p->comb[i];
     pcomb->size = (size_t)(scale * r * (comb_lengths[i] + stereo_adjust * offset) + .5);
-    pcomb->ptr = lsx_zalloc(pcomb->buffer, pcomb->size);
+    lsx_vcalloc(pcomb->buffer, pcomb->size);
+    pcomb->ptr = pcomb->buffer;
   }
   for (i = 0; i < array_length(allpass_lengths); ++i, offset = -offset)
   {
     filter_t * pallpass = &p->allpass[i];
     pallpass->size = (size_t)(r * (allpass_lengths[i] + stereo_adjust * offset) + .5);
-    pallpass->ptr = lsx_zalloc(pallpass->buffer, pallpass->size);
+    lsx_vcalloc(pallpass->buffer, pallpass->size);
+    pallpass->ptr = pallpass->buffer;
   }
 }
 
@@ -141,7 +143,8 @@ static void reverb_create(reverb_t * p, double sample_rate_Hz,
   memset(fifo_write(&p->input_fifo, delay, 0), 0, delay * sizeof(float));
   for (i = 0; i <= ceil(depth); ++i) {
     filter_array_create(p->chan + i, sample_rate_Hz, scale, i * depth);
-    out[i] = lsx_zalloc(p->out[i], buffer_size);
+    lsx_vcalloc(p->out[i], buffer_size);
+    out[i] = p->out[i];
   }
 }
 

@@ -89,7 +89,7 @@ static int sox_echo_start(sox_effect_t * effp)
         float sum_in_volume;
 
         echo->maxsamples = 0;
-	echo->samples = lsx_calloc(echo->num_delays, sizeof(*echo->samples));
+	lsx_vcalloc(echo->samples, echo->num_delays);
         for ( i = 0; i < echo->num_delays; i++ ) {
                 echo->samples[i] = echo->delay[i] * effp->in_signal.rate / 1000.0;
                 if ( echo->samples[i] > echo->maxsamples )

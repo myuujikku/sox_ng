@@ -148,7 +148,7 @@ static int startread(sox_format_t * ft)
   /* Setup buffer */
   vb->buf_len = DEF_BUF_LEN;
   vb->buf_len -= vb->buf_len % (vi->channels*2); /* 2 bytes per sample */
-  vb->buf = lsx_calloc(vb->buf_len, sizeof(char));
+  lsx_vcalloc(vb->buf, vb->buf_len);
   vb->start = vb->end = 0;
 
   /* Fill in other info */
@@ -260,8 +260,8 @@ static int write_vorbis_header(sox_format_t * ft, vorbis_enc_t * ve)
   memset(&vc, 0, sizeof(vc));
   vc.comments = sox_num_comments(ft->oob.comments);
   if (vc.comments) {     /* Make the comment structure */
-    vc.comment_lengths = lsx_calloc((size_t)vc.comments, sizeof(*vc.comment_lengths));
-    vc.user_comments = lsx_calloc((size_t)vc.comments, sizeof(*vc.user_comments));
+    lsx_vcalloc(vc.comment_lengths, vc.comments);
+    lsx_vcalloc(vc.user_comments, vc.comments);
     for (i = 0; i < vc.comments; ++i) {
       static const char prepend[] = "Comment=";
       char * text = lsx_calloc(strlen(prepend) + strlen(ft->oob.comments[i]) + 1, sizeof(*text));

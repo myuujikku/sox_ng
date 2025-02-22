@@ -136,7 +136,7 @@ static int startread(sox_format_t * ft)
   /* Setup buffer */
   vb->buf_len = DEF_BUF_LEN;
   vb->buf_len -= vb->buf_len % (ft->signal.channels*2); /* 2 bytes per sample */
-  vb->buf = lsx_calloc(vb->buf_len, sizeof(char));
+  lsx_vcalloc(vb->buf, vb->buf_len);
   vb->start = vb->end = 0;
 
   /* Fill in other info */

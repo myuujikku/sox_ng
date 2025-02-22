@@ -392,7 +392,7 @@ static int start(sox_effect_t * effp)
         effp->in_signal.length / effp->in_signal.channels : 0;
 
   p->number_of_channels = effp->in_signal.channels;
-  p->channels = lsx_calloc(p->number_of_channels, sizeof(*p->channels));
+  lsx_vcalloc(p->channels, p->number_of_channels);
   for (i = 0; i < p->number_of_channels; ++i) {
     channel_t *  chan = &p->channels[i];
     *chan = p->getopts_channels[i % p->getopts_nchannels];
@@ -440,7 +440,7 @@ static int start(sox_effect_t * effp)
       chan->pos = 0;
 
       /* Exitation: */
-      chan->buffer = lsx_calloc(chan->buffer_len, sizeof(*chan->buffer));
+      lsx_vcalloc(chan->buffer, chan->buffer_len);
       for (k = 0, p2 = chan->p2; k < 2 && p2 >= 0; ++k, p2 = chan->p3) {
         double d1 = 0, d2, colour = pow(2., 4 * (p2 - 1));
         int32_t r = p2 * 100 + .5;

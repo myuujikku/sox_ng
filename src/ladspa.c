@@ -161,7 +161,7 @@ static int sox_ladspa_getopts(sox_effect_t *effp, int argc, char **argv)
   }
 
   /* Scan the ports for inputs and outputs */
-  l_st->control = lsx_calloc(l_st->desc->PortCount, sizeof(LADSPA_Data));
+  lsx_vcalloc(l_st->control, l_st->desc->PortCount);
   lsx_valloc(l_st->inputs,  l_st->desc->PortCount);
   lsx_valloc(l_st->outputs, l_st->desc->PortCount);
 
@@ -328,11 +328,13 @@ static int sox_ladspa_flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sa
   const size_t total_output_count = l_st->output_count * l_st->handle_count;
   const size_t channel_len = min(*isamp / total_input_count, *osamp / total_output_count + l_st->in_latency);
 
-  LADSPA_Data *buf = lsx_calloc(channel_len * total_input_count, sizeof(LADSPA_Data));
-  LADSPA_Data *outbuf = lsx_calloc(channel_len * total_output_count, sizeof(LADSPA_Data));
+  LADSPA_Data *buf, *outbuf;
   LADSPA_Handle handle;
   unsigned long port, l;
   SOX_SAMPLE_LOCALS;
+
+  lsx_vcalloc(buf, channel_len * total_input_count);
+  lsx_vcalloc(outbuf, channel_len * total_output_count);
 
   *isamp = channel_len * total_input_count;
   *osamp = 0;
@@ -414,7 +416,7 @@ static int sox_ladspa_drain(sox_effect_t * effp, sox_sample_t *obuf, size_t *osa
 
   /* feed some silence at the end to push the rest of the data out */
   isamp = l_st->out_latency * effp->in_signal.channels;
-  ibuf = lsx_calloc(isamp, sizeof(*ibuf));
+  lsx_vcalloc(ibuf, isamp);
 
   do {
     dsamp = min(l_st->out_latency * effp->out_signal.channels,

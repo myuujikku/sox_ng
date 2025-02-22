@@ -163,7 +163,7 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
   }
   c->nBands = (argc+1)>>1;
 
-  c->bands = lsx_calloc(c->nBands, sizeof(comp_band_t));
+  lsx_vcalloc(c->bands, c->nBands);
 
   for (i=0;i<c->nBands;++i) {
     c->arg = lsx_strdup(argv[i<<1]);
@@ -228,7 +228,7 @@ static int start(sox_effect_t * effp)
 
     /* Allocate the delay buffer */
     if (c->delay_buf_size > 0)
-      l->delay_buf = lsx_calloc(sizeof(long), c->delay_buf_size);
+      lsx_vcalloc(l->delay_buf, c->delay_buf_size);
     l->delay_buf_ptr = 0;
     l->delay_buf_cnt = 0;
 
