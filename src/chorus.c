@@ -423,7 +423,7 @@ const sox_effect_handler_t *lsx_chorus_effect_fn(void)
 "depth     0-      2    Additional variable delay in milliseconds",
 "-s                     Modulate sinusoidally",
 "-t                     Modulate triangularly",
-"Hint: out-gain <= 1 / ( gain-in + decay 1 + ... + decay n )",
+"Hint: gain-out <= 1 / ( gain-in + decay 1 + ... + decay n )",
           NULL
 	};
 

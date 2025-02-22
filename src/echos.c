@@ -27,7 +27,7 @@ typedef struct {
         int     *counter;
         int     num_delays;
         float   **delay_buf;
-        float   in_gain, out_gain;
+        float   gain_in, gain_out;
         float   *delay, *decay;
         ptrdiff_t *samples;
         size_t sumsamples;
@@ -49,8 +49,8 @@ static int sox_echos_getopts(sox_effect_t * effp, int argc, char **argv)
           return lsx_usage(effp);
 
         i = 0;
-        sscanf(argv[i++], "%f", &echos->in_gain);
-        sscanf(argv[i++], "%f", &echos->out_gain);
+        sscanf(argv[i++], "%f", &echos->gain_in);
+        sscanf(argv[i++], "%f", &echos->gain_out);
         while (i < argc) {
 		float delay, decay;
 
@@ -106,10 +106,10 @@ static int sox_echos_start(sox_effect_t * effp)
                 echos->counter[i] = 0;
                 echos->sumsamples += echos->samples[i];
         }
-        sum_in_volume = echos->in_gain;
+        sum_in_volume = echos->gain_in;
         for ( i = 0; i < echos->num_delays; i++ )
                 sum_in_volume += echos->decay[i];
-        if ( fabsf(sum_in_volume * echos->out_gain) > 1.0 )
+        if ( fabsf(sum_in_volume * echos->gain_out) > 1.0 )
                 lsx_warn("the output may saturate; a safe gain-out is %g",
                          1.0 / fabsf(sum_in_volume));
 
@@ -135,12 +135,12 @@ static int sox_echos_flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sam
                 /* Store delays as 24-bit signed longs */
                 d_in = (float) *ibuf++;
                 /* Compute output first */
-                d_out = d_in * echos->in_gain;
+                d_out = d_in * echos->gain_in;
                 for ( j = 0; j < echos->num_delays; j++ ) {
                         d_out += echos->delay_buf[j][echos->counter[j]] * echos->decay[j];
                 }
                 /* Adjust the output volume and size to 24 bit */
-                d_out = d_out * echos->out_gain;
+                d_out = d_out * echos->gain_out;
                 *obuf++ = SOX_ROUND_CLIP_COUNT(d_out, effp->clips);
                 /* Mix decay of delays and input */
                 for ( j = echos->num_delays - 1; j > 0; j-- ) {
@@ -175,7 +175,7 @@ static int sox_echos_drain(sox_effect_t * effp, sox_sample_t *obuf, size_t *osam
                         d_out += echos->delay_buf[j][echos->counter[j]] * echos->decay[j];
                 }
                 /* Adjust the output volume and size to 24 bit */
-                d_out = d_out * echos->out_gain;
+                d_out = d_out * echos->gain_out;
                 *obuf++ = SOX_ROUND_CLIP_COUNT(d_out, effp->clips);
                 /* Mix decay of delays and input */
                 for ( j = echos->num_delays - 1; j > 0; j-- ) {

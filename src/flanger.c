@@ -25,13 +25,13 @@ typedef enum {INTERP_LINEAR, INTERP_QUADRATIC} interp_t;
 
 typedef struct {
   /* Parameters */
-  double     delay_min;
-  double     delay_depth;
-  double     feedback_gain;
-  double     delay_gain;
+  double     delay;
+  double     depth;
+  double     regen;
+  double     width;
   double     speed;
   lsx_wave_t  wave_shape;
-  double     channel_phase;
+  double     phase;
   interp_t   interpolation;
 
   /* Delay buffers */
@@ -46,7 +46,7 @@ typedef struct {
   size_t  lfo_pos;
 
   /* Balancing */
-  double     in_gain;
+  double     gain_in;
 } priv_t;
 
 
@@ -64,19 +64,19 @@ static int getopts(sox_effect_t * effp, int argc, char *argv[])
   --argc, ++argv;
 
   /* Set non-zero defaults: */
-  p->delay_depth  = 2;
-  p->delay_gain   = 71;
+  p->depth  = 2;
+  p->width   = 71;
   p->speed        = 0.5;
-  p->channel_phase= 25;
+  p->phase= 25;
 
   do { /* break-able block */
-    NUMERIC_PARAMETER(delay_min    , 0   , INFINITY )
-    NUMERIC_PARAMETER(delay_depth  , 0   , INFINITY )
-    NUMERIC_PARAMETER(feedback_gain,-99  , 99 )
-    NUMERIC_PARAMETER(delay_gain   ,-INFINITY, INFINITY )
-    NUMERIC_PARAMETER(speed        , 0   , INFINITY )
+    NUMERIC_PARAMETER(delay, 0   , INFINITY )
+    NUMERIC_PARAMETER(depth, 0   , INFINITY )
+    NUMERIC_PARAMETER(regen, -99 , 99 )
+    NUMERIC_PARAMETER(width,-INFINITY, INFINITY )
+    NUMERIC_PARAMETER(speed, 0   , INFINITY )
     TEXTUAL_PARAMETER(wave_shape, lsx_get_wave_enum())
-    NUMERIC_PARAMETER(channel_phase, 0   , 100)
+    NUMERIC_PARAMETER(phase, 0   , 100)
     TEXTUAL_PARAMETER(interpolation, interp_enum)
   } while (0);
 
@@ -92,21 +92,21 @@ static int getopts(sox_effect_t * effp, int argc, char *argv[])
       "shape = %s\n"
       "phase = %g%%\n"
       "interp= %s",
-      p->delay_min,
-      p->delay_depth,
-      p->feedback_gain,
-      p->delay_gain,
+      p->delay,
+      p->depth,
+      p->regen,
+      p->width,
       p->speed,
       lsx_get_wave_enum()[p->wave_shape].text,
-      p->channel_phase,
+      p->phase,
       interp_enum[p->interpolation].text);
 
   /* Scale to unity: */
-  p->feedback_gain /= 100;
-  p->delay_gain    /= 100;
-  p->channel_phase /= 100;
-  p->delay_min     /= 1000;
-  p->delay_depth   /= 1000;
+  p->regen /= 100;
+  p->width    /= 100;
+  p->phase /= 100;
+  p->delay     /= 1000;
+  p->depth   /= 1000;
 
   return SOX_SUCCESS;
 }
@@ -122,23 +122,23 @@ static int start(sox_effect_t * effp)
   lsx_valloc(f->delay_last, channels);
 
   /* Balance output: */
-  if (!isfinite(f->delay_gain)) {
-    f->in_gain = 0;
-    f->delay_gain = (f->delay_gain > 0) ? 1 : -1;
+  if (!isfinite(f->width)) {
+    f->gain_in = 0;
+    f->width = (f->width > 0) ? 1 : -1;
   } else {
-    f->in_gain = 1 / (1 + f->delay_gain);
-    f->delay_gain  /= 1 + f->delay_gain;
+    f->gain_in = 1 / (1 + f->width);
+    f->width  /= 1 + f->width;
   }
 
   /* Balance feedback loop: */
-  f->delay_gain *= 1 - fabs(f->feedback_gain);
+  f->width *= 1 - fabs(f->regen);
 
-  lsx_debug("in_gain=%g feedback_gain=%g delay_gain=%g\n",
-      f->in_gain, f->feedback_gain, f->delay_gain);
+  lsx_debug("gain_in=%g regen=%g width=%g\n",
+      f->gain_in, f->regen, f->width);
 
   /* Create the delay buffers, one for each channel: */
   f->delay_buf_length =
-    (f->delay_min + f->delay_depth) * effp->in_signal.rate + 0.5;
+    (f->delay + f->depth) * effp->in_signal.rate + 0.5;
   ++f->delay_buf_length;  /* Need 0 to n, i.e. n + 1. */
   ++f->delay_buf_length;  /* Quadratic interpolator needs one more. */
   for (c = 0; c < channels; ++c)
@@ -152,7 +152,7 @@ static int start(sox_effect_t * effp)
       SOX_FLOAT,
       f->lfo,
       f->lfo_length,
-      floor(f->delay_min * effp->in_signal.rate + .5),
+      floor(f->delay * effp->in_signal.rate + .5),
       f->delay_buf_length - 2.,
       3 * M_PI_2);  /* Start the sweep at minimum delay (for mono at least) */
 
@@ -180,13 +180,13 @@ static int flow(sox_effect_t * effp, sox_sample_t const * ibuf,
       double delayed_0, delayed_1;
       double delayed;
       double in, out;
-      size_t channel_phase = c * f->lfo_length * f->channel_phase + .5;
-      double delay = f->lfo[(f->lfo_pos + channel_phase) % f->lfo_length];
+      size_t phase = c * f->lfo_length * f->phase + .5;
+      double delay = f->lfo[(f->lfo_pos + phase) % f->lfo_length];
       double frac_delay = modf(delay, &delay);
       size_t int_delay = (size_t)delay;
 
       in = *ibuf++;
-      f->delay_bufs[c][f->delay_buf_pos] = in + f->delay_last[c] * f->feedback_gain;
+      f->delay_bufs[c][f->delay_buf_pos] = in + f->delay_last[c] * f->regen;
 
       delayed_0 = f->delay_bufs[c]
         [(f->delay_buf_pos + int_delay++) % f->delay_buf_length];
@@ -208,7 +208,7 @@ static int flow(sox_effect_t * effp, sox_sample_t const * ibuf,
       }
 
       f->delay_last[c] = delayed;
-      out = in * f->in_gain + delayed * f->delay_gain;
+      out = in * f->gain_in + delayed * f->width;
       *obuf++ = SOX_ROUND_CLIP_COUNT(out, effp->clips);
     }
     f->lfo_pos = (f->lfo_pos + 1) % f->lfo_length;
