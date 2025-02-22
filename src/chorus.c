@@ -140,7 +140,7 @@ static int sox_chorus_getopts (sox_effect_t *effp,
 	    p = &chorus->stage[chorus->stage_count];
 
             NUMERIC_PARAMETER(delay,  0.0, INFINITY);
-            NUMERIC_PARAMETER(decay, -1.0,   1.0);
+            NUMERIC_PARAMETER(decay, -1.0, 1.0);
             NUMERIC_PARAMETER(speed,  0.0, INFINITY);
             NUMERIC_PARAMETER(depth,  0.0, INFINITY);
             TEXTUAL_PARAMETER(wave_type, modulation_kind_map);
@@ -423,7 +423,7 @@ const sox_effect_handler_t *lsx_chorus_effect_fn(void)
 "depth     0-      2    Additional variable delay in milliseconds",
 "-s                     Modulate sinusoidally",
 "-t                     Modulate triangularly",
-"Hint: out-gain <= 1 / ( gain-in + decay 1 + ... + decay n )",
+"Hint: gain-out <= 1 / ( gain-in + decay 1 + ... + decay n )",
           NULL
 	};
 

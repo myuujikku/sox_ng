@@ -10,7 +10,7 @@
 #include "sox_i.h"
 
 typedef struct {
-  double     in_gain, out_gain, delay_ms, decay, mod_speed;
+  double     gain_in, gain_out, delay, decay, speed;
   lsx_wave_t mod_type;
 
   int        * mod_buf;
@@ -28,19 +28,19 @@ static int getopts(sox_effect_t * effp, int argc, char * * argv)
   char chars[2];
 
   /* Set non-zero defaults: */
-  p->in_gain   = .4;
-  p->out_gain  = .74;
-  p->delay_ms  = 3.;
+  p->gain_in   = .4;
+  p->gain_out  = .74;
+  p->delay  = 3.;
   p->decay     = .4;
-  p->mod_speed = .5;
+  p->speed = .5;
 
   --argc, ++argv;
   do { /* break-able block */
-    NUMERIC_PARAMETER(in_gain  , -1, 1)
-    NUMERIC_PARAMETER(out_gain , .0, INFINITY)
-    NUMERIC_PARAMETER(delay_ms , .0, INFINITY)
+    NUMERIC_PARAMETER(gain_in  , -1, 1)
+    NUMERIC_PARAMETER(gain_out , .0, INFINITY)
+    NUMERIC_PARAMETER(delay    , .0, INFINITY)
     NUMERIC_PARAMETER(decay    , .0, .99)
-    NUMERIC_PARAMETER(mod_speed, .0, INFINITY)
+    NUMERIC_PARAMETER(speed    , .0, INFINITY)
   } while (0);
 
   if (argc && sscanf(*argv, "-%1[st]%c", chars, chars + 1) == 1) {
@@ -48,21 +48,21 @@ static int getopts(sox_effect_t * effp, int argc, char * * argv)
     --argc, ++argv;
   }
 
-  if (!isfinite(p->out_gain)) {
+  if (!isfinite(p->gain_out)) {
     lsx_warn("warning: gain-out cannot be infinite");
     return SOX_EOF;
   }
-  if (!isfinite(p->delay_ms)) {
+  if (!isfinite(p->delay)) {
     lsx_warn("warning: delays cannot be infinite");
     return SOX_EOF;
   }
-  if (!isfinite(p->mod_speed) || p->mod_speed <= 0.0) {
+  if (!isfinite(p->speed) || p->speed <= 0.0) {
     lsx_warn("warning: modulation speeds cannot be infinite or zero");
     return SOX_EOF;
   }
-  if (p->in_gain > (1 - p->decay * p->decay))
+  if (p->gain_in > (1 - p->decay * p->decay))
     lsx_warn("warning: gain-in might cause clipping");
-  if (p->in_gain / (1 - p->decay) > 1 / p->out_gain)
+  if (p->gain_in / (1 - p->decay) > 1 / p->gain_out)
     lsx_warn("warning: gain-out might cause clipping");
 
   return argc? lsx_usage(effp) : SOX_SUCCESS;
@@ -72,14 +72,14 @@ static int start(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *) effp->priv;
 
-  p->delay_buf_len = p->delay_ms * .001 * effp->in_signal.rate + .5;
+  p->delay_buf_len = p->delay * .001 * effp->in_signal.rate + .5;
   if (p->delay_buf_len <= 0) {
     lsx_fail("The delay must be at least one sample");
     return SOX_EOF;
   }
   p->delay_buf = lsx_calloc(p->delay_buf_len, sizeof(*p->delay_buf));
 
-  p->mod_buf_len = effp->in_signal.rate / p->mod_speed + .5;
+  p->mod_buf_len = effp->in_signal.rate / p->speed + .5;
   p->mod_buf = lsx_malloc(p->mod_buf_len * sizeof(*p->mod_buf));
   lsx_generate_wave_table(p->mod_type, SOX_INT, p->mod_buf, p->mod_buf_len,
       1., (double)p->delay_buf_len, M_PI_2);
@@ -97,14 +97,14 @@ static int flow(sox_effect_t * effp, const sox_sample_t *ibuf,
   size_t len = *isamp = *osamp = min(*isamp, *osamp);
 
   while (len--) {
-    double d = *ibuf++ * p->in_gain + p->delay_buf[
+    double d = *ibuf++ * p->gain_in + p->delay_buf[
       (p->delay_pos + p->mod_buf[p->mod_pos]) % p->delay_buf_len] * p->decay;
     p->mod_pos = (p->mod_pos + 1) % p->mod_buf_len;
     
     p->delay_pos = (p->delay_pos + 1) % p->delay_buf_len;
     p->delay_buf[p->delay_pos] = d;
 
-    *obuf++ = SOX_ROUND_CLIP_COUNT(d * p->out_gain, effp->clips);
+    *obuf++ = SOX_ROUND_CLIP_COUNT(d * p->gain_out, effp->clips);
   }
   return SOX_SUCCESS;
 }
@@ -141,8 +141,8 @@ sox_effect_handler_t const * lsx_phaser_effect_fn(void)
 "-s                       Sinusoidal modulation",
 "-t                       Triangular modulation",
 "",
-"Hint:  in-gain < (1 - decay * decay)",
-"      out-gain < (1 - decay) / gain-in",
+"Hint: gain-in  < (1 - decay * decay)",
+"      gain-out < (1 - decay) / gain-in",
     NULL
   };
 

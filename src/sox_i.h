@@ -259,7 +259,7 @@ int lsx_usage(sox_effect_t * effp);
   d = strtod(*argv, &end_ptr); \
   if (end_ptr != *argv) { \
     if (d < min || d > max || *end_ptr != '\0') {\
-      lsx_fail("parameter `%s' must be between %g and %g", #name, (double)min, (double)max); \
+      lsx_fail("parameter `%s' must be from %g to %g", #name, (double)min, (double)max); \
       return lsx_usage(effp); \
     } \
     p->name = d; \
@@ -281,7 +281,7 @@ int lsx_usage(sox_effect_t * effp);
   char * end_ptr; \
   double d = strtod(state.arg, &end_ptr); \
   if (end_ptr == state.arg || d < min || d > max || *end_ptr != '\0') {\
-    lsx_fail("parameter `%s' must be between %g and %g", #name, (double)min, (double)max); \
+    lsx_fail("parameter `%s' must be from %g to %g", #name, (double)min, (double)max); \
     return lsx_usage(effp); \
   } \
   name = d; \
