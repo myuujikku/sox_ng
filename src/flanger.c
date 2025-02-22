@@ -64,17 +64,17 @@ static int getopts(sox_effect_t * effp, int argc, char *argv[])
   --argc, ++argv;
 
   /* Set non-zero defaults: */
-  p->depth  = 2;
-  p->width   = 71;
-  p->speed        = 0.5;
-  p->phase= 25;
+  p->depth = 2;
+  p->width = 71;
+  p->speed = 0.5;
+  p->phase = 25;
 
   do { /* break-able block */
-    NUMERIC_PARAMETER(delay, 0   , INFINITY )
-    NUMERIC_PARAMETER(depth, 0   , INFINITY )
-    NUMERIC_PARAMETER(regen, -99 , 99 )
-    NUMERIC_PARAMETER(width,-INFINITY, INFINITY )
-    NUMERIC_PARAMETER(speed, 0   , INFINITY )
+    NUMERIC_PARAMETER(delay, 0   , 1000 )
+    NUMERIC_PARAMETER(depth, 0   , 1000 )
+    NUMERIC_PARAMETER(regen,-100 , 100 )
+    NUMERIC_PARAMETER(width,-100 , 100 )
+    NUMERIC_PARAMETER(speed, 0   , 192000 )
     TEXTUAL_PARAMETER(wave_shape, lsx_get_wave_enum())
     NUMERIC_PARAMETER(phase, 0   , 100)
     TEXTUAL_PARAMETER(interpolation, interp_enum)
@@ -103,10 +103,10 @@ static int getopts(sox_effect_t * effp, int argc, char *argv[])
 
   /* Scale to unity: */
   p->regen /= 100;
-  p->width    /= 100;
+  p->width /= 100;
   p->phase /= 100;
-  p->delay     /= 1000;
-  p->depth   /= 1000;
+  p->delay /= 1000;
+  p->depth /= 1000;
 
   return SOX_SUCCESS;
 }
@@ -121,24 +121,22 @@ static int start(sox_effect_t * effp)
   lsx_valloc(f->delay_bufs, channels);
   lsx_valloc(f->delay_last, channels);
 
-  /* Balance output: */
-  if (!isfinite(f->width)) {
-    f->gain_in = 0;
-    f->width = (f->width > 0) ? 1 : -1;
-  } else {
-    f->gain_in = 1 / (1 + f->width);
-    f->width  /= 1 + f->width;
-  }
+  /* Balance output */
+  f->gain_in = 1 / (1 + f->width);
+  f->width  /= 1 + f->width;
 
-  /* Balance feedback loop: */
+  /* Balance feedback loop */
   f->width *= 1 - fabs(f->regen);
 
   lsx_debug("gain_in=%g regen=%g width=%g\n",
       f->gain_in, f->regen, f->width);
 
   /* Create the delay buffers, one for each channel: */
-  f->delay_buf_length =
-    (f->delay + f->depth) * effp->in_signal.rate + 0.5;
+  f->delay_buf_length = (f->delay + f->depth) * effp->in_signal.rate;
+  if (f->delay_buf_length < 1) {
+    lsx_fail("delay+depth can't be less than %g", 1000 / effp->in_signal.rate);
+    return SOX_EOF;
+  }
   ++f->delay_buf_length;  /* Need 0 to n, i.e. n + 1. */
   ++f->delay_buf_length;  /* Quadratic interpolator needs one more. */
   for (c = 0; c < channels; ++c)
@@ -146,6 +144,10 @@ static int start(sox_effect_t * effp)
 
   /* Create the LFO lookup table: */
   f->lfo_length = effp->in_signal.rate / f->speed;
+  if (f->lfo_length < 1) {
+    lsx_fail("speed can't be more that the sample rate");
+    return SOX_EOF;
+  }
   f->lfo = lsx_calloc(f->lfo_length, sizeof(*f->lfo));
   lsx_generate_wave_table(
       f->wave_shape,
@@ -258,15 +260,15 @@ sox_effect_handler_t const * lsx_flanger_effect_fn(void)
 "    +----------------------------------->|   |",
 "                                         |___|",
 "        RANGE DEFAULT DESCRIPTION",
-"delay    0-       0   base delay in milliseconds",
-"depth    0-       2   added swept delay in milliseconds",
-"regen  -99-99     0   percentage regeneration (delayed signal feedback)",
-"width -inf-inf   71   percentage of delayed signal mixed with original",
-"speed    0-     0.5   sweeps per second (Hz)",
-"shape    s|t    sin   swept wave shape: sine|triangle",
-"phase    0-100   25   swept wave percentage phase-shift in multi-channel flange",
+"delay  0-1000    0    base delay in milliseconds",
+"depth  0-1000    2    added swept delay in milliseconds",
+"regen -100-100   0    percentage regeneration (delayed signal feedback)",
+"width -100-100  71    percentage of delayed signal mixed with original",
+"speed   0-192k  0.5   sweeps per second (Hz)",
+"shape    s|t    sine  swept wave shape: sine|triangle",
+"phase    0-100  25    percent phase shift of swept wave in multichannel flange",
 "                      0 = 100 = same phase on each channel",
-"interp   l|q    lin   delay-line interpolation: linear|quadratic",
+"interp   l|q  linear  delay-line interpolation: linear|quadratic",
     NULL
   };
 

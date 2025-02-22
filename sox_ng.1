@@ -2174,19 +2174,19 @@ cI c c lx.
 \ 	Range	Default	Description
 delay	0\-	0	Base delay in milliseconds
 depth	0\-	2	Added swept delay in milliseconds
-regen	\-99\-99	0	T{
+regen	\-100\-100	0	T{
 .na
 Percentage of regeneration (delayed signal feedback)
 T}
-width	-inf\-inf	71	T{
+width	\-100\-100	71	T{
 .na
 Percentage of delayed signal mixed with original
 T}
 speed	0\-	0\*d5	Sweeps per second (Hz)
-shape	\ 	sin	Swept wave shape: \fBsine\fR or \fBtriangle\fR
+shape	s|t	sin	Swept wave shape: \fBsine\fR or \fBtriangle\fR
 phase	0\-100	25	T{
 .na
-Swept wave percentage phase shift for multichannel (e.g. stereo) flange;
+Swept wave percentage phase shift for multichannel flange;
 0 = 100 = same phase on each channel.
 T}
 interp	\ 	lin	T{
