@@ -311,6 +311,21 @@ static int start(sox_format_t * ft)
   return SOX_SUCCESS;
 }
 
+/*
+ * Close file for libsndfile (this doesn't close the file handle)
+ */
+static int stop(sox_format_t * ft)
+{
+  priv_t * sf = (priv_t *)ft->priv;
+  sf->sf_stop(sf->sf_file);
+  drain_log_buffer(ft);
+  sf->sf_close(sf->sf_file);
+  free((void *)sf->log_buffer);
+  free((void *)sf->sf_info);
+  LSX_DLLIBRARY_CLOSE(sf, sndfile_dl);
+  return SOX_SUCCESS;
+}
+
 static int check_read_params(sox_format_t * ft, unsigned channels,
     sox_rate_t rate, sox_encoding_t encoding, unsigned bits_per_sample, uint64_t length)
 {
@@ -408,19 +423,6 @@ static size_t read_samples(sox_format_t * ft, sox_sample_t *buf, size_t len)
   return (size_t)sf->sf_read_int(sf->sf_file, (int *)buf, (sf_count_t)len);
 }
 
-/*
- * Close file for libsndfile (this doesn't close the file handle)
- */
-static int stopread(sox_format_t * ft)
-{
-  priv_t * sf = (priv_t *)ft->priv;
-  sf->sf_stop(sf->sf_file);
-  drain_log_buffer(ft);
-  sf->sf_close(sf->sf_file);
-  LSX_DLLIBRARY_CLOSE(sf, sndfile_dl);
-  return SOX_SUCCESS;
-}
-
 static int startwrite(sox_format_t * ft)
 {
   priv_t * sf = (priv_t *)ft->priv;
@@ -490,19 +492,6 @@ static size_t write_samples(sox_format_t * ft, const sox_sample_t *buf, size_t l
   return (size_t)sf->sf_write_int(sf->sf_file, (int *)buf, (sf_count_t)len);
 }
 
-/*
- * Close file for libsndfile (this doesn't close the file handle)
- */
-static int stopwrite(sox_format_t * ft)
-{
-  priv_t * sf = (priv_t *)ft->priv;
-  sf->sf_stop(sf->sf_file);
-  drain_log_buffer(ft);
-  sf->sf_close(sf->sf_file);
-  LSX_DLLIBRARY_CLOSE(sf, sndfile_dl);
-  return SOX_SUCCESS;
-}
-
 static int seek(sox_format_t * ft, sox_uint64_t offset)
 {
   priv_t * sf = (priv_t *)ft->priv;
@@ -549,8 +538,8 @@ LSX_FORMAT_HANDLER(sndfile)
 
   static sox_format_handler_t const format = {SOX_LIB_VERSION_CODE,
     "Pseudo format to use libsndfile", names, 0,
-    startread, read_samples, stopread,
-    startwrite, write_samples, stopwrite,
+    startread, read_samples, stop,
+    startwrite, write_samples, stop,
     seek, write_encodings, NULL, sizeof(priv_t)
   };
 
