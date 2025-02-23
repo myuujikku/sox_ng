@@ -201,11 +201,19 @@ static int sox_echo_stop(sox_effect_t * effp)
 {
         priv_t * echo = (priv_t *) effp->priv;
 
-        free(echo->delay);
-        free(echo->decay);
+        /* free per-channel data */
         free(echo->samples);
         free(echo->delay_buf);
-        echo->delay_buf = NULL;
+        return (SOX_SUCCESS);
+}
+
+static int sox_echo_kill(sox_effect_t * effp)
+{
+        priv_t * echo = (priv_t *) effp->priv;
+
+        /* free per-effect data */
+        free(echo->delay);
+        free(echo->decay);
         return (SOX_SUCCESS);
 }
 
@@ -243,7 +251,7 @@ const sox_effect_handler_t *lsx_echo_effect_fn(void)
     sox_echo_flow,
     sox_echo_drain,
     sox_echo_stop,
-    NULL, sizeof(priv_t)
+    sox_echo_kill, sizeof(priv_t)
   };
 
   return &handler;
