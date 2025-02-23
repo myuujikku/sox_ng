@@ -781,7 +781,7 @@ static int lsx_kill(sox_effect_t * effp)
 const sox_effect_handler_t *lsx_synth_effect_fn(void)
 {
   static const char usage[] =
-    "[-j key] [-n] [length [offset [phase [p1 [p2 [p3]]]]]] {type [combine [fixed[,extra[,mix]]]] [[%]freq[k][:|+|/|-[%]freq2[k]] [offset [phase [p1 [p2 [p3]]]]]]}";
+    "[-j key] [-n] [length [offset [phase [p1 [p2 [p3]]]]]] {type [combine [fixed[,extra[,mix]]]] [freq[:|+|/|-freq2] [offset [phase [p1 [p2 [p3]]]]]]}";
   static const char * const extra_usage[] = {
 "-j key  Retune scientific note names to `key' semitones higher",
 "-n      Don't normalize the output volume",

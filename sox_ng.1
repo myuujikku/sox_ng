@@ -2949,7 +2949,7 @@ The
 option can be given to select only the `wet' signal, thus allowing it to be
 processed further, independently of the `dry' signal.  E.g.
 .XE
-   play_ng \-m voice.wav "|sox_ng voice.wav \-p reverse reverb \-w reverse"
+   play_ng \-m in.au "|sox_ng in.au \-p reverse reverb \-w reverse"
 .XX
 for a reverse reverb effect.
 .TP
@@ -3874,8 +3874,12 @@ See
 .B remix
 for an effect that allows arbitrary channel selection, ordering and mixing.
 .TP
+.nh
+.na
 \fBsynth\fR [\fB\-j \fIkey\fR] [\fB\-n\fR] [\fIlength\fR [\fIoffset\fR [\fIphase\fR [\fIp1\fR [\fIp2\fR [\fIp3\fR]]]]]]
-{\fItype\fR [\fIcombine\fR \fIfixed\fR[\fB,\fIextra\fR[\fB,\fImix\fR]]] \:[[\fB%\fR]\fIfreq\fR[\fBk\fR][\fB:\fR\^|\^\fB+\fR\^|\^\fB/\fR\^|\^\fB\-\fR[\fB%\fR]\fIfreq2\fR[\fBk\fR]]] [\fIoffset\fR [\fIphase\fR [\fIp1\fR [\fIp2\fR [\fIp3\fR]]]]]}
+{\fItype\fR [\fIcombine\fR [\fIfixed\fR[\fB,\fIextra\fR[\fB,\fImix\fR]]]] \:[\fIfreq\fR[\fB:\fR\^|\^\fB+\fR\^|\^\fB/\fR\^|\^\fB\-\fIfreq2\fR]] [\fIoffset\fR [\fIphase\fR [\fIp1\fR [\fIp2\fR [\fIp3\fR]]]]]}
+.ad
+.hy
 .SP
 \fBsynth\fR generates fixed or swept frequency audio tones
 with various wave shapes and wide-band noise of various colors.
