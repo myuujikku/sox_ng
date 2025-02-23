@@ -140,6 +140,8 @@ size_t lsx_readbuf(sox_format_t * ft, void *buf, size_t len)
  */
 void lsx_unreadbuf(sox_format_t * ft, void *buf, size_t len)
 {
+  if (len == 0) return;
+
   /* If there is no pending buffer, allocate it afresh */
   if (ft->pending_count == 0) {
     ft->pending_buffer = lsx_malloc(len);
@@ -470,13 +472,14 @@ static uint8_t const cswap[256] = {
   size_t lsx_read_ ## type ## _buf( \
       sox_format_t * ft, ctype *buf, size_t len) \
   { \
-    int n, bytesread, nread; \
+    size_t n, bytesread, nread; \
     sox_uint8_t *rawbuf = (sox_uint8_t*)buf; \
     bytesread = lsx_readbuf(ft, rawbuf, len * size); \
     nread = bytesread / size; \
     for (n = 0; n < nread; n++) \
       twiddle(buf[n], type); \
-    lsx_unreadbuf(ft, rawbuf + nread * size, bytesread - nread * size); \
+    if (bytesread > nread * size) \
+      lsx_unreadbuf(ft, rawbuf + nread * size, bytesread - nread * size); \
     return nread; \
   }
 
@@ -497,7 +500,8 @@ static uint8_t const cswap[256] = {
     nread = bytesread / size; \
     for (n = 0; n < nread; n++) \
       buf[n] = sox_unpack ## size(data + n * size); \
-    lsx_unreadbuf(ft, data + nread * size, bytesread - nread * size); \
+    if (bytesread > nread * size) \
+      lsx_unreadbuf(ft, data + nread * size, bytesread - nread * size); \
     free(data); \
     return nread; \
   }
