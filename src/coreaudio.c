@@ -26,6 +26,7 @@
 
 typedef struct {
   AudioDeviceID adid;
+  AudioDeviceIOProcID adiopid;
   pthread_mutex_t mutex;
   pthread_cond_t cond;
   int device_started;
@@ -130,173 +131,258 @@ static OSStatus RecIOProc(AudioDeviceID inDevice UNUSED,
     return kAudioHardwareNoError;
 }
 
+/* Helper function from https://stackoverflow.com/questions/4575408 */
+static sox_bool DeviceHasBuffersInScope(AudioObjectID deviceID,
+                                          sox_bool is_input)
+{
+    AudioObjectPropertyAddress propertyAddress = {
+        .mSelector  = kAudioDevicePropertyStreamConfiguration,
+        .mScope     = is_input ? kAudioObjectPropertyScopeInput
+                               : kAudioObjectPropertyScopeOutput,
+        .mElement   = kAudioObjectPropertyElementWildcard
+    };
+    UInt32 dataSize = 0;
+    AudioBufferList *bufferList;
+    sox_bool supportsScope;
+
+    if (deviceID == kAudioObjectUnknown) return sox_false;
+
+    if (AudioObjectGetPropertyDataSize(deviceID, &propertyAddress, 0, NULL,
+                                       &dataSize) != kAudioHardwareNoError)
+        return sox_false;
+
+    bufferList = lsx_malloc(dataSize);
+    if (AudioObjectGetPropertyData(deviceID, &propertyAddress, 0, NULL,
+                                   &dataSize, bufferList))
+    {
+        free(bufferList);
+        return sox_false;
+    }
+
+    supportsScope = bufferList->mNumberBuffers > 0;
+    free(bufferList);
+
+    return supportsScope;
+}
+
 static int setup(sox_format_t *ft, int is_input)
 {
-  priv_t *ac = (priv_t *)ft->priv;
-  OSStatus status;
-  UInt32 property_size;
-  struct AudioStreamBasicDescription stream_desc;
-  int32_t buf_size;
-  int rc;
+    priv_t *ac = (priv_t *)ft->priv;
+    AudioObjectPropertyAddress address = {
+        .mScope = is_input ? kAudioObjectPropertyScopeInput
+                           : kAudioObjectPropertyScopeOutput
+    };
+    UInt32 property_size;
+    struct AudioStreamBasicDescription stream_desc;
+    int32_t buf_size;
+    char *io = is_input ? "input" : "output";  /* For use in error messages */
 
-  if (strncmp(ft->filename, "default", (size_t)7) == 0)
-  {
-      property_size = sizeof(ac->adid);
-      if (is_input)
-          status = AudioHardwareGetProperty(kAudioHardwarePropertyDefaultInputDevice, &property_size, &ac->adid);
-      else
-          status = AudioHardwareGetProperty(kAudioHardwarePropertyDefaultOutputDevice, &property_size, &ac->adid);
-  }
-  else
-  {
-      Boolean is_writable;
-      status = AudioHardwareGetPropertyInfo(kAudioHardwarePropertyDevices, &property_size, &is_writable);
+    /* Setup is called twice (why?) so reset adid to Not Found both times */
+    ac->adid = kAudioDeviceUnknown;
 
-      if (status == noErr)
-      {
-          int device_count = property_size/sizeof(AudioDeviceID);
-          AudioDeviceID *devices;
+    fprintf(stderr, "setup\n");
 
-          devices = malloc(property_size);
-              status = AudioHardwareGetProperty(kAudioHardwarePropertyDevices, &property_size, devices);
+    if (strncmp(ft->filename, "default", (size_t)7) == 0)
+    {
+        address.mSelector = is_input ? kAudioHardwarePropertyDefaultInputDevice
+                                     : kAudioHardwarePropertyDefaultOutputDevice;
+        address.mElement  = kAudioObjectPropertyElementMain;
+        property_size = sizeof(ac->adid);
+        if (AudioObjectGetPropertyData(kAudioObjectSystemObject,
+                                       &address, 0, NULL,
+                                       &property_size, &ac->adid))
+        {
+            lsx_fail_errno(ft, SOX_EPERM,
+                           "there is no default audio %s device", io);
+            return SOX_EOF;
+        }
+    }
+    else
+    {   /*
+	 * Fetch a list of the audio devices and look for the one they want
+	 */
+        sox_uint32_t datasize = 0;
+	AudioDeviceID *devices;
+	int i;
 
-          if (status == noErr)
-          {
-              int i;
-              for (i = 0; i < device_count; i++)
-              {
-                  char name[256];
+        address.mSelector = kAudioHardwarePropertyDevices;
+        address.mElement  = kAudioObjectPropertyElementWildcard;
+        if (AudioObjectGetPropertyDataSize(kAudioObjectSystemObject,
+                                           &address, 0, NULL, &datasize)
+            || datasize == 0)
+        {
+nodevices:  lsx_fail_errno(ft, SOX_EPERM,
+                           "there appear to be no audio %s devices", io);
+            return SOX_EOF;
+        }
 
-                  property_size = sizeof(name);
-                  status = AudioDeviceGetProperty(devices[i],0,false,kAudioDevicePropertyDeviceName,&property_size,&name);
+	devices = lsx_malloc(datasize);
+	if (AudioObjectGetPropertyData(kAudioObjectSystemObject,
+				       &address, 0, NULL,
+				       &datasize, devices))
+	{
+	    free(devices);
+	    goto nodevices;
+	}
 
-                  lsx_report("Found Audio Device \"%s\"\n",name);
+	address.mSelector = kAudioDevicePropertyDeviceName;
 
-                  /* String returned from OS is truncated so only compare
-                   * as much as returned.
-                   */
-                  if (strncmp(name,ft->filename,strlen(name)) == 0)
-                  {
-                      ac->adid = devices[i];
-                      break;
-                  }
-              }
-          }
-          free(devices);
-      }
-  }
+	for (i = 0; i < (int)(datasize / sizeof(AudioDeviceID)); i++)
+	{
+	    char *name;
 
-  if (status || ac->adid == kAudioDeviceUnknown)
-  {
-    lsx_fail_errno(ft, SOX_EPERM, "can not open audio device");
-    return SOX_EOF;
-  }
+	    if (!DeviceHasBuffersInScope(devices[i], is_input)) {
+		lsx_warn("Audio device %d has no buffers in scope", i);
+		continue;
+	    }
+	    datasize = 0;
+	    if (AudioObjectGetPropertyDataSize(devices[i], &address,
+                                               0, NULL, &datasize))
+		continue;
 
-  /* Query device to get initial values */
-  property_size = sizeof(struct AudioStreamBasicDescription);
-  status = AudioDeviceGetProperty(ac->adid, 0, is_input,
-                                  kAudioDevicePropertyStreamFormat,
-                                  &property_size, &stream_desc);
-  if (status)
-  {
-    lsx_fail_errno(ft, SOX_EPERM, "can not get audio device properties");
-    return SOX_EOF;
-  }
+	    name = (char *) lsx_malloc(datasize + 1);
+	    if (AudioObjectGetPropertyData(devices[i], &address,
+                                           0, NULL, &datasize, name))
+	    {
+		free(name);
+		continue;
+	    }
+	    name[datasize] = '\0';
 
-  if (!(stream_desc.mFormatFlags & kLinearPCMFormatFlagIsFloat))
-  {
-    lsx_fail_errno(ft, SOX_EPERM, "audio device does not accept floats");
-    return SOX_EOF;
-  }
+	    lsx_report("found audio device '%s'",name);
 
-  /* OS X effectively only supports these values. */
-  ft->signal.channels = 2;
-  ft->signal.rate = 44100;
-  ft->encoding.bits_per_sample = 32;
+	    if (strcmp(name,ft->filename) == 0)
+	    {
+		/* Found it! */
+		ac->adid = devices[i];
+		free(name);
+		break;
+	    }
+	    free(name);
+	}
 
-  /* TODO: My limited experience with hardware can only get floats working
-   * withh a fixed sample rate and stereo.  I know that is a limitiation of
-   * audio device I have so this may not be standard operating orders.
-   * If some hardware supports setting sample rates and channel counts
-   * then should do that over resampling and mixing.
-   */
-#if  0
-  stream_desc.mSampleRate = ft->signal.rate;
-  stream_desc.mChannelsPerFrame = ft->signal.channels;
+	if (ac->adid == kAudioDeviceUnknown) {
+	   lsx_fail_errno(ft, SOX_EPERM,
+	                  "can't find %s device '%s'. Try -V3\n",
+                          io, ft->filename);
+	   free(devices);
+	   return SOX_EOF;
+	}
+	free(devices);
+    }
 
-  /* Write them back */
-  property_size = sizeof(struct AudioStreamBasicDescription);
-  status = AudioDeviceSetProperty(ac->adid, NULL, 0, is_input,
-                                  kAudioDevicePropertyStreamFormat,
-                                  property_size, &stream_desc);
-  if (status)
-  {
-    lsx_fail_errno(ft, SOX_EPERM, "can not set audio device properties");
-    return SOX_EOF;
-  }
+    if (ac->adid == kAudioDeviceUnknown)
+    {
+      lsx_fail_errno(ft, SOX_EPERM, "can not open audio device");
+      return SOX_EOF;
+    }
 
-  /* Query device to see if it worked */
-  property_size = sizeof(struct AudioStreamBasicDescription);
-  status = AudioDeviceGetProperty(ac->adid, 0, is_input,
-                                  kAudioDevicePropertyStreamFormat,
-                                  &property_size, &stream_desc);
+    /* Query device to get initial values */
+    address.mSelector = kAudioDevicePropertyStreamFormat;
+    address.mElement  = kAudioObjectPropertyElementMain;
+    property_size = sizeof(stream_desc);
+    if (AudioObjectGetPropertyData(ac->adid, &address, 0, NULL,
+                                   &property_size, &stream_desc))
+    {
+      lsx_fail_errno(ft, SOX_EPERM, "can not get audio device properties");
+      return SOX_EOF;
+    }
 
-  if (status)
-  {
-    lsx_fail_errno(ft, SOX_EPERM, "can not get audio device properties");
-    return SOX_EOF;
-  }
-#endif
+    if (!(stream_desc.mFormatFlags & kLinearPCMFormatFlagIsFloat))
+    {
+      lsx_fail_errno(ft, SOX_EPERM, "the audio device does not accept floats");
+      return SOX_EOF;
+    }
 
-  if (stream_desc.mChannelsPerFrame != ft->signal.channels)
-  {
-    lsx_debug("audio device did not accept %d channels. Use %d channels instead.", (int)ft->signal.channels,
-              (int)stream_desc.mChannelsPerFrame);
-    ft->signal.channels = stream_desc.mChannelsPerFrame;
-  }
+    /* OS X effectively only supports these values. */
+    ft->signal.channels = 2;
+    ft->signal.rate = 44100;
+    ft->encoding.bits_per_sample = 32;
 
-  if (stream_desc.mSampleRate != ft->signal.rate)
-  {
-    lsx_debug("audio device did not accept %d sample rate. Use %d instead.", (int)ft->signal.rate,
-              (int)stream_desc.mSampleRate);
-    ft->signal.rate = stream_desc.mSampleRate;
-  }
+    /* TODO: My limited experience with hardware can only get floats working
+     * withh a fixed sample rate and stereo.  I know that is a limitiation of
+     * audio device I have so this may not be standard operating orders.
+     * If some hardware supports setting sample rates and channel counts
+     * then should do that over resampling and mixing.
+     */
+  #if  0
+    stream_desc.mSampleRate = ft->signal.rate;
+    stream_desc.mChannelsPerFrame = ft->signal.channels;
 
-  ac->bufsize = sox_globals.bufsiz / sizeof(sox_sample_t) * Buffactor;
-  ac->bufrd = 0;
-  ac->bufwr = 0;
-  ac->bufrdavail = 0;
-  lsx_valloc(ac->buf, ac->bufsize);
+    /* Write them back */
+    property_size = sizeof(struct AudioStreamBasicDescription);
+    if (AudioDeviceSetProperty(ac->adid, NULL, 0, is_input,
+                                    kAudioDevicePropertyStreamFormat,
+                                    property_size, &stream_desc))
+    {
+      lsx_fail_errno(ft, SOX_EPERM, "can not set audio device properties");
+      return SOX_EOF;
+    }
 
-  buf_size = sox_globals.bufsiz / sizeof(sox_sample_t) * sizeof(float);
-  property_size = sizeof(buf_size);
-  status = AudioDeviceSetProperty(ac->adid, NULL, 0, is_input,
-                                  kAudioDevicePropertyBufferSize,
-                                  property_size, &buf_size);
+    /* Query device to see if it worked */
+    property_size = sizeof(struct AudioStreamBasicDescription);
+    if (AudioDeviceGetProperty(ac->adid, 0, is_input,
+                               kAudioDevicePropertyStreamFormat,
+                               &property_size, &stream_desc)
+    {
+      lsx_fail_errno(ft, SOX_EPERM, "can not get audio device properties");
+      return SOX_EOF;
+    }
+  #endif
 
-  rc = pthread_mutex_init(&ac->mutex, NULL);
-  if (rc)
-  {
-    lsx_fail_errno(ft, SOX_EPERM, "failed initializing mutex");
-    return SOX_EOF;
-  }
+    if (stream_desc.mChannelsPerFrame != ft->signal.channels)
+    {
+      lsx_debug("audio device did not accept %d channels. Use %d channels instead.", (int)ft->signal.channels,
+                (int)stream_desc.mChannelsPerFrame);
+      ft->signal.channels = stream_desc.mChannelsPerFrame;
+    }
 
-  rc = pthread_cond_init(&ac->cond, NULL);
-  if (rc)
-  {
-    lsx_fail_errno(ft, SOX_EPERM, "failed initializing condition");
-    return SOX_EOF;
-  }
+    if (stream_desc.mSampleRate != ft->signal.rate)
+    {
+      lsx_debug("audio device did not accept %d sample rate. Use %d instead.", (int)ft->signal.rate,
+                (int)stream_desc.mSampleRate);
+      ft->signal.rate = stream_desc.mSampleRate;
+    }
 
-  ac->device_started = 0;
+    ac->bufsize = sox_globals.bufsiz / sizeof(sox_sample_t) * Buffactor;
+    ac->bufrd = 0;
+    ac->bufwr = 0;
+    ac->bufrdavail = 0;
+    lsx_valloc(ac->buf, ac->bufsize);
 
-  /* Registers callback with the device without activating it. */
-  if (is_input)
-    status = AudioDeviceAddIOProc(ac->adid, RecIOProc, (void *)ft);
-  else
-    status = AudioDeviceAddIOProc(ac->adid, PlaybackIOProc, (void *)ft);
+    buf_size = sox_globals.bufsiz / sizeof(sox_sample_t) * sizeof(float);
+    address.mSelector = kAudioDevicePropertyBufferSize;
+    property_size = sizeof(buf_size);
+    if (AudioObjectSetPropertyData(ac->adid, &address, 0, NULL,
+                                   property_size, &buf_size)) {
+      lsx_fail_errno(ft, SOX_EPERM, "can't set the audio buffer size");
+      free(ac->buf);
+      return SOX_EOF;
+    }
 
-  return SOX_SUCCESS;
+    if (pthread_mutex_init(&ac->mutex, NULL)) {
+      lsx_fail_errno(ft, SOX_EPERM, "failed initializing mutex");
+      free(ac->buf);
+      return SOX_EOF;
+    }
+
+    if (pthread_cond_init(&ac->cond, NULL)) {
+      lsx_fail_errno(ft, SOX_EPERM, "failed initializing condition");
+      free(ac->buf);
+      return SOX_EOF;
+    }
+
+    /* Registers callback with the device without activating it. */
+    ac->adiopid = NULL;
+    if (AudioDeviceCreateIOProcID(ac->adid, is_input ? RecIOProc : PlaybackIOProc,
+                                  (void *)ft, &ac->adiopid) || !ac->adiopid) {
+      lsx_fail_errno(ft, SOX_EPERM, "can't register the audio IO callback");
+      free(ac->buf);
+      return SOX_EOF;
+    }
+    ac->device_started = 0;
+
+    return SOX_SUCCESS;
 }
 
 static int startread(sox_format_t *ft)
@@ -311,7 +397,10 @@ static size_t read_samples(sox_format_t *ft, sox_sample_t *buf, size_t nsamp)
     SOX_SAMPLE_LOCALS;
 
     if (!ac->device_started) {
-        AudioDeviceStart(ac->adid, RecIOProc);
+        if (AudioDeviceStart(ac->adid, ac->adiopid)) {
+            lsx_warn("can't start the audio input device");
+            return 0;
+        }
         ac->device_started = 1;
     }
 
@@ -340,8 +429,10 @@ static int stopread(sox_format_t * ft)
 {
   priv_t *ac = (priv_t *)ft->priv;
 
-  AudioDeviceStop(ac->adid, RecIOProc);
-  AudioDeviceRemoveIOProc(ac->adid, RecIOProc);
+  if (ac->device_started)
+    if (AudioDeviceStop(ac->adid, ac->adiopid) == noErr)
+      ac->device_started = 0;
+  AudioDeviceDestroyIOProcID(ac->adid, ac->adiopid);
   pthread_cond_destroy(&ac->cond);
   pthread_mutex_destroy(&ac->mutex);
   free(ac->buf);
@@ -366,9 +457,10 @@ static size_t write_samples(sox_format_t *ft, const sox_sample_t *buf, size_t ns
     /* Wait to start until mutex is locked to help prevent callback
     * getting zero samples.
     */
-    if(!ac->device_started){
-        if(AudioDeviceStart(ac->adid, PlaybackIOProc)){
+    if (!ac->device_started) {
+        if (AudioDeviceStart(ac->adid, ac->adiopid)) {
             pthread_mutex_unlock(&ac->mutex);
+            lsx_warn("can't start the audio output device");
             return SOX_EOF;
         }
         ac->device_started = 1;
@@ -406,10 +498,11 @@ static int stopwrite(sox_format_t * ft)
 
         pthread_mutex_unlock(&ac->mutex);
 
-        AudioDeviceStop(ac->adid, PlaybackIOProc);
+        if (AudioDeviceStop(ac->adid, ac->adiopid) == noErr)
+            ac->device_started = 0;
     }
 
-    AudioDeviceRemoveIOProc(ac->adid, PlaybackIOProc);
+    AudioDeviceDestroyIOProcID(ac->adid, ac->adiopid);
     pthread_cond_destroy(&ac->cond);
     pthread_mutex_destroy(&ac->mutex);
     free(ac->buf);
