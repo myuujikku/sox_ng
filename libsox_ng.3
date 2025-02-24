@@ -19,12 +19,12 @@
 .if n .ds d .
 '\"
 '\" Enclosure macro for examples
-.de EX
+.de XE
 .SP
 .nf
 .ft CW
 ..
-.de EE
+.de XX
 .ft R
 .SP
 .fi
@@ -247,13 +247,13 @@ left-shifted 24 bits.
 Representing samples as integers can cause problems when processing audio.  
 For example, if an effect to mix down left and right channels into one
 monophonic channel were to use the line
-.EX
+.XE
    *obuf++ = (*ibuf++ + *ibuf++)/2;
-.EE
+.XX
 distortion may occur since the intermediate addition can overflow 32 bits.
-.EX
+.XE
    *obuf++ = *ibuf++/2 + *ibuf++/2;
-.EE
+.XX
 would get round the overflow but at the expense of the least significant bit.
 .P
 Stereo data is stored with the left and right speaker data
@@ -331,7 +331,7 @@ Typically, fix up the file header or whatever else needs to be done.
 Each effect runs with one input and one output stream.
 An effect's implementation comprises six functions that may be called
 according to the following flow diagram:
-.EX
+.XE
 LOOP (invocations with different parameters)
   getopts
   LOOP (invocations with the same parameters)
@@ -346,7 +346,7 @@ LOOP (invocations with different parameters)
     LOOP (channels)
       stop
   kill
-.EE
+.XX
 Functions that an effect does not need can be NULL.
 An effect that is marked `MCHAN' does not use the LOOP
 (channels) lines and must perform multiple channel processing
@@ -399,9 +399,9 @@ built on your system. For a static build, just link against the
 library. For a dynamic build, use \fBlibtool\fR to
 link with the correct linker flags. See the \fBlibtool\fR manual for
 details; basically, you use it like this:
-.EX
+.XE
    libtool \-\-mode=link gcc \-o prog /path/to/libsox_ng.la
-.EE
+.XX
 .SH LICENSE
 Copyright 1991\-2015 Lance Norskog, Chris Bagwell and sundry contributors.
 .SP

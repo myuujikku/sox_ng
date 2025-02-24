@@ -19,12 +19,12 @@
 .if n .ds d .
 '\"
 '\" Enclosure macro for examples
-.de EX
+.de XE
 .SP
 .nf
 .ft CW
 ..
-.de EE
+.de XX
 .ft R
 .SP
 .fi
@@ -150,12 +150,12 @@ Japanese data broadcasting.  Private chunks are not supported.
 The Advanced Linux Sound Architecture device driver supports both playing and
 recording audio.  ALSA is only used in Linux-based operating systems, though
 these often support OSS (see below) as well.  Examples:
-.EX
+.XE
 	sox_ng infile \-t alsa
 	sox_ng infile \-t alsa default
 	sox_ng infile \-t alsa plughw:0,0
 	sox_ng \-b 16 \-t alsa hw:1 outfile
-.EE
+.XX
 .TP
 .B .amb
 Ambisonic B-Format is a specialization of
@@ -203,11 +203,11 @@ use and normally, you should specify `default'.  If that
 doesn't give the desired behavior, you can specify the short name
 for a given plugin (such as \fBpulse\fR for the PulseAudio plugin).
 Examples:
-.EX
+.XE
 	sox_ng infile \-t ao
 	sox_ng infile \-t ao default
 	sox_ng infile \-t ao pulse
-.EE
+.XX
 .TP
 \fB.ape\fR (with ffmpeg)
 Monkey's Audio format.
@@ -278,11 +278,11 @@ to select a specific device.  The valid names can be seen in the
 System Preferences->Sound menu and then under the Output and Input tabs.
 .SP
 Examples:
-.EX
+.XE
 	sox_ng infile \-t coreaudio
 	sox_ng infile \-t coreaudio default
 	sox_ng infile \-t coreaudio "Internal Speakers"
-.EE
+.XX
 .TP
 \fB.cvsd\fR, \fB.cvs\fR
 Continuously Variable Slope Delta modulation is a headerless format 
@@ -298,10 +298,10 @@ is an alternative handler for CVSD that is unfiltered but can
 be used with any sampling rate. As it is a headerless format,
 you have to specify the sampling rate with \fB\-r\fR if it is
 different from 8kHz.
-.EX
+.XE
 	sox_ng infile outfile.cvu rate 28k
 	play \-r 28k outfile.cvu sinc \-3.4k
-.EE
+.XX
 .TP
 .B .dat
 Text Data files contain a textual representation of sample data.
@@ -318,12 +318,12 @@ a file in this format back into one of the other formats.
 .SP
 Example containing only 2 stereo samples of silence:
 .SP
-.EX
+.XE
     ; Sample Rate 8012
     ; Channels 2
                 0	0	0
     0.00012481278	0	0
-.EE
+.XX
 .TP
 \fB.dfpwm\fR (with ffmpeg)
 DFPWM1a format.
@@ -400,10 +400,10 @@ Grandstream ring-tone files.
 Whilst this file format can contain A-Law, \(*m-law, GSM, G.722,
 G.723, G.726, G.728, or iLBC encoded audio, SoX supports reading and
 writing only A-Law and \(*m-law.  E.g.
-.EX
+.XE
    sox_ng music.wav \-t gsrt ring.bin
    play ring.bin
-.EE
+.XX
 .TP
 \fB.gsm\fR (optional; also with \fB\-t sndfile\fR)
 GSM 06.10 Lossy Speech Compression.
@@ -593,11 +593,11 @@ SoX can only read Opus files, not write them.
 The Open Sound System /dev/dsp device driver supports both playing and
 recording audio.  OSS support is available in Unix-like operating systems,
 sometimes together with alternative sound systems (such as ALSA).  Examples:
-.EX
+.XE
 	sox_ng infile \-t oss
 	sox_ng infile \-t oss /dev/dsp
 	sox_ng \-b 16 \-t oss /dev/dsp outfile
-.EE
+.XX
 .TP
 \fB.paf\fR, \fB.fap\fR (with sndfile)
 Ensoniq PARIS file format (big and little-endian respectively).
@@ -613,9 +613,9 @@ Note: SoX support for SHOUTcast PLS relies on
 .BR wget (1)
 and is only partially supported: it's necessary to
 specify the audio type manually, e.g.
-.EX
+.XE
 	play \-t mp3 \(dqhttp://a.server/pls?rn=265&file=filename.pls\(dq
-.EE
+.XX
 and SoX does not know about alternative servers\*mhit Ctrl-C twice in
 quick succession to quit.
 .TP
@@ -768,13 +768,13 @@ superceded by their more recent Opus codec.
 \fBsunau\fR (optional)
 The Sun /dev/audio device driver supports both playing and
 recording audio.  For example:
-.EX
+.XE
 	sox_ng infile \-t sunau /dev/audio
-.EE
+.XX
 or
-.EX
+.XE
 	sox_ng infile \-t sunau \-e mu-law \-c 1 /dev/audio
-.EE
+.XX
 for older Sun equipment.
 .SP
 .TP
@@ -831,9 +831,9 @@ encoder at the start of each vox file.  This can result in clipping
 and/or DC offset problems when it comes to decoding the audio.
 While little can be done about the clipping, a DC offset can be removed by
 passing the decoded audio through a high-pass filter, e.g.:
-.EX
+.XE
 	sox_ng input.vox output.wav highpass 10
-.EE
+.XX
 .TP
 \fB.w64\fR (with sndfile, also with \fB\-t ffmpeg\fR)
 Sonic Foundry's 64-bit RIFF/WAV format.
@@ -858,9 +858,9 @@ and IMA (or DVI) ADPCM-encoded samples.
 WAV files can also contain audio encoded in other ways not currently
 supported with SoX (e.g. MP3); in some cases such a file can still be
 read by SoX by overriding the file type, e.g.
-.EX
+.XE
    play \-t mp3 mp3\-encoded.wav
-.EE
+.XX
 Big endian versions of RIFF files, called RIFX, are also supported.
 To write a RIFX file, use the
 .B \-B
@@ -868,12 +868,12 @@ output file option.
 .TP
 \fBwaveaudio\fR (optional)
 The MS-Windows native audio device driver.  Examples:
-.EX
+.XE
 	sox_ng infile \-t waveaudio
 	sox_ng infile \-t waveaudio default
 	sox_ng infile \-t waveaudio 1
 	sox_ng infile \-t waveaudio "High Definition Audio Device"
-.EE
+.XX
 If the device name is omitted, \fB-1\fR, or \fBdefault\fR, you
 get the `Microsoft Wave Mapper' device.  Wave Mapper means `use the
 system default audio devices' and you can control what `default' means
@@ -904,9 +904,9 @@ SoX will automatically detect and read WAV files with a non-standard header.
 .SP
 The most common use of this file type is likely to be along the following
 lines:
-.EX
+.XE
 	sox_ng infile.any \-t wavpcm \-e signed-integer outfile.wav
-.EE
+.XX
 .TP
 \fB.webm\fR (with ffmpeg)
 See \fB.mkv\fR.
