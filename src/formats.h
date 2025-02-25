@@ -113,9 +113,13 @@
   FORMAT(fap)
   FORMAT(mat4)
   FORMAT(mat5)
+#if defined HAVE_SNDFILE_1_0_25
+  FORMAT(mpc2k)
+#endif
   FORMAT(paf)
   FORMAT(pvf)
   FORMAT(sd2)
+  FORMAT(sds)
   FORMAT(w64)
   FORMAT(xi)
 #endif

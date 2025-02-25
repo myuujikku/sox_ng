@@ -54,6 +54,7 @@ then
       have_sndfile="yes"
     ])
     AC_CHECK_DECL([SF_FORMAT_OGG], AC_DEFINE([HAVE_SNDFILE_1_0_18], 1, [Define if you have libsndfile >= 1.0.18]),, [#include <sndfile.h>])
+    AC_CHECK_DECL([SF_FORMAT_MPC2K], AC_DEFINE([HAVE_SNDFILE_1_0_25], 1, [Define if you have libsndfile >= 1.0.25]),, [#include <sndfile.h>])
     AC_CHECK_DECL([SFC_SET_SCALE_INT_FLOAT_WRITE], AC_DEFINE([HAVE_SFC_SET_SCALE_INT_FLOAT_WRITE], 1, [Define if you have libsndfile with SFC_SFC_SET_SCALE_INT_FLOAT_WRITE]),, [#include <sndfile.h>])
   ])
   CFLAGS="$ac_save_CFLAGS"

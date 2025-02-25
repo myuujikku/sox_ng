@@ -185,6 +185,9 @@ static struct {
   { "wve",      SF_FORMAT_WVE },
   { "ogg",      SF_FORMAT_OGG },
 #endif
+#ifdef HAVE_SNDFILE_1_0_25
+  { "mpc2k",    SF_FORMAT_MPC2K },
+#endif
   { "svx",      SF_FORMAT_SVX },
   { "8svx",     SF_FORMAT_SVX },
   { "paf",      SF_ENDIAN_BIG | SF_FORMAT_PAF },
