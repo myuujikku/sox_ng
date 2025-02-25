@@ -24,7 +24,7 @@ else
 endif
 else
   libsox_ng_fmt_alsa_la_SOURCES = alsa.c
-  libsox_ng_fmt_alsa_la_LIBADD = libsox.la @ALSA_LIBS@
+  libsox_ng_fmt_alsa_la_LIBADD = libsox_ng.la @ALSA_LIBS@
   pkglib_LTLIBRARIES += libsox_ng_fmt_alsa.la
 endif
 endif
@@ -39,7 +39,7 @@ else
 endif
 else
   libsox_ng_fmt_amr_nb_la_SOURCES = amr-nb.c amr.h
-  libsox_ng_fmt_amr_nb_la_LIBADD = libsox.la @AMRNB_LIBS@
+  libsox_ng_fmt_amr_nb_la_LIBADD = libsox_ng.la @AMRNB_LIBS@
   pkglib_LTLIBRARIES += libsox_ng_fmt_amr_nb.la
 endif
 endif
@@ -54,7 +54,7 @@ else
 endif
 else
   libsox_ng_fmt_amr_wb_la_SOURCES = amr-wb.c amr.h
-  libsox_ng_fmt_amr_wb_la_LIBADD = libsox.la @AMRWB_LIBS@
+  libsox_ng_fmt_amr_wb_la_LIBADD = libsox_ng.la @AMRWB_LIBS@
   pkglib_LTLIBRARIES += libsox_ng_fmt_amr_wb.la
 endif
 endif
@@ -69,7 +69,7 @@ else
 endif
 else
   libsox_ng_fmt_ao_la_SOURCES = ao.c
-  libsox_ng_fmt_ao_la_LIBADD = libsox.la @AO_LIBS@
+  libsox_ng_fmt_ao_la_LIBADD = libsox_ng.la @AO_LIBS@
   pkglib_LTLIBRARIES += libsox_ng_fmt_ao.la
 endif
 endif
@@ -84,7 +84,7 @@ else
 endif
 else
   libsox_ng_fmt_coreaudio_la_SOURCES = coreaudio.c
-  libsox_ng_fmt_coreaudio_la_LIBADD = libsox.la @COREAUDIO_LIBS@
+  libsox_ng_fmt_coreaudio_la_LIBADD = libsox_ng.la @COREAUDIO_LIBS@
   pkglib_LTLIBRARIES += libsox_ng_fmt_coreaudio.la
 endif
 endif
@@ -99,7 +99,7 @@ else
 endif
 else
   libsox_ng_fmt_flac_la_SOURCES = flac.c
-  libsox_ng_fmt_flac_la_LIBADD = libsox.la @FLAC_LIBS@
+  libsox_ng_fmt_flac_la_LIBADD = libsox_ng.la @FLAC_LIBS@
   pkglib_LTLIBRARIES += libsox_ng_fmt_flac.la
 endif
 endif
@@ -114,7 +114,7 @@ else
 endif
 else
   libsox_ng_fmt_gsm_la_SOURCES = gsm.c
-  libsox_ng_fmt_gsm_la_LIBADD = libsox.la @GSM_LIBS@
+  libsox_ng_fmt_gsm_la_LIBADD = libsox_ng.la @GSM_LIBS@
   pkglib_LTLIBRARIES += libsox_ng_fmt_gsm.la
 endif
 endif
@@ -129,7 +129,7 @@ else
 endif
 else
   libsox_ng_fmt_lpc10_la_SOURCES = lpc10.c
-  libsox_ng_fmt_lpc10_la_LIBADD = libsox.la @LPC10_LIBS@
+  libsox_ng_fmt_lpc10_la_LIBADD = libsox_ng.la @LPC10_LIBS@
   pkglib_LTLIBRARIES += libsox_ng_fmt_lpc10.la
 endif
 endif
@@ -144,7 +144,7 @@ else
 endif
 else
   libsox_ng_fmt_mp3_la_SOURCES = mp3.c mp3-util.h
-  libsox_ng_fmt_mp3_la_LIBADD = libsox.la @MP3_LIBS@
+  libsox_ng_fmt_mp3_la_LIBADD = libsox_ng.la @MP3_LIBS@
   pkglib_LTLIBRARIES += libsox_ng_fmt_mp3.la
 endif
 endif
@@ -159,7 +159,7 @@ else
 endif
 else
   libsox_ng_fmt_opus_la_SOURCES = opus.c
-  libsox_ng_fmt_opus_la_LIBADD = libsox.la @OPUS_LIBS@
+  libsox_ng_fmt_opus_la_LIBADD = libsox_ng.la @OPUS_LIBS@
   pkglib_LTLIBRARIES += libsox_ng_fmt_opus.la
 endif
 endif
@@ -174,7 +174,7 @@ else
 endif
 else
   libsox_ng_fmt_oss_la_SOURCES = oss.c
-  libsox_ng_fmt_oss_la_LIBADD = libsox.la @OSS_LIBS@
+  libsox_ng_fmt_oss_la_LIBADD = libsox_ng.la @OSS_LIBS@
   pkglib_LTLIBRARIES += libsox_ng_fmt_oss.la
 endif
 endif
@@ -189,7 +189,7 @@ else
 endif
 else
   libsox_ng_fmt_pulseaudio_la_SOURCES = pulseaudio.c
-  libsox_ng_fmt_pulseaudio_la_LIBADD = libsox.la @PULSEAUDIO_LIBS@
+  libsox_ng_fmt_pulseaudio_la_LIBADD = libsox_ng.la @PULSEAUDIO_LIBS@
   pkglib_LTLIBRARIES += libsox_ng_fmt_pulseaudio.la
 endif
 endif
@@ -204,7 +204,7 @@ else
 endif
 else
   libsox_ng_fmt_waveaudio_la_SOURCES = waveaudio.c
-  libsox_ng_fmt_waveaudio_la_LIBADD = libsox.la @WAVEAUDIO_LIBS@
+  libsox_ng_fmt_waveaudio_la_LIBADD = libsox_ng.la @WAVEAUDIO_LIBS@
   pkglib_LTLIBRARIES += libsox_ng_fmt_waveaudio.la
 endif
 endif
@@ -220,7 +220,7 @@ else
 endif
 else
   libsox_ng_fmt_sndio_la_SOURCES = sndio.c
-  libsox_ng_fmt_sndio_la_LIBADD = libsox.la @SNDIO_LIBS@
+  libsox_ng_fmt_sndio_la_LIBADD = libsox_ng.la @SNDIO_LIBS@
   pkglib_LTLIBRARIES += libsox_ng_fmt_sndio.la
 endif
 endif
@@ -235,7 +235,7 @@ else
 endif
 else
   libsox_ng_fmt_sunau_la_SOURCES = sunaudio.c
-  libsox_ng_fmt_sunau_la_LIBADD = libsox.la @SUN_AUDIO_LIBS@
+  libsox_ng_fmt_sunau_la_LIBADD = libsox_ng.la @SUN_AUDIO_LIBS@
   pkglib_LTLIBRARIES += libsox_ng_fmt_sunau.la
 endif
 endif
@@ -250,7 +250,7 @@ else
 endif
 else
   libsox_ng_fmt_vorbis_la_SOURCES = vorbis.c
-  libsox_ng_fmt_vorbis_la_LIBADD = libsox.la @OGG_VORBIS_LIBS@
+  libsox_ng_fmt_vorbis_la_LIBADD = libsox_ng.la @OGG_VORBIS_LIBS@
   pkglib_LTLIBRARIES += libsox_ng_fmt_vorbis.la
 endif
 endif
@@ -265,7 +265,7 @@ else
 endif
 else
   libsox_ng_fmt_wavpack_la_SOURCES = wavpack.c
-  libsox_ng_fmt_wavpack_la_LIBADD = libsox.la @WAVPACK_LIBS@
+  libsox_ng_fmt_wavpack_la_LIBADD = libsox_ng.la @WAVPACK_LIBS@
   pkglib_LTLIBRARIES += libsox_ng_fmt_wavpack.la
 endif
 endif
@@ -283,40 +283,40 @@ endif
 else
 libsox_ng_fmt_sndfile_la_SOURCES = sndfile.c
 libsox_ng_fmt_sndfile_la_CFLAGS = @WARN_CFLAGS@ @SNDFILE_CFLAGS@
-libsox_ng_fmt_sndfile_la_LIBADD = libsox.la @SNDFILE_LIBS@
+libsox_ng_fmt_sndfile_la_LIBADD = libsox_ng.la @SNDFILE_LIBS@
 libsox_ng_fmt_caf_la_SOURCES = caf.c sndfile.c
 libsox_ng_fmt_caf_la_CFLAGS = @WARN_CFLAGS@ @SNDFILE_CFLAGS@
-libsox_ng_fmt_caf_la_LIBADD = libsox.la @SNDFILE_LIBS@
+libsox_ng_fmt_caf_la_LIBADD = libsox_ng.la @SNDFILE_LIBS@
 libsox_ng_fmt_mat4_la_SOURCES = mat4.c sndfile.c
 libsox_ng_fmt_mat4_la_CFLAGS = @WARN_CFLAGS@ @SNDFILE_CFLAGS@
-libsox_ng_fmt_mat4_la_LIBADD = libsox.la @SNDFILE_LIBS@
+libsox_ng_fmt_mat4_la_LIBADD = libsox_ng.la @SNDFILE_LIBS@
 libsox_ng_fmt_mat5_la_SOURCES = mat5.c sndfile.c
 libsox_ng_fmt_mat5_la_CFLAGS = @WARN_CFLAGS@ @SNDFILE_CFLAGS@
-libsox_ng_fmt_mat5_la_LIBADD = libsox.la @SNDFILE_LIBS@
+libsox_ng_fmt_mat5_la_LIBADD = libsox_ng.la @SNDFILE_LIBS@
 libsox_ng_fmt_paf_la_SOURCES = paf.c sndfile.c
 libsox_ng_fmt_paf_la_CFLAGS = @WARN_CFLAGS@ @SNDFILE_CFLAGS@
-libsox_ng_fmt_paf_la_LIBADD = libsox.la  @SNDFILE_LIBS@
+libsox_ng_fmt_paf_la_LIBADD = libsox_ng.la  @SNDFILE_LIBS@
 libsox_ng_fmt_fap_la_SOURCES = fap.c sndfile.c
 libsox_ng_fmt_fap_la_CFLAGS = @WARN_CFLAGS@ @SNDFILE_CFLAGS@
-libsox_ng_fmt_fap_la_LIBADD = libsox.la @SNDFILE_LIBS@
+libsox_ng_fmt_fap_la_LIBADD = libsox_ng.la @SNDFILE_LIBS@
 libsox_ng_fmt_w64_la_SOURCES = w64.c sndfile.c
 libsox_ng_fmt_w64_la_CFLAGS = @WARN_CFLAGS@ @SNDFILE_CFLAGS@
-libsox_ng_fmt_w64_la_LIBADD = libsox.la @SNDFILE_LIBS@
+libsox_ng_fmt_w64_la_LIBADD = libsox_ng.la @SNDFILE_LIBS@
 libsox_ng_fmt_xi_la_SOURCES = xi.c sndfile.c
 libsox_ng_fmt_wi_la_CFLAGS = @WARN_CFLAGS@ @SNDFILE_CFLAGS@
-libsox_ng_fmt_xi_la_LIBADD = libsox.la @SNDFILE_LIBS@
+libsox_ng_fmt_xi_la_LIBADD = libsox_ng.la @SNDFILE_LIBS@
 libsox_ng_fmt_pvf_la_SOURCES = pvf.c sndfile.c
 libsox_ng_fmt_pvf_CFLAGS = @WARN_CFLAGS@ @SNDFILE_CFLAGS@
-libsox_ng_fmt_pvf_la_LIBADD = libsox.la @SNDFILE_LIBS@
+libsox_ng_fmt_pvf_la_LIBADD = libsox_ng.la @SNDFILE_LIBS@
 libsox_ng_fmt_sd2_la_SOURCES = sd2.c sndfile.c
 libsox_ng_fmt_sd2_CFLAGS = @WARN_CFLAGS@ @SNDFILE_CFLAGS@
-libsox_ng_fmt_sd2_la_LIBADD = libsox.la @SNDFILE_LIBS@
+libsox_ng_fmt_sd2_la_LIBADD = libsox_ng.la @SNDFILE_LIBS@
 libsox_ng_fmt_sds_la_SOURCES = sds.c sndfile.c
 libsox_ng_fmt_sds_CFLAGS = @WARN_CFLAGS@ @SNDFILE_CFLAGS@
-libsox_ng_fmt_sds_la_LIBADD = libsox.la @SNDFILE_LIBS@
+libsox_ng_fmt_sds_la_LIBADD = libsox_ng.la @SNDFILE_LIBS@
 libsox_ng_fmt_mpc2k_la_SOURCES = mpc2k.c sndfile.c
 libsox_ng_fmt_mpc2k_CFLAGS = @WARN_CFLAGS@ @SNDFILE_CFLAGS@
-libsox_ng_fmt_mpc2k_la_LIBADD = libsox.la @SNDFILE_LIBS@
+libsox_ng_fmt_mpc2k_la_LIBADD = libsox_ng.la @SNDFILE_LIBS@
 pkglib_LTLIBRARIES += libsox_ng_fmt_sndfile.la libsox_ng_fmt_caf.la libsox_ng_fmt_mat4.la libsox_ng_fmt_mat5.la libsox_ng_fmt_paf.la libsox_ng_fmt_fap.la libsox_ng_fmt_w64.la libsox_ng_fmt_xi.la libsox_ng_fmt_pvf.la libsox_ng_fmt_sd2.la libsox_ng_fmt_sds.la libsox_ng_fmt_mpc2k.la
 endif
 endif
