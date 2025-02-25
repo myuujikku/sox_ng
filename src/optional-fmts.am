@@ -273,7 +273,7 @@ endif
 
 if HAVE_SNDFILE
 if STATIC_SNDFILE
-  libsox_ng_la_SOURCES += sndfile.c caf.c mat4.c mat5.c paf.c fap.c w64.c xi.c pvf.c sd2.c
+  libsox_ng_la_SOURCES += sndfile.c caf.c mat4.c mat5.c paf.c fap.c w64.c xi.c pvf.c sd2.c sds.c mpc2k.c
   libsox_ng_la_CFLAGS += @SNDFILE_CFLAGS@
 if STATIC_LIBSOX_ONLY
   sox_ng_LDADD += @SNDFILE_LIBS@
@@ -311,7 +311,13 @@ libsox_ng_fmt_pvf_la_LIBADD = libsox.la @SNDFILE_LIBS@
 libsox_ng_fmt_sd2_la_SOURCES = sd2.c sndfile.c
 libsox_ng_fmt_sd2_CFLAGS = @WARN_CFLAGS@ @SNDFILE_CFLAGS@
 libsox_ng_fmt_sd2_la_LIBADD = libsox.la @SNDFILE_LIBS@
-pkglib_LTLIBRARIES += libsox_ng_fmt_sndfile.la libsox_ng_fmt_caf.la libsox_ng_fmt_mat4.la libsox_ng_fmt_mat5.la libsox_ng_fmt_paf.la libsox_ng_fmt_fap.la libsox_ng_fmt_w64.la libsox_ng_fmt_xi.la libsox_ng_fmt_pvf.la libsox_ng_fmt_sd2.la
+libsox_ng_fmt_sds_la_SOURCES = sds.c sndfile.c
+libsox_ng_fmt_sds_CFLAGS = @WARN_CFLAGS@ @SNDFILE_CFLAGS@
+libsox_ng_fmt_sds_la_LIBADD = libsox.la @SNDFILE_LIBS@
+libsox_ng_fmt_mpc2k_la_SOURCES = mpc2k.c sndfile.c
+libsox_ng_fmt_mpc2k_CFLAGS = @WARN_CFLAGS@ @SNDFILE_CFLAGS@
+libsox_ng_fmt_mpc2k_la_LIBADD = libsox.la @SNDFILE_LIBS@
+pkglib_LTLIBRARIES += libsox_ng_fmt_sndfile.la libsox_ng_fmt_caf.la libsox_ng_fmt_mat4.la libsox_ng_fmt_mat5.la libsox_ng_fmt_paf.la libsox_ng_fmt_fap.la libsox_ng_fmt_w64.la libsox_ng_fmt_xi.la libsox_ng_fmt_pvf.la libsox_ng_fmt_sd2.la libsox_ng_fmt_sds.la libsox_ng_fmt_mpc2k.la
 endif
 endif
 

@@ -185,6 +185,9 @@ static struct {
   { "wve",      SF_FORMAT_WVE },
   { "ogg",      SF_FORMAT_OGG },
 #endif
+#ifdef HAVE_SNDFILE_1_0_25
+  { "mpc2k",    SF_FORMAT_MPC2K },
+#endif
   { "svx",      SF_FORMAT_SVX },
   { "8svx",     SF_FORMAT_SVX },
   { "paf",      SF_ENDIAN_BIG | SF_FORMAT_PAF },
@@ -517,10 +520,6 @@ LSX_FORMAT_HANDLER(sndfile)
     /* "wav", */
   /* LSF wrappers of formats already wrapped in SoX: */
     /* "flac", */
-
-    /* Formats that only libsndfile can decode (and encode) */
-    "sds",
-    "mpc2k",
     NULL
   };
 
@@ -544,28 +543,6 @@ LSX_FORMAT_HANDLER(sndfile)
   };
 
   return &format;
-}
-
-LSX_FORMAT_HANDLER(sds)
-{
-  static char const * const names[] = { "sds", NULL };
-  static sox_format_handler_t handler;
-
-  handler = *lsx_sndfile_format_fn();
-  handler.description = "MIDI Sample Dump Standard";
-  handler.names = names;
-  return &handler;
-}
-
-LSX_FORMAT_HANDLER(mpc2k)
-{
-  static char const * const names[] = { "mpc2k", NULL };
-  static sox_format_handler_t handler;
-
-  handler = *lsx_sndfile_format_fn();
-  handler.description = "Akai MPC-2000 format";
-  handler.names = names;
-  return &handler;
 }
 
 #endif
