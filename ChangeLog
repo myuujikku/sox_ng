@@ -1,12 +1,28 @@
 Change History
 --------------
 
-This file contains a list of all changes starting after the release of
-sox-11gamma, followed by a list of prior authors and features.
+This file contains a list of all changes since the release of sox-11gamma.
 
 
-sox_ng-14.5.1	2025-02-18
--------------
+sox_ng-14.5.1-rc2	2025-02-25
+-----------------
+
+Bug fixes:
+
+  o Fix reverb halving the audio length when input is mono
+  o avr/txw formats: Fix false positive write errors
+  o prc format: Don't report read errors when reading a cardinal hits EOF
+  o Reduce infinite chorus/echo(s)/flanger/phaser delay ranges to one second
+  o Report the correct parameter names in effects' syntax errors
+  o Import janstary's improvements to the manual for libsox
+  o Improve phaser's manual section
+  o Fix a double free() when echoing stereo files
+  o Fix compilation with ibm-clang and on Solaris
+  o Fix opus' failure to find its include files
+  o Make compilation --with-dyn-defaults work again (broken since 14.4.2)
+
+sox_ng-14.5.1-rc1	2025-02-18
+-----------------
 
 New features:
 
