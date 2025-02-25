@@ -19,7 +19,7 @@
 
 #if defined(HAVE_LAME_ID3TAG)
 
-extern char const * id3tagmap[][2];
+extern char const * lsx_id3tagmap[][2];
 
 #if defined _WIN32
 
@@ -116,9 +116,9 @@ static void write_comments(sox_format_t * ft)
   p->id3tag_init(p->gfp);
   p->id3tag_set_pad(p->gfp, (size_t)ID3PADDING);
 
-  for (i = 0; id3tagmap[i][0]; ++i)
-    if ((comment = sox_find_comment(ft->oob.comments, id3tagmap[i][1])))
-      set_id3_field(p, id3tagmap[i][0], comment);
+  for (i = 0; lsx_id3tagmap[i][0]; ++i)
+    if ((comment = sox_find_comment(ft->oob.comments, lsx_id3tagmap[i][1])))
+      set_id3_field(p, lsx_id3tagmap[i][0], comment);
 }
 
 #endif /* HAVE_LAME */

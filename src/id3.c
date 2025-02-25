@@ -20,7 +20,7 @@
 
 #if defined(HAVE_ID3TAG) || defined(HAVE_LAME_ID3TAG)
 
-char const * id3tagmap[][2] =
+char const * lsx_id3tagmap[][2] =
 {
   {"TIT2", "Title"},
   {"TPE1", "Artist"},
@@ -195,10 +195,10 @@ void lsx_id3_read_tag(sox_format_t * ft, sox_bool search)
   }
 
   if (info.tag && info.tag->frames) {
-    for (i = 0; id3tagmap[i][0]; ++i) {
-      if ((utf8 = utf8_id3tag_findframe(info.tag, id3tagmap[i][0], 0))) {
-        char * comment = lsx_malloc(strlen(id3tagmap[i][1]) + 1 + strlen((char *)utf8) + 1);
-        sprintf(comment, "%s=%s", id3tagmap[i][1], utf8);
+    for (i = 0; lsx_id3tagmap[i][0]; ++i) {
+      if ((utf8 = utf8_id3tag_findframe(info.tag, lsx_id3tagmap[i][0], 0))) {
+        char * comment = lsx_malloc(strlen(lsx_id3tagmap[i][1]) + 1 + strlen((char *)utf8) + 1);
+        sprintf(comment, "%s=%s", lsx_id3tagmap[i][1], utf8);
         sox_append_comment(&ft->oob.comments, comment);
         free(comment);
         free(utf8);

@@ -21,7 +21,7 @@
 #include "sox_i.h"
 
 #if defined(HAVE_ID3TAG) || defined(HAVE_LAME_ID3TAG)
-extern char const * id3tagmap[][2];
+extern char const * lsx_id3tagmap[][2];
 #endif
 
 #ifdef HAVE_ID3TAG
