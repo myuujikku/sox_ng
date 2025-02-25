@@ -5,8 +5,21 @@ This file contains a list of all changes starting after the release of
 sox-11gamma, followed by a list of prior authors and features.
 
 
-sox_ng-14.4.4	2025-02-18
--------------
+sox_ng-14.4.4-rc2	2025-02-25
+-----------------
+
+Bug fixes:
+
+  o Fix reverb halving the audio length when input is mono
+  o avr, txw: Fix false positive write errors
+  o prc: Don't report read errors when reading a cardinal hits EOF
+  o Report the correct parameter names in effects' syntax errors
+  o Fix compilation with ibm-clang and on Solaris
+  o Fix opus' failure to find its include files
+  o Make compilation --with-dyn-defaults work again (broken since 14.4.2)
+
+sox_ng-14.4.4-rc1	2025-02-18
+-----------------
 
 Bug fixes:
 
