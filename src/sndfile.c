@@ -128,6 +128,10 @@ static int ft_enc(unsigned size, sox_encoding_t e)
   if (e == SOX_ENCODING_FLAC      && size == 16) return SF_FORMAT_PCM_16;
   if (e == SOX_ENCODING_FLAC      && size == 24) return SF_FORMAT_PCM_24;
   if (e == SOX_ENCODING_FLAC      && size == 32) return SF_FORMAT_PCM_32;
+#ifdef HAVE_SF_FORMAT_MPEG
+  if (e == SOX_ENCODING_MP3       && size == 16) return SF_FORMAT_MPEG_LAYER_III;
+  if (e == SOX_ENCODING_MP3) fprintf(stderr, "SOX_ENCODING_MP3 with size=%d\n", size);
+#endif
   return 0; /* Bad encoding */
 }
 
@@ -165,6 +169,10 @@ static sox_encoding_t sox_enc(int ft_encoding, unsigned * size)
     case SF_FORMAT_DWVW_24  : *size = 24; return SOX_ENCODING_DWVW;
     case SF_FORMAT_DWVW_N   : *size =  0; return SOX_ENCODING_DWVWN;
     case SF_FORMAT_GSM610   : *size =  0; return SOX_ENCODING_GSM;
+    case SF_FORMAT_MPEG_LAYER_II
+                            : *size =  0; return SOX_ENCODING_MP3;
+    case SF_FORMAT_MPEG_LAYER_III
+                            : *size =  0; return SOX_ENCODING_MP3;
     default                 : *size =  0; return SOX_ENCODING_UNKNOWN;
   }
 }
@@ -187,6 +195,9 @@ static struct {
 #endif
 #ifdef HAVE_SF_FORMAT_MPC2K
   { "mpc2k",    SF_FORMAT_MPC2K },  /* From 1.0.25 */
+#endif
+#ifdef HAVE_SF_FORMAT_MPEG
+  { "mp3",      SF_FORMAT_MPEG },  /* From 1.1.0 */
 #endif
   { "svx",      SF_FORMAT_SVX },
   { "8svx",     SF_FORMAT_SVX },
@@ -454,7 +465,8 @@ static int startwrite(sox_format_t * ft)
       lsx_fail("cannot find a usable output encoding");
       return SOX_EOF;
     }
-    if ((sf->sf_info->format & SF_FORMAT_TYPEMASK) != SF_FORMAT_RAW)
+    if ((sf->sf_info->format & SF_FORMAT_TYPEMASK) != SF_FORMAT_RAW &&
+        (sf->sf_info->format & SF_FORMAT_TYPEMASK) != SF_FORMAT_MPEG)
       lsx_warn("cannot use desired output encoding, choosing default");
   }
 
@@ -510,6 +522,7 @@ LSX_FORMAT_HANDLER(sndfile)
     /* "aif", */
     /* "au", */
     /* "gsm", */
+    /* "mp3", */
     /* "nist", */
     /* "raw", */
     /* "sf", "ircam", */
@@ -534,6 +547,7 @@ LSX_FORMAT_HANDLER(sndfile)
     SOX_ENCODING_MS_ADPCM, 4, 0,
     SOX_ENCODING_OKI_ADPCM, 4, 0,
     SOX_ENCODING_GSM, 0,
+    SOX_ENCODING_MP3, 0,
     0};
 
   static sox_format_handler_t const format = {SOX_LIB_VERSION_CODE,
