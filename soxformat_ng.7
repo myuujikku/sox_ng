@@ -138,9 +138,11 @@ encoding.  This encoding has become the defacto format produced by modern
 Macs as well as iTunes on any platform.  AIFF-C files produced
 by other applications typically have the file extension .aif and
 require looking at its header to detect the true format.
-The
 .B sowt
-encoding is the only encoding that SoX can handle with this format.
+and
+.B a-law
+are the only encodings that SoX can read natively;
+for other compression types try \fB\-t\ ffmpeg\fR.
 .SP
 AIFF-C is defined in DAVIC 1.4 Part 9 Annex B.
 This format is referred from ARIB STD-B24, which is specified for

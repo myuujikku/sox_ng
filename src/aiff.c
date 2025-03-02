@@ -132,6 +132,16 @@ int lsx_aiffstartread(sox_format_t * ft)
             return SOX_EOF;
           }
         }
+        else if (strncmp(buf, "alaw", (size_t)4) == 0 ||
+            strncmp(buf, "ALAW", (size_t)4) == 0) {
+          enc = SOX_ENCODING_ALAW;
+          if (bits != 16) {
+            lsx_fail_errno(ft, SOX_EHDR,
+              "Sample size of %u is not consistent with `ALAW' compression type", bits);
+            return SOX_EOF;
+          }
+	  bits = 8;
+        }
         else if (strncmp(buf, "NONE", (size_t)4) != 0 &&
             strncmp(buf, "twos", (size_t)4) != 0) {
           buf[4] = 0;
@@ -394,7 +404,7 @@ int lsx_aiffstartread(sox_format_t * ft)
         || (ft->encoding.encoding == SOX_ENCODING_UNKNOWN)
         || (ft->encoding.bits_per_sample == 0)) {
       lsx_report("You must specify # channels, sample rate, signed/unsigned,");
-      lsx_report("and 8/16 on the command line.");
+      lsx_report("and -b 8/16 on the command line.");
       lsx_fail_errno(ft,SOX_EFMT,"Bogus file: no COMM section");
       return(SOX_EOF);
     }
