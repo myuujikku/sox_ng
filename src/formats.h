@@ -117,7 +117,7 @@
   FORMAT(fap)
   FORMAT(mat4)
   FORMAT(mat5)
-#if defined HAVE_SNDFILE_1_0_25
+#if defined HAVE_SF_FORMAT_MPC2K
   FORMAT(mpc2k)
 #endif
   FORMAT(paf)
@@ -186,7 +186,7 @@ FORMAT(wma)
 FORMAT(wsaud)
 FORMAT(wtv)
 
-/* It handles the following formats if you use -f ffmpeg
+/* It handles the following formats if you use -t ffmpeg
 caf
 flac
 ircam

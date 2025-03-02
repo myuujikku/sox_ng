@@ -110,8 +110,10 @@ static char const * auto_detect_format(sox_format_t * ft, char const * ext)
 
 #if HAVE_SNDFILE
   CHECK(sds   , 0, 0, ""     , 0,  2, "\xF0\x7E")
+# if HAVE_SF_FORMAT_MPC2K
   CHECK(mpc2k , 0, 0, ""     , 0,  2, "\x01\x04")
 	/* sndfile always writes [100,0] at [19] */
+# endif
 #endif
 
 #if USING_FFMPEG

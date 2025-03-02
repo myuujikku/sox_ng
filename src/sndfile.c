@@ -181,12 +181,12 @@ static struct {
   { "snd",      SF_FORMAT_AU },
   { "caf",      SF_FORMAT_CAF },
   { "flac",     SF_FORMAT_FLAC },
-#ifdef HAVE_SNDFILE_1_0_18
-  { "wve",      SF_FORMAT_WVE },
-  { "ogg",      SF_FORMAT_OGG },
+  { "wve",      SF_FORMAT_WVE },  /* Probably broken before 1.0.18 */
+#ifdef HAVE_SF_FORMAT_OGG
+  { "ogg",      SF_FORMAT_OGG },  /* From 1.0.16 */
 #endif
-#ifdef HAVE_SNDFILE_1_0_25
-  { "mpc2k",    SF_FORMAT_MPC2K },
+#ifdef HAVE_SF_FORMAT_MPC2K
+  { "mpc2k",    SF_FORMAT_MPC2K },  /* From 1.0.25 */
 #endif
   { "svx",      SF_FORMAT_SVX },
   { "8svx",     SF_FORMAT_SVX },
@@ -518,6 +518,7 @@ LSX_FORMAT_HANDLER(sndfile)
     /* "voc", */
     /* "vox", */
     /* "wav", */
+    /* "wve", */
   /* LSF wrappers of formats already wrapped in SoX: */
     /* "flac", */
     NULL
