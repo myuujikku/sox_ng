@@ -1127,6 +1127,18 @@ putissues() {
 			      "$ftitle/assets/$name" \
 			      "#$number '$title': Failed to attach '$name'")"
 		done
+	        # That may have updated its updated_at field
+		if result="$(geturl GET -r "$apirepo/issues/$number" \
+				    "#$number '$title': Failed to refetch")"
+		then
+		    old="$(cat "$ftitle"/updated_at)"
+		    new="$(echo "$result" | $jq -r .updated_at > "$ftitle"/updated_at)"
+		    if [ "$old" != "$new" ]
+		    then
+			echo "Updating local last-modified time from $old to $new"
+			echo "$result" | $jq -r .updated_at > "$ftitle"/updated_at
+		    fi
+		fi
 	    fi
 
 	    echo "https://$site/$owner/$repo/issues/$number"
