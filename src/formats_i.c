@@ -204,8 +204,9 @@ int lsx_unreadb(sox_format_t * ft, unsigned b)
 int lsx_seeki(sox_format_t * ft, off_t offset, int whence)
 {
     if (ft->seekable == 0) {
-        /* If a stream peel off chars else EPERM */
-        if (whence == SEEK_CUR) {
+        if (whence != SEEK_CUR) {
+            lsx_fail_errno(ft,SOX_EPERM, "file not seekable");
+        } else {
             while (offset > 0 && !feof((FILE*)ft->fp)) {
                 getc((FILE*)ft->fp);
                 offset--;
@@ -215,13 +216,14 @@ int lsx_seeki(sox_format_t * ft, off_t offset, int whence)
                 lsx_fail_errno(ft,SOX_EOF, "offset past EOF");
             else
                 ft->sox_errno = SOX_SUCCESS;
-        } else
-            lsx_fail_errno(ft,SOX_EPERM, "file not seekable");
+        }
     } else {
         if (fseeko((FILE*)ft->fp, offset, whence) == -1)
             lsx_fail_errno(ft,errno, "%s", strerror(errno));
-        else
+        else {
+            ft->tell_off = lsx_tell(ft);
             ft->sox_errno = SOX_SUCCESS;
+        }
     }
     return ft->sox_errno;
 }
