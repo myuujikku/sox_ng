@@ -5,8 +5,8 @@ This file contains a list of all changes starting after the release of
 sox-11gamma, followed by a list of prior authors and features.
 
 
-sox_ng-14.4.4-rc2	2025-02-25
------------------
+sox_ng-14.4.4	2025-03-03
+-------------
 
 Bug fixes:
 
@@ -17,12 +17,6 @@ Bug fixes:
   o Fix compilation with ibm-clang and on Solaris
   o Fix opus' failure to find its include files
   o Make compilation --with-dyn-defaults work again (broken since 14.4.2)
-
-sox_ng-14.4.4-rc1	2025-02-18
------------------
-
-Bug fixes:
-
   o Fix "silence" not to add a random selection of fragments at the end
   o Fix coreaudio device name truncation on MacOS X
   o Fix delay buffer full flag assigned during drain

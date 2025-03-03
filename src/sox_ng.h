@@ -659,11 +659,10 @@ Compute a 32-bit integer API version from three 8-bit parts.
 
 /**
 Client API:
-The API version of the sox_ng.h file. It is not meant to follow the version
-number of SoX but it has historically. Please do not count on
-SOX_LIB_VERSION_CODE staying in sync with the libSoX version.
+The API version of the sox_ng.h file. It follows the version number of SoX
+because that's what sox --version reports.
 */
-#define SOX_LIB_VERSION_CODE   SOX_LIB_VERSION(14, 4, 3)
+#define SOX_LIB_VERSION_CODE   SOX_LIB_VERSION(14, 4, 4)
 
 /**
 Client API:

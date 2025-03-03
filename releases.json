@@ -7,6 +7,38 @@
    "tags": "audio, audio-editing, audio-processing, c, commandline-tool, digital-audio-editor, opensource, sound",
    "releases": [
       {
+         "version": "14.4.4",
+         "state": "stable",
+         "scope": "bugfix",
+         "download": "https://codeberg.org/sox_ng/sox_ng/releases/download/sox_ng-14.4.4/sox_ng-14.4.4.tar.gz",
+         "published": "2025-03-03T08:30:00+00:00"
+         "changes": "Bug fixes:
+
+  o Fix reverb halving the audio length when input is mono
+  o avr, txw: Fix false positive write errors
+  o prc: Don't report read errors when reading a cardinal hits EOF
+  o Report the correct parameter names in effects' syntax errors
+  o Fix compilation with ibm-clang and on Solaris
+  o Fix opus' failure to find its include files
+  o Make compilation --with-dyn-defaults work again (broken since 14.4.2)
+  o Fix "silence" not to add a random selection of fragments at the end
+  o Fix coreaudio device name truncation on MacOS X
+  o Fix delay buffer full flag assigned during drain
+  o Read mono 8-bit MAUD files with an odd number of samples
+  o Multi-channel LADSPA plugins now work
+  o When date read from a pipe is short, report stats for what there was
+  o Detect and report read errors from short audio files
+  o Detect and report write errors to audio files
+  o When an fatal error is detected, stop and exit non-zero in all cases
+  o Revert "fix" to "Floating point exception in startwrite()" which caused
+    playing with -t ao to play only the first part of an audio file.
+    The original bug was hard to reproduce on Fedora; most of them say
+    "sox FAIL sox: `vgacpy3.voc' premature EOF: Numerical result out of range"
+  o Make it work on Haiku and with the ucrt and Sun C libraries
+  o Fix more compiler warnings and errors
+  o Correct the manual and make its mcompand example work"
+      },
+      {
          "version": "14.4.3.1",
          "state": "stable",
          "scope": "minor bugfix",
