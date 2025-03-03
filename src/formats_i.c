@@ -311,17 +311,17 @@ int lsx_seeki(sox_format_t * ft, off_t offset, int whence)
     if (ft->seekable == 0) {
         if (whence != SEEK_CUR) {
             lsx_fail_errno(ft,SOX_EPERM, "file not seekable");
-	} else {
-	    while (offset > 0 && ft->pending_count > 0) {
-		++ft->pending_bytes;
-		--ft->pending_count;
-		--offset;
-		++ft->tell_off;
-	    }
-	    if (ft->pending_count == 0)
-		free(ft->pending_buffer);
+        } else {
+            while (offset > 0 && ft->pending_count > 0) {
+                ++ft->pending_bytes;
+                --ft->pending_count;
+                --offset;
+                ++ft->tell_off;
+            }
+            if (ft->pending_count == 0)
+                free(ft->pending_buffer);
 
-	    /* If a stream peel off chars else EPERM */
+            /* If a stream peel off chars else EPERM */
             while (offset > 0 && !feof((FILE*)ft->fp)) {
                 getc((FILE*)ft->fp);
                 offset--;
@@ -335,8 +335,10 @@ int lsx_seeki(sox_format_t * ft, off_t offset, int whence)
     } else {
         if (fseeko((FILE*)ft->fp, offset, whence) == -1)
             lsx_fail_errno(ft,errno, "%s", strerror(errno));
-        else
+        else {
+            ft->tell_off = lsx_tell(ft);
             ft->sox_errno = SOX_SUCCESS;
+        }
     }
     return ft->sox_errno;
 }
