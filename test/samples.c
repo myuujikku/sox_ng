@@ -1,6 +1,6 @@
 /*
  * samples.c: Given a list of decimal values,
- * output 16-bit binary little-endian sample values for them.
+ * output binary little-endian sample values for them.
  */
 
 #include <stdlib.h>

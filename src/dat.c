@@ -103,6 +103,12 @@ static const char write_error_msg[] = "write error";
     return (SOX_EOF); \
 }
 
+#if _WIN32
+static char const eol[] = "\r\n";
+#else
+static char const eol[] = "\n";
+#endif
+
 static int sox_datstartwrite(sox_format_t * ft)
 {
     priv_t * dat = (priv_t *) ft->priv;
@@ -111,10 +117,10 @@ static int sox_datstartwrite(sox_format_t * ft)
     dat->timevalue = 0.0;
     dat->deltat = 1.0 / (double)ft->signal.rate;
     /* Write format comments to start of file */
-    sprintf(s,"; Sample Rate %ld\015\n", (long)ft->signal.rate);
+    sprintf(s,"; Sample Rate %ld%s", (long)ft->signal.rate, eol);
     if (lsx_writes(ft, s))
         write_error();
-    sprintf(s,"; Channels %d\015\n", (int)ft->signal.channels);
+    sprintf(s,"; Channels %d%s", (int)ft->signal.channels, eol);
     if (lsx_writes(ft, s))
         write_error();
 
@@ -355,18 +361,19 @@ static size_t sox_datwrite(sox_format_t * ft, const sox_sample_t *buf, size_t ns
 
     /* Write time, then sample values, then CRLF newline */
     while(done < nsamp) {
-      sprintf(s," %15.8g ",dat->timevalue);
+      /* A millionth of a second is precise enough */
+      sprintf(s,"%-8.6f",dat->timevalue);
       if (lsx_writes(ft, s))
         write_error();
       for (i=0; i<ft->signal.channels; i++) {
         sampval = SOX_SAMPLE_TO_FLOAT_64BIT(*buf++, ft->clips);
-        sprintf(s," %15.11g", sampval);
+        /* One bit of a 32-bit integer is 4.6566e-10 */
+        sprintf(s," % .10f", sampval);
         if (lsx_writes(ft, s))
           write_error();
         done++;
       }
-      sprintf(s," \r\n");
-      if (lsx_writes(ft, s))
+      if (lsx_writes(ft, eol))
         write_error();
       dat->timevalue += dat->deltat;
     }
