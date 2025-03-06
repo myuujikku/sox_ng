@@ -130,7 +130,6 @@ static int ft_enc(unsigned size, sox_encoding_t e)
   if (e == SOX_ENCODING_FLAC      && size == 32) return SF_FORMAT_PCM_32;
 #ifdef HAVE_SF_FORMAT_MPEG
   if (e == SOX_ENCODING_MP3       && size == 16) return SF_FORMAT_MPEG_LAYER_III;
-  if (e == SOX_ENCODING_MP3) fprintf(stderr, "SOX_ENCODING_MP3 with size=%d\n", size);
 #endif
   return 0; /* Bad encoding */
 }
@@ -170,9 +169,9 @@ static sox_encoding_t sox_enc(int ft_encoding, unsigned * size)
     case SF_FORMAT_DWVW_N   : *size =  0; return SOX_ENCODING_DWVWN;
     case SF_FORMAT_GSM610   : *size =  0; return SOX_ENCODING_GSM;
     case SF_FORMAT_MPEG_LAYER_II
-                            : *size =  0; return SOX_ENCODING_MP3;
+                            : *size = 16; return SOX_ENCODING_MP3;
     case SF_FORMAT_MPEG_LAYER_III
-                            : *size =  0; return SOX_ENCODING_MP3;
+                            : *size = 16; return SOX_ENCODING_MP3;
     default                 : *size =  0; return SOX_ENCODING_UNKNOWN;
   }
 }
