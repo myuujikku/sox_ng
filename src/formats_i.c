@@ -232,6 +232,7 @@ off_t lsx_tell(sox_format_t * ft)
 
 int lsx_eof(sox_format_t * ft)
 {
+  if (ft->pending_count) return sox_false;
   return feof((FILE*)ft->fp);
 }
 
