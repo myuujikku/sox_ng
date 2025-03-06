@@ -168,6 +168,7 @@ void lsx_unreadbuf(sox_format_t * ft, void *buf, size_t len)
       ft->pending_bytes += len;
     }
   }
+  ft->tell_off -= len;
 }
 
 /* Read in a buffer of data of length len bytes and rewind the stream.
