@@ -163,11 +163,11 @@ do_multichannel_formats () {
   convertToAndFrom s16 u16 s24 u24 s32 u32 f32 f64 dat au wav aiff aifc flac caf sph wv sox
 
   format1=u24
-  convertToAndFrom s24 u24 s32 u32 f32 f64 wav aiff aifc flac sph wv sox
+  convertToAndFrom s24 u24 s32 u32 f32 f64 dat wav aiff aifc flac sph wv sox
   (samples=23500; convertToAndFrom paf) || exit 1
 
   format1=s32
-  convertToAndFrom s32 u32 f64 wav aiff aifc caf sph wv mat4 mat5 sox
+  convertToAndFrom s32 u32 f64 dat wav aiff aifc caf sph wv mat4 mat5 sox
 
   format1=al
   convertToAndFrom al s16 u16 s32 f32 f64 dat aiff aifc flac caf w64
