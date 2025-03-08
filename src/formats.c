@@ -611,6 +611,7 @@ static FILE * open_url(char const * identifier)
            sprintf(command, "%s %s \"%s\"", command_args[i][0],
 					command_args[i][1],
 	                                identifier);
+	   break;
         }
     }
     if (!command) {
