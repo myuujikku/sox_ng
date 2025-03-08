@@ -109,8 +109,6 @@ static int setup(sox_format_t * ft)
   unsigned               n;
   int                    err;
 
-  fprintf(stderr, "Setup\n");
-
   _(snd_pcm_open, (&p->pcm, ft->filename, ft->mode == 'r'? SND_PCM_STREAM_CAPTURE : SND_PCM_STREAM_PLAYBACK, 0));
   _(snd_pcm_hw_params_malloc, (&params));
   _(snd_pcm_hw_params_any, (p->pcm, params));
