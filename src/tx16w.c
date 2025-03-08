@@ -358,7 +358,7 @@ static int stopwrite(sox_format_t * ft)
             if (lsx_writeb(ft, 0) ||
                 lsx_writeb(ft, 0) ||
                 lsx_writeb(ft, 0))
-                return(SOX_EOF);
+                write_error();
             sk->bytes_out += 3;
         }
     }
