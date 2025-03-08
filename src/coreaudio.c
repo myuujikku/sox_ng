@@ -300,7 +300,7 @@ nodevices:  lsx_fail_errno(ft, SOX_EPERM,
     ft->encoding.bits_per_sample = 32;
 
     /* TODO: My limited experience with hardware can only get floats working
-     * withh a fixed sample rate and stereo.  I know that is a limitiation of
+     * with a fixed sample rate and stereo.  I know that is a limitation of
      * audio device I have so this may not be standard operating orders.
      * If some hardware supports setting sample rates and channel counts
      * then should do that over resampling and mixing.
