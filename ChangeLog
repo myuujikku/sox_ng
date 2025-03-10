@@ -12,15 +12,20 @@ New features:
 
   o Read NSP format files
   o Read MSP2K (Akai sampler) format files
+  o Read and write AIFC a-law and u-law encodings
+  o Copy AIFF's MARK and INST chunks more often
+  o Copy AIFC's MARK and INST chunks
   o Read and write DSF format and read DFF and WSD formats
   o Add the DSD-related "dop" and "sdm" effects
   o Add reading of Ogg FLAC files (with ffmpeg)
   o SDS format is now autodetected
+  o MP3 with CRC protection and MP2 formats are now autodetected
   o AIFF format now supports ID3 tags
   o The ID3 "TCOM" (Composer) tag is now supported
   o Error messages have been harmonized. The best was
     sox_ng WARN chorus: chorus: warning >>> gain-out can cause saturation
-  o wget, wget2 and curl are sought at runtime instead of at build time
+  o wget, wget2 and curl are sought at runtime instead of at build time and
+    ./configure --with-curl now just makes it prefer curl to wget.
   o Make echos run 20% faster
   o Add "softvol" effect, a software gain that avoids clipping and maybe rises
   o synth: Add "vdelay" combine method to phase-modulate by the synth wave
