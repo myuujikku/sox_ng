@@ -142,6 +142,16 @@ int lsx_aiffstartread(sox_format_t * ft)
           }
 	  bits = 8;
         }
+        else if (strncmp(buf, "ulaw", (size_t)4) == 0 ||
+            strncmp(buf, "ULAW", (size_t)4) == 0) {
+          enc = SOX_ENCODING_ULAW;
+          if (bits != 16) {
+            lsx_fail_errno(ft, SOX_EHDR,
+              "Sample size of %u is not consistent with `ULAW' compression type", bits);
+            return SOX_EOF;
+          }
+	  bits = 8;
+        }
         else if (strncmp(buf, "NONE", (size_t)4) != 0 &&
             strncmp(buf, "twos", (size_t)4) != 0) {
           buf[4] = 0;
@@ -400,6 +410,7 @@ int lsx_aiffstartread(sox_format_t * ft)
         if (bits == 32 || bits == 64) goto OK;
 	break;
     case SOX_ENCODING_ALAW:
+    case SOX_ENCODING_ULAW:
         if (bits == 8) goto OK;
 	break;
     default: /* can't happen */
@@ -930,6 +941,9 @@ static int aifcwriteheader(sox_format_t * ft, uint64_t nframes)
         else if (ft->encoding.encoding == SOX_ENCODING_ALAW &&
                  ft->encoding.bits_per_sample == 8)
                 bits = 16;
+        else if (ft->encoding.encoding == SOX_ENCODING_ULAW &&
+                 ft->encoding.bits_per_sample == 8)
+                bits = 16;
         else
         {
                 lsx_fail_errno(ft,SOX_EFMT,"unsupported output encoding/size");
@@ -954,6 +968,10 @@ static int aifcwriteheader(sox_format_t * ft, uint64_t nframes)
           case SOX_ENCODING_ALAW:
 	    ctype = "alaw";
 	    cname = "8-bit A-law";
+	    break;
+          case SOX_ENCODING_ULAW:
+	    ctype = "ulaw";
+	    cname = "8-bit mu-law";
 	    break;
           default: /* can't happen */
             lsx_fail("Internal error in aifcwriteheader");

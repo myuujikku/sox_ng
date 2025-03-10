@@ -5,7 +5,7 @@ The current release handles the following audio file formats:
 * Amiga 8svx files
 * AMR-WB & AMR-NB (with optional libamrwb & libamrnb libraries)
 * Apple/SGI AIFF files
-** PCM, sowt, A-law
+** PCM, sowt, A-law, u-law
 * SUN .au files
 ** PCM, u-law, A-law
 ** G7xx ADPCM files (read only)
