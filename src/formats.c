@@ -106,7 +106,12 @@ static char const * auto_detect_format(sox_format_t * ft, char const * ext)
   CHECK(sox   , 0, 0, ""     , 0,  4, ".SoX")
   CHECK(sox   , 0, 0, ""     , 0,  4, "XoS.")
   CHECK(mp3   , 0, 0, ""     , 0,  3, "ID3")
-  CHECK(mp3   , 0, 0, ""     , 0,  2, "\xFF\xFB")
+  /* First 16 bits for MPEG 1 layer 3 */
+  CHECK(mp3   , 0, 0, ""     , 0,  2, "\xFF\xFA") /* CRC protected */
+  CHECK(mp3   , 0, 0, ""     , 0,  2, "\xFF\xFB") /* Not protected */
+  /* First 16 bits for MPEG 1 layer 2 */
+  CHECK(mp2   , 0, 0, ""     , 0,  2, "\xFF\xFC") /* CRC protected */
+  CHECK(mp2   , 0, 0, ""     , 0,  2, "\xFF\xFD") /* Not protected */
 
 #if HAVE_SNDFILE
   CHECK(sds   , 0, 0, ""     , 0,  2, "\xF0\x7E")
