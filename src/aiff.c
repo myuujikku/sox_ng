@@ -389,16 +389,26 @@ int lsx_aiffstartread(sox_format_t * ft)
   }
 
   if (foundcomm) {
-    if      (bits <=  8) bits = 8;
-    else if (bits <= 16) bits = 16;
-    else if (bits <= 24) bits = 24;
-    else if (bits <= 32) bits = 32;
-    else if (bits == 64 && enc == SOX_ENCODING_FLOAT) /* no-op */;
-    else {
-      lsx_fail_errno(ft,SOX_EFMT,"unsupported sample size in header: %d", bits);
-      return(SOX_EOF);
+    switch (enc) {
+    case SOX_ENCODING_SIGN2:
+	if      (bits <=  8) bits = 8;
+	else if (bits <= 16) bits = 16;
+	else if (bits <= 24) bits = 24;
+	else if (bits <= 32) bits = 32;
+	goto OK;
+    case SOX_ENCODING_FLOAT:
+        if (bits == 32 || bits == 64) goto OK;
+	break;
+    case SOX_ENCODING_ALAW:
+        if (bits == 8) goto OK;
+	break;
+    default: /* can't happen */
+	lsx_fail("Internal error in lsx_aiffstartread");
+	return(SOX_EOF);
     }
-  } else  {
+    lsx_fail_errno(ft,SOX_EFMT,"unsupported sample size in header: %d", bits);
+    return(SOX_EOF);
+  } else {
     if ((ft->signal.channels == SOX_UNSPEC)
         || (ft->signal.rate == SOX_UNSPEC)
         || (ft->encoding.encoding == SOX_ENCODING_UNKNOWN)
@@ -408,8 +418,8 @@ int lsx_aiffstartread(sox_format_t * ft)
       lsx_fail_errno(ft,SOX_EFMT,"Bogus file: no COMM section");
       return(SOX_EOF);
     }
-
   }
+OK:
   ssndsize /= bits >> 3;
 
   /* Cope with 'sowt' CD tracks as read on Macs */
@@ -917,6 +927,9 @@ static int aifcwriteheader(sox_format_t * ft, uint64_t nframes)
         else if (ft->encoding.encoding == SOX_ENCODING_FLOAT &&
                  ft->encoding.bits_per_sample == 64)
                 bits = 64;
+        else if (ft->encoding.encoding == SOX_ENCODING_ALAW &&
+                 ft->encoding.bits_per_sample == 8)
+                bits = 16;
         else
         {
                 lsx_fail_errno(ft,SOX_EFMT,"unsupported output encoding/size");
@@ -938,8 +951,13 @@ static int aifcwriteheader(sox_format_t * ft, uint64_t nframes)
               cname = "64-bit floating point";
             }
             break;
+          case SOX_ENCODING_ALAW:
+	    ctype = "alaw";
+	    cname = "8-bit A-law";
+	    break;
           default: /* can't happen */
-            break;
+            lsx_fail("Internal error in aifcwriteheader");
+	    return(SOX_EOF);
         }
         cname_len = strlen(cname);
         comm_len = 18+4+1+cname_len;
@@ -984,13 +1002,14 @@ static int aifcwriteheader(sox_format_t * ft, uint64_t nframes)
             lsx_writes(ft, cname) ||
             (comm_padding ? lsx_writeb(ft, 0) : 0) ||
 
+	    write_mark_and_inst_chunks(ft) ||
+
             /* SSND chunk -- describes data */
             lsx_writes(ft, "SSND") ||
             /* chunk size */
             lsx_writedw(ft, (unsigned) (8 + nframes * ft->signal.channels * (ft->encoding.bits_per_sample >> 3))) ||
             lsx_writedw(ft, 0) || /* offset */
-            lsx_writedw(ft, 0) || /* block size */
-	    write_mark_and_inst_chunks(ft))
+            lsx_writedw(ft, 0)) /* block size */
 	        return(SOX_EOF);
 
         /* Any Private chunks shall appear after the required chunks (FORM,FVER,COMM,SSND) */
