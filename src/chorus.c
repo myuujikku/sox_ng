@@ -138,6 +138,7 @@ static int sox_chorus_getopts (sox_effect_t *effp,
 
 	    lsx_revalloc(chorus->stage, chorus->stage_count + 1);
 	    p = &chorus->stage[chorus->stage_count];
+            memset(p, 0, sizeof(*p));
 
             NUMERIC_PARAMETER(delay,  0, 1000);
             NUMERIC_PARAMETER(decay, -1, 1);
