@@ -186,6 +186,25 @@ static int sox_chorus_start (sox_effect_t *effp)
         chorus_priv_t *chorus = (chorus_priv_t *) effp->priv;
         sox_uint64_t i;
 
+        /* start is called once per channel, but each channel gets a copy
+         * of the "stage" pointer, pointing to the same array of stages
+         * which are common data for all channels except for the delay line
+         * and its offsets, which need to be separate for every channel.
+         *
+         * A hacky solution is to copy the stage array for every channel.
+         * This means that everyone gets their own copy of the same wavetable
+         * but at least they all get separate delay lines.
+         */
+
+        if (effp->flow != 0) {
+                chorus_stage_t *stages = chorus->stage;
+                chorus_stage_t *newstages;
+
+                lsx_valloc(newstages, chorus->stage_count);
+                memcpy(newstages, stages, chorus->stage_count * sizeof(chorus_stage_t));
+                chorus->stage = newstages;
+        }
+
         for (i = 0;  i < chorus->stage_count;  i++) {
                 chorus_stage_t *stage = &chorus->stage[i];
 
@@ -372,9 +391,8 @@ static int sox_chorus_stop (sox_effect_t * effp)
                 chorus_stage_t *stage = &chorus->stage[i];
                 free(stage->wave_table);
                 free(stage->delay_line);
-         }
-
-        memset(chorus, 0, sizeof(*chorus));
+        }
+        free(chorus->stage);
 
         return (SOX_SUCCESS);
 }
