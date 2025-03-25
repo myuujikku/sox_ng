@@ -158,7 +158,11 @@ SoX can work with `self-describing' and `raw' audio files.
 completely describes the signal and encoding attributes of the audio
 data that follows. `raw' or `headerless' formats do not contain this
 information, so the audio characteristics of these must be described
-on the SoX command line or inferred from those of the input file.
+on the SoX command line, except for a few which can be inferred
+from the filename extension
+such as \fB.gsm\fR, always \fB\-c1\ \-r8000 \-e gsm\fR,
+and named raw formats like \fB.f32\fR, \fR.s16\fR and \fR.ul\fR
+which give the encoding but not the sample rate or number of channels.
 .SP
 The following four characteristics are used to describe the format of
 audio data:
