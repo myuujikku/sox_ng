@@ -67,12 +67,12 @@ typedef struct {
         float                  depth;       /* in seconds */
         lsx_wave_t             wave_type;
         /* sample tables, table counts and indices */
-        sox_uint64_t           delay_line_index;
-        sox_uint64_t           delay_line_length;
+        sox_uint32_t           delay_line_index;
+        sox_uint32_t           delay_line_length;
         chorus_delay_sample_t  *delay_line;
-        sox_uint64_t           depth_sample_count;
-        sox_uint64_t           wave_index;
-        sox_uint64_t           wave_length;
+        sox_uint32_t           depth_sample_count;
+        sox_uint32_t           wave_index;
+        sox_uint32_t           wave_length;
         int                    *wave_table;
 } chorus_stage_t;
 
@@ -85,11 +85,11 @@ typedef struct {
         float           gain_out;
 
         /* all stages of that effect */
-        sox_uint64_t    stage_count;
+        sox_uint32_t    stage_count;
         chorus_stage_t  *stage;
 
         /* remaining samples for drain phase */
-        sox_uint64_t    remaining_samples;
+        sox_uint32_t    remaining_samples;
 } chorus_priv_t;
 
 /*--------------------*/
@@ -109,7 +109,7 @@ static int sox_chorus_getopts (sox_effect_t *effp,
                                char **argv)
 {
         chorus_priv_t *chorus = (chorus_priv_t *) effp->priv;
-        sox_uint64_t i;
+        sox_uint32_t i;
         float total_volume;
 
         /* skip over effect name */
@@ -184,7 +184,7 @@ static int sox_chorus_getopts (sox_effect_t *effp,
 static int sox_chorus_start (sox_effect_t *effp)
 {
         chorus_priv_t *chorus = (chorus_priv_t *) effp->priv;
-        sox_uint64_t i;
+        sox_uint32_t i;
 
         /* start is called once per channel, but each channel gets a copy
          * of the "stage" pointer, pointing to the same array of stages
@@ -212,8 +212,7 @@ static int sox_chorus_start (sox_effect_t *effp)
                     stage->depth * effp->in_signal.rate;
 
                 /* delay line */
-                stage->delay_line_length =
-                    ceil((stage->delay + stage->depth) * effp->in_signal.rate);
+                stage->delay_line_length = ceil((stage->delay + stage->depth) * effp->in_signal.rate);
 		if (stage->delay_line_length < 1) {
 		    lsx_fail("delay can't be less than %g milliseconds",
 			     1000 / effp->in_signal.rate);
@@ -281,7 +280,7 @@ static int sox_chorus_flow_or_drain (sox_effect_t *effp,
         *isamp = *osamp = len;
 
         while (len--) {
-                sox_uint64_t i;
+                sox_uint32_t i;
                 sox_sample_t output_sample;
 
                 /* Scale samples down to prevent arithmetic overflow
@@ -296,9 +295,9 @@ static int sox_chorus_flow_or_drain (sox_effect_t *effp,
 
                 for (i = 0; i < chorus->stage_count; i++) {
                     chorus_stage_t *stage = &chorus->stage[i];
-                    sox_uint64_t wave_index = stage->wave_index;
-                    sox_uint64_t offset = stage->wave_table[wave_index];
-                    sox_uint64_t delay_line_index =
+                    sox_uint32_t wave_index = stage->wave_index;
+                    sox_uint32_t offset = stage->wave_table[wave_index];
+                    sox_uint32_t delay_line_index =
                         ((stage->delay_line_index + offset)
                          % stage->delay_line_length);
                     chorus_delay_sample_t sample =
@@ -384,7 +383,7 @@ static int sox_chorus_drain (sox_effect_t * effp,
 static int sox_chorus_stop (sox_effect_t * effp)
 {
         chorus_priv_t * chorus = (chorus_priv_t *) effp->priv;
-        sox_uint64_t i;
+        sox_uint32_t i;
 
         for (i = 0;  i < chorus->stage_count;  i++) {
                 chorus_stage_t *stage = &chorus->stage[i];
