@@ -4,6 +4,8 @@
 
 rm -f out.wav
 
+${sox:-sox} --help | grep -q '^AUDIO FILE FORMATS.* nsp ' || exit 254
+
 ${sox:-sox} addf8.nsp out.wav
 
 status=$?
