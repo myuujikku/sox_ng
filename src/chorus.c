@@ -140,10 +140,10 @@ static int sox_chorus_getopts (sox_effect_t *effp,
 	    p = &chorus->stage[chorus->stage_count];
             memset(p, 0, sizeof(*p));
 
-            NUMERIC_PARAMETER(delay,  0, 1000);
+            NUMERIC_PARAMETER(delay,  0, 86400000);
             NUMERIC_PARAMETER(decay, -1, 1);
             NUMERIC_PARAMETER(speed,  0, 192000);
-            NUMERIC_PARAMETER(depth,  0, 1000);
+            NUMERIC_PARAMETER(depth,  0, 86400000);
             TEXTUAL_PARAMETER(wave_type, modulation_kind_map);
 
             /* normalize time parameters to seconds */
@@ -207,12 +207,20 @@ static int sox_chorus_start (sox_effect_t *effp)
 
         for (i = 0;  i < chorus->stage_count;  i++) {
                 chorus_stage_t *stage = &chorus->stage[i];
+		double dll;
 
                 stage->depth_sample_count =
                     stage->depth * effp->in_signal.rate;
 
                 /* delay line */
-                stage->delay_line_length = ceil((stage->delay + stage->depth) * effp->in_signal.rate);
+                dll = ceil((stage->delay + stage->depth) * effp->in_signal.rate);
+                if (dll > SOX_UINT_MAX(32)) {
+		    lsx_fail("delay + depth can't be more than %.0f ms at a sample rate of %.0fHz",
+			     SOX_UINT_MAX(32) / effp->in_signal.rate * 1000,
+			     effp->in_signal.rate);
+		    return SOX_EOF;
+		}
+                stage->delay_line_length = dll;
 		if (stage->delay_line_length < 1) {
 		    lsx_fail("delay can't be less than %g milliseconds",
 			     1000 / effp->in_signal.rate);
