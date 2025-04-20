@@ -85,7 +85,7 @@ libsox_ng_la_SOURCES = adpcms.c adpcms.h aiff.c aiff.h cvsd.c cvsd.h cvsdfilt.h 
 libsox_ng_la_SOURCES += \
 	band.h bend.c biquad.c biquad.h biquads.c chorus.c compand.c \
 	compandt.c compandt.h contrast.c dcshift.c delay.c dft_filter.c \
-	dft_filter.h dither.c dither.h dop.c downsample.c earwax.c \
+	dft_filter.h dither.c dither.h dolbyb.c dop.c downsample.c earwax.c \
 	echo.c echos.c effects.c effects.h effects_i.c effects_i_dsp.c \
 	fade.c ffmpeg.c fft4g.c fft4g.h fifo.h fir.c firfit.c flanger.c gain.c \
 	hilbert.c input.c ladspa.h ladspa.c loudness.c mcompand.c \
@@ -147,6 +147,7 @@ libsox_ng_la_SOURCES += raw-fmt.c s1-fmt.c s2-fmt.c s3-fmt.c \
   id3.c id3.h dsf.c dsdiff.c \
   ima_rw.c ima_rw.h wav.c wve.c xa.c nulfile.c f4-fmt.c f8-fmt.c gsrt.c nsp.c
 
+libsox_ng_la_LIBADD += @DOLBYB_LIBS@ @LIBDOLBYB_LIBADD@
 libsox_ng_la_LIBADD += @GSM_LIBS@ @LIBGSM_LIBADD@
 libsox_ng_la_LIBADD += @LPC10_LIBS@ @LIBLPC10_LIBADD@
 

@@ -33,6 +33,7 @@
   EFFECT(delay)
   EFFECT(dft_filter) /* abstract */
   EFFECT(dither)
+  EFFECT(dolbyb)
   EFFECT(dop)
   EFFECT(downsample)
   EFFECT(earwax)

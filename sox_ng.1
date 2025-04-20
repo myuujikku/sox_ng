@@ -1960,6 +1960,91 @@ options.
 .SP
 See the section on \fBDithering\fR (above).
 .TP
+\fBdolbyb\fR [\fB\-e\fR|\fB\-d\fR] [\fB\-u\fIupsamp\fR] [\fB\-h\fR] [\fB\-t\fIgain\fR(1.0)] [\fB\-a prec\fR(-5.0)] [\fB\-f\fR{\fB1\fR|\fB2\fR|\fB3\fR|\fB4\fR}]
+\fBdolbyb\fR is a Dolby B decoder/encoder based on dolbybcsoftwaredecode
+which simulates the operation of a Dolby\ B en/decoder's electronic circuit.
+.SP
+By default, \fBdolbyb\fR applies Dolby\ B decoding to its input signal;
+with \fB\-e\fR it does Dolby\ B encoding. \fB\-d\fR is also accepted
+but only for symmetry, as it is the default mode of operation.
+.SP
+\fB\-u\fR sets the upsampling ratio to use in the sliding filter.
+Digital filtering only works well if the sample rate is well above
+the cutoff frequency of the filter. For Dolby\ B's sliding filter,
+that frequency can be as high as 34kHz and this does not work well
+if the sample rate is only 44.1Khz. To get around this, it upsamples
+the audio to a higher rate when it passes through this filter.
+By default, \fB\-u0\fR, the upsampling rate is set automatically
+so that the upper sample rate is at least 200Khz;
+upsampling can be switched off with \fB\-u1\fR.
+.SP
+If \fB\-h\fR is given, upsampling is used throughout the effect
+from when the audio enters to when it leaves, not just in the sliding filter.
+As \fBdolbyb\fR's up/downsampling algorithm is simple
+(repeating and averaging samples) you may obtain higher quality results
+by upsampling with \fBrate\fR before \fBdolbyb\ \-u1\fR and
+downsampling it afterwards.
+.SP
+\fB\-t\fR ("threshold") adjusts the gain when the audio is fed
+to the Dolby gain control circuits.
+When a tape deck is encoding or decoding a magnetic tape,
+it knows the signal level at the tape heads but with audio files
+the maximum signal level may not accurately represent the tape's
+maximum flux density (200nWb/m for cassette tapes), giving erroneous results.
+The \fB\-t\fR option adjusts the volume level at which
+the sliding filter reacts to overcome this.
+Its default value is 1.0, which assumes that the maximum amplitude
+of the signal represents the maximum recording level on tape;
+higher values assume that it was recorded too quietly and values
+below 1.0 are for when it was recorded too loud.
+.SP
+To begin with, when you have little idea of what level to use,
+try a wide range of levels like 5, 10, 15 and 20.
+If the result sounds muffled, the threshold is too low and
+if it seems to have too much treble, the threshold is too high.
+Once you know the approximate level, you can try more closely-spaced levels
+and listen carefully to find the best level possible.
+Logic would suggest listening to where tracks fade out, to see if
+the treble increases, but this method doesn't seem to work well
+and the best way seems to be to see how low the level can be set
+before the results sound dull and muffled, then choose a level
+a bit higher than this; you can just about hear the difference
+between results that differ in threshold setting by about 2.
+.SP
+In decode mode, the program has to use trial and error to get the
+right output sample values. \fB\-a\fR sets how accurate it
+needs to be before it is considered OK. A figure of 0.0\ dB would
+mean an accuracy of about 1 sample value. The default is -5.0\ dB,
+which is accurate to less than one sample value.
+.SP
+\fB\-f\fR selects one of four types of filter to use.
+The program originally simulated an analog circuit for a Dolby\ B
+noise reducer. However, too much filtering in the side path was
+altering the phase of the side path audio, which caused problems
+when the side path was recombined with the main signal. Basically
+signals don't add together very well if there is too much difference
+in the phase.
+To fix this, there are now 4 filter modes with hopefully less of a
+phase change:
+.RS
+.TP
+.B \-f1
+is the original method.
+.TP
+.B \-f2
+is a newer method that seems to work better than 1.
+.TP
+.B \-f3
+is another rearrangement which in practice doesn't seem to
+be any better than 1.
+.TP
+.B \-f4
+seems to work best, hence it is the default mode.
+.RE
+For further detail on these parameters and advice on
+digitizing and processing Dolby\ B-encoded tapes, consult
+the wiki pages under https://codeberg.org/martinwguy/libdolbyb
+.TP
 \fBdop\fR
 DSD over PCM.  1-bit DSD data is packed into 24-bit samples for
 transport over non-DSD-aware links.

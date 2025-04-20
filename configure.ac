@@ -572,6 +572,22 @@ if test "$with_twolame" != "no"; then
     fi
 fi
 
+# Check for libdolbyb
+found_libdolbyb=yes
+AC_CHECK_HEADERS(dolbyb.h, ,
+    [AC_CHECK_HEADERS(dolbyb.h, ,found_libdolbyb=no)])
+    AC_CHECK_LIB(dolbyb, dolbyb_init, DOLBYB_LIBS="$DOLBYB_LIBS -ldolbyb", found_libdolbyb=no)
+if test "$found_libdolbyb" = yes; then
+    AC_DEFINE(EXTERNAL_DOLBYB, 1, [Define if you are using an external dolbyb library])
+else
+    LIBDOLBYB_LIBADD=../libdolbyb/libdolbyb.la
+fi
+AM_CONDITIONAL(EXTERNAL_DOLBYB, test x$found_libdolbyb = xyes)
+AC_SUBST(LIBDOLBYB_LIBADD)
+AC_SUBST(DOLBYB_LIBS)
+
+
+
 # Check for libgsm
 found_libgsm=yes
 AC_CHECK_HEADERS(gsm/gsm.h, ,
@@ -832,8 +848,16 @@ AC_SUBST(REPLACE)
 AM_CONDITIONAL(STATIC_LIBSOX_ONLY, test "$enable_shared" = "no" -a "$enable_static" = "yes")
 
 dnl Generate output files.
-AC_CONFIG_FILES(Makefile src/Makefile libgsm/Makefile lpc10/Makefile test/Makefile msvc9/Makefile msvc10/Makefile sox_ng.pc)
+AC_CONFIG_FILES(Makefile src/Makefile libdolbyb/Makefile libgsm/Makefile lpc10/Makefile test/Makefile msvc9/Makefile msvc10/Makefile sox_ng.pc)
 AC_OUTPUT
+
+if test "$using_dolbyb" != "no"; then
+  if test "$found_libdolbyb" = "yes"; then
+    dolbyb_option="(external)"
+  else
+    dolbyb_option="(in-tree)"
+  fi
+fi
 
 if test "$using_gsm" != "no"; then
   if test "$found_libgsm" = "yes"; then
@@ -889,6 +913,7 @@ if test "x$using_amrwb" = "xyes"; then
 echo " dlopen amrwb..............$enable_dl_amrwb"
 fi
 echo "flac.......................$using_flac"
+echo "dolbyb.....................$using_dolbyb $dolbyb_option"
 echo "gsm........................$using_gsm $gsm_option"
 echo "lpc10......................$using_lpc10 $lpc10_option"
 echo "mp2/mp3....................$using_mp3"
