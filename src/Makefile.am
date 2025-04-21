@@ -77,7 +77,7 @@ sox_sample_test_SOURCES = sox_sample_test.c sox_sample_test.h
 # Format handlers and utils source
 libsox_ng_la_SOURCES = adpcms.c adpcms.h aiff.c aiff.h cvsd.c cvsd.h cvsdfilt.h \
 	  g711.c g711.h g721.c g723_24.c g723_40.c g72x.c g72x.h vox.c vox.h \
-	  raw.c raw.h formats.c formats.h formats_i.c sox_i.h skelform.c \
+	  raw.c raw.h formats.c formats.h formats_i.c sox_i.h \
 	  xmalloc.c xmalloc.h getopt.c util.c util.h libsox_ng.c libsox_i.c \
 	  sox-fmt.c soxomp.h win32-unicode.c win32-unicode.h
 
@@ -92,7 +92,7 @@ libsox_ng_la_SOURCES += \
 	mcompand_xover.h noiseprof.c noisered.c \
 	noisered.h output.c overdrive.c pad.c phaser.c rate.c \
 	rate_filters.h rate_half_fir.h rate_poly_fir0.h rate_poly_fir.h \
-	remix.c repeat.c reverb.c reverse.c silence.c sinc.c skeleff.c \
+	remix.c repeat.c reverb.c reverse.c silence.c sinc.c \
 	sdm.c sdm.h sdm_x86.h \
 	softvol.c speed.c speexdsp.c splice.c stat.c stats.c stretch.c swap.c \
 	synth.c tempo.c tremolo.c trim.c upsample.c vad.c vol.c \
