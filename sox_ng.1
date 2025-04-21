@@ -3238,17 +3238,17 @@ instead of truncating it.
 .SP
 This effect supports the \fB\-\-plot\fR global option.
 .TP
-\fBsoftvol\fR [\fIvolume\fR [\fIdouble-time\fR [\fIheadroom\fR]]]
+\fBsoftvol\fR [\fIvolume\fR(1.0) [\fIdouble-time\fR(0) [\fIheadroom\fR(0)]]]
 The soft volume effect applies a simple multiplier to the audio
 ensuring that it does not clip. When a sample would have clipped
 the volume multiplier is automatically reduced to compensate.
 .SP
 It is a simple compander with the advantages of being very fast
-and having no pre- or post-echo.
-In fact, it reacts so fast that its glitches are inaudible.
-Or maybe I'm old and deaf.
+and having no pre- or post-echo and reacts so fast that its volume-reduction
+glitches don't add audible noise.
 .SP
-\fIvolume\fR sets the initial volume multiplier; 1.0 means no change.
+\fIvolume\fR sets the initial volume multiplier;
+the default of 1.0 means no change.
 .SP
 \fIdouble-time\fR says that the volume should slowly increase at a rate
 that makes it double every \fIdouble-time\fR seconds.
