@@ -23,6 +23,7 @@ New features:
   o AIFF format now supports ID3 tags
   o The ID3 "TCOM" (Composer) tag is now supported
   o Add "softvol" effect, a software gain that avoids clipping and maybe rises
+  o Make the 'v' and 'V' keys prefer to adjust softvol if it is active
   o Add "dolbyb" effect to decode and encode Dolby B noise reduction
   o synth: Add "vdelay" combine method to phase-modulate by the synth wave
   o Remove the limit on the number of echo/echos stages (was 7)

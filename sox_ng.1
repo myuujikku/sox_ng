@@ -298,7 +298,8 @@ On some systems, SoX allows the audio playback volume to be adjusted while
 using
 .BR play_ng .
 Where supported, this is achieved by tapping the `\fBv\fR' & `\fBV\fR' keys during
-playback.
+playback. If there is a \fBsoftvol\fR effect in the chain, these keys will
+adjust that instead of the hardware mixer.
 .SP
 To help with setting a suitable recording level, SoX includes a peak level
 meter which can be invoked (before making the actual recording) as follows:
@@ -3260,6 +3261,11 @@ less than the 32-bit maximum.
 This may be necessary when the final bit-depth reduction and/or dithering
 make it clip.
 A value of 0.1 is sufficient to protect down to a bit-depth of 8 with dithering.
+.SP
+When playing sound in interactive mode, the `\fBv\fR' and `\fBV\fR' keys
+reduce and increase the vsoft volume if there is a \fBsoftvol\fR
+in the effects chain. If there are more than one, which one it adjusts
+is probably random.
 .TP
 \fBspectrogram \fR[\fIoptions\fR]
 Create a spectrogram of the audio. The audio is passed unmodified

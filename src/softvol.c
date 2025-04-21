@@ -29,6 +29,20 @@ typedef struct {
   sox_sample_t max_amp;	  /* Don't go beyond this value */
 } priv_t;
 
+/* Remember if there is a softvol in action so that volume keys can change it */
+static priv_t * softvol_priv = NULL;
+
+/* Make 'v' and 'V' keys adjust the softvol if one is active */
+int
+lsx_adjust_softvol(int delta)
+{
+  if (!softvol_priv) return SOX_EOF;
+  fprintf(stderr, "Upping softvol from %.19f to %.19f\n",
+          softvol_priv->softvol, softvol_priv->softvol * (100 + delta) / 100.0);
+  softvol_priv->softvol *= (100 + delta) / 100.0;
+  return SOX_SUCCESS;
+}
+
 /*
  * Process command-line options but don't do other
  * initialization now: effp->in_signal & effp->out_signal are not
@@ -74,6 +88,8 @@ static int getopts(sox_effect_t * effp, int argc, char UNUSED **argv)
   p->max_amp = SOX_SAMPLE_MAX * dB_to_linear(-headroom);
 
   if (argc > 1) return lsx_usage(effp);
+
+  softvol_priv = p;
 
   return SOX_SUCCESS;
 }
@@ -166,6 +182,7 @@ static int stop(sox_effect_t UNUSED * effp)
  */
 static int lsx_kill(sox_effect_t UNUSED * effp)
 {
+  softvol_priv = NULL;
   return SOX_SUCCESS;
 }
 
@@ -182,4 +199,3 @@ const sox_effect_handler_t *lsx_softvol_effect_fn(void)
   };
   return &handler;
 }
-
