@@ -51,10 +51,10 @@ lsx_adjust_softvol(int delta)
 static int getopts(sox_effect_t * effp, int argc, char UNUSED **argv)
 {
   priv_t *p = (priv_t *)effp->priv;
+  float headroom = 0.0;
 
   p->softvol = 1.0;
   p->double_time = 0.0;
-  float headroom = 0.0;
 
   /* Initial value */
   if (argc > 1) {

@@ -650,12 +650,11 @@ static int ostart(sox_effect_t *effp)
   return SOX_SUCCESS;
 }
 
-static int output_flow(sox_effect_t *effp, sox_sample_t const * ibuf,
-    sox_sample_t * obuf, size_t * isamp, size_t * osamp)
+static int output_flow(sox_effect_t UNUSED *effp, sox_sample_t const * ibuf,
+    sox_sample_t UNUSED * obuf, size_t * isamp, size_t * osamp)
 {
   size_t len;
 
-  (void)effp, (void)obuf;
   if (show_progress) for (len = 0; len < *isamp; len += effp->in_signal.channels) {
     omax[0] = max(omax[0], ibuf[len]);
     omin[0] = min(omin[0], ibuf[len]);

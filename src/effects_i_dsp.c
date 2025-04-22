@@ -91,9 +91,9 @@ void lsx_prepare_spline3(double const * x, double const * y, int n,
     double start_1d, double end_1d, double * y_2d)
 {
   double p, qn, sig, un, * u;
+  int i;
 
   lsx_valloc(u, n - 1);
-  int i;
 
   if (start_1d == HUGE_VAL)
     y_2d[0] = u[0] = 0;      /* Start with natural spline or */

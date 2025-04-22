@@ -967,10 +967,10 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
     /* Z-axis */
     {
       int step; double dstep;
-      int k;
+      int base, k;
 
       k = min(400, c_rows);
-      int base = below + (c_rows - k) / 2;
+      base = below + (c_rows - k) / 2;
       print_at(cols - right - 2 - font_X, base - 13, Text, "dBFS");/* Axis label */
       {
         int y;

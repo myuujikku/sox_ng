@@ -792,7 +792,7 @@ static sdm_state_t *sdm_check_path(sdm_t *p, sdm_state_t *s)
 static unsigned sdm_sort_cands(sdm_t *p, sdm_trellis_t *st)
 {
   sdm_state_t *r, *s, *t;
-  sdm_state_t *min;
+  sdm_state_t *min = NULL; /* Suppress compiler warning "used initialized" */
   unsigned i, j, n;
 
   for (i = 0; i < 2 * p->num_cands; i++) {
@@ -830,6 +830,7 @@ static unsigned sdm_sort_cands(sdm_t *p, sdm_trellis_t *st)
     if (sdm_cmple(t, s))
       continue;
 
+    r = st->act[0]; /* shut "used uninitialized" compiler warning up */
     for (j = 0; j < n; j++) {
       r = st->act[j];
       if (sdm_cmple(s, r))

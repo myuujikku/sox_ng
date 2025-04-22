@@ -59,7 +59,13 @@ int lsx_sscanf(const char *str, const char *format, ...)
   int retval;
 
   va_start(va, format);
+#ifdef va_copy
   va_copy(va2, va);
+#else
+ /* "Some systems that do not supply va_copy() have __va_copy instead,
+  * since that was the name used in the draft proposal. */
+  __va_copy(va2, va);
+#endif
   retval = vsscanf(str, format, va);
 
   /* float */
