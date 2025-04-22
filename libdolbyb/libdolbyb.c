@@ -42,7 +42,7 @@ void dolbyb_init(dolbyb_t *Param)
   Param->ThGndB = 0.0;
 
   /* Set initial values */
-  Param->FETGVt = 7500000000;
+  Param->FETGVt = 75000*(int64_t)100000;
 }
 
 static int SecondInit(dolbyb_t *Param)

@@ -1,5 +1,5 @@
 # Makefile.am Copyright (C) 2025 Martin Guy <martinwguy@gmail.com>
-# based on SoX's src/Makefile-am Copyright (C) 2006 Reuben Thomas <rrt@sc3d.org>
+# Based on Sox's Makefile.am Copyright (C) 2006 Reuben Thomas <rrt@sc3d.org>
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -17,13 +17,16 @@
 
 ## Process this file with automake to produce Makefile.in
 
+ACLOCAL_AMFLAGS=-I m4
 AM_CFLAGS = @WARN_CFLAGS@
 
-bin_PROGRAMS = dolbyb
+#bin_PROGRAMS = dolbyb
 lib_LTLIBRARIES = libdolbyb.la
 include_HEADERS = dolbyb.h
-dolbyb_SOURCES = dolbyb.c
-dolbyb_LDADD = libdolbyb.la -lsndfile
+#dolbyb_SOURCES = dolbyb.c
+#dolbyb_LDADD = libdolbyb.la -lsndfile
+dist_man_MANS = dolbyb.1 libdolbyb.3
+EXTRA_DIST = COPYING INSTALL
 
 libdolbyb_la_SOURCES = \
      Calibrate.c DCfilter.c DiodeClip.c ErrMsg.c FindOutSmp.c HPF1.c HPF2.c \
@@ -36,3 +39,7 @@ libdolbyb_la_SOURCES = \
 libdolbyb_la_CFLAGS = @WARN_CFLAGS@
 libdolbyb_la_LDFLAGS = @APP_LDFLAGS@ -version-info @SHLIB_VERSION@ \
   -export-symbols-regex '^dolbyb_(init|start|(en|de)code|free|dumpparam)$$'
+
+# Automatically update libtool script if it gets out-of-date
+libtool: $(LIBTOOL_DEPS)
+	$(SHELL) ./config.status --recheck

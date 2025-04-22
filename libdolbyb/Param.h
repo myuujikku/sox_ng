@@ -8,11 +8,13 @@
 #define ParamMaxChnl    2   /* Maximum number of channels allowed */
 
 /* Advanced parameters */
-#define ParamCapMux (int64_t)10000000000
+/* gcc-2.95 warns "integer constant out of range" and Ansi C disallows
+ * long long constants (1000000000LL) so here's a halfway house */
+#define ParamCapMux ((int64_t)100000*100000)
        /* Values of capacitors are small fractions of a farad.
         * The easiest way to represent them is by multiplying them up
         * so they can be defined as integer values. */
-#define ParamVltMux (int64_t)1000000000
+#define ParamVltMux ((int64_t)10000*100000)
         /* Voltages are represented by integer values. However since
          * the program needs to represent voltages to a fraction of
          * a volt, voltages are multiplied up by VltMux to convert
@@ -33,10 +35,10 @@
          * This is not exact, but it's not critical to get the exact values.
          * There a 3 values depending on whether the input file has
          * a bit depth of 24, 16 or 8. */
-#define ParamFETSVt1 (int64_t)11526914565
-#define ParamFETSVt2 (int64_t)11455997405
-#define ParamFETSVt3 (int64_t)11526914535
-#define ParamFETSVt4 (int64_t)11490770993
+#define ParamFETSVt1 (45 * (int64_t)256153657) /* 11526914565 */
+#define ParamFETSVt2 (5 * (int64_t)2291199481U) /* 11455997405 */
+#define ParamFETSVt3 (15 * (int64_t)768460969) /* 11526914535 */
+#define ParamFETSVt4 (13 * (int64_t)883905461) /* 11490770993 */
 #define ParamDioClp 0.6;
 #define ParamSidAmp1 (double)3.3394756317
 #define ParamSidAmp2 (double)3.3268103599

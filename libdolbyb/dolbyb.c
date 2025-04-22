@@ -18,9 +18,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include "dolbyb.h"
+
 #include <stdlib.h>
 #include <stdio.h>
-#include <dolbyb.h>
 #include <sndfile.h>
 
 static void

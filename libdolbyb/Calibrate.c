@@ -239,8 +239,10 @@ static void CalibrateFindSVlt(dolbyb_t *Param, int64_t FltTyp, int64_t Target)
    * Use a few millionths larger in case of future algorithmic changes
    * which so far have always got the same result within a millionth part
    */
-  LowS = 11365500000;
-  HigS = 11497900000;
+  /* gcc-2.95 warns "integer constant out of range" and Ansi C disallows
+   * long long constants (11365500000LL) so here's a halfway house */
+  LowS = (int64_t)113655*100000;
+  HigS = (int64_t)114979*100000;
   LowRes = CalibrateTrySVlt(Param, LowS);
   HigRes = CalibrateTrySVlt(Param, HigS);
 
