@@ -114,9 +114,6 @@ typedef struct {
   double CalibrateSmpMux;  /* Multiply result of Sin to get sample value */
   int64_t *CalibrateSinTab;
   int64_t CalibrateSinTabMax;
-  /* Results */
-  int64_t CalibrateSVlt[4];	/* 4 is the number of filter types */
-  double CalibrateSAmp[4];
 
   /* HPF1 variables */
   int64_t HPF1Alp;      /* Alpha value */

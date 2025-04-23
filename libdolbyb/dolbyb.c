@@ -23,6 +23,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sndfile.h>
+#include <sndfile.h>
+#if DEBUG
+#include "src/Param.h"
+#endif
 
 static void
 usage(void)

@@ -5,6 +5,7 @@
 #include "dolbyb.h"
 
 #if DEBUG
+#include <stdio.h>
 #include "Param.h"
 #include "SetGate.h"
 #include "HPF2SetVals.h"
@@ -65,8 +66,6 @@ void dolbyb_dumpparam(dolbyb_t *Param)
   printf("%i CalibrateEndSam %lld\n",  count, Param->CalibrateEndSam);
   printf("%i CalibrateSmpDiv %.19f\n", count, Param->CalibrateSmpDiv);
   printf("%i CalibrateSmpMux %.19f\n", count, Param->CalibrateSmpMux);
-  printf("%i CalibrateSVlt %lld %lld %lld %lld\n", count, Param->CalibrateSVlt[0], Param->CalibrateSVlt[1], Param->CalibrateSVlt[2], Param->CalibrateSVlt[3]);	
-  printf("%i CalibrateSAmp %.19f %.19f %.19f %.19f\n", count, Param->CalibrateSAmp[0], Param->CalibrateSAmp[1], Param->CalibrateSAmp[2], Param->CalibrateSAmp[3]);
   printf("%i HPF1Alp %lld\n",          count, Param->HPF1Alp);
   printf("%i HPF1AlpMux %lld\n",       count, Param->HPF1AlpMux);
   printf("%i HPF1PrvIn %lld %lld\n",   count, Param->HPF1PrvIn[0], Param->HPF1PrvIn[1]);

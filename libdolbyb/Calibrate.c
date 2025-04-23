@@ -23,7 +23,6 @@
 #include "dolbyb.h"
 
 #include "Calibrate.h"
-#include "ErrMsg.h"
 #include "Mixers.h"
 #include "Param.h"
 #include "SidePath.h"
@@ -136,7 +135,7 @@ static int64_t CalibrateTrySideAmp(dolbyb_t *Param, double SidAmp)
   return CalibrateRunEncodeTest(Param);
 }
 
-static void CalibrateFindSideAmp(dolbyb_t *Param, int64_t FltTyp, int64_t Target)
+static double CalibrateFindSideAmp(dolbyb_t *Param, int64_t Target)
 {
   int64_t OldGVt;
   double HigAmp, LowAmp, PrvAmp, TryAmp;
@@ -146,7 +145,6 @@ static void CalibrateFindSideAmp(dolbyb_t *Param, int64_t FltTyp, int64_t Target
   OldGVt = Param->FETGVt;   /* Save Value to restore afterwards */
   CalibrateInit(Param, 0, 5);
   /* Set up some test values */
-  Param->FltTyp = FltTyp;
   Param->FETClp = 1;
   Param->FETGVt = 0;
 
@@ -208,7 +206,7 @@ static void CalibrateFindSideAmp(dolbyb_t *Param, int64_t FltTyp, int64_t Target
   /* Restore parameters and store the result */
   Param->FETGVt = OldGVt;
   Param->FETClp = 0;
-  Param->CalibrateSAmp[FltTyp-1] = TryAmp;
+  return TryAmp;
 }
 
 /****  Routines to find best value for SVlt  ****/
@@ -220,7 +218,7 @@ static int64_t CalibrateTrySVlt(dolbyb_t *Param, int64_t SVlt)
   return CalibrateRunEncodeTest(Param);
 }
 
-static void CalibrateFindSVlt(dolbyb_t *Param, int64_t FltTyp, int64_t Target)
+static int64_t CalibrateFindSVlt(dolbyb_t *Param, int64_t Target)
 {
   int64_t HigS, LowS, PrvS, TryS;
   int64_t TryRes, PrvRes;
@@ -229,7 +227,6 @@ static void CalibrateFindSVlt(dolbyb_t *Param, int64_t FltTyp, int64_t Target)
   CalibrateInit (Param, 2, 5);
 
   /* Set up some test values */
-  Param->FltTyp = FltTyp;
   Param->FETClp = 0;
 
   /* Set initial high and low values */
@@ -269,8 +266,7 @@ static void CalibrateFindSVlt(dolbyb_t *Param, int64_t FltTyp, int64_t Target)
    * so out best estimate is half way between them */
   TryS = (TryS + PrvS + 1) / 2;
 
-  /* Store the result */
-  Param->CalibrateSVlt[FltTyp-1] = TryS;
+  return TryS;
 }
 
 /******************************************/
@@ -279,13 +275,9 @@ static void CalibrateFindSVlt(dolbyb_t *Param, int64_t FltTyp, int64_t Target)
 
 void Calibrate(dolbyb_t *Param)
 {
-  uint16_t OldFlt;   /* Exiting filter setting */
-  uint16_t FltCnt;   /* Type of filtering */
   int64_t OffRes;   /* Result with Noise Resuction off */
   int64_t GanTgt;   /* Target for gain adjustement */
   int64_t SvtTgt;   /* Target for SVlt adjustement */
-
-  OldFlt = Param->FltTyp;   /* Save value to restore at the end */
   
   /* Try with noise reduction turned off, to get reference level */
   OffRes = CalibrateRunNoNRTest(Param);
@@ -294,17 +286,9 @@ void Calibrate(dolbyb_t *Param)
   GanTgt = round(OffRes * ParamConvertDb(10.0));
   SvtTgt = round(OffRes * ParamConvertDb(8.0));
 
-  /* Calibrate for each filter type */
-  for (FltCnt = 1; FltCnt <= CalibrateNumFltTyp; FltCnt++) {
-    if (ErrMsgFlg || FltCnt == Param->FltTyp) {
-      CalibrateFindSideAmp(Param, FltCnt, GanTgt);
-      CalibrateFindSVlt(Param, FltCnt, SvtTgt);
-    }
-  }
+  /* Store the result */
+  Param->SidAmp = CalibrateFindSideAmp(Param, GanTgt);
+  Param->FETSVt = CalibrateFindSVlt(Param, SvtTgt);
 
-  /* Restore variables */
-  Param->FltTyp = OldFlt;
-  Param->FETSVt = Param->CalibrateSVlt[OldFlt-1];
-  Param->SidAmp = Param->CalibrateSAmp[OldFlt-1];
   SidePathInit(Param);
 }

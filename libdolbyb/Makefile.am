@@ -21,18 +21,18 @@ ACLOCAL_AMFLAGS=-I m4
 AM_CFLAGS = @WARN_CFLAGS@
 
 #bin_PROGRAMS = dolbyb
-lib_LTLIBRARIES = libdolbyb.la
-include_HEADERS = dolbyb.h
 #dolbyb_SOURCES = dolbyb.c
 #dolbyb_LDADD = libdolbyb.la -lsndfile
+include_HEADERS = dolbyb.h
+lib_LTLIBRARIES = libdolbyb.la
 dist_man_MANS = dolbyb.1 libdolbyb.3
 EXTRA_DIST = COPYING INSTALL
 
 libdolbyb_la_SOURCES = \
-     Calibrate.c DCfilter.c DiodeClip.c ErrMsg.c FindOutSmp.c HPF1.c HPF2.c \
+     Calibrate.c DCfilter.c DiodeClip.c FindOutSmp.c HPF1.c HPF2.c \
      HPF2SetVals.c HPFAdj.c LPFAdj.c Param.c SetGate.c SidePath.c \
      libdolbyb.c \
-     Calibrate.h DCfilter.h DiodeClip.h ErrMsg.h FindOutSmp.h HPF1.h HPF2.h \
+     Calibrate.h DCfilter.h DiodeClip.h FindOutSmp.h HPF1.h HPF2.h \
      HPF2SetVals.h HPFAdj.h LPFAdj.h Param.h SetGate.h SidePath.h \
      dolbyb.h
 
@@ -43,3 +43,15 @@ libdolbyb_la_LDFLAGS = @APP_LDFLAGS@ -version-info @SHLIB_VERSION@ \
 # Automatically update libtool script if it gets out-of-date
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status --recheck
+
+DolbyBi64: DolbyBi64.PP LibI64/*.Lib
+	fpc DolbyBi64.PP
+
+tags:
+	ctags *.[ch]
+
+clean-local:
+	rm -rf .deps autom4te.cache
+	rm -f config.log configure~ \
+	      stamp-h1 libdolbyb-*.tar.gz \
+	      tags dolbyb DolbyBi64

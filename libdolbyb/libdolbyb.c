@@ -47,7 +47,7 @@ void dolbyb_init(dolbyb_t *Param)
 
 static int SecondInit(dolbyb_t *Param)
 {
-  /* More initalising, after the input wave header has been read,  */
+  /* More initialising after the input wave header has been read,  */
   /* so the sample rate and number of samples is now known.        */
 
   Param->DecAMX = ParamConvertDb(Param->DecAdB);
@@ -111,7 +111,6 @@ int dolbyb_start(dolbyb_t *Param)
 
   if (SecondInit(Param)) return 1;
   Calibrate(Param);
-  if (SecondInit(Param)) return 1;
   return 0;
 }
 
@@ -147,7 +146,7 @@ void dolbyb_encode(dolbyb_t *Param, void *in, void *out, size_t nframes)
 
   for (SmpCnt = 0; SmpCnt < nframes; SmpCnt++) {
     for (Chn = 1; Chn <= Param->NumChn; Chn++) {
-      int i; int Mux; uint32_t SmpVal;
+      int i; int Mux; int64_t SmpVal;
 
       /* Get input */
       for (i=1, Mux = 1, SmpVal = 0; i <= NumByt; i++) {
