@@ -7,15 +7,24 @@
    "tags": "audio, audio-editing, audio-processing, c, commandline-tool, digital-audio-editor, opensource, sound",
    "releases": [
       {
-         "version": "14.5.1.0",
+         "version": "14.5.1.2",
          "state": "stable",
          "scope": "minor bugfix",
-         "download": "https://codeberg.org/sox_ng/sox_ng/releases/download/sox_ng-14.5.0.1/sox_ng-14.5.0.1.tar.gz",
-         "published": "2025-04-08T01:15:00+01:00"
+         "download": "https://codeberg.org/sox_ng/sox_ng/releases/download/sox_ng-14.5.1.2/sox_ng-14.5.1.2.tar.gz",
+         "published": "2025-04-24T17:15:00+00:00"
+         "changes": "Bug fixes:
+
+  o Revert "Support unicode when writing id3 tags" which wrote nothing
+      },{
+         "version": "14.5.1.1",
+         "state": "stable",
+         "scope": "minor bugfix",
+         "download": "https://codeberg.org/sox_ng/sox_ng/releases/download/sox_ng-14.5.1.1/sox_ng-14.5.1.1.tar.gz",
+         "published": "2025-04-08T00:15:00+00:00"
          "changes": "Bug fixes:
 
 o chorus: Fix segmentation fault caused by 'Raise limit on number of stages'
-o chorus: FIx double free when processing multiple channels"
+o chorus: Fix double free when processing multiple channels"
       },{
          "version": "14.5.1",
          "state": "stable",
