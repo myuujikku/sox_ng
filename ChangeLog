@@ -57,6 +57,7 @@ Bug fixes:
   o No formats or effects are experimental or deprecated any more
   o Multi-channel LADSPA plugins now work
   o The LD_LIBRARY_PATH change has been reverted (it bombed on Solaris)
+  O Revert the "Unicode when writing id3 tags" patch which never worked
   o ffmpeg's ADX format is no longer autodetected (too many false positives)
   o Reject parameter values of NaN instead of dumping core
   o Correct the manual and make its mcompand example work

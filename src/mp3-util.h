@@ -17,108 +17,55 @@
 
 #include <sys/stat.h>
 
-#if defined(HAVE_LAME_ID3TAG)
+#ifdef USING_ID3TAG
+#if defined(HAVE_MAD_H) || defined(HAVE_MPG123_H)
 
 extern char const * lsx_id3tagmap[][2];
 
-#if defined _WIN32
+#endif /* HAVE_MAD_H */
+#endif /* USING_ID3TAG */
 
-#include <wchar.h>
-#include <windows.h>
-
-#define UTF16_ID3 1
-
-static unsigned short * utf8_to_utf16 (const char * utf8)
-{
-  int len;
-  int wlength;
-  LPWSTR wstr;
-
-  len = strlen(utf8);
-  wlength = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, utf8, len, 0, 0);
-  if (wlength == 0) return NULL;
-  wstr = (LPWSTR)calloc((size_t)(wlength+2), sizeof(wchar_t));
-  MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, utf8, len, wstr+1, wlength);
-  wstr[0] = 0xFEFF; /* add BOM, it is required by LAME */
-  return (unsigned short *) wstr;
-}
-
-#elif defined(HAVE_ICONV)
-
-#include <iconv.h>
-
-#define UTF16_ID3 1
-
-static unsigned short * utf8_to_utf16 (const char * utf8) {
-    size_t inSize, outSize, cstrSize;
-    char *in, *out, *cstr;
-    iconv_t conv;
-    size_t  status;
-
-    inSize  = strlen(utf8);
-    outSize = inSize * 2 + 2; /* worst case, UTF-16 can take max twice as much space as UTF-8 */
-    in      = (char *) utf8;
-    out     = lsx_malloc(outSize);
-    cstr    = out;
-    
-    conv   = iconv_open("UTF-16", "UTF-8");
-    status = iconv(conv, &in, &inSize, &out, &outSize);
-    iconv_close(conv);
-
-    if (status == ((size_t) -1)) {
-      free(cstr);
-      return NULL;
-    }
-
-    cstrSize = out - cstr;
-    cstr[cstrSize] = 0;                /* add null-terminator, first byte */
-    cstr[cstrSize+1] = 0;              /* second byte */
-    return (unsigned short *) cstr;
-}
-
-#endif /* HAVE_ICONV */
-
-
-
-static void set_id3_field (priv_t * p, const char * field, const char * value)
-{
-  char* buf = lsx_malloc(strlen(field) + strlen(value) + 2);
-#if defined(UTF16_ID3)
-  unsigned short * utf16;
-#endif
-
-  if (!buf) return;
-  sprintf(buf, "%s=%s", field, value);
-
-#if defined(UTF16_ID3)
-  utf16 = utf8_to_utf16(buf);
-  if (utf16) {
-    p->id3tag_set_fieldvalue_utf16(p->gfp, utf16);
-    free(utf16);
-  } else {
-    /* the value wasn't valid utf8, fall back to latin1 */
-    p->id3tag_set_fieldvalue(p->gfp, buf);
-  }
-#else
-  p->id3tag_set_fieldvalue(p->gfp, buf);
-#endif
-
-  free(buf);
-}
-
+#if defined(HAVE_LAME)
 
 static void write_comments(sox_format_t * ft)
 {
   priv_t *p = (priv_t *) ft->priv;
   const char* comment;
-  size_t i;
 
   p->id3tag_init(p->gfp);
   p->id3tag_set_pad(p->gfp, (size_t)ID3PADDING);
 
-  for (i = 0; lsx_id3tagmap[i][0]; ++i)
-    if ((comment = sox_find_comment(ft->oob.comments, lsx_id3tagmap[i][1])))
-      set_id3_field(p, lsx_id3tagmap[i][0], comment);
+  /* Note: id3tag_set_fieldvalue is not present in LAME 3.97, so we're using
+     the 3.97-compatible methods for all of the tags that 3.97 supported. */
+  /* FIXME: This is no more necessary, since support for LAME 3.97 has ended. */
+  if ((comment = sox_find_comment(ft->oob.comments, "Title")))
+    p->id3tag_set_title(p->gfp, comment);
+  if ((comment = sox_find_comment(ft->oob.comments, "Artist")))
+    p->id3tag_set_artist(p->gfp, comment);
+  if ((comment = sox_find_comment(ft->oob.comments, "Album")))
+    p->id3tag_set_album(p->gfp, comment);
+  if ((comment = sox_find_comment(ft->oob.comments, "Tracknumber")))
+    p->id3tag_set_track(p->gfp, comment);
+  if ((comment = sox_find_comment(ft->oob.comments, "Year")))
+    p->id3tag_set_year(p->gfp, comment);
+  if ((comment = sox_find_comment(ft->oob.comments, "Comment")))
+    p->id3tag_set_comment(p->gfp, comment);
+  if ((comment = sox_find_comment(ft->oob.comments, "Genre")))
+  {
+    if (p->id3tag_set_genre(p->gfp, comment))
+      lsx_warn("\"%s\" is not a recognized ID3v1 genre.", comment);
+  }
+
+  if ((comment = sox_find_comment(ft->oob.comments, "Discnumber")))
+  {
+    char* id3tag_buf = lsx_malloc(strlen(comment) + 6);
+    if (id3tag_buf)
+    {
+      sprintf(id3tag_buf, "TPOS=%s", comment);
+      p->id3tag_set_fieldvalue(p->gfp, id3tag_buf);
+      free(id3tag_buf);
+    }
+  }
 }
 
 #endif /* HAVE_LAME */
