@@ -529,14 +529,6 @@ if test "$with_lame" != "no"; then
       AC_CHECK_LIB(mp3lame, id3tag_set_fieldvalue, using_lame=$using_lame)
       if test x"$ac_cv_lib_mp3lame_id3tag_set_fieldvalue" = "xyes"; then
         AC_DEFINE(HAVE_LAME_ID3TAG, 1, [Define to 1 if lame supports optional ID3 tags.])
-        AC_CHECK_HEADERS(iconv.h, using_iconv=yes, using_iconv=no)
-        AC_CHECK_HEADERS(windows.h, using_iconv=no)
-        if test x"$using_iconv" = "xyes"; then
-          AC_CHECK_LIB(iconv, libiconv_open, MP3_LIBS="$MP3_LIBS -liconv", using_iconv=no)
-          if test "$ac_cv_lib_mp3lame_id3tag_set_fieldvalue" = yes; then
-            AC_DEFINE(HAVE_ICONV, 1, [Define to 1 if lame should use iconv to write unicode ID3 tags.])
-          fi
-        fi
       fi
       if test x"$with_lame" = "xyes" -a x"$using_lame" = "xno"; then
         AC_MSG_FAILURE([cannot find LAME])
