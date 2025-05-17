@@ -745,7 +745,7 @@ static FILE * open_url(char const * identifier)
             case 96: s = "QUIC connection error"; break;
 	    default: s = "Unrecognized exit code from curl"; break;
 	    } else s = "URL fetch failed";
-	    lsx_fail(s);
+	    lsx_fail("%s", s);
 	    free(command);
 	    return NULL;
 	}
