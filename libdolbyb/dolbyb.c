@@ -25,7 +25,7 @@
 #include <sndfile.h>
 #include <sndfile.h>
 #if DEBUG
-#include "src/Param.h"
+#include "Param.h"
 #endif
 
 static void

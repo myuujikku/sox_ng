@@ -25,6 +25,8 @@
 #include "SidePath.h"
 #include "FindOutSmp.h"
 
+#include "configure.h"  /* for WORDS_BIGENDIAN */
+
 #include <stdlib.h>  /* for free() */
 #include <string.h>  /* for memset() */
 #include <stdio.h>   /* we shouldn't but it's only for error messages */
@@ -120,11 +122,10 @@ void dolbyb_encode(dolbyb_t *Param, void *in, void *out, size_t nframes)
   unsigned char *outp = out;
   uint16_t Chn, UpCnt;
   int64_t SidSmp, TotSmp, OutSmp;
-  int64_t SmpCnt;
+  size_t SmpCnt;
   int64_t MaxSamp, SubSamp;
-  uint16_t NumByt, BytCnt;
+  uint16_t NumByt;
   int32_t MaxVal, MinVal, AddVal;
-  int32_t PrvVal, NxtVal, BytVal;
 
   switch (Param->BDepth) {
   case 8:  NumByt = 1; MaxSamp = -1; SubSamp = 128; 
@@ -146,13 +147,24 @@ void dolbyb_encode(dolbyb_t *Param, void *in, void *out, size_t nframes)
 
   for (SmpCnt = 0; SmpCnt < nframes; SmpCnt++) {
     for (Chn = 1; Chn <= Param->NumChn; Chn++) {
-      int i; int Mux; int64_t SmpVal;
+      int64_t SmpVal;
 
       /* Get input */
-      for (i=1, Mux = 1, SmpVal = 0; i <= NumByt; i++) {
-	SmpVal += Mux * *inp++;
-	Mux *= 256;
+      switch (NumByt) {
+      case 1: SmpVal = (int64_t)(inp[0]);
+              break;
+#ifndef WORDS_BIGENDIAN
+      case 2: SmpVal = (int64_t)((int32_t)inp[0] | ((int32_t)inp[1] << 8));
+              break;
+      case 3: SmpVal = (int64_t)((int32_t)inp[0] | ((int32_t)inp[1] << 8) | ((int32_t)inp[2] << 16));
+#else
+      case 2: SmpVal = (int64_t)((int32_t)inp[1] | ((int32_t)inp[0] << 8));
+              break;
+      case 3: SmpVal = (int64_t)((int32_t)inp[2] | ((int32_t)inp[1] << 8) | ((int32_t)inp[0] << 16));
+#endif
+              break;
       }
+      inp += NumByt;
       if (SmpVal > MaxSamp) SmpVal -= SubSamp;
       SmpVal *= Param->SmpMux;
 
@@ -162,28 +174,42 @@ void dolbyb_encode(dolbyb_t *Param, void *in, void *out, size_t nframes)
       for (UpCnt = 1; UpCnt <= Param->InUS; UpCnt++) {
 	/* Add audio from side path */
 	SidSmp = SidePath(Param, SmpVal, Chn);
-	SmpVal = MixersEncode(SmpVal, SidSmp);
-	TotSmp += SmpVal;
+	TotSmp += MixersEncode(SmpVal, SidSmp);
       }
       OutSmp = (TotSmp / Param->InUS) / Param->SmpMux;
 
       /* Check for sample value out of range */
       if (OutSmp > MaxVal)
-	PrvVal = MaxVal;
+	SmpVal = MaxVal;
       else if (OutSmp < MinVal)
-	PrvVal = MinVal;
+	SmpVal = MinVal;
       else
-	PrvVal = OutSmp;
+	SmpVal = OutSmp;
       /* Convert negative values */
-      if (PrvVal < 0 || Param->BDepth == 8)
-	PrvVal += AddVal;
+      if (SmpVal < 0 || Param->BDepth == 8)
+	SmpVal += AddVal;
 
       /* Send as output bytes */
-      for (BytCnt = 1; BytCnt <= NumByt; BytCnt++) {
-	NxtVal = PrvVal / 256;
-	BytVal = PrvVal - NxtVal * 256;
-	PrvVal = NxtVal;
-	*outp++ = BytVal;
+
+      switch (NumByt) {
+      case 1: *outp++ = SmpVal & 0xff;
+              break;
+#ifndef WORDS_BIGENDIAN
+      case 2: *outp++ = SmpVal & 0xff;
+              *outp++ = (SmpVal >> 8) & 0xff;
+              break;
+      case 3: *outp++ = SmpVal & 0xff;
+              *outp++ = (SmpVal >> 8) & 0xff;
+              *outp++ = (SmpVal >> 16) & 0xff;
+#else
+      case 2: *outp++ = (SmpVal >> 8) & 0xff;
+              *outp++ = SmpVal & 0xff;
+              break;
+      case 3: *outp++ = (SmpVal >> 16) & 0xff;
+              *outp++ = (SmpVal >> 8) & 0xff;
+              *outp++ = SmpVal & 0xff;
+#endif
+              break;
       }
     }
   }
@@ -197,7 +223,6 @@ void dolbyb_decode(dolbyb_t *Param, void *in, void *out, size_t nframes)
   int64_t TotSmp;
   int64_t MaxSamp, SubSamp, MinVal, MaxVal, AddVal;
   int64_t SmpCnt;
-  int32_t PrvVal, NxtVal, BytVal;
 
   switch (Param->BDepth) {
   case 8:  NumByt = 1; MaxSamp = -1; SubSamp = 128; 
@@ -220,13 +245,24 @@ void dolbyb_decode(dolbyb_t *Param, void *in, void *out, size_t nframes)
   /* Process samples */
   for (SmpCnt = 0; SmpCnt < nframes; SmpCnt++) {
     for (NumChn = 1; NumChn <= Param->NumChn; NumChn++) {
-      int i, Mux, BytCnt; int64_t SmpVal, OutSmp;
+      int64_t SmpVal, OutSmp;
 
       /* Get input */
-      for (i=1, Mux = 1, SmpVal = 0; i <= NumByt; i++) {
-	SmpVal += Mux * *inp++;
-	Mux *= 256;
+      switch (NumByt) {
+      case 1: SmpVal = (int64_t)(inp[0]);
+              break;
+#ifndef WORDS_BIGENDIAN
+      case 2: SmpVal = (int64_t)((int32_t)inp[0] | ((int32_t)inp[1] << 8));
+              break;
+      case 3: SmpVal = (int64_t)((int32_t)inp[0] | ((int32_t)inp[1] << 8) | ((int32_t)inp[2] << 16));
+#else
+      case 2: SmpVal = (int64_t)((int32_t)inp[1] | ((int32_t)inp[0] << 8));
+              break;
+      case 3: SmpVal = (int64_t)((int32_t)inp[2] | ((int32_t)inp[1] << 8) | ((int32_t)inp[0] << 16));
+#endif
+              break;
       }
+      inp += NumByt;
       if (SmpVal > MaxSamp) SmpVal -= SubSamp;
       SmpVal *= Param->SmpMux;
 
@@ -242,21 +278,35 @@ void dolbyb_decode(dolbyb_t *Param, void *in, void *out, size_t nframes)
 
       /* Check for sample value out of range */
       if (OutSmp > MaxVal)
-	PrvVal = MaxVal;
+	SmpVal = MaxVal;
       else if (OutSmp < MinVal)
-	PrvVal = MinVal;
+	SmpVal = MinVal;
       else
-	PrvVal = OutSmp;
+	SmpVal = OutSmp;
       /* Convert negative values */
-      if (PrvVal < 0 || Param->BDepth == 8)
-	PrvVal += AddVal;
+      if (SmpVal < 0 || Param->BDepth == 8)
+	SmpVal += AddVal;
 
       /* Send as output bytes */
-      for (BytCnt = 1; BytCnt <= NumByt; BytCnt++) {
-	NxtVal = PrvVal / 256;
-	BytVal = PrvVal - NxtVal * 256;
-	PrvVal = NxtVal;
-	*outp++ = BytVal;
+      switch (NumByt) {
+      case 1: *outp++ = SmpVal & 0xff;
+              break;
+#ifndef WORDS_BIGENDIAN
+      case 2: *outp++ = SmpVal & 0xff;
+              *outp++ = (SmpVal >> 8) & 0xff;
+              break;
+      case 3: *outp++ = SmpVal & 0xff;
+              *outp++ = (SmpVal >> 8) & 0xff;
+              *outp++ = (SmpVal >> 16) & 0xff;
+#else
+      case 2: *outp++ = (SmpVal >> 8) & 0xff;
+              *outp++ = SmpVal & 0xff;
+              break;
+      case 3: *outp++ = (SmpVal >> 16) & 0xff;
+              *outp++ = (SmpVal >> 8) & 0xff;
+              *outp++ = SmpVal & 0xff;
+#endif
+              break;
       }
     }
   }

@@ -33,7 +33,7 @@ libdolbyb_la_SOURCES = \
      HPF2SetVals.c HPFAdj.c LPFAdj.c Param.c SetGate.c SidePath.c \
      libdolbyb.c \
      Calibrate.h DCfilter.h DiodeClip.h FindOutSmp.h HPF1.h HPF2.h \
-     HPF2SetVals.h HPFAdj.h LPFAdj.h Param.h SetGate.h SidePath.h \
+     HPF2SetVals.h HPFAdj.h LPFAdj.h Mixers.h Param.h SetGate.h SidePath.h \
      dolbyb.h
 
 libdolbyb_la_CFLAGS = @WARN_CFLAGS@
