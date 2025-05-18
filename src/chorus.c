@@ -25,9 +25,6 @@
 
 #include "sox_i.h"
 
-/** the maximum number of stages in a chorus */
-#define MAX_STAGE_COUNT  SCALING_FACTOR
-
 /** the number of parameter for a chorus stage */
 #define PARAM_COUNT_PER_STAGE 5
 
@@ -37,6 +34,9 @@
 /** the downscaling factor for the samples in the delay line
  * to prevent overflow; best if it's a power of 2 */
 #define SCALING_FACTOR 256
+
+/** the maximum number of stages in a chorus, because of SCALING_FACTOR */
+#define MAX_STAGE_COUNT SCALING_FACTOR
 
 /** the function for checking for a clipped sample in the resolution
  * after downscaling */
