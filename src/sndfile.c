@@ -168,10 +168,14 @@ static sox_encoding_t sox_enc(int ft_encoding, unsigned * size)
     case SF_FORMAT_DWVW_24  : *size = 24; return SOX_ENCODING_DWVW;
     case SF_FORMAT_DWVW_N   : *size =  0; return SOX_ENCODING_DWVWN;
     case SF_FORMAT_GSM610   : *size =  0; return SOX_ENCODING_GSM;
+#ifdef SF_FORMAT_MPEG_LAYER_II
     case SF_FORMAT_MPEG_LAYER_II
                             : *size = 16; return SOX_ENCODING_MP3;
+#endif
+#ifdef SF_FORMAT_MPEG_LAYER_III
     case SF_FORMAT_MPEG_LAYER_III
                             : *size = 16; return SOX_ENCODING_MP3;
+#endif
     default                 : *size =  0; return SOX_ENCODING_UNKNOWN;
   }
 }
@@ -466,8 +470,11 @@ static int startwrite(sox_format_t * ft)
       lsx_fail("cannot find a usable output encoding");
       return SOX_EOF;
     }
-    if ((sf->sf_info->format & SF_FORMAT_TYPEMASK) != SF_FORMAT_RAW &&
-        (sf->sf_info->format & SF_FORMAT_TYPEMASK) != SF_FORMAT_MPEG)
+    if ((sf->sf_info->format & SF_FORMAT_TYPEMASK) != SF_FORMAT_RAW 
+#ifdef SF_FORMAT_MPEG
+        && (sf->sf_info->format & SF_FORMAT_TYPEMASK) != SF_FORMAT_MPEG
+#endif
+	)
       lsx_warn("cannot use desired output encoding, choosing default");
   }
 
