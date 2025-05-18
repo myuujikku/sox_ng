@@ -25,7 +25,7 @@
 #include "SidePath.h"
 #include "FindOutSmp.h"
 
-#include "configure.h"  /* for WORDS_BIGENDIAN */
+#include "../src/soxconfig.h"  /* for WORDS_BIGENDIAN */
 
 #include <stdlib.h>  /* for free() */
 #include <string.h>  /* for memset() */

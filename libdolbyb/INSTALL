@@ -1,0 +1,8 @@
+You just need "make" and a C compiler.
+
+    make
+    make install
+
+If you have FreePascal (fpc) installed, you can compile the original Pascal:
+
+    make DolbyBi64
