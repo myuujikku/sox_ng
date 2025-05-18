@@ -7,6 +7,66 @@
    "tags": "audio, audio-editing, audio-processing, c, commandline-tool, digital-audio-editor, opensource, sound",
    "releases": [
       {
+         "version": "14.6.0",
+         "state": "stable",
+         "scope": "minor feature",
+         "download": "https://codeberg.org/sox_ng/sox_ng/releases/download/sox_ng-14.6.1/sox_ng-14.6.1.tar.gz",
+         "published": "2025-05-18T23:59:00+00:00"
+         "changes": "New features:
+
+  o Read NSP format files
+  o Read MSP2K (Akai sampler) format files
+  o Read and write AIFC a-law and u-law encodings
+  o Copy AIFF's MARK and INST chunks more often
+  o Copy AIFC's MARK and INST chunks
+  o Read and write DSF format and read DFF and WSD formats
+  o Add the DSD-related 'dop' and 'sdm' effects
+  o Add reading of Ogg FLAC files (with ffmpeg)
+  o SDS format is now autodetected
+  o MP3 with CRC protection and MP2 formats are now autodetected
+  o AIFF format now supports ID3 tags
+  o The ID3 'TCOM' (Composer) tag is now supported
+  o Add 'softvol' effect, a software gain that avoids clipping and maybe rises
+  o Make the 'v' and 'V' keys prefer to adjust softvol if it is active
+  o Add 'dolbyb' effect to decode and encode Dolby B noise reduction
+  o synth: Add 'vdelay' combine method to phase-modulate by the synth wave
+  o Remove the limit on the number of echo/echos stages (was 7)
+  o Remove the limit on the number of channels that phaser can handle (was 4)
+  o Raise the limit on the number of chorus stages from 7 to 256
+  o Remove unnecessary limits on arguments to echo,echos,chorus,phaser,flanger
+  o wget, wget2 and curl are sought at runtime instead of at build time and
+    ./configure --with-curl now just makes it prefer curl to wget.
+  o Make 'echos' run 20% faster
+  o Make --multi-threaded the default
+  o Error messages have been harmonized. The best was
+    sox_ng WARN chorus: chorus: warning >>> gain-out can cause saturation
+  o When curl or wget fail to fetch a URL, decode the exit status to a message
+  o Add flow diagrams to --help-effect chorus/compand/earwax/echo/echos/phaser
+
+Bug fixes:
+
+  o The 'stats' effect's Bit-depth values have been revised to reflect
+    what Bit-depth means and handle corner cases like -32768
+  o Revise all effects' usage messages to the same format and more helpful
+  o 'echos' and 'chorus' have never worked but now do what they say
+  o 'bend''s logarithmic frequency curve is more closely logarithmic
+  o Fix 'silence' not to add a random selection of fragments at the end
+  o 'silence' no longer outputs a random selection of fragments at the end
+  o Make 'firfit' understand frequencies like '10k'
+  o Read mono 8-bit MAUD files with an odd number of samples
+  o Handle unknown odd-sized chunks in AIFF files
+  o Detect and report read errors from short audio files
+  o Detect and report drite errors to audio files
+  o When data read from a pipe is short, report stats for what there was
+  o When an fatal error is detected, stop and exit non-zero in all cases
+  o No formats or effects are experimental or deprecated any more
+  o Multi-channel LADSPA plugins now work
+  o The LD_LIBRARY_PATH change has been reverted (it bombed on Solaris)
+  O Revert the 'Unicode when writing id3 tags' patch which never worked
+  o ffmpeg's ADX format is no longer autodetected (too many false positives)
+  o Reject parameter values of NaN instead of dumping core
+  o Correct the manual and make its mcompand example work"
+      },{
          "version": "14.5.1.2",
          "state": "stable",
          "scope": "minor bugfix",
@@ -14,7 +74,7 @@
          "published": "2025-04-24T17:15:00+00:00"
          "changes": "Bug fixes:
 
-  o Revert "Support unicode when writing id3 tags" which wrote nothing
+  o Revert 'Support unicode when writing id3 tags' which wrote nothing"
       },{
          "version": "14.5.1.1",
          "state": "stable",
