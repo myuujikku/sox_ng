@@ -176,6 +176,8 @@ static sox_encoding_t sox_enc(int ft_encoding, unsigned * size)
 #ifdef HAVE_SF_FORMAT_MPEG
     case SF_FORMAT_MPEG_LAYER_II
                             : *size = 16; return SOX_ENCODING_MP3;
+#endif
+#ifdef SF_FORMAT_MPEG_LAYER_III
     case SF_FORMAT_MPEG_LAYER_III
                             : *size = 16; return SOX_ENCODING_MP3;
 #endif
@@ -454,7 +456,11 @@ static int startwrite(sox_format_t * ft)
       lsx_fail("cannot find a usable output encoding");
       return SOX_EOF;
     }
-    if ((sf->sf_info->format & SF_FORMAT_TYPEMASK) != SF_FORMAT_RAW)
+    if ((sf->sf_info->format & SF_FORMAT_TYPEMASK) != SF_FORMAT_RAW 
+#ifdef SF_FORMAT_MPEG
+        && (sf->sf_info->format & SF_FORMAT_TYPEMASK) != SF_FORMAT_MPEG
+#endif
+	)
       lsx_warn("cannot use desired output encoding, choosing default");
   }
 
