@@ -32,15 +32,16 @@
 
 #define SidePathNumberOfPaths  ParamMaxChnl
 
-int SidePathInit(dolbyb_t *Param)
+char *SidePathInit(dolbyb_t *Param)
 {
   uint16_t TabCnt;
+  char *err;
 
   DCfilterInit(Param);
   HPF1Init(Param);
   HPF2Init(Param);
-  if (SetGateInit(Param)) return 1;
-  if (HPF2SetValsInit(Param)) return 1;
+  if ((err = SetGateInit(Param))) return err;
+  if ((err = HPF2SetValsInit(Param))) return err;
   DiodeClipInit(Param);
 
   /* Set side path gain */
@@ -56,7 +57,7 @@ int SidePathInit(dolbyb_t *Param)
     SetGate(Param, 0, TabCnt);
     HPF2SetVals(Param, TabCnt);
   }
-  return 0;
+  return NULL;
 }
 
 

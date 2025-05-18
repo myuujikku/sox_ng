@@ -216,7 +216,7 @@ static void HPF2SetValsSetHighestFreq(dolbyb_t *Param)
 /****   Initialisation   ****/
 /****************************/
 
-int HPF2SetValsInit(dolbyb_t *Param)
+char *HPF2SetValsInit(dolbyb_t *Param)
 {
   if (Param->HPF2SetValsPotTab == NULL)
     Param->HPF2SetValsPotTab = calloc(HPF2SetValsTableSize + 1, sizeof(*Param->HPF2SetValsPotTab));
@@ -226,14 +226,14 @@ int HPF2SetValsInit(dolbyb_t *Param)
     Param->HPF2SetValsFLTATb = calloc(HPF2SetValsTableSize + 1, sizeof(*Param->HPF2SetValsFLTATb));
   if (Param->HPF2SetValsPotTab == NULL ||
       Param->HPF2SetValsAlpTab == NULL ||
-      Param->HPF2SetValsFLTATb == NULL) return 1;
+      Param->HPF2SetValsFLTATb == NULL) return "Out of memory";
 
   HPF2SetValsSetHighestFreq(Param);
   Param->HPF2SetValsMaxRC = ParamR1 * ParamC1;
   HPF2SetValsTableRes(Param);
   HPF2SetValsMakePotTable(Param);
   HPF2SetValsMakeAlpTable(Param);
-  return 0;
+  return NULL;
 }
 
 

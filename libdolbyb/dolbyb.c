@@ -44,6 +44,17 @@ usage(void)
 
 #define HANDFUL 1024
 
+static char *progname;
+
+static void
+check(char *err)
+{
+  if (err) {
+    fprintf(stderr, "%s: %s\n", progname, err);
+    exit(1);
+  }
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -54,7 +65,9 @@ main(int argc, char *argv[])
   sf_count_t n_read;
   int Encode = 0;
 
-  dolbyb_init(&dolbyb);
+  progname = argv[0];
+
+  check(dolbyb_init(&dolbyb));
 
   /* Process commandline arguments */
   argv++; argc--; /* Skip program name */
@@ -74,33 +87,43 @@ main(int argc, char *argv[])
   if (argc != 2) { usage(); exit(1); }
 
   sf_in = sf_open(argv[0], SFM_READ, &sfinfo);
-  if (sf_in == NULL) exit(1);
+  if (sf_in == NULL) {
+    fprintf(stderr, "%s: Cannot read from audio file %s\n", progname, argv[0]);
+    exit(1);
+  }
   sf_out = sf_open(argv[1], SFM_WRITE, &sfinfo);
-  if (sf_out == NULL) exit(1);
+  if (sf_out == NULL) {
+    fprintf(stderr, "%s: Cannot write to audio file %s\n", progname, argv[1]);
+    exit(1);
+  }
 
   buf_in = calloc(sfinfo.channels * sizeof(short), HANDFUL);
   buf_out = calloc(sfinfo.channels * sizeof(short), HANDFUL);
-  if (buf_in == NULL || buf_out == NULL) exit(1);
+  if (buf_in == NULL || buf_out == NULL) {
+    fprintf(stderr, "%s: Out of memory.\n", progname);
+    exit(1);
+  }
 
   dolbyb.SmpSec = sfinfo.samplerate;
   dolbyb.NumChn = sfinfo.channels;
   dolbyb.BDepth = 16;
-  dolbyb_start(&dolbyb);
+  check(dolbyb_start(&dolbyb));
 
   while ((n_read = sf_readf_short(sf_in, buf_in, (sf_count_t)HANDFUL)) > 0) {
-    if (Encode) dolbyb_encode(&dolbyb, buf_in, buf_out, (size_t)n_read);
-    else        dolbyb_decode(&dolbyb, buf_in, buf_out, (size_t)n_read);
+    if (Encode) check(dolbyb_encode(&dolbyb, buf_in, buf_out, (size_t)n_read));
+    else        check(dolbyb_decode(&dolbyb, buf_in, buf_out, (size_t)n_read));
     if (sf_writef_short(sf_out, buf_out, n_read) != n_read) {
       fprintf(stderr, "Write error on the output file.\n");
-      break;
+      sf_close(sf_out);
+      exit(1);
     }
   }
 #if DEBUG
   dolbyb_dumpparam(&dolbyb);
 #endif
-  dolbyb_free(&dolbyb);
+  check(dolbyb_free(&dolbyb));
   sf_close(sf_out);
   sf_close(sf_in);
 
-  return 0;
+  exit(0);
 }

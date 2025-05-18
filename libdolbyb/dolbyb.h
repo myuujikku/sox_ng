@@ -166,10 +166,10 @@ typedef struct {
 
 } dolbyb_t;
 
-extern void dolbyb_init(dolbyb_t *);  /* Call before doing anything */
-extern int  dolbyb_start(dolbyb_t *); /* Call when BDepth, NumChn and SmpSec are set */
-extern void dolbyb_encode(dolbyb_t *, void *in, void *out, size_t nframes);
-extern void dolbyb_decode(dolbyb_t *, void *in, void *out, size_t nframes);
-extern void dolbyb_free(dolbyb_t *);
+extern char *dolbyb_init(dolbyb_t *);  /* Call before doing anything */
+extern char *dolbyb_start(dolbyb_t *); /* Call when BDepth, NumChn and SmpSec are set */
+extern char *dolbyb_encode(dolbyb_t *, void *in, void *out, size_t nframes);
+extern char *dolbyb_decode(dolbyb_t *, void *in, void *out, size_t nframes);
+extern char *dolbyb_free(dolbyb_t *);
 
 #endif

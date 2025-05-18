@@ -126,6 +126,7 @@ int64_t FindOutSmp(dolbyb_t *Param, int64_t InSamp, uint16_t Chn)
   int32_t GusVal[2], OutVal[2];
   double GusMux = 0.0;
   int GusNow;
+  uint16_t LopCnt = 1;
 
   /* To stop compiler warnings */
   GusVal[0] = 0;
@@ -158,6 +159,7 @@ int64_t FindOutSmp(dolbyb_t *Param, int64_t InSamp, uint16_t Chn)
 
   /* Loop to make further guesses */
   while (NxtDif > Param->FindOutSmpMaxDif) {
+    LopCnt++;
     /* Decide whether to use guess or binary search */
     GusNow = (GusSta == 2 && GusCnt < 2);
     if (GusNow) {
