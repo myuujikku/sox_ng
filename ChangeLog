@@ -48,12 +48,12 @@ Bug fixes:
   o "bend"'s logarithmic frequency curve is more closely logarithmic
   o Fix "silence" not to add a random selection of fragments at the end
   o "silence" no longer outputs a random selection of fragments at the end
-  o Make "fitfit" understand frequencies like "10k"
+  o Make "firfit" understand frequencies like "10k"
   o Read mono 8-bit MAUD files with an odd number of samples
   o Handle unknown odd-sized chunks in AIFF files
   o Detect and report read errors from short audio files
   o Detect and report drite errors to audio files
-  o When date read from a pipe is short, report stats for what there was
+  o When data read from a pipe is short, report stats for what there was
   o When an fatal error is detected, stop and exit non-zero in all cases
   o No formats or effects are experimental or deprecated any more
   o Multi-channel LADSPA plugins now work
