@@ -806,13 +806,15 @@ If SoX has been built with the optional `libmagic' library, this
 option enables its use in helping to detect audio file types.
 .TP
 \fB\-\-multi\-threaded\fR | \fB\-\-single\-threaded\fR
-By default, SoX is `single threaded' but
-if the \fB\-\-multi\-threaded\fR option is given,
-SoX processes audio channels for most multichannel
-effects in parallel on hyperthreading and multicore processors.
-This may reduce processing time but sometimes it may be necessary to use
-this option in conjunction with a larger buffer size than is the default
-to gain any benefit from multithreaded processing
+By default, SoX is `multi threaded' and
+processes audio channels for most multichannel effects in parallel
+on hyperthreading and multicore processors.
+.SP
+If the \fB\-\-single\-threaded\fR option is given, it processes them
+one at a time, which may be more efficient on systems with less RAM.
+.SP
+A larger buffer size than the default may be needed
+to benefit more from multithreaded processing
 (e.g. 131072; see \fB\-\-buffer\fR above).
 .TP
 \fB\-\-no\-clobber\fR

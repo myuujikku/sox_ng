@@ -33,6 +33,7 @@ New features:
   o wget, wget2 and curl are sought at runtime instead of at build time and
     ./configure --with-curl now just makes it prefer curl to wget.
   o Make "echos" run 20% faster
+  o Make --multi-threaded the default
   o Error messages have been harmonized. The best was
     sox_ng WARN chorus: chorus: warning >>> gain-out can cause saturation
   o When curl or wget fail to fetch a URL, decode the exit status to a message
