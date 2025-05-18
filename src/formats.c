@@ -569,7 +569,7 @@ static void incr_pipe_size(FILE *f)
 
 static FILE * open_url(char const * identifier)
 {
-    FILE * f = NULL;
+    FILE *f;	/* The file descriptor to read from the pipe */
 
 #ifndef HAVE_POPEN
     lsx_fail("this build of SoX cannot open URLs");
@@ -616,8 +616,8 @@ static FILE * open_url(char const * identifier)
 	                        strlen(command_args[i][1]) +
 				strlen(identifier));
            sprintf(command, "%s %s \"%s\"", command_args[i][0],
-					command_args[i][1],
-	                                identifier);
+					    command_args[i][1],
+	                                    identifier);
 	   break;
         }
     }
@@ -627,132 +627,142 @@ static FILE * open_url(char const * identifier)
     }
 
     f = popen(command, POPEN_MODE);
-    if (f == NULL)
+    if (f == NULL) {
         lsx_fail("cannot popen `%s'", command);
-    else {
-        incr_pipe_size(f);
+        free(command);
+        return f;
     }
+
+    incr_pipe_size(f);
+
     /* To detect failure and report why, instead of saying
      * sox_ng FAIL formats: can't determine type of file URL `http://bla',
-     * try to read one byte. If we get EOF either it's a zero-length file
-     * or something went wrong.
+     * try to read one byte.
      */
-    if (f != NULL) {
+    {
         int c;
-	int status;
 
         if ((c = getc(f)) != EOF) {
-	    (void) ungetc(c, f);
-	} else if ((status = WEXITSTATUS(pclose(f))) != 0) {
-            char const *s;
-
-	    if (strncmp(command, "wget", 4) == 0)
-	    switch (status) {
-            case 0: s = "No problems occurred"; break;
-            case 1: s = "Generic error code"; break;
-            case 2: s = "Parse error of command line/.wgetrc/.netrc"; break;
-            case 3: s = "File I/O error"; break;
-            case 4: s = "Network failure"; break;
-            case 5: s = "SSL verification failure"; break;
-            case 6: s = "Username/password authentication failure"; break;
-            case 7: s = "Protocol errors"; break;
-            case 8: s = "Server issued an error response"; break;
-	    default: s = "Unrecognized exit code from wget"; break;
-	    } else if (strncmp(command, "curl", 4) == 0)
-	    switch (status) {
-            case 0: s = "Success"; break;
-            case 1: s = "Unsupported protocol"; break;
-            case 2: s = "Failed to initialize."; break;
-            case 3: s = "URL malformed"; break;
-            case 4: s = "Feature was not enabled at build-time"; break;
-            case 5: s = "Could not resolve proxy"; break;
-            case 6: s = "Could not resolve host"; break;
-            case 7: s = "Failed to connect to host"; break;
-            case 8: s = "Weird server reply"; break;
-            case 9: s = "FTP access denied"; break;
-            case 10: s = "FTP accept failed"; break;
-            case 11: s = "FTP weird PASS reply"; break;
-            case 12: s = "FTP timeout"; break;
-            case 13: s = "FTP weird PASV reply"; break;
-            case 14: s = "FTP weird 227 format"; break;
-            case 15: s = "FTP cannot use host"; break;
-            case 16: s = "HTTP/2 error"; break;
-            case 17: s = "FTP could not set binary"; break;
-            case 18: s = "Partial file"; break;
-            case 19: s = "FTP RETR failed."; break;
-            case 21: s = "FTP quote error"; break;
-            case 22: s = "HTTP page not retrieved"; break;
-            case 23: s = "Write error"; break;
-            case 25: s = "FTP could not STOR file"; break;
-            case 26: s = "Read error"; break;
-            case 27: s = "Out of memory"; break;
-            case 28: s = "Operation timeout"; break;
-            case 30: s = "FTP PORT failed"; break;
-            case 31: s = "FTP could not use REST"; break;
-            case 33: s = "HTTP range error"; break;
-            case 34: s = "HTTP post error"; break;
-            case 35: s = "SSL connect error"; break;
-            case 36: s = "Bad download resume"; break;
-            case 37: s = "FILE could not read file"; break;
-            case 38: s = "LDAP cannot bind"; break;
-            case 39: s = "LDAP search failed"; break;
-            case 41: s = "Function not found"; break;
-            case 42: s = "Aborted by callback"; break;
-            case 43: s = "Internal error"; break;
-            case 45: s = "Interface error"; break;
-            case 47: s = "Too many redirects"; break;
-            case 48: s = "Unknown libcurl option"; break;
-            case 49: s = "Malformed telnet option"; break;
-            case 52: s = "Server did not reply"; break;
-            case 53: s = "SSL crypto engine not found"; break;
-            case 54: s = "Cannot set SSL crypto engine as default"; break;
-            case 55: s = "Failed sending network data"; break;
-            case 56: s = "Failure receiving network data"; break;
-            case 58: s = "Problem with local certificate"; break;
-            case 59: s = "Could not use specified SSL cipher"; break;
-            case 60: s = "Peer certificate cannot be authenticated"; break;
-            case 61: s = "Unrecognized transfer encoding"; break;
-            case 63: s = "Maximum file size exceeded"; break;
-            case 64: s = "FTP SSL level failed"; break;
-            case 65: s = "Rewind failed"; break;
-            case 66: s = "Failed to initialise SSL Engine"; break;
-            case 67: s = "Failed to log in"; break;
-            case 68: s = "File not found on TFTP server"; break;
-            case 69: s = "Permission problem on TFTP server"; break;
-            case 70: s = "Out of disk space on TFTP server"; break;
-            case 71: s = "Illegal TFTP operation"; break;
-            case 72: s = "Unknown TFTP transfer ID"; break;
-            case 73: s = "File already exists"; break;
-            case 74: s = "No such user"; break;
-            case 77: s = "Problem reading the SSL CA cert"; break;
-            case 78: s = "The resource referenced in the URL does not exist."; break;
-            case 79: s = "Unspecified error in SSH session"; break;
-            case 80: s = "Failed to shut down the SSL connection"; break;
-            case 82: s = "Could not load CRL file"; break;
-            case 83: s = "Issuer check failed"; break;
-            case 84: s = "The FTP PRET command failed"; break;
-            case 85: s = "RTSP CSeq numbers mismatch"; break;
-            case 86: s = "RTSP Session Identifiers mismatch"; break;
-            case 87: s = "Unable to parse FTP file list"; break;
-            case 88: s = "FTP chunk callback reported error"; break;
-            case 89: s = "No connection available"; break;
-            case 90: s = "SSL public key does not matched pinned public key"; break;
-            case 91: s = "Invalid SSL certificate status"; break;
-            case 92: s = "Stream error in HTTP/2 framing layer"; break;
-            case 93: s = "API function called from inside a callback"; break;
-            case 94: s = "Authentication function returned an error"; break;
-            case 95: s = "Problem in HTTP/3 layer"; break;
-            case 96: s = "QUIC connection error"; break;
-	    default: s = "Unrecognized exit code from curl"; break;
-	    } else s = "URL fetch failed";
-	    lsx_fail("%s", s);
-	    free(command);
-	    return NULL;
-	}
+            (void) ungetc(c, f);
+            free(command);
+            return f;
+        }
     }
 
-    free(command);
-    return f;
+    /* We got EOF immediately so either it's a zero-length file
+     * or something went wrong. */
+    {
+	int status = pclose(f);
+        char const *s;
+
+	if (status == 0) {
+	    /* Nothing went wrong. It's a zero-length file. */
+	    s = "Zero length file";
+        } else if (status == -1) {
+	    /* Something went very wrong */
+	    s = strerror(errno);
+	} else if (strncmp(command, "wget", 4) == 0) switch (status) {
+	/* Decode the exit status into a meaning */
+	case 1: s = "Generic error code"; break;
+	case 2: s = "Parse error of command line/.wgetrc/.netrc"; break;
+	case 3: s = "File I/O error"; break;
+	case 4: s = "Network failure"; break;
+	case 5: s = "SSL verification failure"; break;
+	case 6: s = "Username/password authentication failure"; break;
+	case 7: s = "Protocol errors"; break;
+	case 8: s = "Server issued an error response"; break;
+	default: s = "Unrecognized exit code from wget"; break;
+	} else if (strncmp(command, "curl", 4) == 0) switch (status) {
+	case 1: s = "Unsupported protocol"; break;
+	case 2: s = "Failed to initialize."; break;
+	case 3: s = "URL malformed"; break;
+	case 4: s = "Feature was not enabled at build-time"; break;
+	case 5: s = "Could not resolve proxy"; break;
+	case 6: s = "Could not resolve host"; break;
+	case 7: s = "Failed to connect to host"; break;
+	case 8: s = "Weird server reply"; break;
+	case 9: s = "FTP access denied"; break;
+	case 10: s = "FTP accept failed"; break;
+	case 11: s = "FTP weird PASS reply"; break;
+	case 12: s = "FTP timeout"; break;
+	case 13: s = "FTP weird PASV reply"; break;
+	case 14: s = "FTP weird 227 format"; break;
+	case 15: s = "FTP cannot use host"; break;
+	case 16: s = "HTTP/2 error"; break;
+	case 17: s = "FTP could not set binary"; break;
+	case 18: s = "Partial file"; break;
+	case 19: s = "FTP RETR failed."; break;
+	case 21: s = "FTP quote error"; break;
+	case 22: s = "HTTP page not retrieved"; break;
+	case 23: s = "Write error"; break;
+	case 25: s = "FTP could not STOR file"; break;
+	case 26: s = "Read error"; break;
+	case 27: s = "Out of memory"; break;
+	case 28: s = "Operation timeout"; break;
+	case 30: s = "FTP PORT failed"; break;
+	case 31: s = "FTP could not use REST"; break;
+	case 33: s = "HTTP range error"; break;
+	case 34: s = "HTTP post error"; break;
+	case 35: s = "SSL connect error"; break;
+	case 36: s = "Bad download resume"; break;
+	case 37: s = "FILE could not read file"; break;
+	case 38: s = "LDAP cannot bind"; break;
+	case 39: s = "LDAP search failed"; break;
+	case 41: s = "Function not found"; break;
+	case 42: s = "Aborted by callback"; break;
+	case 43: s = "Internal error"; break;
+	case 45: s = "Interface error"; break;
+	case 47: s = "Too many redirects"; break;
+	case 48: s = "Unknown libcurl option"; break;
+	case 49: s = "Malformed telnet option"; break;
+	case 52: s = "Server did not reply"; break;
+	case 53: s = "SSL crypto engine not found"; break;
+	case 54: s = "Cannot set SSL crypto engine as default"; break;
+	case 55: s = "Failed sending network data"; break;
+	case 56: s = "Failure receiving network data"; break;
+	case 58: s = "Problem with local certificate"; break;
+	case 59: s = "Could not use specified SSL cipher"; break;
+	case 60: s = "Peer certificate cannot be authenticated"; break;
+	case 61: s = "Unrecognized transfer encoding"; break;
+	case 63: s = "Maximum file size exceeded"; break;
+	case 64: s = "FTP SSL level failed"; break;
+	case 65: s = "Rewind failed"; break;
+	case 66: s = "Failed to initialise SSL Engine"; break;
+	case 67: s = "Failed to log in"; break;
+	case 68: s = "File not found on TFTP server"; break;
+	case 69: s = "Permission problem on TFTP server"; break;
+	case 70: s = "Out of disk space on TFTP server"; break;
+	case 71: s = "Illegal TFTP operation"; break;
+	case 72: s = "Unknown TFTP transfer ID"; break;
+	case 73: s = "File already exists"; break;
+	case 74: s = "No such user"; break;
+	case 77: s = "Problem reading the SSL CA cert"; break;
+	case 78: s = "The resource referenced in the URL does not exist."; break;
+	case 79: s = "Unspecified error in SSH session"; break;
+	case 80: s = "Failed to shut down the SSL connection"; break;
+	case 82: s = "Could not load CRL file"; break;
+	case 83: s = "Issuer check failed"; break;
+	case 84: s = "The FTP PRET command failed"; break;
+	case 85: s = "RTSP CSeq numbers mismatch"; break;
+	case 86: s = "RTSP Session Identifiers mismatch"; break;
+	case 87: s = "Unable to parse FTP file list"; break;
+	case 88: s = "FTP chunk callback reported error"; break;
+	case 89: s = "No connection available"; break;
+	case 90: s = "SSL public key does not matched pinned public key"; break;
+	case 91: s = "Invalid SSL certificate status"; break;
+	case 92: s = "Stream error in HTTP/2 framing layer"; break;
+	case 93: s = "API function called from inside a callback"; break;
+	case 94: s = "Authentication function returned an error"; break;
+	case 95: s = "Problem in HTTP/3 layer"; break;
+	case 96: s = "QUIC connection error"; break;
+	default: s = "Unrecognized exit code from curl"; break;
+	} else s = "URL fetch failed";
+
+	/* And report the failure*/
+	lsx_fail("%s", s);
+	free(command);
+	return NULL;
+    }
 #endif
 }
 
