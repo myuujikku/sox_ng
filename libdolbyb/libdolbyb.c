@@ -222,7 +222,7 @@ void dolbyb_decode(dolbyb_t *Param, void *in, void *out, size_t nframes)
   uint16_t NumChn, UpCnt, NumByt;
   int64_t TotSmp;
   int64_t MaxSamp, SubSamp, MinVal, MaxVal, AddVal;
-  int64_t SmpCnt;
+  size_t SmpCnt;
 
   switch (Param->BDepth) {
   case 8:  NumByt = 1; MaxSamp = -1; SubSamp = 128; 
