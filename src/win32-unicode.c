@@ -34,6 +34,8 @@
 #include <windows.h>
 #include <io.h>
 
+#define lsx_valloc(v,n)  v = lsx_realloc_array(NULL, (n), sizeof(*(v)))
+
 static UINT g_old_output_cp = ((UINT)-1);
 
 char *win32_utf16_to_utf8(const wchar_t *input)

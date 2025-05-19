@@ -21,6 +21,8 @@
 #include <windows.h>
 #include <stdlib.h>	/* for malloc() */
 
+#define lsx_valloc(v,n)  v = lsx_realloc_array(NULL, (n), sizeof(*(v)))
+
 typedef struct file_entry
 {
     char name[MAX_PATH];
