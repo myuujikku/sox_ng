@@ -28,6 +28,7 @@ The current release handles the following audio file formats:
 * IRCAM SoundFile files
 * NIST SPHERE files
 * CSL NSP audio/bioelectric files
+* SDS format
 * SoundBlaster .VOC files
 * Sounder & Soundtool (DOS) files
 * Turtle beach SampleVision files
@@ -39,6 +40,7 @@ The current release handles the following audio file formats:
 ** RIFX (big endian)
 * WavPack files (with optional libwavpack library)
 * Yamaha TX-16W sampler files
+* Akai MSP2K sampler files
 * Psion (palmtop) A-law WVE files and Record voice notes
 * Maxis XA Audio files
 ** EA ADPCM (read support only, for now)
@@ -93,6 +95,7 @@ The audio effects/tools included in this release are as follows:
 ** bandreject: RBJ band-reject biquad IIR filter
 ** band: SPKit resonator band-pass IIR filter
 ** bass: Tone control: RBJ shelving biquad IIR filter
+** dolbyb: Noise reduction encoding and decoding
 ** equalizer: RBJ peaking equalisation biquad IIR filter
 ** firfit: FFT convolution FIR filter using given freq. response (W.I.P.)
 ** highpass: High-pass filter: Single pole or RBJ biquad IIR
