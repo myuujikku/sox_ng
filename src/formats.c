@@ -53,6 +53,10 @@
 #  include <unistd.h>
 #endif
 
+#ifdef HAVE_SYS_WAIT_H
+#  include <sys/wait.h>	/* for WEXITSTATUS */
+#endif
+
 #define PIPE_AUTO_DETECT_SIZE 256 /* Only as much as we can rewind a pipe */
 #define AUTO_DETECT_SIZE 4096     /* For seekable file, so no restriction */
 
@@ -659,6 +663,12 @@ static FILE * open_url(char const * identifier)
 	int status = pclose(f);
         char const *s;
 
+#ifdef WEXITSTATUS
+        /* Some pclose()s return the command's exit status;
+         * others return a code that you have to decode with WEXITSTATUS
+         */
+        status = WEXITSTATUS(status);
+#endif
 	if (status == 0) {
 	    /* Nothing went wrong. It's a zero-length file. */
 	    s = "Zero length file";
