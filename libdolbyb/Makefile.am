@@ -25,7 +25,8 @@ AM_CFLAGS = @WARN_CFLAGS@
 #dolbyb_LDADD = libdolbyb.la -lsndfile
 include_HEADERS = dolbyb.h
 lib_LTLIBRARIES = libdolbyb.la
-dist_man_MANS = dolbyb.1 libdolbyb.3
+#dist_man_MANS = dolbyb.1 libdolbyb.3
+dist_man_MANS = libdolbyb.3
 EXTRA_DIST = COPYING INSTALL
 
 libdolbyb_la_SOURCES = \
