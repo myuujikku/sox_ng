@@ -505,13 +505,16 @@ static sox_bool is_url(char const * text)
 
 static int xfclose(FILE * file, lsx_io_type io_type)
 {
-  return
-#ifdef HAVE_POPEN
-    io_type != lsx_io_file? pclose(file) :
+  if (file == NULL) return SOX_SUCCESS;  /* Shouldn't happen */
+#if HAVE_POPEN
+  return io_type != lsx_io_file ? pclose(file) : fclose(file);
+#else
+  (void) io_type;
+  return fclose(file);
 #endif
-    fclose(file);
 }
 
+#if HAVE_POPEN
 static void incr_pipe_size(FILE *f)
 {
 /*
@@ -558,6 +561,7 @@ static void incr_pipe_size(FILE *f)
   (void) f;
 #endif
 }
+#endif /* HAVE_POPEN */
 
 #ifndef POPEN_MODE
 # ifdef _WIN32
@@ -569,12 +573,12 @@ static void incr_pipe_size(FILE *f)
 
 static FILE * open_url(char const * identifier)
 {
-    FILE *f;	/* The file descriptor to read from the pipe */
-
-#ifndef HAVE_POPEN
+#if !HAVE_POPEN
     lsx_fail("this build of SoX cannot open URLs");
+    (void) identifier;
     return NULL;
 #else
+    FILE *f;	/* The file descriptor to read from the pipe */
     static const char * const command_args[][2] = {
     /* Try wget before wget2 as it's more likely to be installed
      * unless configured --with-curl
@@ -770,22 +774,22 @@ static FILE * xfopen(char const * identifier, char const * mode, lsx_io_type * i
 {
   FILE * f = NULL;
 
-#ifdef HAVE_POPEN
   if (*identifier == '|') {
+    *io_type = lsx_io_pipe;
+#if HAVE_POPEN
     f = popen(identifier + 1, POPEN_MODE);
     if (f) {
-      *io_type = lsx_io_pipe;
       incr_pipe_size(f);
     }
 #else
     lsx_fail("this build of SoX cannot open pipes");
 #endif
   } else if (is_url(identifier)) {
+      *io_type = lsx_io_url;
       f = open_url(identifier);
-      if (f) *io_type = lsx_io_url;
   } else {
+      *io_type = lsx_io_file;
       f = lsx_fopen(identifier, mode);
-      if (f) *io_type = lsx_io_file;
   }
   return f;
 }
@@ -832,7 +836,9 @@ static sox_format_t * open_read(
         xfopen(path, "rb", &ft->io_type);
       type = io_types[ft->io_type];
       if (ft->fp == NULL) {
-        lsx_fail("can't open input %s `%s': %s", type, path, strerror(errno));
+        /* Pipe and URL openers will already have emitted an error message */
+        if (strcmp(type, "file") == 0)
+          lsx_fail("can't open input file `%s': %s", path, strerror(errno));
         goto error;
       }
     }
@@ -895,7 +901,7 @@ static sox_format_t * open_read(
   ft->priv = lsx_calloc(1, ft->handler.priv_size);
   /* Read and write starters can change their formats. */
   if (ft->handler.startread && (*ft->handler.startread)(ft) != SOX_SUCCESS) {
-    lsx_fail("can't open input %s `%s': %s", type, ft->filename, ft->sox_errstr);
+    lsx_fail("Can't open input %s `%s': %s", type, ft->filename, ft->sox_errstr);
     goto error;
   }
 
