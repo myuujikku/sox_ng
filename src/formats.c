@@ -832,6 +832,7 @@ static sox_format_t * open_read(
         xfopen(path, "rb", &ft->io_type);
       type = io_types[ft->io_type];
       if (ft->fp == NULL) {
+        lsx_fail("can't open input %s `%s': %s", type, path, strerror(errno));
         goto error;
       }
     }
