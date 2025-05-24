@@ -46,8 +46,7 @@ make install
 It installs as `sox_ng`, `sox_ng.h`, `libsox_ng.so` and so on
 so that `sox` and `sox_ng` can coexist on the same system.
 To make it work the same as the original `sox`, use
-`./configure --enable-replace` instead, and if `ffmpeg` is installed
-add `--with-ffmpeg` to decode 48 more audio and video formats.
+`./configure --enable-replace`
 
 ### Development branches
 

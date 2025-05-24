@@ -447,15 +447,20 @@ dnl Test for using ffmpeg
 AC_ARG_WITH(ffmpeg,
     AS_HELP_STRING([--with-ffmpeg], [Use ffmpeg to decode otherwise unsupported formats]))
 using_ffmpeg=no
-if test "$with_ffmpeg" = "yes"; then
+if test "$with_ffmpeg" != "no"; then
     # We've already checked for popen() but AC_CHECK_FUNCS() doesn't leave
     # anything that we can use here, so check again.
-    AC_CHECK_FUNC(popen, [],
-      [AC_MSG_FAILURE([--with-ffmpeg requires the presence of popen()])])
-    using_ffmpeg=yes
-    AC_DEFINE(USING_FFMPEG, 1, [1 if should use ffmpeg to decode otherwise unsupported formats])
-    # ffmpeg.c can use these to improve autodetection when stdin is a pipe
-    AC_CHECK_FUNCS(pipe fork)
+    AC_CHECK_FUNC(popen,
+	[using_ffmpeg=yes
+	 AC_DEFINE(USING_FFMPEG, 1, [1 if should use ffmpeg to decode otherwise unsupported formats])],
+	[AS_IF([test x"$with_ffmpeg" = x"yes"],
+	  [AC_MSG_FAILURE([--with-ffmpeg requires the presence of popen()])],
+	  [AC_MSG_NOTICE([ffmpeg requires the presence of popen(); compiling without])])])
+    if test "$using_ffmpeg" = yes
+    then
+      # ffmpeg.c can use these to improve autodetection when stdin is a pipe
+      AC_CHECK_FUNCS(pipe fork)
+    fi
 fi
 
 

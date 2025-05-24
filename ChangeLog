@@ -38,6 +38,7 @@ New features:
     sox_ng WARN chorus: chorus: warning >>> gain-out can cause saturation
   o When curl or wget fail to fetch a URL, decode the exit status to a message
   o Add flow diagrams to --help-effect chorus/compand/earwax/echo/echos/phaser
+  o Make --with-ffmpeg the default configuration
 
 Bug fixes:
 
