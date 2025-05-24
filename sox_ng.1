@@ -2508,6 +2508,7 @@ See the description of the \fBhighpass\fR effect for details.
 The quoted \fIcompand-args\fR are as for the \fBcompand\fR effect:
 .br
 \fIattack1\fB,\fIdecay1\fR{\fB,\fIattack\fB,\fIdecay\fR}
+.br
 [\fIsoft-knee-dB\fB:\fR]\fIin-dB1\fR[\fB,\fIout-dB1\fR]{\fB,\fIin-dB\fB,\fIout-dB\fR}
 .br
 [\fIgain\fR [\fIinitial-volume-dB\fR [\fIdelay\fR]]]
@@ -2525,18 +2526,18 @@ as used for tape noise reduction in professional recording studios:
 .XE
 .ne 6
 # Dolby A compressor
-sox_ng in.au dolbyA.au mcompand \
-    ".1,.1 4:-56,-46,-36,-26,-26,-20,-17,-15,-9,-9" 80 \
-    ".1,.1 4:-56,-46,-36,-26,-26,-20,-17,-15,-9,-9" 3k \
-    ".1,.1 4:-56,-46,-36,-26,-26,-20,-17,-15,-9,-9" 9k \
+sox_ng in.au dolbyA.au mcompand \\
+    ".1,.1 4:-56,-46,-36,-26,-26,-20,-17,-15,-9,-9" 80 \\
+    ".1,.1 4:-56,-46,-36,-26,-26,-20,-17,-15,-9,-9" 3k \\
+    ".1,.1 4:-56,-46,-36,-26,-26,-20,-17,-15,-9,-9" 9k \\
     ".1,.1 4:-56,-42,-36,-23,-26,-18,-17,-14,-9,-9"
 
 .ne 6
 # Dolby A decompressor
-sox_ng dolbyA.au out.au mcompand \
-    ".1,.1 4:-46,-56,-26,-36,-20,-26,-15,-17,-9,-9" 80 \
-    ".1,.1 4:-46,-56,-26,-36,-20,-26,-15,-17,-9,-9" 3k \
-    ".1,.1 4:-46,-56,-26,-36,-20,-26,-15,-17,-9,-9" 9k \
+sox_ng dolbyA.au out.au mcompand \\
+    ".1,.1 4:-46,-56,-26,-36,-20,-26,-15,-17,-9,-9" 80 \\
+    ".1,.1 4:-46,-56,-26,-36,-20,-26,-15,-17,-9,-9" 3k \\
+    ".1,.1 4:-46,-56,-26,-36,-20,-26,-15,-17,-9,-9" 9k \\
     ".1,.1 4:-42,-56,-23,-36,-18,-26,-14,-17,-9,-9"
 .XX
 Real Dolby A probably compands each channel separately
@@ -3456,7 +3457,6 @@ If `-' is given, the spectrogram is sent to the `standard output'
 (stdout).
 .IP \fB\-L\fR
 Plot the frequency on a logarithmic axis.
-\
 .IP \fB\-R\ \fIL\fR:\fIH\fR
 Specify the frequency range (from \fIL\fR to \fIH\fR).
 The frequencies can have an optional suffix
