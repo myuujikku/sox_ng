@@ -180,8 +180,6 @@ static int setup(sox_format_t *ft, int is_input)
     /* Setup is called twice (why?) so reset adid to Not Found both times */
     ac->adid = kAudioDeviceUnknown;
 
-    fprintf(stderr, "setup\n");
-
     if (strncmp(ft->filename, "default", (size_t)7) == 0)
     {
         address.mSelector = is_input ? kAudioHardwarePropertyDefaultInputDevice

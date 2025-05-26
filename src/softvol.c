@@ -37,8 +37,6 @@ int
 lsx_adjust_softvol(int delta)
 {
   if (!softvol_priv) return SOX_EOF;
-  fprintf(stderr, "Upping softvol from %.19f to %.19f\n",
-          softvol_priv->softvol, softvol_priv->softvol * (100 + delta) / 100.0);
   softvol_priv->softvol *= (100 + delta) / 100.0;
   return SOX_SUCCESS;
 }
