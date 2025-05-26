@@ -68,7 +68,7 @@ static int startread(sox_format_t * ft)
                 read_error();
         if (strncmp(buf, "FORM", (size_t)4) != 0)
         {
-                lsx_fail_errno(ft, SOX_EHDR, "Header did not begin with magic word `FORM'");
+                lsx_fail_errno(ft, SOX_EHDR, "header did not begin with magic word `FORM'");
                 return(SOX_EOF);
         }
         if (lsx_readdw(ft, &totalsize) || lsx_reads(ft, buf, (size_t)4))
@@ -96,7 +96,7 @@ static int startread(sox_format_t * ft)
                                 read_error();
                         if (buf[0] != 0)
                         {
-                                lsx_fail_errno(ft, SOX_EFMT, "Unsupported data compression");
+                                lsx_fail_errno(ft, SOX_EFMT, "unsupported data compression");
                                 return(SOX_EOF);
                         }
                         if (lsx_seeki(ft,(off_t)4,SEEK_CUR))
@@ -167,7 +167,7 @@ static int startread(sox_format_t * ft)
 
         if (rate == 0)
         {
-                lsx_fail_errno(ft, SOX_EHDR, "Invalid sample rate");
+                lsx_fail_errno(ft, SOX_EHDR, "invalid sample rate");
                 return(SOX_EOF);
         }
         if (strncmp(buf,"BODY",(size_t)4) != 0)
@@ -243,7 +243,7 @@ static int startwrite(sox_format_t * ft)
         for (i = 0; i < ft->signal.channels; i++) {
                 if ((p->tmp[i] = lsx_tmpfile()) == NULL)
                 {
-                        lsx_fail_errno(ft,errno,"Can't open channel output file");
+                        lsx_fail_errno(ft,errno,"can't open channel output file");
                         return(SOX_EOF);
                 }
         }
@@ -295,13 +295,13 @@ static int stopwrite(sox_format_t * ft)
         for (i = 0; i < ft->signal.channels; i++) {
                 if (fseeko(p->tmp[i], (off_t)0, 0))
                 {
-                        lsx_fail_errno (ft,errno,"Can't rewind channel output file %lu",(unsigned long)i);
+                        lsx_fail_errno (ft,errno,"can't rewind channel output file %lu",(unsigned long)i);
                         return(SOX_EOF);
                 }
                 while (!feof(p->tmp[i])) {
                         len = fread(svxbuf, (size_t) 1, (size_t) 512, p->tmp[i]);
                         if (lsx_writebuf(ft, svxbuf, len) != len) {
-                          lsx_fail_errno (ft,errno,"Can't write channel output file %lu",(unsigned long)i);
+                          lsx_fail_errno (ft,errno,"can't write channel output file %lu",(unsigned long)i);
                           return SOX_EOF;
                         }
                 }

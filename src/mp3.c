@@ -489,7 +489,7 @@ static int startread(sox_format_t * ft)
 
   if (p->Stream.error)
   {
-      lsx_fail_errno(ft,SOX_EOF,"No valid MP3 frame found");
+      lsx_fail_errno(ft,SOX_EOF,"no valid MP3 frame found");
       return SOX_EOF;
   }
 
@@ -502,7 +502,7 @@ static int startread(sox_format_t * ft)
           ft->signal.channels = MAD_NCHANNELS(&p->Frame.header);
           break;
       default:
-          lsx_fail_errno(ft, SOX_EFMT, "Cannot determine number of channels");
+          lsx_fail_errno(ft, SOX_EFMT, "cannot determine number of channels");
           return SOX_EOF;
   }
 
@@ -986,7 +986,7 @@ static int startwrite(sox_format_t * ft)
     p->opt = p->twolame_init();
 
     if (p->opt == NULL){
-      lsx_fail_errno(ft,SOX_EOF,"Initialization of Twolame library failed");
+      lsx_fail_errno(ft,SOX_EOF,"initialization of Twolame library failed");
       return(SOX_EOF);
     }
 #endif
@@ -995,7 +995,7 @@ static int startwrite(sox_format_t * ft)
     p->gfp = p->lame_init();
 
     if (p->gfp == NULL){
-      lsx_fail_errno(ft,SOX_EOF,"Initialization of LAME library failed");
+      lsx_fail_errno(ft,SOX_EOF,"initialization of LAME library failed");
       return(SOX_EOF);
     }
 
@@ -1022,7 +1022,7 @@ static int startwrite(sox_format_t * ft)
 #endif
     }
     if (fail) {
-      lsx_fail_errno(ft,SOX_EOF,"Unsupported number of channels");
+      lsx_fail_errno(ft,SOX_EOF,"unsupported number of channels");
       return(SOX_EOF);
     }
   }
@@ -1109,7 +1109,7 @@ static int startwrite(sox_format_t * ft)
 
     if (ft->encoding.compression < 0.5) {
       if (p->mp2) {
-        lsx_fail_errno(ft,SOX_EOF,"Variable bitrate encoding not supported for MP2 audio");
+        lsx_fail_errno(ft,SOX_EOF,"variable bitrate encoding not supported for MP2 audio");
         return(SOX_EOF);
       }
 #ifdef HAVE_LAME
@@ -1260,13 +1260,13 @@ static size_t sox_mp3write(sox_format_t * ft, const sox_sample_t *buf, size_t sa
 #endif
     }
     if (written < 0) {
-        lsx_fail_errno(ft,SOX_EOF,"Encoding failed");
+        lsx_fail_errno(ft,SOX_EOF,"encoding failed");
         return 0;
     }
 
     if (lsx_writebuf(ft, p->mp3_buffer, (size_t)written) < (size_t)written)
     {
-        lsx_fail_errno(ft,SOX_EOF,"File write failed");
+        lsx_fail_errno(ft,SOX_EOF,"file write failed");
         return 0;
     }
 
@@ -1291,9 +1291,9 @@ static int stopwrite(sox_format_t * ft)
 #endif
   }
   if (written < 0)
-    lsx_fail_errno(ft, SOX_EOF, "Encoding failed");
+    lsx_fail_errno(ft, SOX_EOF, "encoding failed");
   else if (lsx_writebuf(ft, p->mp3_buffer, (size_t)written) < (size_t)written)
-    lsx_fail_errno(ft, SOX_EOF, "File write failed");
+    lsx_fail_errno(ft, SOX_EOF, "file write failed");
   else if (!p->mp2) {
 #ifdef HAVE_LAME
     if (ft->seekable && (num_samples != p->num_samples || p->vbr_tag))

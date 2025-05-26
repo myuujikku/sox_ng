@@ -117,7 +117,7 @@ static int sox_silence_getopts(sox_effect_t * effp, int argc, char **argv)
       return lsx_usage(effp);
     if (silence->start_periods < 0)
     {
-        lsx_fail("Periods must not be negative");
+        lsx_fail("periods must not be negative");
         return(SOX_EOF);
     }
     argv++;
@@ -197,7 +197,7 @@ static int sox_silence_getopts(sox_effect_t * effp, int argc, char **argv)
     {
         if ((silence->start_unit != '%') && (silence->start_unit != 'd'))
         {
-            lsx_fail("Invalid unit specified");
+            lsx_fail("invalid unit specified");
             return lsx_usage(effp);
         }
         if ((silence->start_unit == '%') && ((silence->start_threshold < 0.0)
@@ -217,7 +217,7 @@ static int sox_silence_getopts(sox_effect_t * effp, int argc, char **argv)
     {
         if ((silence->stop_unit != '%') && (silence->stop_unit != 'd'))
         {
-            lsx_fail("Invalid unit specified");
+            lsx_fail("invalid unit specified");
             return(SOX_EOF);
         }
         if ((silence->stop_unit == '%') && ((silence->stop_threshold < 0.0) ||

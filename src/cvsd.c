@@ -669,7 +669,7 @@ int lsx_dvmsstopwrite(sox_format_t * ft)
         }
         if (lsx_seeki(ft, (off_t)0, 0) != 0)
         {
-                lsx_fail_errno(ft,errno,"Can't rewind output file to rewrite DVMS header");
+                lsx_fail_errno(ft,errno,"can't rewind output file to rewrite DVMS header");
                 return(SOX_EOF);
         }
         make_dvms_hdr(ft, &hdr);

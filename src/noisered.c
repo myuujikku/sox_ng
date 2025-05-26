@@ -104,7 +104,7 @@ static int sox_noisered_start(sox_effect_t * effp)
             break;
         i1 = i1_ul;
         if (i1 != fchannels) {
-            lsx_fail("Got channel %lu, expected channel %lu.",
+            lsx_fail("got channel %lu, expected channel %lu.",
                     (unsigned long)i1, (unsigned long)fchannels);
             return SOX_EOF;
         }
@@ -112,7 +112,7 @@ static int sox_noisered_start(sox_effect_t * effp)
         data->chandata[fchannels].noisegate[0] = f1;
         for (i = 1; i < FREQCOUNT; i ++) {
             if (1 != fscanf(ifp, ", %f", &f1)) {
-                lsx_fail("Not enough data for channel %lu "
+                lsx_fail("not enough data for channel %lu "
                         "(expected %d, got %lu)", (unsigned long)fchannels, FREQCOUNT, (unsigned long)i);
                 return SOX_EOF;
             }

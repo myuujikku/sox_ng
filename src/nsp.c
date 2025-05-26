@@ -62,7 +62,7 @@ int lsx_nspstartread(sox_format_t * ft)
       if (ssndsize > 0)
         break;
       else {
-        lsx_fail_errno(ft,SOX_EHDR,"Missing SDA_ chunk");
+        lsx_fail_errno(ft,SOX_EHDR,"missing SDA_ chunk");
         return(SOX_EOF);
       }
     }
@@ -79,7 +79,7 @@ int lsx_nspstartread(sox_format_t * ft)
 
       /* Most likely there will only be 1 channel, but there can be 2 here */
       if (maxabschan[0] == 0xffff && maxabschan[1] == 0xffff) {
-        lsx_fail_errno(ft,SOX_EHDR,"Channels A and B undefined");
+        lsx_fail_errno(ft,SOX_EHDR,"channels A and B undefined");
         return(SOX_EOF);
       } else if (maxabschan[0] == 0xffff || maxabschan[1] == 0xffff) {
         ft->signal.channels = 1;
@@ -111,7 +111,7 @@ int lsx_nspstartread(sox_format_t * ft)
         }
       }
       if (numchannels == 0) {
-        lsx_fail_errno(ft,SOX_EHDR,"No channels defined");
+        lsx_fail_errno(ft,SOX_EHDR,"no channels defined");
         return(SOX_EOF);
       }
       ft->signal.channels = numchannels;

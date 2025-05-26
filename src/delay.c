@@ -81,7 +81,7 @@ static int start(sox_effect_t * effp)
     }
     for (i = 0; i < p->argc; ++i) {
       if (!lsx_parseposition(effp->in_signal.rate, p->args[i].str, &delay, last_seen, in_length, '=') || delay == SOX_UNKNOWN_LEN) {
-        lsx_fail("Position relative to end of audio specified, but audio length is unknown");
+        lsx_fail("position relative to end of audio specified, but audio length is unknown");
         return SOX_EOF;
       }
       p->args[i].delay = last_seen = delay;

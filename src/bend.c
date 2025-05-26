@@ -101,11 +101,11 @@ static int parse(sox_effect_t * effp, char **argv, sox_rate_t rate)
 
     /* sanity checks */
     if (!argv && p->bends[i].duration < p->bends[i].start) {
-      lsx_fail("Bend %" PRIuPTR " has negative width", i+1);
+      lsx_fail("bend %" PRIuPTR " has negative width", i+1);
       return SOX_EOF;
     }
     if (!argv && i && p->bends[i].start < p->bends[i-1].start) {
-      lsx_fail("Bend %" PRIuPTR " overlaps with previous one", i+1);
+      lsx_fail("bend %" PRIuPTR " overlaps with previous one", i+1);
       return SOX_EOF;
     }
 

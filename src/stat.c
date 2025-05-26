@@ -72,7 +72,7 @@ static int sox_stat_getopts(sox_effect_t * effp, int argc, char **argv)
     else if (!(strcmp(*argv, "-a")))
       stat->fft_average = sox_true;
     else {
-      lsx_fail("Summary effect: unknown option");
+      lsx_fail("summary effect: unknown option");
       return SOX_EOF;
     }
   }

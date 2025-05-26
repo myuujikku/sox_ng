@@ -121,7 +121,7 @@ static int startread(sox_format_t * ft)
 
   /* Init the decoder */
   if (ov_open_callbacks(ft, vb->vf, NULL, (size_t) 0, callbacks) < 0) {
-    lsx_fail_errno(ft, SOX_EHDR, "Input not an Ogg Vorbis audio stream");
+    lsx_fail_errno(ft, SOX_EHDR, "input is not an Ogg Vorbis audio stream");
     return (SOX_EOF);
   }
 

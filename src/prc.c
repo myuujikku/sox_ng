@@ -135,14 +135,14 @@ static int startread(sox_format_t * ft)
   if (prc_checkheader(ft, head))
     lsx_debug("Found Psion Record header");
   else {
-      lsx_fail_errno(ft,SOX_EHDR,"Not a Psion Record file");
+      lsx_fail_errno(ft,SOX_EHDR,"not a Psion Record file");
       return (SOX_EOF);
   }
 
   if (lsx_readb(ft, &byte))
       read_error();
   if ((byte & 0x3) != 0x2) {
-    lsx_fail_errno(ft, SOX_EHDR, "Invalid length byte for application name string %d", (int)(byte));
+    lsx_fail_errno(ft, SOX_EHDR, "invalid length byte for application name string %d", (int)(byte));
     return SOX_EOF;
   }
 
@@ -151,7 +151,7 @@ static int startread(sox_format_t * ft)
   if (lsx_reads(ft, appname, (size_t)byte))
     read_error();
   if (strncasecmp(appname, "record.app", (size_t) byte) != 0) {
-    lsx_fail_errno(ft, SOX_EHDR, "Invalid application name string %.63s", appname);
+    lsx_fail_errno(ft, SOX_EHDR, "invalid application name string %.63s", appname);
     return SOX_EOF;
   }
 
@@ -168,7 +168,7 @@ static int startread(sox_format_t * ft)
   else if (encoding == 0x100001a1)
     ft->encoding.encoding = SOX_ENCODING_IMA_ADPCM;
   else {
-    lsx_fail_errno(ft, SOX_EHDR, "Unrecognised encoding");
+    lsx_fail_errno(ft, SOX_EHDR, "unrecognised encoding");
     return SOX_EOF;
   }
 
@@ -427,7 +427,7 @@ static int stopwrite(sox_format_t * ft)
   }
 
   if (lsx_seeki(ft, (off_t)0, 0) != 0) {
-      lsx_fail_errno(ft,errno,"Can't rewind output file to rewrite header");
+      lsx_fail_errno(ft,errno,"can't rewind output file to rewrite header");
       return(SOX_EOF);
   }
   return prcwriteheader(ft);

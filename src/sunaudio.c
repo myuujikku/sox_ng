@@ -80,7 +80,7 @@ static int sunstartread(sox_format_t * ft)
 #ifdef __SVR4
     /* Read in old values, change to what we need and then send back */
     if (ioctl(pPriv->device, AUDIO_GETDEV, &audio_dev) < 0) {
-        lsx_fail_errno(ft,errno,"Unable to get information for device %s", szDevname);
+        lsx_fail_errno(ft,errno,"unable to get information for device %s", szDevname);
         return(SOX_EOF);
     }
     lsx_report("Hardware detected:  %s",audio_dev.name);
@@ -116,7 +116,7 @@ static int sunstartread(sox_format_t * ft)
         if (ft->encoding.encoding != SOX_ENCODING_ULAW &&
             ft->encoding.encoding != SOX_ENCODING_ALAW &&
             ft->encoding.encoding != SOX_ENCODING_SIGN2) {
-            lsx_fail_errno(ft,SOX_EFMT,"Driver only supports ULAW, ALAW, and signed linear for bytes");
+            lsx_fail_errno(ft,SOX_EFMT,"driver only supports ULAW, ALAW, and signed linear for bytes");
                 return (SOX_EOF);
         }
         if ((ft->encoding.encoding == SOX_ENCODING_ULAW ||
@@ -131,12 +131,12 @@ static int sunstartread(sox_format_t * ft)
         samplesize = 16;
         pPriv->sample_shift = 1;
         if (ft->encoding.encoding != SOX_ENCODING_SIGN2) {
-            lsx_fail_errno(ft,SOX_EFMT,"Driver only supports signed linear for words");
+            lsx_fail_errno(ft,SOX_EFMT,"driver only supports signed linear for words");
             return(SOX_EOF);
         }
     }
     else {
-        lsx_fail_errno(ft,SOX_EFMT,"Driver only supports bytes and words");
+        lsx_fail_errno(ft,SOX_EFMT,"driver only supports bytes and words");
         return(SOX_EOF);
     }
 
@@ -153,7 +153,7 @@ static int sunstartread(sox_format_t * ft)
 
     /* Read in old values, change to what we need and then send back */
     if (ioctl(pPriv->device, AUDIO_GETINFO, &audio_if) < 0) {
-        lsx_fail_errno(ft,errno,"Unable to initialize %s", szDevname);
+        lsx_fail_errno(ft,errno,"unable to initialize %s", szDevname);
         return(SOX_EOF);
     }
     audio_if.record.precision = samplesize;
@@ -169,19 +169,19 @@ static int sunstartread(sox_format_t * ft)
 
     ioctl(pPriv->device, AUDIO_SETINFO, &audio_if);
     if (audio_if.record.precision != samplesize) {
-        lsx_fail_errno(ft,errno,"Unable to initialize sample size for %s", szDevname);
+        lsx_fail_errno(ft,errno,"unable to initialize sample size for %s", szDevname);
         return(SOX_EOF);
     }
     if (audio_if.record.channels != ft->signal.channels) {
-        lsx_fail_errno(ft,errno,"Unable to initialize number of channels for %s", szDevname);
+        lsx_fail_errno(ft,errno,"unable to initialize number of channels for %s", szDevname);
         return(SOX_EOF);
     }
     if (audio_if.record.sample_rate != ft->signal.rate) {
-        lsx_fail_errno(ft,errno,"Unable to initialize rate for %s", szDevname);
+        lsx_fail_errno(ft,errno,"unable to initialize rate for %s", szDevname);
         return(SOX_EOF);
     }
     if (audio_if.record.encoding != encoding) {
-        lsx_fail_errno(ft,errno,"Unable to initialize encoding for %s", szDevname);
+        lsx_fail_errno(ft,errno,"unable to initialize encoding for %s", szDevname);
         return(SOX_EOF);
     }
     /* Flush any data in the buffers - its probably in the wrong format */
@@ -225,7 +225,7 @@ static int sunstartwrite(sox_format_t * ft)
 #ifdef __SVR4
     /* Read in old values, change to what we need and then send back */
     if (ioctl(pPriv->device, AUDIO_GETDEV, &audio_dev) < 0) {
-        lsx_fail_errno(ft,errno,"Unable to get device information");
+        lsx_fail_errno(ft,errno,"unable to get device information");
         return(SOX_EOF);
     }
     lsx_report("Hardware detected:  %s",audio_dev.name);
@@ -299,7 +299,7 @@ static int sunstartwrite(sox_format_t * ft)
 
     /* Read in old values, change to what we need and then send back */
     if (ioctl(pPriv->device, AUDIO_GETINFO, &audio_if) < 0) {
-        lsx_fail_errno(ft,errno,"Unable to initialize /dev/audio");
+        lsx_fail_errno(ft,errno,"unable to initialize /dev/audio");
         return(SOX_EOF);
     }
     audio_if.play.precision = samplesize;
@@ -315,19 +315,19 @@ static int sunstartwrite(sox_format_t * ft)
 
     ioctl(pPriv->device, AUDIO_SETINFO, &audio_if);
     if (audio_if.play.precision != samplesize) {
-        lsx_fail_errno(ft,errno,"Unable to initialize sample size for /dev/audio");
+        lsx_fail_errno(ft,errno,"unable to initialize sample size for /dev/audio");
         return(SOX_EOF);
     }
     if (audio_if.play.channels != ft->signal.channels) {
-        lsx_fail_errno(ft,errno,"Unable to initialize number of channels for /dev/audio");
+        lsx_fail_errno(ft,errno,"unable to initialize number of channels for /dev/audio");
         return(SOX_EOF);
     }
     if (audio_if.play.sample_rate != ft->signal.rate) {
-        lsx_fail_errno(ft,errno,"Unable to initialize rate for /dev/audio");
+        lsx_fail_errno(ft,errno,"unable to initialize rate for /dev/audio");
         return(SOX_EOF);
     }
     if (audio_if.play.encoding != encoding) {
-        lsx_fail_errno(ft,errno,"Unable to initialize encoding for /dev/audio");
+        lsx_fail_errno(ft,errno,"unable to initialize encoding for /dev/audio");
         return(SOX_EOF);
     }
 
@@ -372,7 +372,7 @@ static size_t sunread(sox_format_t* ft, sox_sample_t* pOutput, size_t cOutput)
         cbRead = read(pPriv->device, pbOutput, cbOutputLeft);
         if (cbRead <= 0) {
             if (cbRead < 0) {
-                lsx_fail_errno(ft, errno, "Error reading from device");
+                lsx_fail_errno(ft, errno, "error reading from device");
                 return 0;
             }
             break;
@@ -487,7 +487,7 @@ static size_t sunwrite(
             cbWritten = write(pPriv->device, &pPriv->pOutput[i], cbStride - i);
             i += cbWritten;
             if (cbWritten <= 0) {
-                lsx_fail_errno(ft, errno, "Error writing to device");
+                lsx_fail_errno(ft, errno, "error writing to device");
                 return 0;
             }
         } while (i != cbStride);

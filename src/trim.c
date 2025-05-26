@@ -48,7 +48,7 @@ static int parse(sox_effect_t *effp, int argc, char **argv)
     /* dummy parse to check for syntax errors */
     arg = lsx_parseposition(0., arg, NULL, (uint64_t)0, (uint64_t)0, '+');
     if (!arg || *arg) {
-      lsx_fail("Error parsing position %u", i+1);
+      lsx_fail("error parsing position %u", i+1);
       return lsx_usage(effp);
     }
   }
@@ -69,7 +69,7 @@ static int start(sox_effect_t *effp)
   /* calculate absolute positions */
   for (i = 0; i < p->num_pos; i++) {
     if (!lsx_parseposition(effp->in_signal.rate, p->pos[i].argstr, &p->pos[i].sample, last_seen, in_length, '+')) {
-      lsx_fail("Position %u is relative to end of audio, but audio length is unknown", i+1);
+      lsx_fail("position %u is relative to end of audio, but audio length is unknown", i+1);
       return SOX_EOF;
     }
     last_seen = p->pos[i].sample;
@@ -80,7 +80,7 @@ static int start(sox_effect_t *effp)
   last_seen = 0;
   for (i = 0; i < p->num_pos; i++) {
     if (p->pos[i].sample < last_seen) {
-      lsx_fail("Position %u is behind the following position.", i);
+      lsx_fail("position %u is behind the following position.", i);
       return SOX_EOF;
     }
     last_seen = p->pos[i].sample;

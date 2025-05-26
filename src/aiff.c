@@ -92,7 +92,7 @@ int lsx_aiffstartread(sox_format_t * ft)
       if (ssndsize > 0)
         break;
       else {
-        lsx_fail_errno(ft,SOX_EHDR,"Missing SSND chunk");
+        lsx_fail_errno(ft,SOX_EHDR,"missing SSND chunk");
         return(SOX_EOF);
       }
     }
@@ -155,7 +155,7 @@ int lsx_aiffstartread(sox_format_t * ft)
         else if (strncmp(buf, "NONE", (size_t)4) != 0 &&
             strncmp(buf, "twos", (size_t)4) != 0) {
           buf[4] = 0;
-          lsx_fail_errno(ft, SOX_EHDR, "Unsupported AIFC compression type `%s'", buf);
+          lsx_fail_errno(ft, SOX_EHDR, "unsupported AIFC compression type `%s'", buf);
           return(SOX_EOF);
         }
       }
@@ -414,7 +414,7 @@ int lsx_aiffstartread(sox_format_t * ft)
         if (bits == 8) goto OK;
 	break;
     default: /* can't happen */
-	lsx_fail("Internal error in lsx_aiffstartread");
+	lsx_fail("internal error in lsx_aiffstartread");
 	return(SOX_EOF);
     }
     lsx_fail_errno(ft,SOX_EFMT,"unsupported sample size in header: %d", bits);
@@ -426,7 +426,7 @@ int lsx_aiffstartread(sox_format_t * ft)
         || (ft->encoding.bits_per_sample == 0)) {
       lsx_report("You must specify # channels, sample rate, signed/unsigned,");
       lsx_report("and -b 8/16 on the command line.");
-      lsx_fail_errno(ft,SOX_EFMT,"Bogus file: no COMM section");
+      lsx_fail_errno(ft,SOX_EFMT,"bogus file: no COMM section");
       return(SOX_EOF);
     }
   }
@@ -532,7 +532,7 @@ static int textChunk(char **text, char *chunkDescription, sox_format_t * ft)
 
   if (lsx_readbuf(ft, *text, (size_t) chunksize) != chunksize)
   {
-    lsx_fail_errno(ft,SOX_EOF,"Unexpected EOF in %s header", chunkDescription);
+    lsx_fail_errno(ft,SOX_EOF,"unexpected EOF in %s header", chunkDescription);
     return(SOX_EOF);
   }
   if (chunksize != SOX_SIZE_MAX)
@@ -545,7 +545,7 @@ static int textChunk(char **text, char *chunkDescription, sox_format_t * ft)
     char c;
     if (lsx_readbuf(ft, &c, (size_t)1) != 1)
     {
-      lsx_fail_errno(ft,SOX_EOF,"Unexpected EOF in %s header", chunkDescription);
+      lsx_fail_errno(ft,SOX_EOF,"unexpected EOF in %s header", chunkDescription);
       return(SOX_EOF);
     }
   }
@@ -578,7 +578,7 @@ static int commentChunk(char **text, char *chunkDescription, sox_format_t * ft)
         lsx_readw(ft, &commentLength))
       return SOX_EOF;
     if (((size_t)totalCommentLength) + commentLength > USHRT_MAX) {
-        lsx_fail_errno(ft,SOX_EOF,"Comment too long in %s header", chunkDescription);
+        lsx_fail_errno(ft,SOX_EOF,"comment too long in %s header", chunkDescription);
         return(SOX_EOF);
     }
     totalCommentLength += commentLength;
@@ -591,7 +591,7 @@ static int commentChunk(char **text, char *chunkDescription, sox_format_t * ft)
     }
 
     if (lsx_readbuf(ft, *text + totalCommentLength - commentLength, (size_t) commentLength) != commentLength) {
-        lsx_fail_errno(ft,SOX_EOF,"Unexpected EOF in %s header", chunkDescription);
+        lsx_fail_errno(ft,SOX_EOF,"unexpected EOF in %s header", chunkDescription);
         return(SOX_EOF);
     }
     *(*text + totalCommentLength) = '\0';
@@ -600,7 +600,7 @@ static int commentChunk(char **text, char *chunkDescription, sox_format_t * ft)
         /* Read past pad byte */
         char c;
         if (lsx_readbuf(ft, &c, (size_t)1) != 1) {
-            lsx_fail_errno(ft,SOX_EOF,"Unexpected EOF in %s header", chunkDescription);
+            lsx_fail_errno(ft,SOX_EOF,"unexpected EOF in %s header", chunkDescription);
             return(SOX_EOF);
         }
         totalReadLength += 1;
@@ -694,7 +694,7 @@ int lsx_aiffstopwrite(sox_format_t * ft)
 
         if (!ft->seekable)
         {
-            lsx_fail_errno(ft,SOX_EOF,"Non-seekable file");
+            lsx_fail_errno(ft,SOX_EOF,"non-seekable file");
             return(SOX_EOF);
         }
         if (lsx_seeki(ft, (off_t)0, SEEK_SET) != 0)
@@ -901,7 +901,7 @@ int lsx_aifcstopwrite(sox_format_t * ft)
 
         if (!ft->seekable)
         {
-            lsx_fail_errno(ft,SOX_EOF,"Non-seekable file");
+            lsx_fail_errno(ft,SOX_EOF,"non-seekable file");
             return(SOX_EOF);
         }
         if (lsx_seeki(ft, (off_t)0, SEEK_SET) != 0)
@@ -974,7 +974,7 @@ static int aifcwriteheader(sox_format_t * ft, uint64_t nframes)
 	    cname = "8-bit mu-law";
 	    break;
           default: /* can't happen */
-            lsx_fail("Internal error in aifcwriteheader");
+            lsx_fail("internal error in aifcwriteheader");
 	    return(SOX_EOF);
         }
         cname_len = strlen(cname);

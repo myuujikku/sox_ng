@@ -155,7 +155,7 @@ static int ossinit(sox_format_t* ft)
 
     if (ioctl(pPriv->device, (size_t) SNDCTL_DSP_RESET, 0) < 0)
     {
-        lsx_fail_errno(ft,SOX_EOF,"Unable to reset device %s. Possibly accessing an invalid file/device", szDevname);
+        lsx_fail_errno(ft,SOX_EOF,"unable to reset device %s. Possibly accessing an invalid file/device", szDevname);
         return(SOX_EOF);
     }
 
@@ -207,7 +207,7 @@ static int ossinit(sox_format_t* ft)
     /* Give up and exit */
     if (rc < 0 || tmp != sampletype)
     {
-        lsx_fail_errno(ft,SOX_EOF,"Unable to set the sample size to %d", samplesize);
+        lsx_fail_errno(ft,SOX_EOF,"unable to set the sample size to %d", samplesize);
         return (SOX_EOF);
     }
 
@@ -243,7 +243,7 @@ static int ossinit(sox_format_t* ft)
     }
 
     if (ioctl(pPriv->device, (size_t) SNDCTL_DSP_SYNC, NULL) < 0) {
-        lsx_fail_errno(ft,SOX_EOF,"Unable to sync dsp");
+        lsx_fail_errno(ft,SOX_EOF,"unable to sync dsp");
         return (SOX_EOF);
     }
 
@@ -285,7 +285,7 @@ static size_t ossread(sox_format_t* ft, sox_sample_t* pOutput, size_t cOutput)
         cbRead = read(pPriv->device, pbOutput, cbOutputLeft);
         if (cbRead <= 0) {
             if (cbRead < 0) {
-                lsx_fail_errno(ft, errno, "Error reading from device");
+                lsx_fail_errno(ft, errno, "error reading from device");
                 return 0;
             }
             break;
@@ -425,7 +425,7 @@ static size_t osswrite(
             cbWritten = write(pPriv->device, &pPriv->pOutput[i], cbStride - i);
             i += cbWritten;
             if (cbWritten <= 0) {
-                lsx_fail_errno(ft, errno, "Error writing to device");
+                lsx_fail_errno(ft, errno, "error writing to device");
                 return 0;
             }
         } while (i != cbStride);

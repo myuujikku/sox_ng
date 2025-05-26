@@ -126,7 +126,7 @@ static int startread(sox_format_t * ft)
     lsx_debug("Found header filetype %s",filetype);
     if(strcmp(filetype,"LM8953"))
     {
-        lsx_fail_errno(ft,SOX_EHDR,"Invalid filetype ID in input file header, != LM8953");
+        lsx_fail_errno(ft,SOX_EHDR,"invalid filetype ID in input file header, != LM8953");
         return(SOX_EOF);
     }
     /*
@@ -255,7 +255,7 @@ static int startwrite(sox_format_t * ft)
     /* If you have to seek around the output file */
     if (! ft->seekable)
     {
-        lsx_fail_errno(ft,SOX_EOF,"Output must be a file, not a pipe");
+        lsx_fail_errno(ft,SOX_EOF,"output must be a file, not a pipe");
         return(SOX_EOF);
     }
 

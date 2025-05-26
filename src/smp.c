@@ -366,7 +366,7 @@ static int sox_smpstartwrite(sox_format_t * ft)
         /* If you have to seek around the output file */
         if (! ft->seekable)
         {
-                lsx_fail_errno(ft,SOX_EOF,"Output must be a file, not a pipe");
+                lsx_fail_errno(ft,SOX_EOF,"output must be a file, not a pipe");
                 return(SOX_EOF);
         }
 
@@ -379,7 +379,7 @@ static int sox_smpstartwrite(sox_format_t * ft)
         /* Write file header */
         if(lsx_writebuf(ft, &header, HEADERSIZE) != HEADERSIZE)
         {
-            lsx_fail_errno(ft,errno,"Can't write header completely");
+            lsx_fail_errno(ft,errno,"can't write header completely");
             return(SOX_EOF);
         }
         if (lsx_writedw(ft, 0))      /* write as zero length for now, update later */

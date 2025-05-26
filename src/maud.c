@@ -181,7 +181,7 @@ static int startread(sox_format_t * ft)
                         if (lsx_readbuf(ft, chunk_buf, (size_t)chunksize)
                             != chunksize)
                         {
-                                lsx_fail_errno(ft,SOX_EOF,"Unexpected EOF in ANNO header");
+                                lsx_fail_errno(ft,SOX_EOF,"unexpected EOF in ANNO header");
                                 return(SOX_EOF);
                         }
                         chunk_buf[chunksize] = '\0';
@@ -243,7 +243,7 @@ static int startwrite(sox_format_t * ft)
         /* If you have to seek around the output file */
         if (! ft->seekable)
         {
-            lsx_fail_errno(ft,SOX_EOF,"Output must be a file, not a pipe");
+            lsx_fail_errno(ft,SOX_EOF,"output must be a file, not a pipe");
             return (SOX_EOF);
         }
         p->nsamples = 0x7f000000;

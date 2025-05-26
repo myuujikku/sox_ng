@@ -234,12 +234,12 @@ static int start_read(sox_format_t * const ft)
   }
 
   if (!FLAC__stream_decoder_process_until_end_of_metadata(p->decoder)) {
-    lsx_fail_errno(ft, SOX_EHDR, "Error whilst decoding metadata");
+    lsx_fail_errno(ft, SOX_EHDR, "error whilst decoding metadata");
     return SOX_EOF;
   }
 
   if (FLAC__stream_decoder_get_state(p->decoder) > FLAC__STREAM_DECODER_END_OF_STREAM) {
-    lsx_fail_errno(ft, SOX_EHDR, "Error during metadata decoding");
+    lsx_fail_errno(ft, SOX_EHDR, "error during metadata decoding");
     return SOX_EOF;
   }
 
@@ -401,7 +401,7 @@ static int start_write(sox_format_t * const ft)
 
   p->encoder = FLAC__stream_encoder_new();
   if (p->encoder == NULL) {
-    lsx_fail_errno(ft, SOX_ENOMEM, "Error creating the encoder instance");
+    lsx_fail_errno(ft, SOX_ENOMEM, "error creating the encoder instance");
     return SOX_EOF;
   }
 
@@ -472,12 +472,12 @@ static int start_write(sox_format_t * const ft)
 
     p->metadata[p->num_metadata] = FLAC__metadata_object_new(FLAC__METADATA_TYPE_SEEKTABLE);
     if (p->metadata[p->num_metadata] == NULL) {
-      lsx_fail_errno(ft, SOX_ENOMEM, "Error creating the encoder seek table template");
+      lsx_fail_errno(ft, SOX_ENOMEM, "error creating the encoder seek table template");
       return SOX_EOF;
     }
     {
       if (!FLAC__metadata_object_seektable_template_append_spaced_points_by_samples(p->metadata[p->num_metadata], (unsigned)(10 * ft->signal.rate + .5), (FLAC__uint64)(ft->signal.length/ft->signal.channels))) {
-        lsx_fail_errno(ft, SOX_ENOMEM, "Error creating the encoder seek table points");
+        lsx_fail_errno(ft, SOX_ENOMEM, "error creating the encoder seek table points");
         return SOX_EOF;
       }
     }

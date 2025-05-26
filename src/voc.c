@@ -253,7 +253,7 @@ static int startread(sox_format_t * ft)
 
   /* get rate of data */
   if (v->rate == -1) {
-    lsx_fail_errno(ft, SOX_EOF, "Input file had no sound!");
+    lsx_fail_errno(ft, SOX_EOF, "input file had no sound!");
     return (SOX_EOF);
   }
 
@@ -294,7 +294,7 @@ static int startread(sox_format_t * ft)
       v->size = 4;
       break;
     default:
-      lsx_fail("Unknown format %d", v->format);
+      lsx_fail("unknown format %d", v->format);
       return (SOX_EOF);
       break;
   }
@@ -607,7 +607,7 @@ static int getblock(sox_format_t * ft)
         /* block, the DATA blocks rate value is invalid */
         if (!v->extended) {
           if (uc == 0) {
-            lsx_fail_errno(ft, SOX_EFMT, "Sample rate is zero?");
+            lsx_fail_errno(ft, SOX_EFMT, "sample rate is zero");
             return (SOX_EOF);
           }
           if ((v->rate != -1) && (uc != v->rate)) {
@@ -630,7 +630,7 @@ static int getblock(sox_format_t * ft)
         if (lsx_readdw(ft, &new_rate_32))
 	  return SOX_EOF;
         if (new_rate_32 == 0) {
-          lsx_fail_errno(ft, SOX_EFMT, "Sample rate is zero?");
+          lsx_fail_errno(ft, SOX_EFMT, "sample rate is zero");
           return (SOX_EOF);
         }
         if ((v->rate != -1) && ((long) new_rate_32 != v->rate)) {
@@ -664,7 +664,7 @@ static int getblock(sox_format_t * ft)
               lsx_readb(ft, &uc))
 	    return SOX_EOF;
           if (uc == 0) {
-            lsx_fail_errno(ft, SOX_EFMT, "Silence sample rate is zero");
+            lsx_fail_errno(ft, SOX_EFMT, "silence sample rate is zero");
             return (SOX_EOF);
           }
           /*
@@ -726,7 +726,7 @@ voc_text:
         if (lsx_readw(ft, &new_rate_16))
 	  return SOX_EOF;
         if (new_rate_16 == 0) {
-          lsx_fail_errno(ft, SOX_EFMT, "Sample rate is zero?");
+          lsx_fail_errno(ft, SOX_EFMT, "sample rate is zero");
           return (SOX_EOF);
         }
         if ((v->rate != -1) && (new_rate_16 != v->rate)) {

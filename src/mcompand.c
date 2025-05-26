@@ -137,7 +137,7 @@ static int parse_subarg(char *s, char **subargv, size_t *subargc) {
 
   if (*subargc < 2 || *subargc > 5)
     {
-      lsx_fail("Wrong number of parameters for the compander effect within mcompand; usage:\n"
+      lsx_fail("wrong number of parameters for the compander effect within mcompand; usage:\n"
   "\tattack1,decay1{,attack2,decay2} [soft-knee-dB:]in-dB1[,out-dB1]{,in-dB2,out-dB2} [gain [initial-volume-dB [delay]]]\n"
   "\tdB values are floating point or -inf'; times are in seconds.");
       return (SOX_EOF);
@@ -327,7 +327,7 @@ static int sox_mcompand_flow_1(sox_effect_t * effp, priv_t * c, comp_band_t * l,
        cannot report back to flow() how many samples were consumed/emitted.
        Additionally, flow() doesn't know how to handle diverging
        sub-compander delays. */
-    lsx_fail("Using a compander delay is currently not supported");
+    lsx_fail("using a compander delay is currently not supported");
     exit(1);
     /* FIXME */
   }

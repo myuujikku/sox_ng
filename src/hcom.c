@@ -129,20 +129,20 @@ static int startread(sox_format_t * ft)
 	  return SOX_EOF;
         if (compresstype > 1)
         {
-                lsx_fail_errno(ft,SOX_EHDR,"Bad compression type in HCOM header");
+                lsx_fail_errno(ft,SOX_EHDR,"bad compression type in HCOM header");
                 return (SOX_EOF);
         }
         if (lsx_readdw(ft, &divisor))
 	  return SOX_EOF;
         if (divisor == 0 || divisor > 4)
         {
-                lsx_fail_errno(ft,SOX_EHDR,"Bad sampling rate divisor in HCOM header");
+                lsx_fail_errno(ft,SOX_EHDR,"bad sampling rate divisor in HCOM header");
                 return (SOX_EOF);
         }
         if (lsx_readw(ft, &dictsize) ||
             dictsize == 0 || dictsize > 511)
         {
-                lsx_fail_errno(ft, SOX_EHDR, "Implausible dictionary size in HCOM header");
+                lsx_fail_errno(ft, SOX_EHDR, "implausible dictionary size in HCOM header");
                 return SOX_EOF;
         }
 
@@ -167,7 +167,7 @@ static int startread(sox_format_t * ft)
                                p->dictionary[i].dict_rightson)) {
                         free(p->dictionary);
                         p->dictionary = NULL;
-                        lsx_fail_errno(ft, SOX_EHDR, "Invalid dictionary");
+                        lsx_fail_errno(ft, SOX_EHDR, "invalid dictionary");
                         return SOX_EOF;
                 }
         }

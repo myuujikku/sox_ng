@@ -931,7 +931,7 @@ static void read_user_effects(char const *filename)
     add_eff_chain();
 
     if (!file) {
-        lsx_fail("Cannot open effects file `%s': %s", filename, strerror(errno));
+        lsx_fail("cannot open effects file `%s': %s", filename, strerror(errno));
         exit(1);
     }
 
@@ -953,7 +953,7 @@ static void read_user_effects(char const *filename)
            occurred */
         if (ferror(file))
           break; /* use error reporting after loop */
-        lsx_fail("Error reading effects file `%s' (not a text file?)", filename);
+        lsx_fail("error reading effects file `%s' (not a text file?)", filename);
         exit(1);
       }
 
@@ -968,7 +968,7 @@ static void read_user_effects(char const *filename)
         /* Make sure first option is an effect name. */
         if (!sox_find_effect(argv[0]) && !is_pseudo_effect(argv[0]))
         {
-          lsx_fail("Cannot find an effect called `%s'.", argv[0]);
+          lsx_fail("cannot find an effect called `%s'.", argv[0]);
           exit(1);
         }
 
@@ -991,7 +991,7 @@ static void read_user_effects(char const *filename)
       }
     }
     if (ferror(file)) {
-      lsx_fail("Error reading effects file `%s': %s", filename, strerror(errno));
+      lsx_fail("error reading effects file `%s': %s", filename, strerror(errno));
       exit(1);
     }
     fclose(file);
@@ -1654,11 +1654,11 @@ static void calculate_combiner_signal_parameters(void)
 
     /* Check for invalid/unusual rate or channel combinations: */
     if (min_rate != max_rate)
-      lsx_fail("Input files must have the same sample-rate");
+      lsx_fail("input files must have the same sample-rate");
       /* Don't exit quite yet; give the user any other message 1st */
     if (min_channels != max_channels) {
       if (combine_method == sox_concatenate) {
-        lsx_fail("Input files must have the same # channels");
+        lsx_fail("input files must have the same # channels");
         exit(1);
       } else if (combine_method != sox_merge)
         lsx_warn("Input files don't have the same # channels");
@@ -2156,7 +2156,7 @@ static void read_comment_file(sox_comments_t * comments, char const * const file
   FILE * file = lsx_fopen(filename, "r");
 
   if (file == NULL) {
-    lsx_fail("Cannot open comment file `%s'", filename);
+    lsx_fail("cannot open comment file `%s'", filename);
     exit(1);
   }
   do {
@@ -2168,7 +2168,7 @@ static void read_comment_file(sox_comments_t * comments, char const * const file
       text[i++] = c;
     }
     if (ferror(file)) {
-      lsx_fail("Error reading comment file `%s'", filename);
+      lsx_fail("error reading comment file `%s'", filename);
       exit(1);
     }
     if (i) {
@@ -2336,7 +2336,7 @@ static char parse_gopts_and_fopts(file_t * f)
       case 1:
 #define SOX_BUFMIN 16
         if (sscanf(optstate.arg, "%i %c", &i, &dummy) != 1 || i <= SOX_BUFMIN) {
-          lsx_fail("Buffer size `%s' must be > %d", optstate.arg, SOX_BUFMIN);
+          lsx_fail("buffer size `%s' must be > %d", optstate.arg, SOX_BUFMIN);
           exit(1);
         }
         sox_globals.bufsiz = i;
@@ -2369,7 +2369,7 @@ static char parse_gopts_and_fopts(file_t * f)
 
       case 6:
         if (sscanf(optstate.arg, "%i %c", &i, &dummy) != 1 || i <= SOX_BUFMIN) {
-          lsx_fail("Buffer size `%s' must be > %d", optstate.arg, SOX_BUFMIN);
+          lsx_fail("buffer size `%s' must be > %d", optstate.arg, SOX_BUFMIN);
           exit(1);
         }
         sox_globals.input_bufsiz = i;
@@ -2379,7 +2379,7 @@ static char parse_gopts_and_fopts(file_t * f)
 #if defined(HAVE_TERMIOS_H) || defined(HAVE_CONIO_H)
         interactive = sox_true; break;
 #else
-        lsx_fail("Interactive mode has not been enabled at compile time");
+        lsx_fail("interactive mode was not enabled at compile time");
         exit(1); break;
 #endif
       case 8: usage_effect(optstate.arg); break;
@@ -2413,7 +2413,7 @@ static char parse_gopts_and_fopts(file_t * f)
       case 24: sox_globals.use_threads = sox_true; break;
       case 25:
         if (sscanf(optstate.arg, "%i %c", &i, &dummy) != 1 || i < 8 || i > 16) {
-          lsx_fail("Min DFT size must be in range 8 to 16");
+          lsx_fail("minimum DFT size must be in range 8 to 16");
           exit(1);
         }
         sox_globals.log2_dft_min_size = i;
@@ -2452,7 +2452,7 @@ static char parse_gopts_and_fopts(file_t * f)
       char k = 0;
       size_t n = sscanf(optstate.arg, "%lf %c %c", &f->signal.rate, &k, &dummy);
       if (n < 1 || f->signal.rate <= 0 || (n > 1 && k != 'k') || n > 2) {
-        lsx_fail("Rate value `%s' is not a positive number", optstate.arg);
+        lsx_fail("rate value `%s' is not a positive number", optstate.arg);
         exit(1);
       }
       f->signal.rate *= k == 'k'? 1000. : 1.;
@@ -2461,7 +2461,7 @@ static char parse_gopts_and_fopts(file_t * f)
 
     case 'v':
       if (sscanf(optstate.arg, "%lf %c", &f->volume, &dummy) != 1) {
-        lsx_fail("Volume value `%s' is not a number", optstate.arg);
+        lsx_fail("volume value `%s' is not a number", optstate.arg);
         exit(1);
       }
       uservolume = sox_true;
@@ -2472,7 +2472,7 @@ static char parse_gopts_and_fopts(file_t * f)
 
     case 'c':
       if (sscanf(optstate.arg, "%d %c", &i, &dummy) != 1 || i <= 0) {
-        lsx_fail("Channels value `%s' is not a positive integer", optstate.arg);
+        lsx_fail("channels value `%s' is not a positive integer", optstate.arg);
         exit(1);
       }
       f->signal.channels = i;
@@ -2480,14 +2480,14 @@ static char parse_gopts_and_fopts(file_t * f)
 
     case 'C':
       if (sscanf(optstate.arg, "%lf %c", &f->encoding.compression, &dummy) != 1) {
-        lsx_fail("Compression value `%s' is not a number", optstate.arg);
+        lsx_fail("compression value `%s' is not a number", optstate.arg);
         exit(1);
       }
       break;
 
     case 'b':
       if (sscanf(optstate.arg, "%d %c", &i, &dummy) != 1 || i <= 0) {
-        lsx_fail("Bits value `%s' is not a positive integer", optstate.arg);
+        lsx_fail("bits value `%s' is not a positive integer", optstate.arg);
         exit(1);
       }
       f->encoding.bits_per_sample = i;
@@ -2534,7 +2534,7 @@ static char parse_gopts_and_fopts(file_t * f)
       else {
         if (sscanf(optstate.arg, "%d %c", &i, &dummy) != 1 || i < 0) {
           sox_globals.verbosity = 2;
-          lsx_fail("Verbosity value `%s' is not a non-negative integer", optstate.arg);
+          lsx_fail("verbosity value `%s' is not a non-negative integer", optstate.arg);
           exit(1);
         }
         sox_globals.verbosity = (unsigned)i;
@@ -2601,7 +2601,7 @@ static char const * set_default_device(file_t * f)
     f->filetype = try_device("ao");
 
   if (!f->filetype) {
-    lsx_fail("Sorry, there is no default audio device configured");
+    lsx_fail("sorry, there is no default audio device configured");
     exit(1);
   }
   return device_name(f->filetype);
@@ -2806,7 +2806,7 @@ static int soxi(int argc, char * const * argv)
       else {
         if (sscanf(optstate.arg, "%d %c", &i, &dummy) != 1 || i < 0) {
           sox_globals.verbosity = 2;
-          lsx_fail("Verbosity value `%s' is not a non-negative integer", optstate.arg);
+          lsx_fail("verbosity value `%s' is not a non-negative integer", optstate.arg);
           exit(1);
         }
         sox_globals.verbosity = (unsigned)i;

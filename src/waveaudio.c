@@ -251,7 +251,7 @@ static int start(sox_format_t* ft)
 
       if (dev == dev_count)
       {
-        lsx_fail_errno(ft, ENODEV, "The requested device was not found");
+        lsx_fail_errno(ft, ENODEV, "the requested device was not found");
         return SOX_EOF;
       }
     }
@@ -276,7 +276,7 @@ static int start(sox_format_t* ft)
       priv->sample_shift = 2;
       break;
   default:
-      lsx_fail_errno(ft, E2BIG, "Unexpected value for wBitsPerSample: %u", fmt.Format.wBitsPerSample);
+      lsx_fail_errno(ft, E2BIG, "unexpected value for wBitsPerSample: %u", fmt.Format.wBitsPerSample);
       return SOX_EOF;
   }
 

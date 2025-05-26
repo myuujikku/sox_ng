@@ -853,7 +853,7 @@ static sox_format_t * open_read(
       }
     }
     if (setvbuf (ft->fp, NULL, _IOFBF, sizeof(char) * input_bufsiz)) {
-      lsx_fail("Can't set read buffer");
+      lsx_fail("can't set read buffer");
       goto error;
     }
     ft->seekable = is_seekable(ft);
@@ -911,7 +911,7 @@ static sox_format_t * open_read(
   ft->priv = lsx_calloc(1, ft->handler.priv_size);
   /* Read and write starters can change their formats. */
   if (ft->handler.startread && (*ft->handler.startread)(ft) != SOX_SUCCESS) {
-    lsx_fail("Can't open input %s `%s': %s", type, ft->filename, ft->sox_errstr);
+    lsx_fail("can't open input %s `%s': %s", type, ft->filename, ft->sox_errstr);
     goto error;
   }
 
@@ -1243,7 +1243,7 @@ static sox_format_t * open_write(
     /* stdout tends to be line-buffered.  Override this */
     /* to be Full Buffering. */
     if (setvbuf (ft->fp, NULL, _IOFBF, sizeof(char) * sox_globals.bufsiz)) {
-      lsx_fail("Can't set write buffer");
+      lsx_fail("can't set write buffer");
       goto error;
     }
     ft->seekable = is_seekable(ft);
@@ -1453,7 +1453,7 @@ int sox_parse_playlist(sox_playlist_callback_t callback, void * p, char const * 
     *slash_pos = '\0';
 
   if (file == NULL) {
-    lsx_fail("Can't open playlist file `%s': %s", listname, strerror(errno));
+    lsx_fail("can't open playlist file `%s': %s", listname, strerror(errno));
     result = SOX_EOF;
   }
   else {

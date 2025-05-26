@@ -267,15 +267,15 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
       return lsx_usage(effp);
     case 'R':
       if (parse_range (optstate.arg, &p->low_freq, &p->high_freq)) {
-         lsx_fail("Frequency range `%s' is invalid.", optstate.arg);
+         lsx_fail("frequency range `%s' is invalid.", optstate.arg);
          return SOX_EOF;
       }
       if (p->low_freq < 0 || p->high_freq < 0) {
-        lsx_fail("Frequency range `%s' is invalid. Frequencies must be positive.", optstate.arg);
+        lsx_fail("frequency range `%s' is invalid. Frequencies must be positive.", optstate.arg);
         return SOX_EOF;
       }
       if (p->low_freq >= p->high_freq) {
-        lsx_fail("Frequency range `%s' is invalid. Lower frequency must be less than higher frequency.", optstate.arg);
+        lsx_fail("frequency range `%s' is invalid. Lower frequency must be less than higher frequency.", optstate.arg);
         exit(1);
       }
       break;

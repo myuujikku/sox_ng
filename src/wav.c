@@ -413,7 +413,7 @@ static int sndfile_workaround(uint64_t *len, sox_format_t *ft) {
     /* Seek back to where we were, which won't work if you're piping */
     if (lsx_seeki(ft, here, SEEK_SET)!=SOX_SUCCESS)
     {
-        lsx_fail_errno(ft,SOX_EHDR, "Cannot seek backwards to work around possible broken header");
+        lsx_fail_errno(ft,SOX_EHDR, "cannot seek backwards to work around possible broken header");
         return SOX_EOF;
     }
     if (memcmp(magic, "fmt ", (size_t)4)==0)
@@ -457,7 +457,7 @@ static int findChunk(sox_format_t * ft, const char *Label, uint64_t *len)
             }
             else
             {
-                lsx_fail_errno(ft, SOX_EHDR, "Cannot yet read block sizes of arbitrary RF64 chunks, cannot find chunk '%s'", Label);
+                lsx_fail_errno(ft, SOX_EHDR, "cannot yet read block sizes of arbitrary RF64 chunks, cannot find chunk '%s'", Label);
                 return SOX_EOF;
             }
         }
@@ -737,7 +737,7 @@ static int startread(sox_format_t * ft)
     case WAVE_FORMAT_G722_ADPCM:
         return wavfail(ft, "G.722 ADPCM");
     default:
-        lsx_fail_errno(ft, SOX_EHDR, "Unknown file encoding (type %x)", wav->formatTag);
+        lsx_fail_errno(ft, SOX_EHDR, "unknown file encoding (type %x)", wav->formatTag);
         return SOX_EOF;
     }
 
@@ -748,7 +748,7 @@ static int startread(sox_format_t * ft)
         lsx_report("User options overriding channels read in .wav header");
 
     if (ft->signal.channels == 0) {
-        lsx_fail_errno(ft, SOX_EHDR, "Channel count is zero");
+        lsx_fail_errno(ft, SOX_EHDR, "channel count is zero");
         return SOX_EOF;
     }
 
@@ -795,7 +795,7 @@ static int startread(sox_format_t * ft)
 
         if (wBitsPerSample != 4)
         {
-            lsx_fail_errno(ft,SOX_EOF,"Can only handle 4-bit MS ADPCM");
+            lsx_fail_errno(ft,SOX_EOF,"can only handle 4-bit MS ADPCM");
             return SOX_EOF;
         }
 
@@ -855,7 +855,7 @@ static int startread(sox_format_t * ft)
 
         if (wBitsPerSample != 4)
         {
-            lsx_fail_errno(ft,SOX_EOF,"Can only handle 4-bit IMA ADPCM");
+            lsx_fail_errno(ft,SOX_EOF,"can only handle 4-bit IMA ADPCM");
             return SOX_EOF;
         }
 
@@ -934,7 +934,7 @@ static int startread(sox_format_t * ft)
       break;
 
     default:
-      lsx_fail_errno(ft,SOX_EFMT,"Sorry, don't understand size");
+      lsx_fail_errno(ft,SOX_EFMT,"don't understand size");
       return SOX_EOF;
     }
 
@@ -948,7 +948,7 @@ static int startread(sox_format_t * ft)
     /* Now look for the wave data chunk */
     if (findChunk(ft, "data", &len) == SOX_EOF)
     {
-        lsx_fail_errno(ft, SOX_EOF, "Could not find data chunk");
+        lsx_fail_errno(ft, SOX_EOF, "could not find data chunk");
         return SOX_EOF;
     }
 
@@ -997,7 +997,7 @@ static int startread(sox_format_t * ft)
     default:
         if (ft->encoding.bits_per_sample == 0)
         {
-            lsx_fail_errno(ft, SOX_EHDR, "Bits per sample is zero");
+            lsx_fail_errno(ft, SOX_EHDR, "bits per sample is zero");
             return SOX_EOF;
         }
         wav->numSamples = div_bits(qwDataLength, ft->encoding.bits_per_sample) / ft->signal.channels;
@@ -1440,7 +1440,7 @@ static int wavwritehdr(sox_format_t * ft, int second_header)
     sox_bool isExtensible = sox_false;    /* WAVE_FORMAT_EXTENSIBLE? */
 
     if (ft->signal.channels > UINT16_MAX) {
-        lsx_fail_errno(ft, SOX_EOF, "Too many channels (%u)",
+        lsx_fail_errno(ft, SOX_EOF, "too many channels (%u)",
                        ft->signal.channels);
         return SOX_EOF;
     }
@@ -1474,7 +1474,7 @@ static int wavwritehdr(sox_format_t * ft, int second_header)
         case SOX_ENCODING_IMA_ADPCM:
             if (wChannels>16)
             {
-                lsx_fail_errno(ft,SOX_EOF,"Channels(%d) must be <= 16",wChannels);
+                lsx_fail_errno(ft,SOX_EOF,"channels(%d) must be <= 16",wChannels);
                 return SOX_EOF;
             }
             wFormatTag = WAVE_FORMAT_IMA_ADPCM;
@@ -1486,7 +1486,7 @@ static int wavwritehdr(sox_format_t * ft, int second_header)
         case SOX_ENCODING_MS_ADPCM:
             if (wChannels>16)
             {
-                lsx_fail_errno(ft,SOX_EOF,"Channels(%d) must be <= 16",wChannels);
+                lsx_fail_errno(ft,SOX_EOF,"channels(%d) must be <= 16",wChannels);
                 return SOX_EOF;
             }
             wFormatTag = WAVE_FORMAT_ADPCM;
@@ -1751,7 +1751,7 @@ static int stopwrite(sox_format_t * ft)
 
         if (lsx_seeki(ft, (off_t)0, SEEK_SET) != 0)
         {
-                lsx_fail_errno(ft,SOX_EOF,"Can't rewind output file to rewrite header");
+                lsx_fail_errno(ft,SOX_EOF,"can't rewind output file to rewrite header");
                 return SOX_EOF;
         }
 
