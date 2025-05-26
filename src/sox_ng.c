@@ -1448,7 +1448,7 @@ static sox_bool overwrite_permitted(char const * filename)
   lsx_warn("Output file `%s' already exists", filename);
   if (!stdin_is_a_tty)
     return sox_false;
-  do fprintf(stderr, "%s sox: overwrite `%s' (y/n)? ", myname, filename);
+  do fprintf(stderr, "%s: overwrite `%s' (y/n)? ", myname, filename);
   while (scanf(" %c%*[^\n]", &c) != 1 || !strchr("yYnN", c));
   return c == 'y' || c == 'Y';
 }
@@ -1922,7 +1922,7 @@ static void display_supported_effects(void)
   puts("\n  # LibSoX-only effect");
 }
 
-static void usage(char const * message)
+static void usage(void)
 {
   const sox_version_info_t * info = sox_version_info();
   size_t i;
@@ -2015,9 +2015,6 @@ static void usage(char const * message)
     putchar('\n');
   }
 
-  if (message)
-    lsx_fail("%s\n", message);  /* N.B. stderr */
-
   printf("Usage summary: [gopts] [[fopts] infile]... [fopts]%s [effect [effopt]]...\n\n",
          sox_mode == sox_play? "" : " outfile");
   for (i = 0; i < array_length(lines1); ++i)
@@ -2038,7 +2035,6 @@ static void usage(char const * message)
   display_supported_formats();
   display_supported_effects();
   printf("EFFECT OPTIONS: effect dependent; see --help-effect\n");
-  exit(message != NULL);
 }
 
 static void usage_effect(char const * name)
@@ -2358,8 +2354,10 @@ static char parse_gopts_and_fopts(file_t * f)
         break;
 
       case 5:
-        if (f->encoding.reverse_bytes != sox_option_default || f->encoding.opposite_endian)
-          usage("only one endian option per file is allowed");
+        if (f->encoding.reverse_bytes != sox_option_default || f->encoding.opposite_endian) {
+          lsx_fail("only one endian option per file is allowed");
+	  exit(1);
+	}
         switch (enum_option(optstate.arg, optstate.lngind, endian_options)) {
           case ENDIAN_little: f->encoding.reverse_bytes = MACHINE_IS_BIGENDIAN; break;
           case ENDIAN_big: f->encoding.reverse_bytes = MACHINE_IS_LITTLEENDIAN; break;
@@ -2435,12 +2433,12 @@ static char parse_gopts_and_fopts(file_t * f)
       return c;
 
     case 'h':
-      usage(NULL);
-      break;
+      usage();
+      exit(0);
 
     case '?':
-      usage("invalid option");              /* No return */
-      break;
+      lsx_fail("invalid option");
+      exit(1);
 
     case 't':
       f->filetype = optstate.arg;
@@ -2513,8 +2511,10 @@ static char parse_gopts_and_fopts(file_t * f)
       break;
 
     case 'L': case 'B': case 'x':
-      if (f->encoding.reverse_bytes != sox_option_default || f->encoding.opposite_endian)
-        usage("only one endian option per file is allowed");
+      if (f->encoding.reverse_bytes != sox_option_default || f->encoding.opposite_endian) {
+        lsx_fail("only one endian option per file is allowed");
+	exit(1);
+      }
       switch (c) {
         case 'L': f->encoding.reverse_bytes   = MACHINE_IS_BIGENDIAN;    break;
         case 'B': f->encoding.reverse_bytes   = MACHINE_IS_LITTLEENDIAN; break;
@@ -2612,8 +2612,10 @@ static int add_file(file_t const * const opts, char const * const filename)
   file_t * f = lsx_malloc(sizeof(*f));
 
   *f = *opts;
-  if (!filename)
-    usage("missing filename"); /* No return */
+  if (!filename) {
+    lsx_fail("missing filename");
+    exit(1);
+  }
   f->filename = lsx_strdup(filename);
   lsx_revalloc(files, file_count + 1);
   files[file_count++] = f;
@@ -2940,21 +2942,30 @@ int main(int argc, char **argv)
     combine_method = sox_concatenate;
 
   /* Make sure we got at least the required # of input filenames */
-  if (input_count < 1)
-    usage("No input filenames specified");
+  if (input_count < 1) {
+    lsx_fail("no input filenames specified. For help say `%s -h'", myname);
+    exit(1);
+  }
 
   /* Check for misplaced input/output-specific options */
   for (i = 0; i < input_count; ++i) {
-    if (files[i]->encoding.compression != HUGE_VAL)
-      usage("A compression factor can be given only for an output file");
-    if (files[i]->oob.comments != NULL)
-      usage("Comments can be given only for an output file");
+    if (files[i]->encoding.compression != HUGE_VAL) {
+      lsx_fail("a compression factor can be given only for an output file");
+      exit(1);
+    }
+    if (files[i]->oob.comments != NULL) {
+      lsx_fail("comments can be given only for an output file");
+      exit(1);
+    }
   }
-  if (ofile->volume != HUGE_VAL)
-    usage("-v can be given only for an input file;\n"
-            "\tuse the `gain' or `vol' effect to set the output file volume");
-  if (ofile->signal.length != SOX_UNSPEC)
-    usage("--ignore-length can be given only for an input file");
+  if (ofile->volume != HUGE_VAL) {
+    lsx_fail("-v can only be given for an input file; use `gain' or `vol'");
+    exit(1);
+  }
+  if (ofile->signal.length != SOX_UNSPEC) {
+    lsx_fail("--ignore-length can only be given for an input file");
+    exit(1);
+  }
 
   signal(SIGINT, SIG_IGN); /* So child pipes aren't killed by track skip */
   for (i = 0; i < input_count; i++) {

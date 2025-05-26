@@ -221,7 +221,8 @@ lsx_getopt(
                     { /* No match */
                         if (oerr)
                         {
-                            lsx_warn("parameter not recognized from `%s'", current);
+                            lsx_fail("option `%s' not recognized", current);
+			    exit(1);
                         }
                         state->ind++;
                         return '?';
@@ -230,12 +231,12 @@ lsx_getopt(
                     { /* Ambiguous. */
                         if (oerr)
                         {
-                            lsx_warn("parameter `%s' is ambiguous:", current);
+                            lsx_warn("option `%s' is ambiguous:", current);
                             for (pCur = state->longopts; pCur->name; pCur++)
                             {
                                 if (0 == strncmp(pCur->name, param, nameLen))
                                 {
-                                    lsx_warn("parameter `%s' could be `--%s'", current, pCur->name);
+                                    lsx_warn("option `%s' could be `--%s'", current, pCur->name);
                                 }
                             }
                         }
@@ -253,7 +254,8 @@ lsx_getopt(
         { /* ':' is never a valid short option character */
             if (oerr)
             {
-                lsx_warn("option `%c' not recognized", state->opt);
+                lsx_fail("option `%c' not recognized", state->opt);
+		exit(1);
             }
             state->curpos++;
             CheckCurPosEnd(state);
@@ -268,7 +270,8 @@ lsx_getopt(
             { /* unrecognized option */
                 if (oerr)
                 {
-                    lsx_warn("option `%c' not recognized", state->opt);
+                    lsx_fail("option `%c' not recognized", state->opt);
+		    exit(1);
                 }
                 CheckCurPosEnd(state);
                 return '?';
