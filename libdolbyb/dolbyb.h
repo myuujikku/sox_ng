@@ -26,7 +26,7 @@
 
 typedef struct {
   /* Compulsory Parameters */
-  int32_t SmpSec;  /* Samples per second in the input and output files */
+  uint32_t SmpSec; /* Samples per second in the input and output files */
   int16_t BDepth;  /* Size of samples in the input and output files: 8, 16 or 24 */
   int16_t NumChn;  /* Number of channels in the input and output files */
 
@@ -108,12 +108,12 @@ typedef struct {
   int64_t SidePathGcVal;   /* Gain for audio entering gain control */
 
   /* Calibrate variables */
-  int64_t CalibrateWrmSam;
-  int64_t CalibrateEndSam;
+  int32_t CalibrateWrmSam;
+  int32_t CalibrateEndSam;
   double CalibrateSmpDiv;  /* SmpCyc divided by 2 pi */
   double CalibrateSmpMux;  /* Multiply result of Sin to get sample value */
   int64_t *CalibrateSinTab;
-  int64_t CalibrateSinTabMax;
+  uint32_t CalibrateSinTabMax;
 
   /* HPF1 variables */
   int64_t HPF1Alp;      /* Alpha value */
@@ -166,10 +166,10 @@ typedef struct {
 
 } dolbyb_t;
 
-extern char *dolbyb_init(dolbyb_t *);  /* Call before doing anything */
-extern char *dolbyb_start(dolbyb_t *); /* Call when BDepth, NumChn and SmpSec are set */
-extern char *dolbyb_encode(dolbyb_t *, void *in, void *out, size_t nframes);
-extern char *dolbyb_decode(dolbyb_t *, void *in, void *out, size_t nframes);
-extern char *dolbyb_free(dolbyb_t *);
+extern void dolbyb_init(dolbyb_t *);  /* Call before doing anything */
+extern int  dolbyb_start(dolbyb_t *); /* Call when BDepth, NumChn and SmpSec are set */
+extern void dolbyb_encode(dolbyb_t *, void *in, void *out, size_t nframes);
+extern void dolbyb_decode(dolbyb_t *, void *in, void *out, size_t nframes);
+extern void dolbyb_free(dolbyb_t *);
 
 #endif

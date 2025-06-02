@@ -29,9 +29,10 @@
 
 #include <stdlib.h>  /* for free() */
 #include <string.h>  /* for memset() */
+#include <stdio.h>   /* we shouldn't but it's only for error messages */
 
 /* Set default values */
-char *dolbyb_init(dolbyb_t *Param)
+void dolbyb_init(dolbyb_t *Param)
 {
   memset((void *)Param, 0, sizeof(*Param));
 
@@ -44,14 +45,10 @@ char *dolbyb_init(dolbyb_t *Param)
 
   /* Set initial values */
   Param->FETGVt = 75000*(int64_t)100000;
-
-  return NULL;
 }
 
-static char *SecondInit(dolbyb_t *Param)
+static int SecondInit(dolbyb_t *Param)
 {
-  char *err;
-
   /* More initialising after the input wave header has been read,  */
   /* so the sample rate and number of samples is now known.        */
 
@@ -71,27 +68,31 @@ static char *SecondInit(dolbyb_t *Param)
   Param->CFrq = Param->SmpSec;
 
   /* Initialise side path routines */
-  if ((err = SidePathInit(Param))) return err;
+  if (SidePathInit(Param)) return 1;
   FindOutSmpInit(Param);
-  return NULL;
+  return 0;
 }
 
 /* Do initialisation that depends on parameter changes */
-char *dolbyb_start(dolbyb_t *Param)
+int dolbyb_start(dolbyb_t *Param)
 {
-  char *err;
-
   /* Check validity of parameters */
 
-  if (Param->SmpSec <= 0)
-    return "Did you forget to set dolbyb.SmpSec before calling dolbyb_start()?";
+  if (Param->SmpSec <= 0) {
+    fprintf(stderr, "Did you forget to set dolbyb.SmpSec before calling dolbyb_start()?\n");
+    return 1;
+  }
 
-  if (Param->NumChn < 1 || Param->NumChn > 2)
-    return "libdolbyb can only process mono and stereo audio";
+  if (Param->NumChn < 1 || Param->NumChn > 2) {
+    fprintf(stderr, "libdolbyb can only process mono and stereo audio\n");
+    return 1;
+  }
 
   /* Check filter type is valid */
-  if (Param->FltTyp < 1 || Param->FltTyp > 4)
-    return "dolbyb.FltTyp must be from 1 to 4";
+  if (Param->FltTyp < 1 || Param->FltTyp > 4) {
+    fprintf(stderr, "dolbyb.FltTyp must be from 1 to 4.\n");
+    return 1;
+  }
 
   switch (Param->FltTyp) {
   case 1: Param->FETSVt = ParamFETSVt1; Param->SidAmp = ParamSidAmp1; break;
@@ -106,15 +107,16 @@ char *dolbyb_start(dolbyb_t *Param)
   case 16: Param->SmpMux = ParamSMux16; break;
   case 24: Param->SmpMux = ParamSMux24; break;
   default:
-    return "dolbyb.BDepth must be 8, 16 or 24";
+    fprintf(stderr, "dolbyb.BDepth must be 8, 16 or 24.\n");
+    return 1;
   }
 
-  if ((err = SecondInit(Param))) return err;
+  if (SecondInit(Param)) return 1;
   Calibrate(Param);
-  return NULL;
+  return 0;
 }
 
-char *dolbyb_encode(dolbyb_t *Param, void *in, void *out, size_t nframes)
+void dolbyb_encode(dolbyb_t *Param, void *in, void *out, size_t nframes)
 {
   unsigned char *inp = in;
   unsigned char *outp = out;
@@ -136,7 +138,11 @@ char *dolbyb_encode(dolbyb_t *Param, void *in, void *out, size_t nframes)
            MaxVal = 8388607L; MinVal = -8388608L; AddVal = 16777216L;
            break;
   default:
-           return "BDepth is not 8/16/24. Did you set it before calling dolbyb_start()?";
+           fprintf(stderr, "BDepth is not 8/16/24. Did you set it before calling dolbyb_start()?\n");
+	   /* Shut the compiler warnings up */
+           NumByt = MaxSamp = SubSamp = 0;
+           MaxVal = MinVal = AddVal = 0;
+	   exit(1);
   }
 
   for (SmpCnt = 0; SmpCnt < nframes; SmpCnt++) {
@@ -207,10 +213,9 @@ char *dolbyb_encode(dolbyb_t *Param, void *in, void *out, size_t nframes)
       }
     }
   }
-  return NULL;
 }
 
-char *dolbyb_decode(dolbyb_t *Param, void *in, void *out, size_t nframes)
+void dolbyb_decode(dolbyb_t *Param, void *in, void *out, size_t nframes)
 {
   unsigned char *inp = in;
   unsigned char *outp = out;
@@ -230,7 +235,11 @@ char *dolbyb_decode(dolbyb_t *Param, void *in, void *out, size_t nframes)
            MaxVal = 8388607L; MinVal = -8388608L; AddVal = 16777216L;
            break;
   default:
-           return "BDepth is not 8/16/24. Did you set it before calling dolbyb_start()?";
+           fprintf(stderr, "BDepth is not 8/16/24. Did you set it before calling dolbyb_start()?\n");
+	   /* Shut the compiler warnings up */
+           NumByt = MaxSamp = SubSamp = 0;
+           MaxVal = MinVal = AddVal = 0;
+	   exit(1);
   }
 
   /* Process samples */
@@ -301,10 +310,9 @@ char *dolbyb_decode(dolbyb_t *Param, void *in, void *out, size_t nframes)
       }
     }
   }
-  return NULL;
 }
 
-char *dolbyb_free(dolbyb_t *Param)
+void dolbyb_free(dolbyb_t *Param)
 {
   if (Param->HPF2SetValsPotTab) {
     free(Param->HPF2SetValsPotTab); Param->HPF2SetValsPotTab = NULL;
@@ -327,5 +335,4 @@ char *dolbyb_free(dolbyb_t *Param)
   if (Param->CalibrateSinTab) {
     free(Param->CalibrateSinTab); Param->CalibrateSinTab = NULL;
   }
-  return NULL;
 }

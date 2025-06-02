@@ -6,5 +6,5 @@
 #define HPF2SetValsNumberOfFilters  ParamMaxChnl
 #define HPF2SetValsTableSize  1000
 
-extern char *HPF2SetValsInit(dolbyb_t *Param);
+extern int HPF2SetValsInit(dolbyb_t *Param);
 extern void HPF2SetVals(dolbyb_t *Param, uint16_t FltNum);

@@ -123,11 +123,9 @@ static uint32_t SetGateGetRes27(dolbyb_t *Param, double Vin)
 static double SetGateInRes1(uint32_t InpRes)
 {
   /* Calculate total of resistances in parallel */
-  int64_t ResVal;
   double InvRes;
 
-  ResVal = ParamGCR1d;
-  InvRes = 1.0 / InpRes + 1.0 / ResVal;
+  InvRes = 1.0 / InpRes + 1.0 / ParamGCR1d;
   return (1.0 / InvRes);
 }
 
@@ -223,7 +221,7 @@ static void SetGateTab2Pos(dolbyb_t *Param, uint16_t TabPos)
 /****   Main Routines   ****/
 /***************************/
 
-char *SetGateInit(dolbyb_t *Param)
+int SetGateInit(dolbyb_t *Param)
 {
   double Vin = SetGateTab1Ed / 100.0;
   double Att;
@@ -239,7 +237,7 @@ char *SetGateInit(dolbyb_t *Param)
     Param->SetGateAlpTab2 = calloc(nmemb, sizeof(*Param->SetGateAlpTab2));
   if (Param->SetGateAttTab == NULL ||
       Param->SetGateAlpTab1 == NULL ||
-      Param->SetGateAlpTab2 == NULL) return "Out of memory";
+      Param->SetGateAlpTab2 == NULL) return 1;
 
   if (Param->AllHig)
     Param->SetGateSmpSec = Param->SmpSec * Param->UpSamp;
@@ -297,7 +295,7 @@ char *SetGateInit(dolbyb_t *Param)
   Param->SetGateMaxSmp /= 4;
   Param->SetGateMinSmp = -Param->SetGateMaxSmp;
 
-  return NULL;
+  return 0;
 }
 
 void SetGate(dolbyb_t *Param, int64_t InSamp, uint16_t TabNum)

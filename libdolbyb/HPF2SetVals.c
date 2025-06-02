@@ -76,10 +76,8 @@ static double FETRes(double Vgs)
 static uint16_t HPF2SetValsTabPos(dolbyb_t *Param, int64_t VltDif)
 {
   /* Return table position for an input voltage */
-  int64_t TabPos;
 
-  TabPos = VltDif / Param->HPF2SetValsTabRes;
-  return TabPos;
+  return (uint16_t)(VltDif / Param->HPF2SetValsTabRes);
 }
 
 static void HPF2SetValsTableRes(dolbyb_t *Param)
@@ -127,7 +125,7 @@ static void HPF2SetValsMakePotTable(dolbyb_t *Param)
   }
 }
 
-static double HPF2SetValsMakeAlpVal(dolbyb_t *Param, uint16_t TabPos, int64_t SmpSec)
+static double HPF2SetValsMakeAlpVal(dolbyb_t *Param, uint16_t TabPos, uint32_t SmpSec)
 {
   /* Calculate alpha value for different table positions */
   /* Also calculate additional attenuation, */
@@ -162,7 +160,8 @@ static void HPF2SetValsMakeAlpTable(dolbyb_t *Param)
 {
   /* Create table of alpha values for filter */
   uint16_t TabCnt;
-  int64_t SmpSec, AlpVal;
+  uint32_t SmpSec;
+  int64_t AlpVal;
   double a;
   int64_t PrvAlp = 0;
 
@@ -193,12 +192,12 @@ static void HPF2SetValsSetHighestFreq(dolbyb_t *Param)
 {
   /* Set highest frequency for filter, and so set minimum RC value */
   /* Also set difference in RC when program would like to use higher frequencies */
-  int64_t SmpSec;
+  uint32_t SmpSec;
   double ResVal, MaxFrq;
 
   SmpSec = Param->UpSamp * Param->SmpSec;
 
-  MaxFrq = SmpSec * ParamMxFqRt;   /* Max filter frequency allowed */
+  MaxFrq = (double)SmpSec * ParamMxFqRt;   /* Max filter frequency allowed */
   Param->HPF2SetValsMinRC = 1 / (2 * M_PI * MaxFrq);  /* RC for max frequency */
 
   /* Now calculate highest frequency that the program might want to use */
@@ -216,7 +215,7 @@ static void HPF2SetValsSetHighestFreq(dolbyb_t *Param)
 /****   Initialisation   ****/
 /****************************/
 
-char *HPF2SetValsInit(dolbyb_t *Param)
+int HPF2SetValsInit(dolbyb_t *Param)
 {
   if (Param->HPF2SetValsPotTab == NULL)
     Param->HPF2SetValsPotTab = calloc(HPF2SetValsTableSize + 1, sizeof(*Param->HPF2SetValsPotTab));
@@ -226,14 +225,14 @@ char *HPF2SetValsInit(dolbyb_t *Param)
     Param->HPF2SetValsFLTATb = calloc(HPF2SetValsTableSize + 1, sizeof(*Param->HPF2SetValsFLTATb));
   if (Param->HPF2SetValsPotTab == NULL ||
       Param->HPF2SetValsAlpTab == NULL ||
-      Param->HPF2SetValsFLTATb == NULL) return "Out of memory";
+      Param->HPF2SetValsFLTATb == NULL) return 1;
 
   HPF2SetValsSetHighestFreq(Param);
   Param->HPF2SetValsMaxRC = ParamR1 * ParamC1;
   HPF2SetValsTableRes(Param);
   HPF2SetValsMakePotTable(Param);
   HPF2SetValsMakeAlpTable(Param);
-  return NULL;
+  return 0;
 }
 
 

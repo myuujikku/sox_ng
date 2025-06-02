@@ -45,7 +45,7 @@
  * In the worst case, when the sample rate is 47999 and there is
  * no common divisor, it still only uses 2.5MB of memory.
  */
-static int64_t hcd(int64_t a, int64_t b)
+static int64_t hcd64(int64_t a, int64_t b)
 {
    while (a != b)
      if (a > b) a = a - b;
@@ -57,9 +57,9 @@ static int CalibrateMakeSinTab(dolbyb_t *Param)
 {
   double dt = 2.0 * M_PI * CalibrateTstFrq / Param->CFrq;
   double SinArg = 0.0;
-  int64_t SmpCnt;
+  uint32_t SmpCnt;
 
-  Param->CalibrateSinTabMax = Param->CFrq / hcd(Param->CFrq, CalibrateTstFrq);
+  Param->CalibrateSinTabMax = Param->CFrq / hcd64(Param->CFrq, CalibrateTstFrq);
   Param->CalibrateSinTab = malloc(Param->CalibrateSinTabMax * sizeof(*Param->CalibrateSinTab));
   if (!Param->CalibrateSinTab) return 1;
   for (SmpCnt = 0; SmpCnt < Param->CalibrateSinTabMax; SmpCnt++) {
@@ -69,7 +69,7 @@ static int CalibrateMakeSinTab(dolbyb_t *Param)
   return 0;
 }
 
-static int CalibrateInit(dolbyb_t *Param, int64_t WarmUp, int64_t TstLen)
+static int CalibrateInit(dolbyb_t *Param, int32_t WarmUp, int32_t TstLen)
 {
   Param->CalibrateSmpDiv = ((double)Param->CFrq / CalibrateTstFrq) / (2 * M_PI);
   Param->CalibrateSmpMux = CalibrateTestAmp * sqrt(2.0) * ParamVltMux / 1000.0;
@@ -80,7 +80,7 @@ static int CalibrateInit(dolbyb_t *Param, int64_t WarmUp, int64_t TstLen)
 
 /****  Routines to run calibration tests  ****/
 
-static int64_t CalibrateSmpCnt;
+static int32_t CalibrateSmpCnt;
 
 static int64_t CalibrateNextTestToneSamp(dolbyb_t *Param)
 {

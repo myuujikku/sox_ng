@@ -8,5 +8,5 @@
 #define SetGateTab2St     1
 #define SetGateTab2Ed     700
 
-extern char *SetGateInit(dolbyb_t *Param);
+extern int SetGateInit(dolbyb_t *Param);
 extern void SetGate(dolbyb_t *Param, int64_t InSamp, uint16_t TabNum);

@@ -41,7 +41,7 @@ but the option flag is included for convenience and symmetry.
 .BI \-u N
 Digital filtering only works well if the sample rate is well above
 the cutoff frequency of the filter. For Dolby\ B's sliding filter,
-that frequency can be as high as 34kHz and this does not work well
+that frequency can be well above 20kHz and this does not work well
 if the sample rate is only 44.1Khz. To get around this, it upsamples
 the audio to a higher rate when it passes through this filter.
 By default, the upsample rate is set so that the upper sample rate
