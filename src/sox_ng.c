@@ -2891,6 +2891,8 @@ int main(int argc, char **argv)
   size_t i;
   char mybase[8];
 
+  if (argc < 2) { usage(); exit(1); }
+
   gettimeofday(&load_timeofday, NULL);
   myname = argv[0];
   sox_globals.output_message_handler = output_message;
