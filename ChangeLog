@@ -5,7 +5,7 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
-sox_ng-14.6.0-rc2	2025-05-26
+sox_ng-14.6.0-rc3	2025-06-10
 -------------
 
 New features:
@@ -37,7 +37,7 @@ New features:
   o Error messages have been harmonized. The best was
     sox_ng WARN chorus: chorus: warning >>> gain-out can cause saturation
   o When curl or wget fail to fetch a URL, decode the exit status to a message
-  o Don't spew the usage pages for invalid options, only for sox_ng -h
+  o Don't spew the usage pages when there are invalid options
   o Add flow diagrams to --help-effect chorus/compand/earwax/echo/echos/phaser
   o Make --with-ffmpeg the default configuration
 
