@@ -37,7 +37,7 @@ void HPF1Init(dolbyb_t *Param)
   uint16_t FltCnt;
 
   if (Param->AllHig)
-    SmpSec = Param->SmpSec * Param->UpSamp;
+    SmpSec = Param->SmpSec * Param->UpSmp;
   else
     SmpSec = Param->SmpSec;
 

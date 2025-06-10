@@ -30,11 +30,11 @@ libdolbyb, a Dolby B encoding and decoding library
 .P
 .B void dolbyb_init(&dolbyb);
 .P
-.B int dolbyb_start(&dolbyb);
+.B char *dolbyb_start(&dolbyb);
 .P
-.B void dolbyb_encode(&dolbyb, void *in, void *out, size_t nframes);
+.B char *dolbyb_encode(&dolbyb, void *in, void *out, size_t nframes);
 .P
-.B void dolbyb_decode(&dolbyb, void *in, void *out, size_t nframes);
+.B char *dolbyb_decode(&dolbyb, void *in, void *out, size_t nframes);
 .P
 .B void dolbyb_free(&dolbyb);
 .SH DESCRIPTION
@@ -44,7 +44,6 @@ Dolby\ B noise reduction for magnetic tape recording.
 .TP
 .B dolbyb_init
 Fills in your \fIdolbyb_t\fP structure with default values.
-It cannot fail.
 .TP
 .B dolbyb_start
 Fills in parts of the \fIdolbyb\fP structure with values that depend on the
@@ -161,9 +160,12 @@ Calling it even if \fBdolbyb_start()\fP failed is safe.
 The library is thread-safe and you can run multiple instances of it
 simultaneously by having several \fBdolbyb_t\fP structures.
 If they're all using the same number of channels, sample rate and bit depth,
-you can simply copy the strucrure filled in by \fBdolbyb_start()\fP
-and hand the different copies to the endoder and decoder functions,
+you can simply copy the structure filled in by \fBdolbyb_start()\fP
+and hand the different copies to the encoder and decoder functions,
 in which case just make sure you only \fBdolbyb_free()\fP one of them.
+.SH RETURN VALUE
+All functions except dolbyb_init() and dolbyb_free() return NULL if they succeed
+or a pointer to an error message if they fail.
 .SH EXAMPLES
 The following code uses \fBlibsndfile\fR to read and write
 audio files. Put it in \fBdolbyb.c\fR and compile it with

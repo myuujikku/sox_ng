@@ -25,7 +25,7 @@
 #include "SidePath.h"
 #include "FindOutSmp.h"
 
-#include "../src/soxconfig.h"  /* for WORDS_BIGENDIAN */
+#include "configure.h"  /* for WORDS_BIGENDIAN */
 
 #include <stdlib.h>  /* for free() */
 #include <string.h>  /* for memset() */
@@ -47,8 +47,10 @@ void dolbyb_init(dolbyb_t *Param)
   Param->FETGVt = 75000*(int64_t)100000;
 }
 
-static int SecondInit(dolbyb_t *Param)
+static char *SecondInit(dolbyb_t *Param)
 {
+  char *err;
+
   /* More initialising after the input wave header has been read,  */
   /* so the sample rate and number of samples is now known.        */
 
@@ -56,43 +58,41 @@ static int SecondInit(dolbyb_t *Param)
   Param->ThGain = ParamConvertDb(Param->ThGndB);
 
   /* Set up sample rates */
-  if (Param->UpSamp == 0) {
-    while (Param->UpSamp * Param->SmpSec < 200000L)
-      Param->UpSamp++;
+  if (Param->UpSamp < 0) return "Upsampling cannot be negative";
+  if (Param->UpSamp > 0)
+    Param->UpSmp = Param->UpSamp;
+  else {
+    Param->UpSmp = 1;
+    while (Param->UpSmp * Param->SmpSec < 200000L)
+      Param->UpSmp++;
   }
   if (Param->AllHig)
-    Param->InUS = Param->UpSamp;
+    Param->InUS = Param->UpSmp;
   else
     Param->InUS = 1;
 
-  Param->CFrq = Param->SmpSec;
-
   /* Initialise side path routines */
-  if (SidePathInit(Param)) return 1;
+  if ((err = SidePathInit(Param))) return err;
   FindOutSmpInit(Param);
-  return 0;
+  return NULL;
 }
 
 /* Do initialisation that depends on parameter changes */
-int dolbyb_start(dolbyb_t *Param)
+char *dolbyb_start(dolbyb_t *Param)
 {
+  char *err;
+
   /* Check validity of parameters */
 
-  if (Param->SmpSec <= 0) {
-    fprintf(stderr, "Did you forget to set dolbyb.SmpSec before calling dolbyb_start()?\n");
-    return 1;
-  }
+  if (Param->SmpSec <= 0)
+    return "Did you forget to set dolbyb.SmpSec before calling dolbyb_start()?";
 
-  if (Param->NumChn < 1 || Param->NumChn > 2) {
-    fprintf(stderr, "libdolbyb can only process mono and stereo audio\n");
-    return 1;
-  }
+  if (Param->NumChn < 1 || Param->NumChn > 2)
+    return "libdolbyb can only process mono and stereo audio";
 
   /* Check filter type is valid */
-  if (Param->FltTyp < 1 || Param->FltTyp > 4) {
-    fprintf(stderr, "dolbyb.FltTyp must be from 1 to 4.\n");
-    return 1;
-  }
+  if (Param->FltTyp < 1 || Param->FltTyp > 4)
+    return "dolbyb.FltTyp must be from 1 to 4";
 
   switch (Param->FltTyp) {
   case 1: Param->FETSVt = ParamFETSVt1; Param->SidAmp = ParamSidAmp1; break;
@@ -107,16 +107,17 @@ int dolbyb_start(dolbyb_t *Param)
   case 16: Param->SmpMux = ParamSMux16; break;
   case 24: Param->SmpMux = ParamSMux24; break;
   default:
-    fprintf(stderr, "dolbyb.BDepth must be 8, 16 or 24.\n");
-    return 1;
+    return "dolbyb.BDepth must be 8, 16 or 24";
   }
 
-  if (SecondInit(Param)) return 1;
+  if ((err = SecondInit(Param))) return err;
+
   Calibrate(Param);
-  return 0;
+
+  return NULL;
 }
 
-void dolbyb_encode(dolbyb_t *Param, void *in, void *out, size_t nframes)
+char *dolbyb_encode(dolbyb_t *Param, void *in, void *out, size_t nframes)
 {
   unsigned char *inp = in;
   unsigned char *outp = out;
@@ -138,11 +139,10 @@ void dolbyb_encode(dolbyb_t *Param, void *in, void *out, size_t nframes)
            MaxVal = 8388607L; MinVal = -8388608L; AddVal = 16777216L;
            break;
   default:
-           fprintf(stderr, "BDepth is not 8/16/24. Did you set it before calling dolbyb_start()?\n");
 	   /* Shut the compiler warnings up */
            NumByt = MaxSamp = SubSamp = 0;
            MaxVal = MinVal = AddVal = 0;
-	   exit(1);
+           return "BDepth is not 8/16/24. Did you set it before calling dolbyb_start()?";
   }
 
   for (SmpCnt = 0; SmpCnt < nframes; SmpCnt++) {
@@ -213,9 +213,10 @@ void dolbyb_encode(dolbyb_t *Param, void *in, void *out, size_t nframes)
       }
     }
   }
+  return NULL;
 }
 
-void dolbyb_decode(dolbyb_t *Param, void *in, void *out, size_t nframes)
+char *dolbyb_decode(dolbyb_t *Param, void *in, void *out, size_t nframes)
 {
   unsigned char *inp = in;
   unsigned char *outp = out;
@@ -235,11 +236,10 @@ void dolbyb_decode(dolbyb_t *Param, void *in, void *out, size_t nframes)
            MaxVal = 8388607L; MinVal = -8388608L; AddVal = 16777216L;
            break;
   default:
-           fprintf(stderr, "BDepth is not 8/16/24. Did you set it before calling dolbyb_start()?\n");
 	   /* Shut the compiler warnings up */
            NumByt = MaxSamp = SubSamp = 0;
            MaxVal = MinVal = AddVal = 0;
-	   exit(1);
+           return "BDepth is not 8/16/24. Did you set it before calling dolbyb_start()?";
   }
 
   /* Process samples */
@@ -310,6 +310,7 @@ void dolbyb_decode(dolbyb_t *Param, void *in, void *out, size_t nframes)
       }
     }
   }
+  return NULL;
 }
 
 void dolbyb_free(dolbyb_t *Param)
@@ -331,8 +332,5 @@ void dolbyb_free(dolbyb_t *Param)
   }
   if (Param->SetGateAlpTab2) {
     free(Param->SetGateAlpTab2); Param->SetGateAlpTab2 = NULL;
-  }
-  if (Param->CalibrateSinTab) {
-    free(Param->CalibrateSinTab); Param->CalibrateSinTab = NULL;
   }
 }

@@ -32,7 +32,7 @@
 /* rather than keep increasing to fc of the filter */
 
 /* Amend to upsample and then downsample the audio   */
-/* going through the filter according to Param.UpSamp */
+/* going through the filter according to Param.UpSmp */
 
 #define HPF2SetValsPotTarget  1000000L
 #define HPF2SetValsMaxAlpVal  1000000L
@@ -166,7 +166,7 @@ static void HPF2SetValsMakeAlpTable(dolbyb_t *Param)
   int64_t PrvAlp = 0;
 
   /* Set some initial values */
-  SmpSec = Param->UpSamp * Param->SmpSec;
+  SmpSec = Param->UpSmp * Param->SmpSec;
 
   /* Set high value to get multiplier */
   a = HPF2SetValsMakeAlpVal(Param, HPF2SetValsTableSize, SmpSec);
@@ -195,7 +195,7 @@ static void HPF2SetValsSetHighestFreq(dolbyb_t *Param)
   uint32_t SmpSec;
   double ResVal, MaxFrq;
 
-  SmpSec = Param->UpSamp * Param->SmpSec;
+  SmpSec = Param->UpSmp * Param->SmpSec;
 
   MaxFrq = (double)SmpSec * ParamMxFqRt;   /* Max filter frequency allowed */
   Param->HPF2SetValsMinRC = 1 / (2 * M_PI * MaxFrq);  /* RC for max frequency */
@@ -215,7 +215,7 @@ static void HPF2SetValsSetHighestFreq(dolbyb_t *Param)
 /****   Initialisation   ****/
 /****************************/
 
-int HPF2SetValsInit(dolbyb_t *Param)
+char *HPF2SetValsInit(dolbyb_t *Param)
 {
   if (Param->HPF2SetValsPotTab == NULL)
     Param->HPF2SetValsPotTab = calloc(HPF2SetValsTableSize + 1, sizeof(*Param->HPF2SetValsPotTab));
@@ -225,14 +225,14 @@ int HPF2SetValsInit(dolbyb_t *Param)
     Param->HPF2SetValsFLTATb = calloc(HPF2SetValsTableSize + 1, sizeof(*Param->HPF2SetValsFLTATb));
   if (Param->HPF2SetValsPotTab == NULL ||
       Param->HPF2SetValsAlpTab == NULL ||
-      Param->HPF2SetValsFLTATb == NULL) return 1;
+      Param->HPF2SetValsFLTATb == NULL) return "Out of memory";
 
   HPF2SetValsSetHighestFreq(Param);
   Param->HPF2SetValsMaxRC = ParamR1 * ParamC1;
   HPF2SetValsTableRes(Param);
   HPF2SetValsMakePotTable(Param);
   HPF2SetValsMakeAlpTable(Param);
-  return 0;
+  return NULL;
 }
 
 

@@ -40,7 +40,7 @@ void HPF2Init(dolbyb_t *Param)
   if (Param->AllHig)
     Param->HPF2UpSmp = 1;
   else
-    Param->HPF2UpSmp = Param->UpSamp;
+    Param->HPF2UpSmp = Param->UpSmp;
 
   /* Set previous sample values to 0 */
   for (Chn = 0; Chn <= HPF2NumberOfFilters - 1; Chn++) {

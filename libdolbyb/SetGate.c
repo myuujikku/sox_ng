@@ -221,7 +221,7 @@ static void SetGateTab2Pos(dolbyb_t *Param, uint16_t TabPos)
 /****   Main Routines   ****/
 /***************************/
 
-int SetGateInit(dolbyb_t *Param)
+char *SetGateInit(dolbyb_t *Param)
 {
   double Vin = SetGateTab1Ed / 100.0;
   double Att;
@@ -237,10 +237,10 @@ int SetGateInit(dolbyb_t *Param)
     Param->SetGateAlpTab2 = calloc(nmemb, sizeof(*Param->SetGateAlpTab2));
   if (Param->SetGateAttTab == NULL ||
       Param->SetGateAlpTab1 == NULL ||
-      Param->SetGateAlpTab2 == NULL) return 1;
+      Param->SetGateAlpTab2 == NULL) return "Out of memory";
 
   if (Param->AllHig)
-    Param->SetGateSmpSec = Param->SmpSec * Param->UpSamp;
+    Param->SetGateSmpSec = Param->SmpSec * Param->UpSmp;
   else
     Param->SetGateSmpSec = Param->SmpSec;
 
@@ -295,7 +295,7 @@ int SetGateInit(dolbyb_t *Param)
   Param->SetGateMaxSmp /= 4;
   Param->SetGateMinSmp = -Param->SetGateMaxSmp;
 
-  return 0;
+  return NULL;
 }
 
 void SetGate(dolbyb_t *Param, int64_t InSamp, uint16_t TabNum)

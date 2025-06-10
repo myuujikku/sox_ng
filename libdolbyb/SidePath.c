@@ -32,31 +32,36 @@
 
 #define SidePathNumberOfPaths  ParamMaxChnl
 
-int SidePathInit(dolbyb_t *Param)
+char *SidePathInit(dolbyb_t *Param)
 {
+  double AmpVal;
   uint16_t TabCnt;
+  char *err;
 
   DCfilterInit(Param);
   HPF1Init(Param);
   HPF2Init(Param);
-  if (SetGateInit(Param)) return 1;
-  if (HPF2SetValsInit(Param)) return 1;
+  if ((err = SetGateInit(Param))) return err;
+  if ((err = HPF2SetValsInit(Param))) return err;
   DiodeClipInit(Param);
 
   /* Set side path gain */
-  Param->SidePathGainMux = ParamMuxValue(Param->SidAmp, 1048576L);
-  Param->SidePathGainVal = round(Param->SidAmp * Param->SidePathGainMux);
+  AmpVal = Param->SidAmp;
+  Param->SidePathGainMux = ParamMuxValue(AmpVal, 1048576L);
+  Param->SidePathGainVal = round(AmpVal * Param->SidePathGainMux);
 
   /* Set gain before gain control circuits */
-  Param->SidePathGcMux = ParamMuxValue(ParamGanAmp, 1048576L);
-  Param->SidePathGcVal = round(ParamGanAmp * Param->SidePathGcMux);
+  AmpVal = ParamGanAmp;
+  if (Param->ThGain != 1.0) AmpVal *= Param->ThGain;
+  Param->SidePathGcMux = ParamMuxValue(AmpVal, 1048576L);
+  Param->SidePathGcVal = round(AmpVal * Param->SidePathGcMux);
 
   /* Set some initial gain control values */
   for (TabCnt = 1; TabCnt <= SidePathNumberOfPaths; TabCnt++) {
     SetGate(Param, 0, TabCnt);
     HPF2SetVals(Param, TabCnt);
   }
-  return 0;
+  return NULL;
 }
 
 

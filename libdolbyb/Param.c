@@ -19,9 +19,9 @@ void dolbyb_dumpparam(dolbyb_t *Param)
 
   count++;
   printf("%i UpSamp %d\n",             count, Param->UpSamp);
+  printf("%i UpSmp %d\n",              count, Param->UpSmp);
   printf("%i FltTyp %d\n",             count, Param->FltTyp);
   printf("%i AllHig %d\n",             count, Param->AllHig);
-  printf("%i CFrq %d\n",               count, Param->CFrq);
   printf("%i DecAMX %.19f\n",          count, Param->DecAMX);
   printf("%i ThGain %.19f\n",          count, Param->ThGain);
   printf("%i InUS %d\n",               count, Param->InUS);

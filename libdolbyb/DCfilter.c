@@ -56,7 +56,7 @@ void DCfilterInit(dolbyb_t *Param)
   uint16_t Flt;
 
   if (Param->AllHig)
-    SmpSec = Param->SmpSec * Param->UpSamp;
+    SmpSec = Param->SmpSec * Param->UpSmp;
   else
     SmpSec = Param->SmpSec;
 

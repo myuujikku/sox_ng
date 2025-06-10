@@ -53,29 +53,37 @@ static int64_t hcd64(int64_t a, int64_t b)
    return a;
 }
 
-static int CalibrateMakeSinTab(dolbyb_t *Param)
+static char *CalibrateMakeSinTab(dolbyb_t *Param)
 {
-  double dt = 2.0 * M_PI * CalibrateTstFrq / Param->CFrq;
+  double dt = 2.0 * M_PI * CalibrateTstFrq / Param->SmpSec;
   double SinArg = 0.0;
   uint32_t SmpCnt;
 
-  Param->CalibrateSinTabMax = Param->CFrq / hcd64(Param->CFrq, CalibrateTstFrq);
+  Param->CalibrateSinTabMax = Param->SmpSec / hcd64(Param->SmpSec, CalibrateTstFrq);
   Param->CalibrateSinTab = malloc(Param->CalibrateSinTabMax * sizeof(*Param->CalibrateSinTab));
-  if (!Param->CalibrateSinTab) return 1;
+  if (!Param->CalibrateSinTab) return "Out of memory";
   for (SmpCnt = 0; SmpCnt < Param->CalibrateSinTabMax; SmpCnt++) {
     Param->CalibrateSinTab[SmpCnt] = round(sin(SinArg) * Param->CalibrateSmpMux);
     SinArg += dt;
   }
-  return 0;
+  return NULL;
 }
 
-static int CalibrateInit(dolbyb_t *Param, int32_t WarmUp, int32_t TstLen)
+static char *CalibrateInit(dolbyb_t *Param, int32_t WarmUp, int32_t TstLen)
 {
-  Param->CalibrateSmpDiv = ((double)Param->CFrq / CalibrateTstFrq) / (2 * M_PI);
+  Param->CalibrateSmpDiv = ((double)Param->SmpSec / CalibrateTstFrq) / (2 * M_PI);
   Param->CalibrateSmpMux = CalibrateTestAmp * sqrt(2.0) * ParamVltMux / 1000.0;
-  Param->CalibrateWrmSam = WarmUp * Param->CFrq;
-  Param->CalibrateEndSam = (TstLen + WarmUp) * Param->CFrq;
+  Param->CalibrateWrmSam = WarmUp * Param->SmpSec;
+  Param->CalibrateEndSam = (TstLen + WarmUp) * Param->SmpSec;
   return CalibrateMakeSinTab(Param);
+}
+
+static void CalibrateDeInit(dolbyb_t *Param)
+{
+  if (Param->CalibrateSinTab) {
+    free(Param->CalibrateSinTab);
+    Param->CalibrateSinTab = NULL;
+  }
 }
 
 /****  Routines to run calibration tests  ****/
@@ -104,6 +112,9 @@ static int64_t CalibrateRunNoNRTest(dolbyb_t *Param)
     SmpVal = MixersEncode(CalibrateNextTestToneSamp(Param), 0);
     SmpTot += SmpVal < 0 ? -SmpVal : SmpVal;
   }
+
+  CalibrateDeInit(Param);
+
   /* Return the result */
   return SmpTot / Param->CalibrateEndSam;
 }
@@ -142,6 +153,7 @@ static double CalibrateFindSideAmp(dolbyb_t *Param, int64_t Target)
   int64_t TryRes, PrvRes;
   int64_t HigRes, LowRes;
 
+
   OldGVt = Param->FETGVt;   /* Save Value to restore afterwards */
   CalibrateInit(Param, 0, 5);
   /* Set up some test values */
@@ -150,13 +162,13 @@ static double CalibrateFindSideAmp(dolbyb_t *Param, int64_t Target)
 
   /* Find High and low values */
 
-  /* Lowest  result is 2.354113326 for filter type 4 at 384000Hz
-   * Highest result is 4.225473657 for filter type 1 at 8000Hz
-   * Use a few millionths larger in case of future algorithmic changes
-   * which so far have always got the same result within a millionth part
+  /* The highest and lowest results we've seen are
+   * 2.3192325 for filter type 4 at 20000Hz and
+   * 4.4790271 for filter type 1 at 8001Hz
+   * Use slightly larger in case of future algorithmic changes.
    */
-  LowAmp = 2.35411;
-  HigAmp = 4.22548;
+  LowAmp = 2.3;
+  HigAmp = 4.5;
   LowRes = CalibrateTrySideAmp(Param, LowAmp);
   HigRes = CalibrateTrySideAmp(Param, HigAmp);
 
@@ -200,10 +212,11 @@ static double CalibrateFindSideAmp(dolbyb_t *Param, int64_t Target)
     }
   }
   /* We have two Amplitudes that give the same result
-   * so out best estimate is half way between them */
+   * so our best estimate is half way between them */
   TryAmp = (TryAmp + PrvAmp) / 2;
 
   /* Restore parameters and store the result */
+  CalibrateDeInit(Param);
   Param->FETGVt = OldGVt;
   Param->FETClp = 0;
   return TryAmp;
@@ -231,15 +244,15 @@ static int64_t CalibrateFindSVlt(dolbyb_t *Param, int64_t Target)
 
   /* Set initial high and low values */
 
-  /* The Lowest  result is 11365539381 for filter type 2 at 8000Hz
-   * The Highest result is 11497842079 for filter type 3 at 384000Hz
-   * Use a few millionths larger in case of future algorithmic changes
-   * which so far have always got the same result within a millionth part
+  /* The highest and lowest results we've seen are
+   * 11257398552 for filter type 2 at 20000Hz
+   * 11501205920 for filter type 1 at 3840000Hz
+   * Use slightly larger in case of future algorithmic changes.
    */
-  /* gcc-2.95 warns "integer constant out of range" and Ansi C disallows
+  /* gcc-2.95 warns "integer constant out of range" and ANSI C disallows
    * long long constants (11365500000LL) so here's a halfway house */
-  LowS = (int64_t)113655*100000;
-  HigS = (int64_t)114979*100000;
+  LowS = (int64_t)112500*100000;
+  HigS = (int64_t)115100*100000;
   LowRes = CalibrateTrySVlt(Param, LowS);
   HigRes = CalibrateTrySVlt(Param, HigS);
 
@@ -266,6 +279,8 @@ static int64_t CalibrateFindSVlt(dolbyb_t *Param, int64_t Target)
    * so out best estimate is half way between them */
   TryS = (TryS + PrvS + 1) / 2;
 
+  CalibrateDeInit(Param);
+
   return TryS;
 }
 
@@ -273,11 +288,22 @@ static int64_t CalibrateFindSVlt(dolbyb_t *Param, int64_t Target)
 /****  Routines to do the calibration  ****/
 /******************************************/
 
+static void CalibrateCacheSave(dolbyb_t *Param);
+static int CalibrateCacheFind(dolbyb_t *Param);
+
 void Calibrate(dolbyb_t *Param)
 {
   int64_t OffRes;   /* Result with Noise Resuction off */
   int64_t GanTgt;   /* Target for gain adjustement */
   int64_t SvtTgt;   /* Target for SVlt adjustement */
+  double OldThGain;
+
+  /* First, see if it's cached */
+  if (CalibrateCacheFind(Param)) return;
+
+  /* Run calibration without threashold gain */
+  OldThGain = Param->ThGain;
+  Param->ThGain = 1.0;
   
   /* Try with noise reduction turned off, to get reference level */
   OffRes = CalibrateRunNoNRTest(Param);
@@ -290,5 +316,92 @@ void Calibrate(dolbyb_t *Param)
   Param->SidAmp = CalibrateFindSideAmp(Param, GanTgt);
   Param->FETSVt = CalibrateFindSVlt(Param, SvtTgt);
 
+  /* Restore variables */
+  Param->ThGain = OldThGain;
   SidePathInit(Param);
+
+  /* Save it in the cache */
+  CalibrateCacheSave(Param);
+}
+
+/************************************/
+/****  Calibration result cache  ****/
+/************************************/
+#include <stdio.h>
+#include <string.h>
+
+static char *CalibrateCacheFileName(void)
+{
+#if defined(unix) || defined(_WIN32)
+   extern char *getenv(const char *);
+   static char *filename = NULL;
+# ifdef unix
+   static char *name = ".libdolbyb";
+# else
+   static char *name = "libdolbyb.cache";
+# endif
+   char *dir;
+
+   if (filename) return(filename);
+
+   dir = getenv(
+# ifdef unix
+                      "HOME"
+# else
+                      "TEMP"
+# endif
+		            );
+   if (dir == NULL) return name;
+   filename=malloc(strlen(dir) + 1 + strlen(name) + 1);
+   sprintf(filename, "%s/%s", dir, name);
+   return filename;
+#else
+   return "libdolbyb.cache";
+#endif
+}
+
+/* Add a result to the calibration cache file */
+static void
+CalibrateCacheSave(dolbyb_t *Param)
+{
+  char *filename = CalibrateCacheFileName();
+  FILE *fp;
+
+  if (filename == NULL) return;
+  fp = fopen(filename, "a");
+  if (fp == NULL) return;
+  fprintf(fp, "SmpSec=%u FltTyp=%u UpSamp=%u SidAmp=%.19lf FETSVt=%lld\n",
+          Param->SmpSec, Param->FltTyp, Param->UpSamp, Param->SidAmp, Param->FETSVt);
+  fclose(fp);
+}
+
+/* Look for results in the calibration cache file
+ * Returns 1 if it finds them (and fills then into Param)
+ * Returns 0 if it doesn't */
+static int
+CalibrateCacheFind(dolbyb_t *Param)
+{
+  char line[256];
+  unsigned int SmpSec;
+  int FltTyp, UpSamp;
+  double SidAmp; int64_t FETSVt;
+    int n;
+
+  FILE *fp = fopen(CalibrateCacheFileName(), "r");
+  if (fp == NULL) return 0;
+  while (fgets(line, sizeof(line), fp) != NULL) {
+    if ((n = sscanf(line, "SmpSec=%u FltTyp=%d UpSamp=%d SidAmp=%lf FETSVt=%lld\n",
+                     &SmpSec, &FltTyp, &UpSamp, &SidAmp, &FETSVt)) == 5) {
+      if (SmpSec == Param->SmpSec &&
+          FltTyp == Param->FltTyp &&
+	  UpSamp == Param->UpSamp) {
+        Param->SidAmp = SidAmp;
+        Param->FETSVt = FETSVt;
+        fclose(fp);
+        return 1;
+      }
+    } else fprintf(stderr, "sscanf returned %d\n", n);
+  }
+  fclose(fp);
+  return 0;
 }

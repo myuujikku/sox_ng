@@ -31,14 +31,15 @@ typedef struct {
   int16_t NumChn;  /* Number of channels in the input and output files */
 
   /* Adjustable Parameters */
-  int16_t UpSamp;  /* Upsampling to use when generating the lowpass filter's alpha table */
+  int16_t UpSamp;  /* Upsampling to use when generating the highpass filter's
+                    * alpha table. See also UpSmp below. */
   int16_t FltTyp;  /* Filter type to use; 1, 2, 3 or 4 (the default) */
-  int     AllHig;  /* (Bool) Also upsample the Gate, DC and highpass filters */
-  int32_t CFrq;    /* Sample frequency used for calibration */
+  int     AllHig;  /* (Bool) Also upsample the Gate, DC and lowpass filters */
   double  DecAdB;  /* Decoding accuracy in decibels, default -5.0 */
   double  ThGndB;  /* Threshold level adjustmentin decibel, default 0.0 */
 
   /* Internal Parameters */
+  int16_t UpSmp;   /* The actual value we use, since UpSamp=0 means automatic */
   double  DecAMX;  /* Internal version of the Decoding Accuracy */
   double  ThGain;  /* Adjust the threshold to the level the tape was digitized at (1.0) */
   int16_t InUS;    /* How many times to upsample the input samples */
@@ -167,9 +168,9 @@ typedef struct {
 } dolbyb_t;
 
 extern void dolbyb_init(dolbyb_t *);  /* Call before doing anything */
-extern int  dolbyb_start(dolbyb_t *); /* Call when BDepth, NumChn and SmpSec are set */
-extern void dolbyb_encode(dolbyb_t *, void *in, void *out, size_t nframes);
-extern void dolbyb_decode(dolbyb_t *, void *in, void *out, size_t nframes);
+extern char *dolbyb_start(dolbyb_t *); /* Call when BDepth, NumChn and SmpSec are set */
+extern char *dolbyb_encode(dolbyb_t *, void *in, void *out, size_t nframes);
+extern char *dolbyb_decode(dolbyb_t *, void *in, void *out, size_t nframes);
 extern void dolbyb_free(dolbyb_t *);
 
 #endif
