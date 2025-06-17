@@ -23,6 +23,10 @@ Yes, GPL, not LGPL. If you want to include it in a commercial product,
 you can either translate the original Pascal sources and make them work
 or use FreePascal to compile the original library and link to it.
 
+The name "dolbyb" is pronounced "DOLL bib" and is a new proper noun without
+any implied reference to Dolby Laboratories Inc. with whom I have had
+nothing to do except as a longtime user of their excellent products.
+
 I have the original author's blessing for this work
 
 	Martin Guy <martinwguy&#64;gmail.com> March 2025.

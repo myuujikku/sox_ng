@@ -385,13 +385,12 @@ CalibrateCacheFind(dolbyb_t *Param)
   unsigned int SmpSec;
   int FltTyp, UpSamp;
   double SidAmp; int64_t FETSVt;
-    int n;
 
   FILE *fp = fopen(CalibrateCacheFileName(), "r");
   if (fp == NULL) return 0;
   while (fgets(line, sizeof(line), fp) != NULL) {
-    if ((n = sscanf(line, "SmpSec=%u FltTyp=%d UpSamp=%d SidAmp=%lf FETSVt=%lld\n",
-                     &SmpSec, &FltTyp, &UpSamp, &SidAmp, &FETSVt)) == 5) {
+    if (sscanf(line, "SmpSec=%u FltTyp=%d UpSamp=%d SidAmp=%lf FETSVt=%lld\n",
+                     &SmpSec, &FltTyp, &UpSamp, &SidAmp, &FETSVt) == 5) {
       if (SmpSec == Param->SmpSec &&
           FltTyp == Param->FltTyp &&
 	  UpSamp == Param->UpSamp) {
@@ -400,7 +399,7 @@ CalibrateCacheFind(dolbyb_t *Param)
         fclose(fp);
         return 1;
       }
-    } else fprintf(stderr, "sscanf returned %d\n", n);
+    }
   }
   fclose(fp);
   return 0;
