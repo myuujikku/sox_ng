@@ -40,6 +40,12 @@
 #include <sys/stat.h>
 #endif
 
+/* The Linux FD_ISSET() manual says that newer POSIX systems need sys/select.h
+ * but older systems did not. */
+#ifdef HAVE_SYS_SELECT_H
+#include <sys/select.h>
+#endif
+
 #if defined(HAVE_WIN32_GLOB_H)
   #include "win32-glob.h"
   #define HAVE_GLOB_H 1
