@@ -1467,6 +1467,10 @@ static char *fndup_with_count(const char *filename, size_t count)
 
     fn = filename;
 
+#ifndef FILENAME_MAX
+/* Undefined on Sortix */
+# define FILENAME_MAX 4096
+#endif
     efn = expand_fn = lsx_malloc((size_t)FILENAME_MAX);
 
     /* Find extension in case user didn't specify a substitution
