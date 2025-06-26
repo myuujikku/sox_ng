@@ -525,8 +525,8 @@ else
     opus_old_cflags="$CFLAGS"
     # Extra square brackets are required otherwise m4 mangles them
     OPUS_CFLAGS="$(echo $CFLAGS | sed 's|\(-I[[^ ]]*\)|\1 \1/opus|g') -I/usr/local/include/opus -I/usr/include/opus"
-    CFLAGS="$CFLAGS $OPUS_CFLAGS"
 fi
+CFLAGS="$CFLAGS $OPUS_CFLAGS"
 
 AC_OPTIONAL_FORMAT(opus, OPUS, [AC_CHECK_HEADER(opus/opusfile.h,
   [AC_CHECK_LIB(opus, opus_decoder_create, OPUS_LIBS="$OPUS_LIBS -lopus", using_opus=no)
