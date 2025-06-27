@@ -23,6 +23,11 @@
 #include <stddef.h>
 #include <string.h>
 
+/*
+ * Some of these are also included in win32-glob.c because it can't include
+ * "xmalloc.h" for lack of LSX_RETURN_VALID
+ */
+
 LSX_RETURN_VALID void *lsx_malloc(size_t size);
 LSX_RETURN_VALID void *lsx_calloc(size_t n, size_t size);
 LSX_RETURN_VALID void *lsx_realloc_array(void *p, size_t n, size_t size);
