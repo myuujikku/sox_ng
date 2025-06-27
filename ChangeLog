@@ -5,6 +5,19 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
+sox_ng-14.6.0.1-rc1	2025-06-27
+---------------
+
+Bug fixes:
+
+  o Fix compilation on MSYS2/MinGW with GCC 15.1
+  o Fix compilation on MacOS X with older SDKs
+  o Fix opusfile detection when using pkg-config
+  o Fix compilation of libdolbyb
+  o Fix compilation on Sortix
+  o Fix compilation of libdolbyb on AIX 7.3
+
+
 sox_ng-14.6.0	2025-06-17
 -------------
 
