@@ -15,7 +15,7 @@ but you can also make your own.
 Acknowledgements
 ----------------
 
-The sox_ng exectables included in this package makes use of the following projects:
+The sox_ng executables included in this package makes use of the following projects:
 
   SoX - https://codeberg.org/sox_ng
 
@@ -35,29 +35,35 @@ The sox_ng exectables included in this package makes use of the following projec
 
   WavPack - http://www.wavpack.com
 
+  Speex and SpeexDSP - http://www.speex.org
+
+  FFTW3 - http://fftw.org
+
 Enjoy,
 The SoX and SoX Development Teams
 
-Appendix - wget Support
------------------------
+Appendix - wget, curl and ffmpeg Support
+----------------------------------------
 
-SoX can make use of the wget command line utility to load files over
-the internet or listen to shoutcast streams.  It only needs to be
-somewhere in your path to be used by SoX.
+SoX can make use of the wget or curl command line utilities to load files
+over the internet or listen to shoutcast streams. A configure option 
+--with-curl says to prefer curl over wget if both are available.
 
-Please consult wget's homepage for access to source code as well
-as further instructions on configuring and installing.
+For SoX to make use of wget, curl or ffmpeg, they must be located either
+in your PATH or in the same directory that SoX is run from.
+
+Please consult wget's, curl's and ffmpeg's homepages for access to source code
+as well as further instructions on configuring and installing.
 
 http://www.gnu.org/software/wget
+http://curl.se
+http://ffmpeg.org
 
 Appendix - MP3 Support
 ----------------------
 
-SoX contains support for reading and writing MP3 files but does not ship
-with the dylib's that perform decoding and encoding of MP3 data because
-of patent restrictions.  For further details, refer to:
-
-http://en.wikipedia.org/wiki/MP3#Licensing_and_patent_issues
+SoX contains support for reading and writing MP3 files using libmad and LAME
+and using libsndfile (which uses mpg123 and lame)
 
 MP3 support can be enabled by placing Lame encoding library and/or
 MAD decoding library into a standard library search location such
@@ -99,20 +105,19 @@ or set LTDL_LIBRARY_PATH to search path.
 
 These can be compiled yourself, they may turn up on searches of the internet
 or may be included with other AMR applications already installed
-on your system. Try searching for libopencore-amrnb.dylib and
-libopencore-amrwb.dylib.
+on your system.
 
 Obtain the latest amrnb and amrwb source code from
 http://sourceforge.net/projects/opencore-amr
 
-cd opencore-amr-0.1.2
+cd opencore-amr-0.1.6
 ./configure CFLAGS="-arch i386 -m32" LDFALGS="-arch i386"
 make
 sudo make install
 
 If that does not work, then try this:
 
-cd opencore-amr-0.1.2
+cd opencore-amr-0.1.6
 ./build_osx.sh
 
 Appendix - LADSPA Plugins
@@ -126,4 +131,4 @@ of OS X LADSPA plugins.
 http://audacity.sourceforge.net/download/plugins
 
 SoX will search for these plugins based on LADSPA_PATH
-enviornment variable.  See sox.txt for further information.
+enviornment variable.  See sox_ng.txt for further information.

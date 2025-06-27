@@ -11,11 +11,13 @@ wget.exe -- optional external program from "https://www.gnu.org/software/wget"
 	    instead of from local storage
 
 ffmpeg.exe -- optional external program from "ffmpeg.org" used to decode
-              some obscure audio file formats not supported natively
+              dozens of audio (and video!) file formats not supported natively
 
-All were compiled using the M cross environment MXE
+All were compiled using the M Cross Environment MXE
 See http://codeberg.org/sox_ng/sox_ng/wiki/Distro-MXE.md
 and http://mxe.cc
+
+The msvc* directories and CMake files are old and may or may not still work.
 
 sox_ng.1.txt/pdf -- manual for sox_ng
 soxi_ng.1.txt/pdf -- manual for soxi or sox_ng --info
@@ -46,7 +48,7 @@ soxi_ng functionality can be equated using the "--info" option.
 The rough syntax is:
 
 play_ng: sox_ng [input files and options] -d [effects]
-rec_ng: sox_ng -d [output file and options] [effects]
+rec_ng:  sox_ng -d [output file and options] [effects]
 soxi_ng: sox_ng --info [input files and options]
 
 Building SoX_NG.EXE yourself
@@ -70,7 +72,7 @@ git clone https://github.com/mxe/mxe.git
 cd mxe
 
 # Fetch the configuration file for sox_ng
-wget -P src https://codeberg.org/sox_ng/sox_ng/releases/download/sox_ng-14.5.0.1/sox_ng{.mk,-test.c}
+wget -P src https://codeberg.org/sox_ng/sox_ng/releases/download/sox_ng-14.5.0.1/sox_ng.mk
 
 # Build it
 make sox_ng
@@ -113,27 +115,24 @@ SOX_NG.EXE included in this package makes use of the following projects.
 Enjoy,
 The SoX and SoX Development Teams
 
-Appendix - wget and ffmpeg Support
-----------------------------------
+Appendix - wget, curl and ffmpeg Support
+----------------------------------------
 
-The SoX Windows binary can make use of the wget command line utility
-to load files over the internet and of the ffmpeg utility to read
-an extra four dozen audio and video formats.
+The SoX Windows binary can make use of the wget or curl command line utility
+to load files over the internet or listen to shoutcast streams.
+A configure option --with-curl says to prefer curl over wget
+if both are available.
+
+It can also use the ffmpeg utility to read four dozen more audio (and video!)
+formats.
 
 Binary copies of wget and ffmpeg have been included with this package
 for your convenience.
 
-For SoX to make use of wget or ffmpeg, they must be located either
-in your PATH or within the same directory that SoX is run from.
-
-Custom configuration of wget can be made by editing the file wget.ini
+For SoX to make use of wget, curl or ffmpeg, they must be located either
+in your PATH or in the same directory that SoX is run from and
+custom configuration of wget can be made by editing the file wget.ini
 contained in the same directory as wget.exe.
-
-Please consult wget and ffmpeg's homepages for access to source code
-as well as further instructions on configuring them.
-
-http://www.gnu.org/software/wget
-http://ffmpeg.org
 
 Appendix - MP3 and AMR-NB/AMR-WB Support
 ----------------------------------------
