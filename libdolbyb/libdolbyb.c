@@ -29,7 +29,6 @@
 
 #include <stdlib.h>  /* for free() */
 #include <string.h>  /* for memset() */
-#include <stdio.h>   /* we shouldn't but it's only for error messages */
 
 /* Set default values */
 void dolbyb_init(dolbyb_t *Param)
