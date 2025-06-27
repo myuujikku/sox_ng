@@ -22,6 +22,17 @@
 #include <CoreAudio/CoreAudio.h>
 #include <pthread.h>
 
+/*
+ * Portability garply to use deprecated name on systems without its new alias
+ */
+#if __MAC_OS_X_VERSION_MIN_REQUIRED >= 120000 || __IPHONE_OS_VERSION_MIN_REQUIRED >= 150000 || __WATCH_OS_VERSION_MIN_REQUIRED >= 80000 || __TV_OS_VERSION_MIN_REQUIRED >= 150000
+  /* Use the new constant on newer OS versions */
+# define kAudioObjectPropertyElementMaster kAudioObjectPropertyElementMain
+#else
+  /* Use the deprecated constant on older OS versions */
+# define kAudioObjectPropertyElementMain kAudioObjectPropertyElementMaster
+#endif
+
 #define Buffactor 4
 
 typedef struct {
