@@ -118,7 +118,7 @@ libsox_ng_la_LIBADD += @GOMP_LIBS@
 
 libsox_ng_la_CFLAGS = @WARN_CFLAGS@
 libsox_ng_la_LDFLAGS = @APP_LDFLAGS@ -version-info @SHLIB_VERSION@ \
-  -export-symbols-regex '^(sox_.*|create_lpc10_(en|de)coder_state|lpc10_(en|de)code|lsx_(adjust_softvol|gsm_(create|destroy|encode|decode)|([cm]|re)alloc.*|check_read_params|(close|open)_dllibrary|(debug(_more|_most)?|fail|report|warn)_impl|eof|error|fail_errno|filelength|find_(enum_(text|value)|file_extension)|flush|clearerr|getopt(_init)?|id3(_read_tag|tagmap)|raw(read|write)|read(_b_buf|buf|chars)|unreadbuf|realloc|rewind|seeki|sigfigs3p?|sscanf|strcasecmp|strncasecmp|strdup|tell|unreadb|write(b|_b_buf|buf|s)))$$'
+  -export-symbols-regex '^(sox_.*|create_lpc10_(en|de)coder_state|lpc10_(en|de)code|lsx_(adjust_softvol|gsm_(create|destroy|encode|decode)|([cm]|re)alloc.*|check_read_params|(close|open)_dllibrary|(debug(_more|_most)?|fail|report|warn)_impl|eof|error|fail_errno|filelength|find_(enum_(text|value)|file_extension)|flush|clearerr|getopt(_init)?|id3(_read_tag|tagmap)|raw(read|write)|read(_b_buf|buf|chars)|unreadbuf|realloc|realloc_array|rewind|seeki|sigfigs3p?|sscanf|strcasecmp|strncasecmp|strdup|tell|unreadb|write(b|_b_buf|buf|s)))$$'
 
 if HAVE_WIN32_LTDL
   libsox_ng_la_SOURCES += win32-ltdl.c win32-ltdl.h

@@ -19,8 +19,9 @@
 #include <errno.h>
 #define WIN32_LEAN_AND_MEAN 1
 #include <windows.h>
-#include <stdlib.h>	/* for malloc() */
 
+extern void *lsx_malloc(size_t size);
+extern void *lsx_realloc_array(void *p, size_t n, size_t size);
 #define lsx_valloc(v,n)  v = lsx_realloc_array(NULL, (n), sizeof(*(v)))
 
 typedef struct file_entry
@@ -43,11 +44,7 @@ insert(
     file_entry** phead)
 {
     int len;
-    file_entry* cur = malloc(sizeof(file_entry));
-    if (!cur)
-    {
-        return ENOMEM;
-    }
+    file_entry* cur = lsx_malloc(sizeof(file_entry));
 
     len = _snprintf(cur->name, MAX_PATH, "%s%s", path, name);
     cur->name[MAX_PATH - 1] = 0;
@@ -123,19 +120,11 @@ glob(
     if (err == 0)
     {
         lsx_valloc(pglob->gl_pathv, entries + 1);
-        if (pglob->gl_pathv)
-        {
-            pglob->gl_pathc = entries;
-            pglob->gl_pathv[entries] = NULL;
-            for (; head; head = head->next, entries--)
-                pglob->gl_pathv[entries - 1] = (char*)head;
-            qsort(pglob->gl_pathv, pglob->gl_pathc, sizeof(char*), entry_comparer);
-        }
-        else
-        {
-            pglob->gl_pathc = 0;
-            err = ENOMEM;
-        }
+        pglob->gl_pathc = entries;
+        pglob->gl_pathv[entries] = NULL;
+        for (; head; head = head->next, entries--)
+            pglob->gl_pathv[entries - 1] = (char*)head;
+        qsort(pglob->gl_pathv, pglob->gl_pathc, sizeof(char*), entry_comparer);
     }
     else if (pglob)
     {
