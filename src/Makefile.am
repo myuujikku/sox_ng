@@ -271,4 +271,4 @@ installcheck: sox_sample_test
 		--srcdir=${srcdir}
 
 check-am: sox_sample_test
-	sh tests.sh
+	sh $(srcdir)/tests.sh
