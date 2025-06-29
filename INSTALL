@@ -66,6 +66,18 @@ on some systems, the following modification to the command is needed:
 
 	sudo make install
 
+If on saying `sox_ng` you get:
+
+    sox_ng: error while loading shared libraries:
+    libsox_ng.so.3: cannot open shared object file: No such file or directory
+
+You probably need to
+
+	sudo ldconfig
+
+so that the fast shared library index is updated.
+It will also be OK after a reboot.
+
 To run a selection of tests on the installed sox_ng executable:
 
 	make installcheck
