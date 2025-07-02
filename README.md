@@ -91,6 +91,7 @@ To enable all of SoX's optional modules you can install
 `ladspa-sdk`
 `lame`,
 `libao`,
+`libfftw3`,
 `libflac`,
 `libid3tag`,
 `libmad`
@@ -108,7 +109,7 @@ To enable all of SoX's optional modules you can install
 
 ### Debian, Ubuntu, Mint etc.
 ```
-apt install gcc make libtool ladspa-sdk libao-dev libasound2-dev \
+apt install gcc make libtool ladspa-sdk libao-dev libasound2-dev libfftw3-dev \
 	libgsm1-dev libid3tag0-dev libltdl-dev libmad0-dev libmagic-dev \
 	libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev \
 	libopusfile-dev libpng-dev libpulse-dev libsamplerate0-dev \
@@ -122,7 +123,8 @@ apt-get install jq libtext-multimarkdown-perl
 
 ### Fedora, Red Hat, CentOS etc.
 ```
-yum install gcc make libtool alsa-lib-devel file-devel flac-devel gsm-devel \
+yum install gcc make libtool \
+	alsa-lib-devel fftw-devel file-devel flac-devel gsm-devel \
 	ladspa-devel lame-devel libao-devel libcaca-devel libid3tag-devel \
 	libmad-devel libpng-devel libsamplerate-devel libsndfile-devel \
 	libtool-ltdl-devel libvorbis-devel opencore-amr-devel \
