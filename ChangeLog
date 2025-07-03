@@ -5,7 +5,16 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
-sox_ng-14.6.0.1-rc1	2025-06-27
+sox_ng-14.6.0.2	2025-07-03
+---------------
+
+Bug fixes:
+
+  o Fix use of lsx_valloc() in win32-unicode.c on MSYS2/MingW
+  o Don't include test/samples in the distro tarball
+
+
+sox_ng-14.6.0.1	2025-06-27
 ---------------
 
 Bug fixes:
