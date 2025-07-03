@@ -31,7 +31,7 @@
 ..
 .TH SoX 3 "August 11, 2024" "libsox_ng" "Sound eXchange_ng"
 .SH NAME
-libsox_ng, another audio file-format and effect library
+libsox_ng, another audio file format and effect library
 .SH SYNOPSIS
 .B #include <sox_ng.h>
 .na
@@ -202,7 +202,7 @@ If \fIencoding\fR is not NULL it specifies the sample encoding.
 Both \fIsignal\fR and \fIencoding\fR are normally only needed for
 headerless audio files where that information is not stored in the file.
 If \fIfiletype\fR is not NULL, it specifies the file type as
-the short strings listed in \fBsoxformats(7)\fR;
+the short strings listed in \fBsoxformat_ng(7)\fR;
 otherwise, the file's type is guessed from the filename extension
 and/or the file's contents.
 .SP
@@ -260,7 +260,7 @@ anything might happen.
 It returns the number of samples read,
 which may be less tha the number requested,
 or zero at the end of the file or if an error occurred.
-\fBsox_read()\fR's return value does not distiguish between
+\fBsox_read()\fR's return value does not distinguish between
 the end of a file and an error
 but you can inspect \fBformat->sox_errno\fR to tell the difference.
 It should be \fBSOX_SUCCESS\fR or \fBSOX_EOF\fR unless some other error
@@ -287,7 +287,7 @@ depending on the function.
 to the file described by \fIformat\fR and
 the 32-bit signed data in \fIbuf\fR are converted according to the format.
 The value of \fIlen\fR is the total samples and must be
-divisable by the number of channels, otherwise unexpected things will occur.
+divisible by the number of channels, otherwise unexpected things will occur.
 It returns the actual number of samples encoded, zero if an error occurred.
 .TP
 .nh
@@ -458,7 +458,7 @@ and cast the array to that structure.
 See \fBvoc.c\fR for an example of the use of a private data area.  
 \fBvoc.c\fR has to track the number of samples it 
 writes and, when finishing, seek back to the beginning of the file
-and write it nto the header.
+and write it into the header.
 The private area is usually not very large and some effects,
 such as \fBecho\fR, \fBlsx_malloc()\fR larger areas for delay lines and such.
 .P
