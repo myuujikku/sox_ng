@@ -208,7 +208,7 @@ By default, SoX copies comments from the first input file
 to output files that support comments, so output files may contain
 Replay Gain information which is incorrect.
 This can be fixed, when converting input files
-with \fB\-\-replaygain\fR enabled, by removing all comments using
+with \fB\-\-replay\-gain\fR enabled, by removing all comments using
 \fB\-\-comment\ \(dq\(dq\fR or removing just the REPLAYGAIN comment
 with
 .XE
@@ -335,7 +335,7 @@ losses in audio fidelity.  E.g. with
    sox_ng long.mp3 short.mp3 trim 10
 .XX
 SoX first decompresses the input MP3 file, then applies the \fBtrim\fR
-effect and finally creates the output MP3 file by re-compressing the
+effect and finally creates the output MP3 file by recompressing the
 audio with a possible reduction in fidelity above that which
 occurred when the input file was created.
 Hence, if what is ultimately desired is lossily compressed audio, it is
@@ -890,7 +890,7 @@ invocations with the same inputs and the same parameters yield the
 same output.
 .TP
 \fB\-\-replay\-gain track\fR\^|\^\fBalbum\fR\^|\^\fBoff\fR
-Select whether or not to apply replay-gain adjustment to input files.
+Select whether or not to apply replay gain adjustment to input files.
 The default is
 .B off
 for
@@ -1226,7 +1226,7 @@ for a list of supported file types.
 .if n .sp -1
 .TP
 \ 
-These options specify whether the byte-order of the audio data is,
+These options specify whether the byte order of the audio data is,
 respectively, `little endian', `big endian' or the opposite to that of
 the system on which SoX is being used.  Endianness applies only to data
 encoded as floating point or as signed or unsigned integers of 16 or
@@ -1625,7 +1625,7 @@ equivalent:
 though the second form is more flexible as it allows the effects to
 be ordered arbitrarily.
 .SP
-For example, when making a stereo file quadrophonic,
+For example, when making a stereo file quadraphonic,
 the left and right channels are copied into the third and fourth and
 when mixing a four-channel file down to stereo, the left channel is
 the mix of the first and third and the right of the second and fourth.
@@ -1801,7 +1801,7 @@ and
 .B mcompand
 effects.
 .TP
-\fBdcshift \fIshift\fR [\fIlimitergain\fR]
+\fBdcshift \fIshift\fR [\fIlimiter\-gain\fR]
 Apply a DC shift to the audio.  This can be useful to remove a DC
 offset (caused perhaps by a hardware problem in the recording chain)
 from the audio.  The effect of a DC offset is reduced headroom and
@@ -1817,7 +1817,7 @@ of \(+-2 that indicates the amount to shift the audio (which is in the
 range of \(+-1).
 .SP
 An optional
-.I limitergain
+.I limiter\-gain
 can be specified as well.  It should have a value much less than 1
 (e.g. 0\*d05 or 0\*d02) and is used only on peaks to prevent clipping.
 .SP
@@ -1963,7 +1963,7 @@ Downsample the signal by an integer factor: Only the first of
 each \fIfactor\fR samples is retained, the others are discarded.
 .SP
 No decimation filter is applied.  If the input is not a properly
-bandlimited baseband signal, aliasing will occur.  This may be
+band-limited baseband signal, aliasing will occur.  This may be
 desirable, e.g., for frequency translation.
 .SP
 For a general resampling effect with antialiasing, see \fBrate\fR.
@@ -1971,7 +1971,7 @@ See \fBupsample\fR.
 .TP
 \fBearwax\fR
 This effect takes a 44.1kHz stereo signal and adds audio cues that,
-when listened to on headphones, move the soundstage from inside your head
+when listened to on headphones, move the sound stage from inside your head
 to outside and in front of you, as if listening to loudspeakers.
 .TP
 \fBecho \fIgain-in gain-out\fR <\fIdelay decay\fR>
@@ -3082,7 +3082,7 @@ For example, the invocations
 create a high-pass, low-pass, band-pass and band-reject filter
 respectively.
 .SP
-The default stop-band attenuation of 120dB can be overridden with
+The default stop band attenuation of 120dB can be overridden with
 \fB\-a\fR; alternatively, the kaiser window's `beta' parameter can be
 given directly with \fB\-b\fR.
 .SP
@@ -3281,7 +3281,7 @@ helping to discern artefacts at the spectrogram edges.
 .IP \fB\-r\fR
 Raw spectrogram: suppress the display of axes and legends.
 .IP \fB\-A\fR
-Selects an alternative, fixed color-set.  This is provided only for
+Selects an alternative, fixed color set. This is provided only for
 compatibility with spectrograms produced by another package.  It should
 not normally be used as it has some problems, not least, a lack of
 differentiation at the bottom end which results in masking of low-level
@@ -3786,7 +3786,7 @@ determines the change in length: >1 lengthens and <1 shortens.
 By default, it is 1 (no change)
 .SP
 .I window
-is the length of the crossfading window in milliseconds with a default of 20.
+is the length of the cross-fading window in milliseconds with a default of 20.
 .SP
 The
 .I fade
@@ -3961,7 +3961,7 @@ to prevent clipping, so for noise in the range 0 to 1, an offset of 0.5.
 \fBnoise\fR is a handy alias for \fBwhitenoise\fR
 .TP
 .B tpdfnoise
-Noise with a Triangular Probability Densitity Function.
+Noise with a Triangular Probability Density Function.
 .TP
 .B pinknoise
 Random noise with the power at each frequency inversely proportional to the frequency.
@@ -3970,7 +3970,7 @@ Random noise with the power at each frequency inversely proportional to the freq
 Random noise with the power at each frequency inversely proportional to the frequency squared.
 .TP
 .B pluck
-A plucked-string simulation in which an array of sample values
+A plucked string simulation in which an array of sample values
 representing a taut string
 is set in motion with a burst of noise and decayed over time.
 .SP
@@ -4038,7 +4038,7 @@ Exponential: as `/', but the initial phase is always zero, and with stepped
 \ 
 The frequency or frequency range is not used for the noise types.
 .SP
-\fIoffset\fR is the bias (DC-offset) of the signal in percent; default=0.
+\fIoffset\fR is the bias (DC offset) of the signal in percent; default=0.
 .SP
 \fIphase\fR is the phase shift as a percentage of 1 cycle with a default of 0
 (not used for noise).
@@ -4061,7 +4061,7 @@ to create a more complex waveform:
 .ne 2
    play_ng \-n synth 0.5 sine 200\-500 synth 0.5 sine fmod 700\-100
 .XX
-The following could be used to help tune a guiter:
+The following could be used to help tune a guitar:
 .XE
 .ne 2
    for n in E2 A2 D3 G3 B3 E4; do
@@ -4175,7 +4175,7 @@ both play from 12 minutes 34 seconds into the audio up to 15 minutes in
 minutes before the end.
 .TP
 \fBupsample\fR [\fIfactor\fR]
-Upsample the signal by an integer factor: \fIfactor\fR\-1 zero-value
+Upsample the signal by an integer factor: \fIfactor\fR\-1 zero-valued
 samples are inserted between each pair of input samples.  As a result,
 the original spectrum is replicated into the new frequency space and
 attenuated.  This attenuation can be compensated for by adding
@@ -4279,7 +4279,7 @@ See the
 .B silence
 effect.
 .TP
-\fBvol \fIgain\fR [\fItype\fR [\fIlimitergain\fR]]
+\fBvol \fIgain\fR [\fItype\fR [\fIlimiter\-gain\fR]]
 Apply amplification or attenuation to the audio signal.
 Unlike
 .BR \-v ,
@@ -4333,7 +4333,7 @@ and the
 parameters can be concatenated if desired, e.g.
 .BR "vol 10dB" .
 .SP
-An optional \fIlimitergain\fR value can be specified and should be a
+An optional \fIlimiter\-gain\fR value can be specified and should be a
 value much less
 than 1 (e.g. 0\*d05 or 0\*d02) and is used only on peaks to prevent clipping.
 Not specifying this parameter causes no limiter to be used.  In verbose
