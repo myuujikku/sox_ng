@@ -85,13 +85,14 @@ glob(
         return EINVAL;
     }
 
-    path[MAX_PATH - 1] = 0;
-    strncpy(path, pattern, MAX_PATH);
-    if (path[MAX_PATH - 1] != 0)
+    /* The terminating nul is included in the MAX_PATH (260) characters */
+    if (strlen(pattern) > MAX_PATH - 1)
     {
         errno = ENAMETOOLONG;
         return ENAMETOOLONG;
     }
+    strncpy(path, pattern, MAX_PATH - 1);
+    path[MAX_PATH - 1] = '\0';
 
     len = strlen(path);
     while (len > 0 && path[len - 1] != '/' && path[len - 1] != '\\')
