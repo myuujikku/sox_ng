@@ -17,7 +17,8 @@
 
 #include "sox_i.h"
 
-static char const magic[2][4] = {".SoX", "XoS."};
+static char const magic[2][4] = { { '.', 'S', 'o', 'X' },
+                                  { 'X', 'o', 'S', '.' } };
 #define FIXED_HDR     (4 + 8 + 8 + 4 + 4) /* Without magic */
 
 static int startread(sox_format_t * ft)
