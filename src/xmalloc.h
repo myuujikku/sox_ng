@@ -29,8 +29,8 @@
 #endif
 
 /*
- * Some of these are also included in win32-glob.c because it can't include
- * "xmalloc.h" for lack of LSX_RETURN_VALID
+ * Some of these are also included in win32-glob.c and win32-unicode.c
+ * because they can't include "xmalloc.h" for lack of LSX_RETURN_VALID
  */
 
 LSX_RETURN_VALID void *lsx_malloc(size_t size);
