@@ -34,6 +34,7 @@
 #include <windows.h>
 #include <io.h>
 
+extern void *lsx_realloc_array(void *p, size_t n, size_t size);
 #define lsx_valloc(v,n)  v = lsx_realloc_array(NULL, (n), sizeof(*(v)))
 
 static UINT g_old_output_cp = ((UINT)-1);
