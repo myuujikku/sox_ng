@@ -118,7 +118,7 @@ or the 8SVX musical instrument description format.
 AIFF files are multimedia archives and
 can have multiple audio and picture chunks\*m
 you may need a separate archiver to work with them.
-With Mac OS X, AIFF has been superseded by CAF.
+On MacOS X, AIFF has been superceded by CAF.
 .TP
 \&\fB.aiffc\fR, \fB.aifc\fR (also with \fB\-t sndfile\fR)
 AIFF-C is a format based on AIFF that was created to allow
@@ -288,12 +288,10 @@ Subsequent lines contain two or more numeric data intems:
 the time since the beginning of the first sample and the sample value
 for each channel.
 .SP
-Values are normalized so that the maximum and minimum
-are 1 and \-1.  This file format can be used to
-create data files for external programs such as
-FFT analysers or graph routines.  SoX can also convert
-a file in this format back into one of the other file
-formats.
+Values are normalized so the maximum and minimum are 1 and \-1.
+This file format can be used to create data files for external programs
+such as FFT analyzers or graph routines.  SoX can also convert
+a file in this format back into one of the other formats.
 .SP
 Example containing only 2 stereo samples of silence:
 .SP
@@ -313,12 +311,11 @@ A self-describing variant of
 See
 .BR .paf .
 .TP
-\&\fB.flac\fR (optional; also with \fB\-t sndfile\fR)
-Xiph.org's Free Lossless Audio CODEC compressed audio.
-FLAC is an open, patent-free CODEC designed for compressing
-music.  It is similar to MP3 and Ogg Vorbis, but lossless,
-meaning that audio is compressed in FLAC without any loss in
-quality.
+\fB.flac\fR (optional; also with \fB\-t sndfile\fR or \fB\-t ffmpeg\fB)
+Xiph.org's Free Lossless Audio Codec compressed audio.
+FLAC is an open, patent-free codec designed for compressing
+music.  It is similar to MP3 and Ogg Vorbis but lossless,
+so the audio is compressed without any loss in quality.
 .SP
 SoX can read native FLAC files (.flac) but not Ogg FLAC files (.ogg).
 [But see
@@ -363,7 +360,7 @@ It is rather CPU intensive.
 Macintosh HCOM files.
 These are Mac FSSD files with Huffman compression.
 .TP
-.B .htk
+.B .htk (also with \fB\-t sndfile\fR)
 Single channel 16-bit PCM format used by HTK,
 a toolkit for building Hidden Markov Model speech processing tools.
 .TP
@@ -392,10 +389,10 @@ SoX can read, but not write this file format.
 See [1] for details of this format.
 .TP
 .B .maud
-An IFF-conforming audio file type, registered by
-MS MacroSystem Computer GmbH, published along
-with the `Toccata' sound-card on the Amiga.
-Allows 8bit linear, 16bit linear, A-Law, \(*m-law
+An IFF-conforming audio file type registered by
+MS MacroSystem Computer GmbH and published along
+with the `Toccata' sound card on the Amiga
+allows 8bit linear, 16bit linear, A-Law and \(*m-law
 in mono and stereo.
 .TP
 \&\fB.mp3\fR, \fB.mp2\fR (optional read, optional write)
