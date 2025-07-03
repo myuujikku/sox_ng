@@ -53,37 +53,13 @@ play_ng: sox_ng [input files and options] -d [effects]
 rec_ng: sox_ng -d [output file and options] [effects]
 soxi_ng: sox_ng --info [input files and options]
 
-Building SoX_NG.EXE yourself
-----------------------------
-
-The sox_ng Windows executable is cross-compiled using MXE (http://mxe.cc)
-and it's dead easy.
-
-# Install the things it needs
-sudo apt-get install \
-    autoconf automake autopoint bash bison bzip2 flex g++ g++-multilib \
-    gettext git gperf intltool libc6-dev-i386 libgdk-pixbuf2.0-dev \
-    libltdl-dev libgl-dev libpcre3-dev libssl-dev libtool-bin \
-    libxml-parser-perl lzip make openssl p7zip-full patch perl python3 \
-    python3-distutils python3-mako python3-packaging python3-pkg-resources \
-    python3-setuptools python-is-python3 ruby sed sqlite3 unzip wget xz-utils
-# For other Unix distros, see https://mxe.cc#Requirements
-
-# Get a copy of MXE
-git clone https://github.com/mxe/mxe.git
-cd mxe
-
-# Fetch the configuration file for sox_ng
-wget -P src https://codeberg.org/sox_ng/sox_ng/releases/download/sox_ng-14.5.0.1/sox_ng{.mk,-test.c}
-
-# Build it
-make sox_ng
-
-# Build the additional packages it can use
-make wget ffmpeg
-
-# Make the distribution zip file
-zip -j sox_ng-win32.zip usr/i686-w64-mingw32.static/bin/{sox_ng,wget,ffmpeg}.exe
+Finding the audio device
+------------------------
+On most Windows systems you still have to
+```
+   set AUDIODRIVER=waveaudio
+```
+to gain access to the sound card.
 
 Acknowledgements
 ----------------
