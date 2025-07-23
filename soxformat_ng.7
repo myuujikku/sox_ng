@@ -711,6 +711,10 @@ read by SoX by overriding the file type, e.g.
 .EX
    play \-t mp3 mp3\-encoded.wav
 .EE
+.SP
+Natively, SoX can only read WAV files with a bit-depth of 8, 16, 24 or 32;
+files with other bit-depths can be read by preceding them with \f(CW\-t\ sndfile\fR.
+.SP
 Big endian versions of RIFF files, called RIFX, are also supported.
 To write a RIFX file, use the
 .B \-B
