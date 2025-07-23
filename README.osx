@@ -1,5 +1,5 @@
 SoX
-------
+---
 
 This file contains information specific to the MacOS X version of SoX.
 Please refer to the README file for general information.
@@ -11,6 +11,19 @@ If the sox_ng executable is invoked with an executable name of soxi_ng, play_ng,
 or rec_ng it will perform the functions of those applications as defined
 in included documents.  Symlinks are included with this package
 but you can also make your own.
+
+Installation
+------------
+
+You can install sox_ng using Homebrew:
+
+    brew install sox_ng
+
+or you can compile it yourself from a release tarball::
+
+    ./configure
+    make
+    sudo make install
 
 Acknowledgements
 ----------------
