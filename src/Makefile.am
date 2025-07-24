@@ -201,9 +201,15 @@ install-exec-hook:
 			$(LN_S) soxi_ng$(EXEEXT) soxi$(EXEEXT); \
 		fi; \
 		cd $(DESTDIR)$(libdir); \
-		$(RM) libsox.a; $(LN_S) libsox_ng.a libsox.a; \
-		$(RM) libsox.la; $(LN_S) libsox_ng.la libsox.la; \
-		$(RM) libsox.so; $(LN_S) libsox_ng.so libsox.so; \
+		if test -f libsox_ng.a; then \
+			$(RM) libsox.a; $(LN_S) libsox_ng.a libsox.a; \
+		fi; \
+		if test -f libsox_ng.la; then \
+			$(RM) libsox.la; $(LN_S) libsox_ng.la libsox.la; \
+		fi; \
+		if test -f libsox_ng.so; then \
+			$(RM) libsox.so; $(LN_S) libsox_ng.so libsox.so; \
+		fi; \
 	fi
 
 install-data-hook:
