@@ -153,6 +153,10 @@ install-data-hook:
 			cd $(DESTDIR)$(mandir)/man1 && $(RM) soxi.1 && \
 			    $(LN_S) soxi_ng.1 soxi.1; \
 		fi; \
+		if test "$(pkgconfigdir)"; then \
+			cd $(DESTDIR)$(pkgconfigdir); \
+			$(RM) "sox.pc"; $(LN_S) sox_ng.pc sox.pc; \
+		fi; \
 	fi
 
 uninstall-hook:
@@ -172,6 +176,10 @@ uninstall-hook:
 		fi; \
 		if test "$(SYMLINKS)" = "yes"; then \
 			$(RM) $(DESTDIR)$(mandir)/man1/soxi.1; \
+		fi; \
+		if test "$(pkgconfigdir)"; then \
+			cd $(DESTDIR)$(pkgconfigdir); \
+			$(RM) "sox.pc"; \
 		fi; \
 	fi
 
