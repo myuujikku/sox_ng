@@ -5,6 +5,13 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
+sox_ng-14.6.0.3	2025-07-28
+---------------
+
+Bug fixes:
+  o Really don't include test/samples in the distro tarball
+
+
 sox_ng-14.6.0.2	2025-07-03
 ---------------
 
