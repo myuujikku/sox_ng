@@ -1428,15 +1428,15 @@ static int wavwritehdr(sox_format_t * ft, int second_header)
 
     /* fact chunk (not PCM) */
     uint32_t dwFactSize=4;        /* length of the fact chunk */
-    uint32_t dwSamplesWritten=0;  /* windows doesnt seem to use this*/
+    uint64_t dwSamplesWritten=0;  /* windows doesnt seem to use this*/
 
     /* data chunk */
-    uint32_t  dwDataLength; /* length of sound data in bytes */
+    uint64_t  dwDataLength; /* length of sound data in bytes */
     /* end of variables written to header */
 
     /* internal variables, intermediate values etc */
     int bytespersample; /* (uncompressed) bytes per sample (per channel) */
-    long blocksWritten = 0;
+    uint64_t blocksWritten = 0;
     sox_bool isExtensible = sox_false;    /* WAVE_FORMAT_EXTENSIBLE? */
 
     if (ft->signal.channels > UINT16_MAX) {
@@ -1522,8 +1522,7 @@ static int wavwritehdr(sox_format_t * ft, int second_header)
      * hint then write default value.  Also, use default value even
      * on header update if more then 32-bit length needs to be written.
      */
-    if ((!second_header && !ft->signal.length) || 
-        wav->numSamples > 0xffffffff) { 
+    if (!second_header && !ft->signal.length) {
         /* adjust for blockAlign */
         blocksWritten = MS_UNSPEC/wBlockAlign;
         dwDataLength = blocksWritten * wBlockAlign;
@@ -1636,16 +1635,27 @@ static int wavwritehdr(sox_format_t * ft, int second_header)
         break;
     }
 
+    /* WAV files can't speciy lengths more than 4G samples or 4GB of data:
+     * warn and write UNSPEC instead of creating files of a random size. */
+    if (dwSamplesWritten > 0xffffffff) {
+        lsx_warn("length exceeds 4G samples: file may read truncated");
+	dwSamplesWritten = MS_UNSPEC;
+    }
+    if (dwDataLength > 0xffffffff) {
+        lsx_warn("length exceeds 4GB of data: file may read truncated");
+	dwDataLength = MS_UNSPEC;
+    }
+
     /* if not PCM, write the 'fact' chunk */
     if (isExtensible || wFormatTag != WAVE_FORMAT_PCM){
         if (lsx_writes(ft, "fact") ||
             lsx_writedw(ft,dwFactSize) ||
-            lsx_writedw(ft,dwSamplesWritten))
+            lsx_writedw(ft,(uint32_t)dwSamplesWritten))
 	        write_error();
     }
 
     if (lsx_writes(ft, "data") ||
-        lsx_writedw(ft, dwDataLength))               /* data chunk size */
+        lsx_writedw(ft, (uint32_t)dwDataLength))     /* data chunk size */
 	    write_error();
 
     if (!second_header) {
@@ -1656,13 +1666,13 @@ static int wavwritehdr(sox_format_t * ft, int second_header)
                 dwAvgBytesPerSec, wBlockAlign, wBitsPerSample);
     } else {
         lsx_debug("Finished writing Wave file, %u data bytes %lu samples",
-                dwDataLength, (unsigned long)wav->numSamples);
+                (uint32_t)dwDataLength, (unsigned long)wav->numSamples);
         if (wFormatTag == WAVE_FORMAT_GSM610){
-            lsx_debug("GSM6.10 format: %li blocks %u padded samples %u padded data bytes",
-                    blocksWritten, dwSamplesWritten, dwDataLength);
+            lsx_debug("GSM6.10 format: %u blocks %u padded samples %u padded data bytes",
+                    (uint32_t)blocksWritten, (uint32_t)dwSamplesWritten, (uint32_t)dwDataLength);
             if (wav->gsmbytecount != dwDataLength)
                 lsx_warn("help ! internal inconsistency - data_written %u gsmbytecount %lu",
-                        dwDataLength, (unsigned long)wav->gsmbytecount);
+                        (uint32_t)dwDataLength, (unsigned long)wav->gsmbytecount);
 
         }
     }
