@@ -9,4 +9,5 @@ check-am:
 	sox=../../src/sox_ng sh $(srcdir)/check.sh -n
 
 dist-hook:
+	$(RM) -f samples samples.o
 	$(RM) -rf $(distdir)/.deps
