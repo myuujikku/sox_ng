@@ -253,9 +253,7 @@ AC_CHECK_FUNCS(posix_fadvise)
 dnl Check if math library is needed.
 AC_SEARCH_LIBS([pow], [m])
 AC_SEARCH_LIBS([lrint], [m])
-AC_SEARCH_LIBS([va_copy])
 AC_CHECK_FUNCS([lrint])
-AC_CHECK_FUNCS([va_copy])
 
 dnl Large File Support
 AC_SYS_LARGEFILE
