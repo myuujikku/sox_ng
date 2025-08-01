@@ -1,0 +1,16 @@
+#! /bin/sh
+
+# https://sourceforge.net/p/sox/bugs/305:
+# Sox blocking in an infinite loop when decoding AMR files
+
+rm -f core a.amr a.wav
+
+printf '#!AMR\n\x60' > a.amr
+ulimit -t 5
+${sox:-sox} a.amr a.wav
+
+status=$?
+
+rm -f core a.amr a.wav
+
+exit $status
