@@ -5,6 +5,13 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
+sox_ng-14.6.0.4	2025-08-06
+---------------
+
+Bug fixes:
+  o Make ogg output work again, broken in 14.6.0
+
+
 sox_ng-14.6.0.3	2025-07-28
 ---------------
 
