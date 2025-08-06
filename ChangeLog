@@ -4,12 +4,21 @@ Change History
 This file contains a list of all changes since the release of sox-11gamma.
 
 
+sox_ng-14.5.1.2	2025-08-06
+---------------
+
+Bug fixes:
+
+  o Make ogg output work again, broken in 14.5.1
+
+
 sox_ng-14.5.1.1	2025-04-08
 ---------------
 
 Bug fixes:
-o chorus: Fix segmentation fault caused by 'Raise limit on number of stages'
-o chorus: FIx double free when processing multiple channels
+
+  o chorus: Fix segmentation fault caused by 'Raise limit on number of stages'
+  o chorus: FIx double free when processing multiple channels
 
 sox_ng-14.5.1	2025-03-03
 -------------
