@@ -407,6 +407,10 @@ must currently compile and build SoX with the MP3 libraries (LAME & MAD)
 from source code, or, in some cases, obtain pre-built dynamically loadable
 libraries.
 .SP
+\fBlibmad\fR, which SoX uses to decode \fB.mp2\fR files, does not work on files
+with a bit-rate higher than 192K and decoding them with \fB\-t\ sndfile\fR is broken
+but you can read them with \fB\-t ffmpeg\fR.
+.SP
 When reading MP3 files, up to 28 bits of precision is stored although
 only 16 bits is reported to user.  This is to allow default behavior
 of writing 16 bit output files.  A user can specify a higher precision
