@@ -21,9 +21,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-/* For S_IFDIR and S_IFMT in C89 you need to */
-/* #define _XOPEN_SOURCE 500 */
-
 #include "soxconfig.h"
 #include "sox_ng.h"
 #include "util.h"
@@ -35,6 +32,10 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <time.h>
+
+#ifdef HAVE_FCNTL_H
+#include <fcntl.h>
+#endif
 
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
@@ -257,8 +258,7 @@ static void cleanup(void)
     if (ofile->ft) {
       if (!success && ofile->ft->io_type == lsx_io_file) {   /* If we failed part way through */
         struct stat st;                  /* writing a normal file, remove it. */
-        if (!lsx_stat(ofile->ft->filename, &st) &&
-            (st.st_mode & S_IFMT) == S_IFREG)
+        if (!lsx_stat(ofile->ft->filename, &st) && S_ISREG(st.st_mode))
           lsx_unlink(ofile->ft->filename);
       }
       sox_close(ofile->ft); /* Assume we can unlink a file before closing it. */
