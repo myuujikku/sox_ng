@@ -33,6 +33,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+
+#ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <time.h>
@@ -249,8 +252,7 @@ static void cleanup(void)
     if (ofile->ft) {
       if (!success && ofile->ft->io_type == lsx_io_file) {   /* If we failed part way through */
         struct stat st;                  /* writing a normal file, remove it. */
-        if (!stat(ofile->ft->filename, &st) &&
-            (st.st_mode & S_IFMT) == S_IFREG)
+        if (!stat(ofile->ft->filename, &st) && S_ISREG(st.st_mode))
           unlink(ofile->ft->filename);
       }
       sox_close(ofile->ft); /* Assume we can unlink a file before closing it. */
