@@ -49,7 +49,7 @@ the external program \fBffmpeg\fR are marked `(with ffmpeg)'
 .SP
 Formats for which SoX has internal drivers but that are also supported
 by \fBsndfile\fR or \fBffmpeg\fR are marked
-(also with \fB-t sndfile\fR) or (also with \fB-t ffmpeg\fR).
+(also with \fB\-t sndfile\fR) or (also with \fB\-t ffmpeg\fR).
 This might be
 useful if you have a file that doesn't work with SoX's built-in
 readers and writers.
@@ -168,7 +168,7 @@ See http://www.ambisonia.com/Members/mleese/file-format-for-b-format for
 details.  It is up to you to get the channels together in the right
 order and at the correct amplitude.
 .TP
-\fB.amr\-nb\fR, \fB.amr\-wb\fR (both optional)
+\fB.amr\-nb\fR, \fB.amr\-wb\fR (both optional, also with \fB\-t ffmpeg\fR)
 Adaptive Multi Rate Narrow and Wide Band are lossy formats for speech
 used in 3rd generation mobile telephony and defined in 3GPP TS\ 26.071
 and TS\ 26.171
@@ -260,7 +260,7 @@ options, in which case SoX will issue a warning about the mismatch.
 \fB.avi\fR (with ffmpeg)
 Audio Video Interleaved format.
 .TP
-.B .avr
+\fB.avr\fR (also with \fB\-t ffmpeg\fR)
 Audio Visual Research format,
 used by a number of commercial packages on the Mac.
 .TP
@@ -417,7 +417,7 @@ writing only A-Law and \(*m-law.  E.g.
    play ring.bin
 .XX
 .TP
-\fB.gsm\fR (optional; also with \fB\-t sndfile\fR)
+\fB.gsm\fR (optional; also with \fB\-t sndfile\fR or \fB\-t ffmpeg\fR))
 GSM 06.10 Lossy Speech Compression.
 A lossy format for compressing speech which is used in the
 Global Standard for Mobile telecommunications (GSM).  It's good
@@ -429,11 +429,11 @@ and is rather CPU intensive.
 \fB.gxf\fR (with ffmpeg)
 General eXchange Format.
 .TP
-.B .hcom
+\fB.hcom\fR (also with \fB\-t ffmpeg\fR)
 Macintosh HCOM files.
 These are Mac FSSD files with Huffman compression.
 .TP
-.B .htk (also with \fB\-t sndfile\fR)
+\fB.htk\fR (also with \fB\-t sndfile\fR)
 Single channel 16-bit PCM format used by HTK,
 a toolkit for building Hidden Markov Model speech processing tools.
 .TP
@@ -569,7 +569,7 @@ MPEG-TS (MPEG-2 Transport Stream) format.
 \fB.mxf\fR, \fB.mxf_opatom\fR (with ffmpeg)
 Material eXchange Format Operational Pattern OP1A "OP-Atom" format (SMPTE 390M).
 .TP
-\fB.nist\fR (also with \fB\-t sndfile\fR)
+\fB.nist\fR (also with \fB\-t sndfile\fR or \fB\-t ffmpeg\fR)
 See \fB.sph\fR.
 .TP
 \fB.nsp\fR (also with \fB\-t ffmpeg\fR)
@@ -626,7 +626,7 @@ sometimes together with alternative sound systems (such as ALSA).  Examples:
 	sox_ng \-b 16 \-t oss /dev/dsp outfile
 .XX
 .TP
-\fB.paf\fR, \fB.fap\fR (with sndfile)
+\fB.paf\fR, \fB.fap\fR (with sndfile, also with \fB\-t ffmpeg\fB)
 Ensoniq PARIS file format (big and little-endian respectively).
 .TP
 .B .pls
@@ -689,7 +689,7 @@ does not end in `.sbc', you will need to prefix it with `-t ffmpeg'.
 \fB.sd2\fR (with sndfile)
 Sound Designer 2 format.
 .TP
-\fB.sds\fR (with sndfile)
+\fB.sds\fR (with sndfile, also with \fB\-t ffmpeg\fR)
 MIDI Sample Dump Standard.
 .TP
 \fB.sf\fR (also with \fB\-t sndfile\fR or \fB\-t ffmpeg\fR)
@@ -697,7 +697,7 @@ IRCAM SDIF (Institut de Recherche et Coordination Acoustique/Musique
 Sound Description Interchange Format) is used by academic music software
 such as the CSound package and the MixView sound sample editor.
 .TP
-\fB.sln\fR
+\fB.sln\fR (also with \fB\-t ffmpeg\fR)
 Asterisk PBX `signed linear' 8khz, 16-bit signed integer, little-endian
 raw format.
 .TP
@@ -969,7 +969,7 @@ the RIFF header is not necessarily preserved losslessly, though the audio is.
 \fB.wve\fR (also with \fB\-t sndfile\fR)
 Psion 8-bit A-law is used on Psion SIBO PDAs (Series 3 and similar).
 .TP
-.B .xa
+\fB.xa\fR (also with \fB\-t ffmpeg\fR)
 Maxis XA files are 16-bit ADPCM audio files used by Maxis games.
 Writing \fB.xa\fR files is currently not supported,
 although adding write support should not be very difficult.
