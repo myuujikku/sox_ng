@@ -449,7 +449,7 @@ sox_effect_handler_t const * lsx_dither_effect_fn(void)
   static char const * const extra_usage[] = {
     "(none)   Use TPDF",
     "-S       Use sloped TPDF (without noise shaping)",
-    "-s       Shape noise (with shibata filter)",
+    "-s       Shape noise (with a Shibata filter)",
     "-f name  Set shaping filter to one of: lipshitz, f-weighted,",
     "         modified-e-weighted, improved-e-weighted, gesemann,",
     "         shibata, low-shibata, high-shibata.",

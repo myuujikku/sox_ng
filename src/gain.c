@@ -275,7 +275,7 @@ sox_effect_handler_t const * lsx_norm_effect_fn(void)
   };
   handler = *lsx_gain_effect_fn();
   handler.name = "norm";
-  handler.usage = "[level]";
+  handler.usage = "[level(0)]";
   handler.extra_usage = extra_usage;
   handler.getopts = norm_getopts;
   return &handler;

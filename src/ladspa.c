@@ -469,7 +469,7 @@ static int sox_ladspa_kill(sox_effect_t * effp)
 
 static sox_effect_handler_t sox_ladspa_effect = {
   "ladspa",
-  "MODULE [PLUGIN] [ARGUMENT...]", NULL, 
+  "module [plugin] {argument}", NULL, 
   SOX_EFF_MCHAN | SOX_EFF_CHAN | SOX_EFF_GAIN,
   sox_ladspa_getopts,
   sox_ladspa_start,

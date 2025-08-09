@@ -215,7 +215,7 @@ static int sox_echos_stop(sox_effect_t * effp)
 
 const sox_effect_handler_t *lsx_echos_effect_fn(void)
 {
-  static const char usage[] = "gain-in gain-out delay decay <delay decay>";
+  static const char usage[] = "gain-in gain-out <delay decay>";
   static char const * const extra_usage[] = {
 "                                                         ___",
 " In--+--------+-------------------+-------------------->|   |",
