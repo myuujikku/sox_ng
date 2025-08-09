@@ -35,6 +35,7 @@ static int setup(sox_format_t *ft, int is_input)
   char *dev;
   pa_sample_spec spec;
   int error;
+  pa_channel_map map;
 
   /* TODO: If user specified device of type "server:dev" then
    * break up and override server.
@@ -76,8 +77,10 @@ static int setup(sox_format_t *ft, int is_input)
   spec.rate = ft->signal.rate;
   spec.channels = ft->signal.channels;
 
+  pa_channel_map_init_auto(&map, spec.channels, PA_CHANNEL_MAP_ALSA);
+
   pa->pasp = pa_simple_new(server, "SoX", dir, dev, app_str, &spec,
-                          NULL, NULL, &error);
+                          &map, NULL, &error);
 
   if (pa->pasp == NULL)
   {
