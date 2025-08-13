@@ -1550,7 +1550,10 @@ static int wavwritehdr(sox_format_t * ft, int second_header)
         wRiffLength += (8+dwFactSize);
 
     /* dwAvgBytesPerSec <-- this is BEFORE compression, isn't it? guess not. */
-    dwAvgBytesPerSec = (double)wBlockAlign*ft->signal.rate / (double)wSamplesPerBlock + 0.5;
+    /* Round before dividing so that txw's 33333.3 doesn't become
+     * 33333 with 66667 byte rate.
+     */
+    dwAvgBytesPerSec = (wBlockAlign*lrint(ft->signal.rate)) / wSamplesPerBlock;
 
     /* figured out header info, so write it */
 
