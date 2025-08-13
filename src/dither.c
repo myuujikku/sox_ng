@@ -364,6 +364,8 @@ static int start(sox_effect_t * effp)
   if (effp->in_signal.precision <= p->prec || p->prec > 24)
     return SOX_EFF_NULL;   /* Dithering not needed at this resolution */
 
+  effp->out_signal.precision = effp->in_signal.precision;
+
   if (p->prec == 1) {
     /* The general dither routines don't work in this case, so notify
        user and leave it at that for now.
