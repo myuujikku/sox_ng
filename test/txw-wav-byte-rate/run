@@ -1,0 +1,22 @@
+#! /bin/sh
+
+# Issue #552: Incorrect ByteRate when converting 33kHz TWX files to WAV
+# https://sourceforge.net/p/sox/bugs/304
+
+rm -f bd.wav
+
+${sox:-sox} -t txw BD.W01 bd.wav
+bitrate="$(${sox:-sox} --info bd.wav | grep '^Bit Rate' | sed 's/.*: //')"
+
+# See what's in the WAV file
+byterate="$(od -t dL bd.wav | head -2 | tail -1 | sed 's/.* //')"
+case "$byterate" in
+66666) status=0;;
+66667) status=2;;
+*)     echo "Unexpected byte rate of $byterate in bd.wav" 1>&2
+       exit 2;; # Leave bd.wav
+esac
+
+rm -f bd.wav
+
+exit $status
