@@ -372,7 +372,7 @@ static int start(sox_effect_t * effp)
     return SOX_EFF_NULL;
   }
 
-  effp->out_signal.precision = p->prec;
+  effp->out_signal.precision = effp->in_signal.precision;
 
   p->flow = flow_no_shape;
   if (p->filter_name) {
