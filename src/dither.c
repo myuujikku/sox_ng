@@ -372,7 +372,7 @@ static int start(sox_effect_t * effp)
   if (effp->in_signal.precision <= p->prec || p->prec > 24)
     return SOX_EFF_NULL;   /* Dithering not needed at this resolution */
 
-  effp->out_signal.precision = p->prec;
+  effp->out_signal.precision = effp->in_signal.precision;
 
   if (p->prec == 1) {
     p->sdm = sdm_init(NULL, effp->in_signal.rate, 0, 0, 0);
