@@ -222,7 +222,7 @@ static int stop(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *)effp->priv;
   if (p->do_scan)
-    fclose(p->tmp_file); /* auto-deleted by lsx_tmpfile */
+    lsx_close_tmpfile(p->tmp_file);
   return SOX_SUCCESS;
 }
 
