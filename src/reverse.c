@@ -73,7 +73,7 @@ static int drain(sox_effect_t * effp, sox_sample_t *obuf, size_t *osamp)
 static int stop(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *)effp->priv;
-  fclose(p->tmp_file); /* auto-deleted by lsx_tmpfile */
+  lsx_close_tmpfile(p->tmp_file);
   return SOX_SUCCESS;
 }
 
