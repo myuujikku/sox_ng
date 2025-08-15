@@ -32,14 +32,8 @@ static int startwrite(sox_format_t * ft)
 {
   priv_t * ao = (priv_t *)ft->priv;
 
-  /* ft->e.bps == 0 on NetBSD so avoid SIGFPE */
-  if (ft->encoding.bits_per_sample >> 3)
-  {
-      ao->buf_size = sox_globals.bufsiz - (sox_globals.bufsiz % (ft->encoding.bits_per_sample >> 3));
-      ao->buf_size *= (ft->encoding.bits_per_sample >> 3);
-  } else {
-      ao->buf_size = sox_globals.bufsiz;
-  }
+  ao->buf_size = sox_globals.bufsiz - (sox_globals.bufsiz % (ft->encoding.bits_per_sample >> 3));
+  ao->buf_size *= (ft->encoding.bits_per_sample >> 3);
   ao->buf = lsx_malloc(ao->buf_size);
 
   ao_initialize();
