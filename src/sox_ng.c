@@ -1330,7 +1330,6 @@ static void adjust_volume(int delta)
 {
   char * from_env;
 
-  fprintf(stderr, "Soundcard volume\n");
   if (lsx_adjust_softvol(delta) == SOX_SUCCESS) return;
   from_env = getenv("MIXERDEV");
   int vol1 = 0, vol2 = 0, fd = open(from_env? from_env : "/dev/mixer", O_RDWR);
@@ -1353,7 +1352,6 @@ static void adjust_volume(int delta)
 static void adjust_volume(int delta)
 {
   int vol1 = 0, vol2 = 0, fd = fileno((FILE*)ofile->ft->fp);
-  fprintf(stderr, "Audioio volume\n");
   if (lsx_adjust_softvol(delta) == SOX_SUCCESS) return;
   if (fd >= 0) {
     audio_info_t audio_info;
@@ -1374,7 +1372,6 @@ static void adjust_volume(int delta)
 #else
 static void adjust_volume(int delta)
 {
-  fprintf(stderr, "Fallback volume\n");
   if (lsx_adjust_softvol(delta))
     putc('\a', stderr);
 }
