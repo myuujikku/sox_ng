@@ -240,6 +240,7 @@ static char const * auto_detect_format(sox_format_t * ft, char const * ext)
   return NULL;
 }
 
+/* Must match the entries in sox_ng.h:sox_encoding_t */
 static sox_encodings_info_t const s_sox_encodings_info[] = {
   {sox_encodings_none  , "n/a"          , "Unknown or not applicable"},
   {sox_encodings_none  , "Signed PCM"   , "Signed Integer PCM"},

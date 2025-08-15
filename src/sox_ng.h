@@ -509,6 +509,7 @@ typedef enum sox_version_flags_t {
 Client API:
 Format of sample data.
 */
+/* Must match the entries in formats.c:s_sox_encodings_info[] */
 typedef enum sox_encoding_t {
   SOX_ENCODING_UNKNOWN   , /**< encoding has not yet been determined */
 
