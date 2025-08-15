@@ -60,6 +60,7 @@
 #define WAVE_FORMAT_IMA_ADPCM           (0x0011U)
 #define WAVE_FORMAT_DIGISTD             (0x0015U)
 #define WAVE_FORMAT_DIGIFIX             (0x0016U)
+#define WAVE_FORMAT_SONARC              (0x0021U)
 #define WAVE_FORMAT_DOLBY_AC2           (0x0030U)
 #define WAVE_FORMAT_GSM610              (0x0031U)
 #define WAVE_FORMAT_ROCKWELL_ADPCM      (0x003bU)
@@ -662,6 +663,10 @@ static int startread(sox_format_t * ft)
     {
     case WAVE_FORMAT_UNKNOWN:
         lsx_fail_errno(ft,SOX_EHDR,"file is in unsupported Microsoft Official Unknown format");
+        return SOX_EOF;
+
+    case WAVE_FORMAT_SONARC:
+        lsx_fail_errno(ft,SOX_EHDR,"file is in unsupported WAV Sonarc format");
         return SOX_EOF;
 
     case WAVE_FORMAT_PCM:
