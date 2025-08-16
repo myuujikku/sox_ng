@@ -2382,6 +2382,7 @@ as reported by the plugin via an output control port named "latency".
 .SP
 If it is set, the environment variable \fBLADSPA_PATH\fP is used as
 the search path for plugins.
+See \fBLADSPA_PATH\fR in the section \fBENVIRONMENT\fR.
 .TP
 \fBloudness\fR [\fIgain\fR [\fIreference\fR]]
 Loudness control is similar to the
@@ -4413,8 +4414,11 @@ SoX also responds to the standard environment variable
 .TP
 \fBLADSPA_PATH\fR
 A colon-separated list of directories in which to search for LADSPA plugins.
-The default depends on how SoX was built and is typically /usr/lib/ladspa or
-/usr/local/lib/ladspa.
+The default depends on how SoX was built but
+on Unix it defaults to \f(CW/usr/lib/ladspa\fR
+and on MacOS/X to \f(CW/Library/Audio/Plug-Ins/LADSPA\fR.
+Windows doesn't have a "usual place" for LADSPA plugins, but Ardour puts
+them in \ef(CWC:\eProgram Files\eArdour6\elib\eardour6\eladspa\efR or similar.
 .TP
 \fBLD_LIBRARY_PATH\fR
 When searching for the dynamic libraries in which most effects and
