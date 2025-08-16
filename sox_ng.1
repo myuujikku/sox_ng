@@ -2413,8 +2413,13 @@ The
 (latency compensation) option automatically compensates for latency
 as reported by the plugin via an output control port named "latency".
 .SP
-If found, the environment variable LADSPA_PATH will be used as search
-path for plugins.
+The environment variable \fBLADSPA_PATH\fP is a colon-separated list
+of directories in which to search for LADSPA plugins.
+The default depends on how SoX was built but
+on Unix it defaults to \f(CW/usr/lib/ladspa\fR
+and on MacOS/X to \f(CW/Library/Audio/Plug-Ins/LADSPA\fR.
+Windows doesn't have a "usual place" for LADSPA plugins, but Ardour puts
+them in \ef(CWC:\eProgram Files\eArdour6\elib\eardour6\eladspa\efR or similar.
 .TP
 \fBloudness\fR [\fIgain\fR [\fIreference\fR]]
 Loudness control\*msimilar to the
