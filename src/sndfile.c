@@ -455,7 +455,7 @@ static int startwrite(sox_format_t * ft)
       return SOX_EOF;
     }
     if ((sf->sf_info->format & SF_FORMAT_TYPEMASK) != SF_FORMAT_RAW 
-#ifdef SF_FORMAT_MPEG
+#if HAVE_SF_FORMAT_MPEG
         && (sf->sf_info->format & SF_FORMAT_TYPEMASK) != SF_FORMAT_MPEG
 #endif
 	)
