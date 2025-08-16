@@ -120,6 +120,9 @@ static int sox_ladspa_getopts(sox_effect_t *effp, int argc, char **argv)
   if (argc >= 1) {
     l_st->name = argv[0];
     argc--; argv++;
+  } else {
+    /* The module name is mandatory */
+    return lsx_usage(effp);
   }
 
   /* Load module */
