@@ -102,6 +102,7 @@ static int sox_ladspa_getopts(sox_effect_t *effp, int argc, char **argv)
   int c;
   union {LADSPA_Descriptor_Function fn; lt_ptr ptr;} ltptr;
   unsigned long index = 0, i;
+  char *newpath = NULL;
   double arg;
   lsx_getopt_t optstate;
   lsx_getopt_init(argc, argv, "+rl", NULL, lsx_getopt_flag_none, 1, &optstate);
@@ -126,11 +127,43 @@ static int sox_ladspa_getopts(sox_effect_t *effp, int argc, char **argv)
   if (path == NULL)
     path = LADSPA_PATH;
 
+  /* If --prefix=/usr/local, LADSPA_PATH will be /usr/local/lib/ladspa
+   * but most plugins are in /usr/lib/ladspa
+   */
+#if unix
+  {
+    char extra[] = "/usr/lib/ladspa";
+    if (strstr(path, extra) == NULL) {
+      newpath = lsx_realloc(newpath, strlen(path) + 1 + strlen(extra) + 1);
+      sprintf(newpath, "%s:%s", path, extra);
+      path = newpath;
+    }
+  }
+#endif
+
+#if defined(__APPLE__) && defined(__MACH__)
+# include <TargetConditionals.h>
+# if TARGET_OS_MAC == 1
+  /* OSX */
+  {
+    char extra[] = "/Library/Audio/Plug-Ins/LADSPA";
+    if (strstr(path, extra) == NULL) {
+      newpath = lsx_realloc(newpath, strlen(path) + 1 + strlen(extra) + 1);
+      sprintf(newpath, "%s:%s", path, extra);
+      path = newpath;
+    }
+  }
+# endif
+#endif
+
   if(lt_dlinit() || lt_dlsetsearchpath(path)
       || (l_st->lth = lt_dlopenext(l_st->name)) == NULL) {
     lsx_fail("could not open LADSPA plugin %s", l_st->name);
     return SOX_EOF;
   }
+
+  /* lt_dlsetsearchpath() copies path into its own static */
+  free(newpath);
 
   /* Get descriptor function */
   if ((ltptr.ptr = lt_dlsym(l_st->lth, "ladspa_descriptor")) == NULL) {
