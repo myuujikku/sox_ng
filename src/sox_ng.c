@@ -2453,8 +2453,10 @@ static char parse_gopts_and_fopts(file_t * f)
           lsx_warn("this build of SoX does not include `magic'");
         break;
       case 21: play_rate_arg = lsx_strdup(optstate.arg);
-               if (play_rate_arg[0] != '-')
+               if (play_rate_arg[0] != '-') {
                    lsx_fail("--play-rate-arg must begin with `-')");
+                   exit(1);
+               }
                break;
       case 22: no_clobber = sox_false; break;
       case 23: no_clobber = sox_true; break;
