@@ -1745,6 +1745,10 @@ A fuller sounding chorus (with three additional delays):
    play_ng guitar1.wav chorus 0.5 0.9 50 0.4 0.25 2 \-t \\
 	 60 0.32 0.4 2.3 \-t 40 0.3 0.3 1.3 \-s
 .XX
+\fBflanger\fP can do everything that \fBchorus\fP can do
+except for \fIgain-in\fR and \fIgain-out\fR but works
+internally in floating point and interpolates between samples so is
+slower but gives much less noisy results.
 .TP
 \fBcompand \fIattack1\fB,\fIdecay1\fR{\fB,\fIattack\fB,\fIdecay\fR}
 [\fIsoft-knee-dB\fB:\fR]\fIin-dB1\fR[\fB,\fIout-dB1\fR]{\fB,\fIin-dB\fB,\fIout-dB\fR}
@@ -2607,6 +2611,10 @@ More severe:
 .XE
    play_ng snare.flac phaser 0.6 0.66 3 0.6 2 \-t
 .XX
+\fBflanger\fP can do everything that \fBphaser\fP can do
+except for \fIgain-in\fR and \fIgain-out\fR but works
+internally in floating point and interpolates between samples so is
+slower but gives much less noisy results.
 .TP
 \fBpitch \fR[\fB\-q\fR] \fIshift\fR [\fIsegment\fR [\fIsearch\fR [\fIoverlap\fR]]]
 Change the audio pitch (but not tempo).
