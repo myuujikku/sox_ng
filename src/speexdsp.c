@@ -51,7 +51,7 @@ static int get_param(
     {
         char* arg_end;
         *pParam = strtoul((*pArgv)[1], &arg_end, 0);
-        if (!arg_end || arg_end[0] || *pParam < min_valid || max_valid <= *pParam)
+        if (!arg_end || arg_end[0] || *pParam < min_valid || max_valid < *pParam)
             return 0;
 
         --*pArgc;
