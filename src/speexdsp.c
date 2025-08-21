@@ -82,7 +82,7 @@ static int getopts(sox_effect_t* effp, int argc, char** argv)
             if (!get_param(&argc, &argv, &p->agc, agcDefault, 1, 100))
             {
                 lsx_fail("invalid argument \"%s\" to -agc parameter - expected number from 1 to 100", argv[1]);
-                return lsx_usage(effp);
+                return SOX_EOF;
             }
         }
         else if (!strcasecmp("-denoise", argv[0]))
@@ -92,7 +92,7 @@ static int getopts(sox_effect_t* effp, int argc, char** argv)
             if (!get_param(&argc, &argv, &p->denoise, denoiseDefault, 1, 100))
             {
                 lsx_fail("invalid argument \"%s\" to -denoise parameter - expected number from 0 to 100", argv[1]);
-                return lsx_usage(effp);
+                return SOX_EOF;
             }
         }
         else if (!strcasecmp("-dereverb", argv[0]))
@@ -106,7 +106,7 @@ static int getopts(sox_effect_t* effp, int argc, char** argv)
             if (!get_param(&argc, &argv, &p->samples_per_frame, 0, 1, 1000000000) || !p->samples_per_frame)
             {
                 lsx_fail("invalid argument \"%s\" to -spf parameter - expected positive number", argv[1]);
-                return lsx_usage(effp);
+                return SOX_EOF;
             }
         }
         else if (!strcasecmp("-fps", argv[0]))
@@ -117,13 +117,13 @@ static int getopts(sox_effect_t* effp, int argc, char** argv)
             if (!get_param(&argc, &argv, &p->frames_per_second, 0, 1, 100) || !p->frames_per_second)
             {
                 lsx_fail("invalid argument \"%s\" to -fps parameter - expected number from 1 to 100", argv[1]);
-                return lsx_usage(effp);
+                return SOX_EOF;
             }
         }
         else
         {
             lsx_fail("invalid parameter \"%s\"", argv[0]);
-            return lsx_usage(effp);
+            return SOX_EOF;
         }
     }
 
