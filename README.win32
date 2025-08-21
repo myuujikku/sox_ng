@@ -53,14 +53,6 @@ play_ng: sox_ng [input files and options] -d [effects]
 rec_ng:  sox_ng -d [output file and options] [effects]
 soxi_ng: sox_ng --info [input files and options]
 
-Finding the audio device
-------------------------
-On most Windows systems you still have to
-```
-   set AUDIODRIVER=waveaudio
-```
-to gain access to the sound card.
-
 Building SoX_NG.EXE yourself
 ----------------------------
 
