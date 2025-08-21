@@ -79,17 +79,17 @@ static int getopts(sox_effect_t* effp, int argc, char** argv)
         {
             /* AGC level argument is optional. If not specified, it defaults to agcDefault.
                If specified, it must be from 0 to 100. */
-            if (!get_param(&argc, &argv, &p->agc, agcDefault, 0, 100))
+            if (!get_param(&argc, &argv, &p->agc, agcDefault, 1, 100))
             {
-                lsx_fail("invalid argument \"%s\" to -agc parameter - expected number from 0 to 100", argv[1]);
+                lsx_fail("invalid argument \"%s\" to -agc parameter - expected number from 1 to 100", argv[1]);
                 return lsx_usage(effp);
             }
         }
         else if (!strcasecmp("-denoise", argv[0]))
         {
             /* Denoise level argument is optional. If not specified, it defaults to denoiseDefault.
-               If specified, it must be from 0 to 100. */
-            if (!get_param(&argc, &argv, &p->denoise, denoiseDefault, 0, 100))
+               If specified, it must be from 1 to 100. */
+            if (!get_param(&argc, &argv, &p->denoise, denoiseDefault, 1, 100))
             {
                 lsx_fail("invalid argument \"%s\" to -denoise parameter - expected number from 0 to 100", argv[1]);
                 return lsx_usage(effp);
@@ -324,8 +324,8 @@ const sox_effect_handler_t* lsx_speexdsp_effect_fn(void)
 "Use the Speex DSP library to improve perceived sound quality.",
 "-agc [target_level]    Enable automatic gain control and optionally specify",
 "                       a target volume level from 1-100. The default is 100.",
-"-denoise [max_dB]      Enable noise reduction and optionally specify",
-"                       the maximum attenuation. The default is 15.",
+"-denoise [max_dB]      Enable noise reduction and optionally specify the",
+"                       maximum attenuation from 1 to 100. The default is 15.",
 "-dereverb              Enable reverb reduction.",
 "-fps frames_per_second Specify the number of frames per second from 1-100",
 "                       The default is 20.",
