@@ -516,6 +516,8 @@ Variable Bit Rate (VBR) encoding yet, only Constant Bit Rate (CBR).
 The bit rate is set using the \fB\-C\fR option in kbps:
 32, 48, 56, 64, 80, 96, 112, 128, 160 or 192 for mono files
 and double those for stereo ones.
+At present, \fBtwolame\fR outputs 0.005 seconds of quiet garbage
+at the start and truncates the end by 0.002 seconds.
 .TP
 \fB.mp3\fR (optional, also with \-t sndfile\fR or \fB\-t ffmpeg\fR)
 SoX uses \fBlibmad\fR to decode MP3 files; to decode using
@@ -530,6 +532,9 @@ for the output file to prevent loss of this extra information.
 .SP
 When writing MP3 files, SoX uses \fBliblame\fR and can use up to
 24 bits of precision.
+At present SoX's use of \fBliblame\fR adds 0.01 seconds of quiet garbage
+at the start and at the end;
+encoding with \f(CW\-t sndfile\fR gets the length right and no garbage.
 .SP
 MP3 compression parameters can be selected using SoX's \fB\-C\fR option
 as follows:
