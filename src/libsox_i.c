@@ -45,7 +45,7 @@
   #define FAKE_MKSTEMP
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
 static int check_dir(char * buf, size_t buflen, char const * name)
 {
   struct stat st;
@@ -93,7 +93,7 @@ FILE * lsx_tmpfile(void)
   is null, figure out a reasonable default.
   To force use of tmpfile(), set sox_globals.tmp_path = "".
   */
-#ifdef WIN32
+#ifdef _WIN32
   if (!path)
   {
     static char default_path[260] = "";
