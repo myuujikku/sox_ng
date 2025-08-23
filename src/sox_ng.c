@@ -2930,7 +2930,7 @@ static sox_bool cmp_comment_text(char const * c1, char const * c2)
   return c1 && c2 && !strcasecmp(c1, c2);
 }
 
-#ifdef WIN32
+#ifdef _WIN32
 static int sox_main(int argc, char **argv)
 #else
 int main(int argc, char **argv)
@@ -3141,7 +3141,7 @@ int main(int argc, char **argv)
   return 0;
 }
 
-#ifdef WIN32
+#ifdef _WIN32
 
 #include <windows.h>
 
