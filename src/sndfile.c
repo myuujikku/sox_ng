@@ -548,8 +548,6 @@ LSX_FORMAT_HANDLER(sndfile)
     /* "wav", */
   /* LSF wrappers of formats already wrapped in SoX: */
     /* "flac", */
-
-    "sds",  /* ?? */
     NULL
   };
 
