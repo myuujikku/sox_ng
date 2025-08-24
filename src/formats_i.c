@@ -335,7 +335,7 @@ int lsx_seeki(sox_format_t * ft, off_t offset, int whence)
                 ft->sox_errno = SOX_SUCCESS;
         }
     } else {
-        if (fseeko((FILE*)ft->fp, offset, whence) == -1)
+        if (fseeko((FILE*)ft->fp, offset, whence))
             lsx_fail_errno(ft,errno, "%s", strerror(errno));
         else {
             ft->tell_off = lsx_tell(ft);
