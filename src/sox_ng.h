@@ -1052,10 +1052,10 @@ offset is relative to the beginning of the file.
 Forward declarations:
 *****************************************************************************/
 
-typedef struct sox_format_t sox_format_t;
-typedef struct sox_effect_t sox_effect_t;
-typedef struct sox_effect_handler_t sox_effect_handler_t;
-typedef struct sox_format_handler_t sox_format_handler_t;
+typedef struct sox_format sox_format_t;
+typedef struct sox_effect sox_effect_t;
+typedef struct sox_effect_handler sox_effect_handler_t;
+typedef struct sox_format_handler sox_format_handler_t;
 
 /*****************************************************************************
 Function pointers:
@@ -1263,7 +1263,7 @@ Client API:
 Information about a build of libSoX, returned from the sox_version_info
 function.
 */
-typedef struct sox_version_info_t {
+typedef struct sox_version_info {
     size_t       size;         /**< structure size = sizeof(sox_version_info_t) */
     sox_version_flags_t flags; /**< feature flags = popen | magic | threads | memopen */
     sox_uint32_t version_code; /**< version number = 0x140400 */
@@ -1280,7 +1280,7 @@ Client API:
 Global parameters (for effects & formats), returned from the sox_get_globals
 function.
 */
-typedef struct sox_globals_t {
+typedef struct sox_globals {
 /* public: */
   unsigned     verbosity; /**< messages are only written if globals.verbosity >= message.level */
   sox_output_message_handler_t output_message_handler; /**< client-specified message output callback */
@@ -1318,7 +1318,7 @@ typedef struct sox_globals_t {
 Client API:
 Signal parameters; members should be set to SOX_UNSPEC (= 0) if unknown.
 */
-typedef struct sox_signalinfo_t {
+typedef struct sox_signalinfo {
   sox_rate_t       rate;         /**< samples per second, 0 if unknown */
   unsigned         channels;     /**< number of sound channels, 0 if unknown */
   unsigned         precision;    /**< bits per sample, 0 if unknown */
@@ -1330,7 +1330,7 @@ typedef struct sox_signalinfo_t {
 Client API:
 Basic information about an encoding.
 */
-typedef struct sox_encodings_info_t {
+typedef struct sox_encodings_info {
   sox_encodings_flags_t flags; /**< lossy once (lossy1), lossy twice (lossy2), or lossless (none). */
   char const * name;           /**< encoding name. */
   char const * desc;           /**< encoding description. */
@@ -1340,7 +1340,7 @@ typedef struct sox_encodings_info_t {
 Client API:
 Encoding parameters.
 */
-typedef struct sox_encodinginfo_t {
+typedef struct sox_encodinginfo {
   sox_encoding_t encoding; /**< format of sample numbers */
   unsigned bits_per_sample;/**< 0 if unknown or variable; uncompressed value if lossless; compressed value if lossy */
   double compression;      /**< compression factor (where applicable) */
@@ -1376,7 +1376,7 @@ typedef struct sox_encodinginfo_t {
 Client API:
 Looping parameters (out-of-band data).
 */
-typedef struct sox_loopinfo_t {
+typedef struct sox_loopinfo {
   sox_uint64_t  start;  /**< first sample */
   sox_uint64_t  length; /**< length */
   unsigned      count;  /**< number of repeats, 0=forever */
@@ -1387,7 +1387,7 @@ typedef struct sox_loopinfo_t {
 Client API:
 Instrument information.
 */
-typedef struct sox_instrinfo_t{
+typedef struct sox_instrinfo {
   signed char MIDInote;   /**< for unity pitch playback */
   signed char MIDIlow;    /**< MIDI pitch-bend low range */
   signed char MIDIhi;     /**< MIDI pitch-bend high range */
@@ -1399,7 +1399,7 @@ typedef struct sox_instrinfo_t{
 Client API:
 File buffer info.  Holds info so that data can be read in blocks.
 */
-typedef struct sox_fileinfo_t {
+typedef struct sox_fileinfo {
   char          *buf;                 /**< Pointer to data buffer */
   size_t        size;                 /**< Size of buffer in bytes */
   size_t        count;                /**< Count read into buffer */
@@ -1410,7 +1410,7 @@ typedef struct sox_fileinfo_t {
 Client API:
 Handler structure defined by each format.
 */
-struct sox_format_handler_t {
+struct sox_format_handler {
   unsigned     sox_lib_version_code;  /**< Checked on load; must be 1st in struct*/
   char         const * description;   /**< short description of format */
   char         const * const * names; /**< null-terminated array of filename extensions that are handled by this format */
@@ -1456,7 +1456,7 @@ struct sox_format_handler_t {
 Client API:
 Comments, instrument info, loop info (out-of-band data).
 */
-typedef struct sox_oob_t{
+typedef struct sox_oob {
   /* Decoded: */
   sox_comments_t   comments;              /**< Comment strings in id=value format. */
   sox_instrinfo_t  instr;                 /**< Instrument specification */
@@ -1469,7 +1469,7 @@ typedef struct sox_oob_t{
 Client API:
 Data passed to/from the format handler
 */
-struct sox_format_t {
+struct sox_format {
   char             * filename;      /**< File name */
 
   /**
@@ -1519,7 +1519,7 @@ Information about a loaded format handler, including the format name and a
 function pointer that can be invoked to get additional information about the
 format.
 */
-typedef struct sox_format_tab_t {
+typedef struct sox_format_tab {
   char *name;         /**< Name of format handler */
   sox_format_fn_t fn; /**< Function to call to get format handler's information */
 } sox_format_tab_t;
@@ -1528,7 +1528,7 @@ typedef struct sox_format_tab_t {
 Client API:
 Global parameters for effects.
 */
-typedef struct sox_effects_globals_t {
+typedef struct sox_effects_globals {
   sox_plot_t plot;         /**< To help the user choose effect & options */
   sox_globals_t * global_info; /**< Pointer to associated SoX globals */
 } sox_effects_globals_t;
@@ -1537,7 +1537,7 @@ typedef struct sox_effects_globals_t {
 Client API:
 Effect handler information.
 */
-struct sox_effect_handler_t {
+struct sox_effect_handler {
   char const * name;  /**< Effect name */
   char const * usage; /**< Short explanation of parameters accepted by effect */
   char const * const * extra_usage;           /**< Additional lines of usage */
@@ -1555,7 +1555,7 @@ struct sox_effect_handler_t {
 Client API:
 Effect information.
 */
-struct sox_effect_t {
+struct sox_effect {
   sox_effects_globals_t    * global_info; /**< global effect parameters */
   sox_signalinfo_t         in_signal;     /**< Information about the incoming data stream */
   sox_signalinfo_t         out_signal;    /**< Information about the outgoing data stream */
@@ -1577,7 +1577,7 @@ struct sox_effect_t {
 Client API:
 Chain of effects to be applied to a stream.
 */
-typedef struct sox_effects_chain_t {
+typedef struct sox_effects_chain {
   sox_effect_t **effects;                  /**< Table of effects to be applied to a stream */
   size_t length;                           /**< Number of effects to be applied */
   sox_effects_globals_t global_info;       /**< Copy of global effects settings */
