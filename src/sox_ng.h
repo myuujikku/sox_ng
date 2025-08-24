@@ -1497,6 +1497,7 @@ struct sox_format {
   char             * filetype;      /**< Type of file, as determined by header inspection or libmagic. */
   sox_oob_t        oob;             /**< comments, instrument info, loop info (out-of-band data) */
   sox_bool         seekable;        /**< Can seek on this file */
+  sox_bool         last_byte_was_zero;/**< The last byte written was a zero */
   char             mode;            /**< Read or write mode ('r' or 'w') */
   sox_uint64_t     olength;         /**< Samples * chans written to file */
   sox_uint64_t     clips;           /**< Incremented if clipping occurs */

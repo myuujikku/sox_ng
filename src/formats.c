@@ -1366,14 +1366,29 @@ int sox_close(sox_format_t * ft)
     result = ft->handler.stopread? (*ft->handler.stopread)(ft) : SOX_SUCCESS;
   else {
     if (ft->handler.flags & SOX_FILE_REWIND) {
+      /* Really write out a final zero byte if we're writing a sparse file.
+       * See lsx_writebuf() */
+      if (ft->last_byte_was_zero) {
+	if (lsx_seeki(ft, (off_t)-1, SEEK_CUR) == SOX_SUCCESS)
+	  putc('\0', (FILE *)ft->fp);
+	ft->last_byte_was_zero = sox_false;
+      }
       if (ft->olength != ft->signal.length && ft->seekable) {
         result = lsx_seeki(ft, (off_t)0, 0);
         if (result == SOX_SUCCESS)
           result = ft->handler.stopwrite? (*ft->handler.stopwrite)(ft)
              : ft->handler.startwrite?(*ft->handler.startwrite)(ft) : SOX_SUCCESS;
       }
+    } else {
+      result = ft->handler.stopwrite? (*ft->handler.stopwrite)(ft) : SOX_SUCCESS;
+      /* Really write out a final zero byte if we're writing a sparse file.
+       * See lsx_writebuf() */
+      if (ft->last_byte_was_zero) {
+	if (lsx_seeki(ft, (off_t)-1, SEEK_CUR) == SOX_SUCCESS)
+	  putc('\0', (FILE *)ft->fp);
+	ft->last_byte_was_zero = sox_false;
+      }
     }
-    else result = ft->handler.stopwrite? (*ft->handler.stopwrite)(ft) : SOX_SUCCESS;
   }
 
   if (ft->fp && ft->fp != stdin && ft->fp != stdout)
