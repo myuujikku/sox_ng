@@ -604,7 +604,7 @@ Client API:
 The API version of the sox_ng.h file. It follows the version number of SoX
 because that's what sox --version reports.
 */
-#define SOX_LIB_VERSION_CODE   SOX_LIB_VERSION(14, 4, 4)
+#define SOX_LIB_VERSION_CODE   SOX_LIB_VERSION(14, 4, 5)
 
 /**
 Client API:

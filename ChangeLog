@@ -5,6 +5,42 @@ This file contains a list of all changes starting after the release of
 sox-11gamma, followed by a list of prior authors and features.
 
 
+sox_ng-14.4.5-rc1	2025-08-24
+-----------------
+
+New features:
+  o On Windows you no longer need to set AUDIODRIVER=waveaudio beforehand
+
+Bug fixes:
+  o On Windows, delete temporary files and output files with write errors
+  o Fix opusfile detection when using pkg-config
+  o Fix compilation on AIX 7.3, MSYS2/MinGW, Sortix and on
+    MacOS X with older SDKs
+  o On Windows you no longer have to "set AUDIODRIVER=waveaudio"
+  o Spell-check and revise the manuals, fix some usage messages
+  o Make reading MP2/3 and Ogg files work with -t sndfile
+  o Make writing MP3 files work with -t sndfile
+  o Fix various floating point exceptions and segmentations faults
+  o When writing WAV files >4GB, set the size to "unspecified"
+  o Reject negative sample rates
+  o Make the GSRT padding byte for odd numbers of samples silent
+  o Use sigaction() so that SoX is stoppable even when blocked by I/O.
+  o Make the status display adapt to the terminal width
+  o Fix reading of zero-length AIFF files
+  o Fix reading of AMR files with invalid block types
+  o Fix an input buffer overrun with OSS audio device
+  o Fix OSS drivers that treat mono output as stereo
+  o Fix ogg output (broken in 14.6.0, fixed in 14.6.0.4)
+  o Fix asymmetric drain in noisered
+  o Initialize the channel map when using pulseaudio
+  o Make it compile with C89 compilers
+  o Correct WAV's byte rate for TXW's 33333.333Hz sample rate
+  o Detect and report the unsupported Sonarc-in-WAV format
+  o Fix OKI ADPCM compression and decompression to respect the standard
+  o Give LADSPA_PATH a sensible system default
+  o Avoid slowdown of overdrive due to denormalized floating point values
+
+
 sox_ng-14.4.4	2025-03-03
 -------------
 
