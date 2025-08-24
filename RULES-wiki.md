@@ -30,6 +30,9 @@ that makes it easier to search for them with precision.
 [Semantic line breaks](https://sembr.org) and less-than-80-column lines
 are preferred to long lines so that the `.md` version is more readable.
 
+The same wiki is included in all release tarballs, so if content only applies
+to some versions of `sox_ng`, say which.
+
 ## Markdown style
 
 In theory, we should use standard
