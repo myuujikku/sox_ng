@@ -930,7 +930,6 @@ echo " twolame...................$using_twolame"
 if test "x$using_twolame" = "xyes"; then
 echo " dlopen twolame............$enable_dl_twolame"
 fi
-echo " iconv support.............$using_iconv"
 echo "oggvorbis..................$using_oggvorbis"
 echo "opus.......................$using_opus"
 echo "sndfile....................$using_sndfile"
