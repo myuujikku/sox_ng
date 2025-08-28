@@ -335,7 +335,9 @@ static int start(sox_format_t * ft)
      * and we need to OR in the bit depth */
     switch (sf->sf_info->format) {
     case SF_FORMAT_OGG | SF_FORMAT_VORBIS:
+#if HAVE_SF_FORMAT_MPEG
     case SF_FORMAT_MPEG | SF_FORMAT_MPEG_LAYER_III:
+#endif
       break;
     default:
       sf->sf_info->format |= subtype;
