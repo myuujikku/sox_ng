@@ -23,6 +23,13 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <math.h>  /* Required by other source files that include dolbyb.h */
+
+/* These are not defined/declared when compiling -ansi (C90) */
+#ifndef M_PI
+# define M_PI 3.14159265358979323846
+#endif
+extern double round(double x);
 
 typedef struct {
   /* Compulsory Parameters */
