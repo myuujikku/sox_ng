@@ -17,7 +17,7 @@
 
 #include <sys/stat.h>
 
-#if (defined(USING_ID3TAG) && defined(HAVE_MAD_H)) || defined(HAVE_LAME_ID3TAG)
+#if defined(USING_ID3TAG) && defined(HAVE_MAD_H)
 
 static char const * id3tagmap[][2] =
 {
