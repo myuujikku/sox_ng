@@ -5,6 +5,15 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
+sox_ng-14.6.1-rc2	2025-08-29
+-----------------
+
+Bug fixes:
+  o Haiku: fix compilation and add system LADSPA plugin directories
+  o Fix setting of -fstack-protector for GCCs that don't have it
+  o Fix compilation with version of libsndfile that don't have MPEG
+
+
 sox_ng-14.6.1-rc1	2025-08-24
 -----------------
 
