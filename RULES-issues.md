@@ -21,7 +21,7 @@ they can be restored from the copy made above by going:
 ```
 issues/putissues.sh codeberg.org/pincopallino/sox_ng -f
 ```
-where `-f` means "don't worry if the issue `id`s don't match."
+where `-f` means "don't worry if the issue numbers and `id`s don't match."
 
 Like the wiki, it has a script `makehtml.sh` to make HTML pages of the issues.
 
@@ -31,41 +31,44 @@ but for the moment the preferred way to edit the issues is via the
 web interface.
 
 It is possible to make a new issue from the command line by creating
-`issues/"Don't worry, be happy".md` and in a directory
-`issues/"Don't worry, be happy"` placing files `milestone`
-and maybe `labels` and then saying
+`issues/"Don't worry, be happy".md`
+and, if you like, also in a directory
+`issues/"Don't worry, be happy"`
+containing files `milestone` containing `minor` `micro` or whatever
+and maybe a file `labels` containing one label name per line then
 `issues/putissues.sh` using your Codeberg username and password.
-It will fill in the `number` file with whatever forgejo assigns to it.
+It will fill in the `number` file and other file in the dir
+with whatever forgejo assigns to it.
 
 ## Format of an issue
 
 ### Title
 
-A one-liner, as short as possible.
+The issue's filename stem and directory name, as short as possible but unique.
 
 For the issue downloader to work on Windows and MS/DOS,
 you should avoid slash, backslash, colon and double quotes.
 
 If a new issue has the same cause as an existing one,
-its title (not its first line) should end `=#35`
+its filename title (not its first line) should end `=#35`
 so that the summary of issues says where to go for the best info.
 
 ### Description
 
-The first line of every issue is `# Title`, the same as the Title.
+The first line of every issue is `# Don't worry, be happy`, the same as the Title.
 
-The second-level headings are usually
+The second-level headings are usually a selection of
 `## Links`, `## Description`, `## Repeat by`, `## Results`,
-`## Analysis` and `## Conclusion`.
+`## Analysis` and `## Conclusion`; D A and C are usually always there.
 
 Commit hashes should be cited as their first seven digits because
 that makes it easier to search for them with precision.
 
-In the content, [semantic line breaks](https://sembr.org)
-and less-than-80-column lines are preferred to long lines
-so that the `.md` version is more readable.  
+In the content, less-than-80-column lines and [semantic line breaks](https://sembr.org)
+are preferred to long lines so that the `.md` version is more readable.  
 Unfortunately, `forgejo` renders all line breaks in its pages
-for the issues even though it doesn't do this to the wiki.
+for the issues (even though it doesn't do this to the wiki)
+so good layout and line breaks are a good thing.
 
 [The Markdown Guide](https://www.markdownguide.org/basic-syntax/#line-breaks)
 recommends ending a line with two spaces or <BR>
@@ -78,8 +81,10 @@ see RULES-issues.md
 
 ### Attachments
 
-Test files (small ones only please!) and patches
-need to be attached to the main description.
+Essential test files (small ones only please!) and patches
+should to be attached to the main description. Big ones
+can be attached to comments, as these are not downloaded
+by `getissues.sh`.
 
 ### Comments
 
@@ -105,9 +110,10 @@ the conventional labels `bug` or `enhancement`.
 
 All optional:
 * `bounty`: Someone has offered money to whoever resolves this issue
+* `bugfix`: The issue regards repairing an operational defect
 * `copyright`: The issue impacts on `sox_ng`'s copyright status
 * `duplicate`: This report has the same cause as another issue; go there
 * `invalid`: This reported bug does not affect `sox_ng`
-* `needswork`: All info seems to be in, but work is needed
+* `needswork`: All info seems to be in, but work is needed to resolve it
 * `patch`: A solution is available, maybe as an attached patch
 * `unconfirmed`: We have heard of a bug but not yet seen whether it bites us

@@ -20,14 +20,15 @@ The command-line interface is the only way to add images and attachments.
 ## Local HTML version
 
 In the `wiki` directory there is a script `makehtml.sh`. If you run it,
-it creates `index.html` (=`Home.md`) and an HTML page for each page of the wiki.
+it creates `index.html` (=`Home.md`) and an HTML file for each topic
+in the wiki.
 
 ## Content
 
 Commit hashes should be cited as their first seven digits because
 that makes it easier to search for them with precision.
 
-[Semantic line breaks](https://sembr.org) and less-than-80-column lines
+Less-than-80-column lines and [Semantic line breaks](https://sembr.org)
 are preferred to long lines so that the `.md` version is more readable.
 
 ## Markdown style
@@ -39,8 +40,8 @@ four-space indentation of items in ordered and unordered lists
 and all the rest.
 
 In practice we use forgejo/github/gitlab Markdown because it
-seems to work mostly, with a couple of extra rules so that
-`makehtml.sh` produces similar output to what Forgejo does.
+seems to work mostly, with a few extra rules so that
+`makehtml.sh` produces similar output to what Forgejo does:
 
 ### Headers
 
@@ -93,9 +94,5 @@ but a paragraph break is preferred to make the `.md` file more readable.
 
 #### Code blocks
 
-Enclose paragraphs of code with a line of three grave quotes
-before and after them.
-
-Markdown also allows code blocks indented with spaces
-but the two-space-to-four-space conversion for lists
-may mess the indentation up.
+Enclose paragraphs of code with lines consisting of three grave quotes
+with a blank line above and below.
