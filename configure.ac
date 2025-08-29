@@ -145,7 +145,7 @@ dnl "yes" enables -fstack-protector or fails if it's not available.
 dnl "all" or "strong" require that flag to be available in the gcc you have.
 dnl "auto" chooses -fstack-protector-strong if it's available or
 dnl                -fstack-protector if only that is available or
-dnl                no starck protection if none is available.
+dnl                no stack protection if none is available.
 dnl "auto" is the default if no --enable-stack-protector option is given.
 
 AC_ARG_ENABLE(stack-protector,
@@ -210,13 +210,16 @@ strong)
 	AC_MSG_ERROR([gcc-$gccver does not have -fstack-protector-strong])
     fi ;;
 auto)
-    if test x"$have_ssp_strong" = x"yes"
+    if test x"$have_ssp" = x"yes"
     then
-	AX_APPEND_COMPILE_FLAGS([-fstack-protector-strong])
-	enable_ssp=strong	# For the final report
-    else
-	AX_APPEND_COMPILE_FLAGS([-fstack-protector])
-	enable_ssp=yes		# For the final report
+	if test x"$have_ssp_strong" = x"yes"
+	then
+	    AX_APPEND_COMPILE_FLAGS([-fstack-protector-strong])
+	    enable_ssp=strong	# For the final report
+	else
+	    AX_APPEND_COMPILE_FLAGS([-fstack-protector])
+	    enable_ssp=yes		# For the final report
+	fi
     fi ;;
 esac
 
