@@ -99,6 +99,13 @@ static LADSPA_Data ladspa_default(const LADSPA_PortRangeHint *p)
 /*
  * Process options
  */
+#if defined(__APPLE__) && defined(__MACH__)
+# include <TargetConditionals.h>  /* for TARGET_OS_MAC */
+#endif
+#if defined(__HAIKU__)
+# include <os/storage/FindDirectory.h>
+#endif
+
 static int sox_ladspa_getopts(sox_effect_t *effp, int argc, char **argv)
 {
   priv_t * l_st = (priv_t *)effp->priv;
@@ -130,14 +137,16 @@ static int sox_ladspa_getopts(sox_effect_t *effp, int argc, char **argv)
   }
 
   /* Load module */
+
+  /* Get the user-defined path first so it has priority */
   path = getenv("LADSPA_PATH");
   if (path == NULL)
     path = LADSPA_PATH;
 
+#if defined(unix) || defined(__unix__) || defined(__unix)
   /* If --prefix=/usr/local, LADSPA_PATH will be /usr/local/lib/ladspa
    * but most plugins are in /usr/lib/ladspa
    */
-#if unix
   {
     char extra[] = "/usr/lib/ladspa";
     if (strstr(path, extra) == NULL) {
@@ -149,9 +158,8 @@ static int sox_ladspa_getopts(sox_effect_t *effp, int argc, char **argv)
 #endif
 
 #if defined(__APPLE__) && defined(__MACH__)
-# include <TargetConditionals.h>
 # if TARGET_OS_MAC == 1
-  /* OSX */
+  /* MacOS X */
   {
     char extra[] = "/Library/Audio/Plug-Ins/LADSPA";
     if (strstr(path, extra) == NULL) {
@@ -161,6 +169,28 @@ static int sox_ladspa_getopts(sox_effect_t *effp, int argc, char **argv)
     }
   }
 # endif
+#endif
+
+#if defined(__HAIKU__)
+  {
+    char **paths;
+    size_t pathCount;
+    status_t status;
+
+    status = find_paths(B_FIND_PATH_ADD_ONS_DIRECTORY, "LADSPA", &paths, &pathCount);
+    if (status == 0) {
+      while (pathCount > 0) {
+        char *extra = *paths++;
+        if (strstr(path, extra) == NULL) {
+          newpath = lsx_realloc(newpath, strlen(path) + 1 + strlen(extra) + 1);
+          sprintf(newpath, "%s:%s", path, extra);
+          path = newpath;
+	}
+	pathCount--;
+      }
+      free(paths):
+    }
+  }
 #endif
 
   if(lt_dlinit() || lt_dlsetsearchpath(path)
