@@ -16,7 +16,7 @@ fi
 # Create a file with 4GB of data
 if [ ! -f 4GB.wav ]
 then
-${sox:-sox} -n -b 16 -e signed 4GB.wav trim 0 2147483648s
+${sox:-sox} -D -n -b 16 -e signed 4GB.wav trim 0 2147483648s
 status=$?
 case "$status" in
 0) : ;;
