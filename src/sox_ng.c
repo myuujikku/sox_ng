@@ -2230,7 +2230,7 @@ static void read_comment_file(sox_comments_t * comments, char const * const file
 static char const * const getoptstr =
   "+b:c:de:hmnpqr:t:v:xBC:DGLMNRSTV::X";
 
-static struct lsx_option_t const long_options[] = {
+static lsx_option_t const long_options[] = {
   /*
    * The order and position of these must correspond to the numbers
    * in the huge case statement in parse_gopts_and_fopts()

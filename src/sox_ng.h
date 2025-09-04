@@ -2503,7 +2503,7 @@ typedef enum lsx_getopt_flags_t {
 Plugins API:
 lsx_getopt long option descriptor.
 */
-typedef struct lsx_option_t {
+typedef struct lsx_option {
     char const *     name;    /**< Name of the long option. */
     lsx_option_arg_t has_arg; /**< Whether the long option supports an argument and, if so, whether the argument is required or optional. */
     int *            flag;    /**< Flag to set if argument is present. */
@@ -2514,7 +2514,7 @@ typedef struct lsx_option_t {
 Plugins API:
 lsx_getopt session information (initialization data and state).
 */
-typedef struct lsx_getopt_t {
+typedef struct lsx_getopt {
     int                  argc;     /**< IN    argc:      Number of arguments in argv */
     char * const *       argv;     /**< IN    argv:      Array of arguments */
     char const *         shortopts;/**< IN    shortopts: Short option characters */
