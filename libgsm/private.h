@@ -103,6 +103,8 @@ extern word	gsm_asr  	P((word a, int n));
 # define GSM_L_MULT(a, b) /* word a, word b */	\
 	(((longword)(a) * (longword)(b)) << 1)
 
+#if 0
+/* This macro provokes compiler warnings about signed/unsigned conversions */
 # define GSM_L_ADD(a, b)	\
 	( (a) <  0 ? ( (b) >= 0 ? (a) + (b)	\
 		 : (utmp = (ulongword)-((a) + 1) + (ulongword)-((b) + 1)) \
@@ -110,6 +112,9 @@ extern word	gsm_asr  	P((word a, int n));
 	: ((b) <= 0 ? (a) + (b)   \
 	          : (utmp = (ulongword)(a) + (ulongword)(b)) >= MAX_LONGWORD \
 		    ? MAX_LONGWORD : utmp))
+#else
+# define GSM_L_ADD(a, b) gsm_L_add(a, b)
+#endif
 
 /*
  * # define GSM_ADD(a, b)	\

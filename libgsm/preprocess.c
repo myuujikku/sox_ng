@@ -50,7 +50,9 @@ void Gsm_Preprocess P3((S, s, so),
 	word		SO;
 
 	longword	ltmp;		/* for   ADD */
+#if 0
 	ulongword	utmp;		/* for L_ADD */
+#endif
 
 	register int		k = 160;
 

@@ -402,11 +402,14 @@ static void RPE_grid_positioning P3((Mc,xMp,ep),
 	assert(0 <= Mc && Mc <= 3);
 
         switch (Mc) {
-                case 3: *ep++ = 0;
-                case 2:  do {
-                                *ep++ = 0;
-                case 1:         *ep++ = 0;
-                case 0:         *ep++ = *xMp++;
+                case 3: *ep++ = 0; goto two;
+                case 2:
+two:		         do {
+                                *ep++ = 0; goto one;
+                case 1:
+one:                            *ep++ = 0; goto zero;
+                case 0:
+zero:                           *ep++ = *xMp++;
                          } while (--i);
         }
         while (++Mc < 4) *ep++ = 0;
@@ -459,6 +462,8 @@ void Gsm_RPE_Encoding P5((S,e,xmaxc,Mc,xMc),
 	word	xM[13], xMp[13];
 	word	mant, exp;
 
+	if (S) assert(S); /* Shut compiler warning up */
+
 	Weighting_filter(e, x);
 	RPE_grid_selection(x, xM, Mc);
 
@@ -480,6 +485,8 @@ void Gsm_RPE_Decoding P5((S, xmaxcr, Mcr, xMcr, erp),
 {
 	word	exp, mant;
 	word	xMp[ 13 ];
+
+	if (S) assert(S); /* Shut compiler warning up */
 
 	APCM_quantization_xmaxc_to_exp_mant( xmaxcr, &exp, &mant );
 	APCM_inverse_quantization( xMcr, mant, exp, xMp );

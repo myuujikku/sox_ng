@@ -329,6 +329,7 @@ void Gsm_LPC_Analysis P3((S, s,LARc),
         word 		 * LARc)	/* 0..7   LARc's	OUT	*/
 {
 	longword	L_ACF[9];
+	if (S) assert(S); /* Shut compiler warning up */
 
 #if defined(USE_FLOAT_MUL) && defined(FAST)
 	if (S->fast) Fast_Autocorrelation (s,	  L_ACF );

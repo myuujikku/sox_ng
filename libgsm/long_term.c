@@ -879,6 +879,7 @@ void Gsm_Long_Term_Predictor P7((S,d,dp,e,dpp,Nc,bc), 	/* 4x for 160 samples */
 {
 	assert( d  ); assert( dp ); assert( e  );
 	assert( dpp); assert( Nc ); assert( bc );
+	if (S) assert(S); /* Shut compiler warning up */
 
 #if defined(FAST) && defined(USE_FLOAT_MUL)
 	if (S->fast)
