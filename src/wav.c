@@ -1643,15 +1643,19 @@ static int wavwritehdr(sox_format_t * ft, int second_header)
         break;
     }
 
-    /* WAV files can't speciy lengths more than 4G samples or 4GB of data:
-     * warn and write UNSPEC instead of creating files of a random size. */
-    if (dwSamplesWritten > 0xffffffff) {
-        lsx_warn("length exceeds 4G samples: file may read truncated");
-	dwSamplesWritten = MS_UNSPEC;
-    }
-    if (dwDataLength > 0xffffffff) {
-        lsx_warn("length exceeds 4GB of data: file may read truncated");
-	dwDataLength = MS_UNSPEC;
+    /* WAV files can't specify more than 4G samples or 4GB of data:
+     * warn and write UNSPEC instead of creating files with a random
+     * (truncated) size field.
+     */
+    if (second_header) {
+	if (dwSamplesWritten > 0xffffffffu) {
+	    lsx_warn("length is 4G or more samples: file may read truncated");
+	    dwSamplesWritten = MS_UNSPEC;
+	}
+	if (dwDataLength > 0xffffffffu) {
+	    lsx_warn("length is 4GB or more of data: file may read truncated");
+	    dwDataLength = MS_UNSPEC;
+	}
     }
 
     /* if not PCM, write the 'fact' chunk */
