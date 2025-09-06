@@ -23,6 +23,7 @@ typedef struct {
   double             att, beta, phase, Fc0, Fc1, tbw0, tbw1;
   int                num_taps[2];
   sox_bool           round;
+  sox_bool           delete;
 } priv_t;
 
 static int create(sox_effect_t * effp, int argc, char * * argv)
@@ -32,7 +33,7 @@ static int create(sox_effect_t * effp, int argc, char * * argv)
   char * parse_ptr = argv[0];
   int i = 0;
   lsx_getopt_t optstate;
-  lsx_getopt_init(argc, argv, "+ra:b:p:MILt:n:", NULL, lsx_getopt_flag_none, 1, &optstate);
+  lsx_getopt_init(argc, argv, "+ra:b:p:MILt:n:d", NULL, lsx_getopt_flag_none, 1, &optstate);
 
   b->filter_ptr = &b->filter;
   p->phase = 50;
@@ -52,6 +53,7 @@ static int create(sox_effect_t * effp, int argc, char * * argv)
       case 't': p->tbw1 = lsx_parse_frequency(optstate.arg, &parse_ptr2);
         if (p->tbw1 < 1 || *parse_ptr2) return lsx_usage(effp);
         break;
+      case 'd': p->delete = sox_true; break;
       default: c = 0;
     }
     if ((p->att && p->beta >= 0) || (p->tbw1 && p->num_taps[1]))
@@ -107,6 +109,11 @@ static int start(sox_effect_t * effp)
     int i, n, post_peak, longer;
 
     if (p->Fc0 >= Fn || p->Fc1 >= Fn) {
+      /* If low-pass filtering at a frequency above the sample rate 
+       * and -d, pass data through unmodified (i.e. remove ourselves)
+       */
+      if (p->Fc0 == 0 && p->delete) return SOX_EFF_NULL;
+
       lsx_fail("filter frequency must be less than sample-rate / 2");
       return SOX_EOF;
     }
@@ -148,7 +155,7 @@ sox_effect_handler_t const * lsx_sinc_effect_fn(void)
   static sox_effect_handler_t handler;
   handler = *lsx_dft_filter_effect_fn();
   handler.name = "sinc";
-  handler.usage = "[-a att|-b beta] [-p phase|-M|-I|-L] [-t tbw|-n taps] [freqHP][-freqLP [-t tbw|-n taps]]";
+  handler.usage = "[-a att|-b beta] [-p phase|-M|-I|-L] [-t tbw|-n taps] [freqHP][-freqLP [-t tbw|-n taps]] [-r] [-d]";
   handler.getopts = create;
   handler.start = start;
   handler.priv_size = sizeof(priv_t);

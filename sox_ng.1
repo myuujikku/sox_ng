@@ -3209,7 +3209,7 @@ that's longer than 1s and quieter than 3%, trim that to 1s and so on.
 .XX
 .TP
 \fBsinc\fR [\fB\-a\fI att\fR\^|\^\fB\-b\fI beta\fR] [\fB\-p\fI phase\fR\^|\^\fB\-M\fR\^|\^\fB\-I\fR\^|\^\fB\-L\fR] \:[\fB\-t\fI tbw\fR\^|\^\fB\-n\fI taps\fR]
-[\fIfreqHP\fR]\:[\fB\-\fIfreqLP\fR [\fB\-t\fR tbw\^|\^\fB\-n\fR taps]] [\fB\-r\fR]]
+[\fIfreqHP\fR]\:[\fB\-\fIfreqLP\fR [\fB\-t\fR tbw\^|\^\fB\-n\fR taps]] [\fB\-r\fR]] [\fB\-d\fR]]
 .SP
 Apply a kaiser-windowed low-pass, high-pass, band-pass or band-reject filter
 to the signal.
@@ -3255,6 +3255,13 @@ The
 .B \-r
 option controls whether the filter should round the number of taps to the closest integer
 instead of truncating it.
+.SP
+The
+.B \-d
+option specifies that, if a low-pass filter is being created and
+the cutoff frequency is at or above the Nyquist frequency,
+the \fBsinc\fP effect should be deleted from the effects chain
+instead of failing.
 .SP
 This effect supports the \fB\-\-plot\fR global option.
 .TP
