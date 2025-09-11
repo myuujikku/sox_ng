@@ -1336,7 +1336,7 @@ sox_get_format_fns(void)
   {
     lt_dlhandle lth = lt_dlopenext(file);
     const char *end = file + strlen(file);
-    const char prefix[] = "sox_fmt_";
+    const char prefix[] = "sox_ng_fmt_";
     char fnname[MAX_NAME_LEN];
     char *start = strstr(file, prefix);
 
