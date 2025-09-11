@@ -38,6 +38,9 @@ cd sox_ng*
 ./configure
 make
 ```
+On most systems you should only get two compiler warnings
+about `#pragma STDC FENV_ACCESS`
+
 Install it:
 ```
 make install
