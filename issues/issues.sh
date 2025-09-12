@@ -20,6 +20,8 @@
 # - id            Unique number in all issues on forgejo
 # - username      Who created the issue
 # - created_at    When it was created
+# - updated_at    When it was last updated on the server
+#                 The format of *_at is "2025-02-11T00:41:06Z"
 #
 # It requires all issues to have different titles because
 # that's what it indexes them by, and new issues won't have a number yet.
@@ -27,17 +29,18 @@
 # could be possible by sorting them by number and doing new issues last.
 #
 # putissues is chatty and its output to stdout is one line for each change.
-# Errors go to stderr, so if you need it to be silent, >/dev/null
+# Errors go to stderr, so if you need it to be silent except for errors >/dev/null
 #
 # It can be run from the top directory or in the issues/ directory,
-# which both makes it work when run as issues/getissues.sh and
-# if you're working in issues/ you can create issues/issues and it will
+# which make it work both when run as issues/getissues.sh and
+# if you're working in issues/ with a directory issues/issues; it will
 # download them therein to avoid cluttering the working directory and
-# as an easy way of keeping a copy of what it outputs as you develop
-# by mving issues/ to some other name.
+# as an easy way of keeping a copy the proper output if you're working on it
+# by moving issues/ to some other name.
+# The -o option tells it to use a different directory.
 #
 # The site, owner and repo default to the remote origin of the git
-# directory you're in, can be specified as codeberg.org/sox_ng/issues
+# directory you're in, can be specified as codeberg.org/sox_ng/sox_ng
 # or the individual components can be overridden by the -s -o and -r flags.
 #
 # This is really two programs that share many subroutines:
@@ -65,11 +68,13 @@
 # Documentation for the codeberg issues API is at
 # https://codeberg.org/api/swagger#/issue
 #
-#	Martin Guy <martinwguy@gmail.com>, July-November 2024
+#       Martin Guy <martinwguy@gmail.com>, July-November 2024
 
 # TODO:
 # - If a URL transfer failed due to bad network connectivity, retry it.
-# - When creating new issues from local, fill in creation date and username
+# - When creating new issues from local, fill in creation date and username.
+#   You can't set or change the remote creation date, but it your clocks are
+#   synchronized it will be the same within a second or two.
 
 # For function-local variables, bash, dash and ksh have "local";
 # ksh has "typeset"
@@ -78,7 +83,7 @@ test -n "$KSH_VERSION" && alias local=typeset
 # dash's built-in "echo" always interprets backslash sequences
 # so replace it with the more portable "printf".
 # For issue bodies or json, don't call printf which may be an external command
-# because that limits the size of the argument to 128K or whatver.
+# because that limits the size of the argument to 128K or whatever.
 # If you know you don't want a trailing newline, use echo_n
 
 echo() {
@@ -115,6 +120,7 @@ usage() {
     echo '         (valid only with putissues)'
     echo '-O       Only fetch open issues (valid only with getissues)'
     echo '-U       Show the URLs that curl is putting to (for debugging)'
+    echo '-J       Dump the remote issue list to issues.json (for debugging)'
   } 1>&2
 }
 
@@ -189,6 +195,7 @@ transfer=	# wget or curl
 issuesdir=issues
 username=
 password=
+dumpissues=false
 
 while [ $# -gt 0 ]
 do
@@ -198,6 +205,7 @@ do
     -D) allow_delete=true; shift ;;
     -O) open_only=true; shift;;
     -U) debug_URLs=true; shift ;;
+    -J) dumpissues=true; shift ;;
     -c) transfer=curl; shift ;;
     -w) transfer=wget; shift ;;
 
@@ -376,11 +384,11 @@ select_transfer()
 
 select_transfer
 
-# Make sure jq is present
-if echo '' | jaq > /dev/null
+# Make sure jaq (faster) or jq is present
+if echo '' | jaq > /dev/null 2>&1
 then
     jq="jaq -c"
-elif echo '' | jq > /dev/null
+elif echo '' | jq > /dev/null 2>&1
 then
     jq="jq -c"
 else
@@ -447,7 +455,7 @@ geturl() {
     case $transfer in
     curl) command="curl --fail --silent --compressed -S -L --location-trusted \
 			-H Accept:application/json -X $method" ;;
-    wget) command="wget -nv -O - --compression=gzip \
+    wget) command="wget -q -O - --compression=gzip \
 			--header Accept:application/json" ;;
     esac
 
@@ -722,6 +730,11 @@ fetchissues() {
     # Forgejo includes pull requests in the issues. Ignore them.
     rissues_json="$(echo "$rissues_json" | \
 		    $jq 'del(.[] | select(.pull_request != null))')"
+
+    if $dumpissues
+    then
+	echo "$rissues_json" | eval "$(echo "$jq" | sed 's/ -c//')" > issues.json
+    fi
 }
 
 # Write remote issues into the local directory
@@ -746,7 +759,7 @@ getissues() {
     local url
 
     # Remove any previously produced output
-    for a in *.md
+    for a in *.md .*.md
     do
 	# Guard against issues whose title ends in .md
 	test -d "$a" && continue
@@ -755,11 +768,11 @@ getissues() {
 	# though they may have created an issue called "*" (!)
 	test "$a" = "*.md" && [ ! -f "*.md" ] && continue
 
-	test -f "$a" && rm "$a"
+	test -f "$a" && rm ./"$a"
 	# If we were interrupted, we may have created an .md file
 	# but not its corresponding directory so check first.
 	dirname="$(echo "$a" | sed 's/\.md$//')"
-	test -d "$dirname" && rm -r "$dirname"
+	test -d "$dirname" && rm -r ./"$dirname"
     done
 
     echo "$rissues_json" | $jq -r '.[].number' | while read -r number
@@ -779,15 +792,15 @@ getissues() {
 	# Check for duplicate titles
 	if [ -f "$ftitle".md ]
 	then
-	    echo "Ignoring another issue with the same title: $ftitle"
+	    echo "Ignoring issue $number with the same title as $(cat ./"$ftitle"/number): '$ftitle'"
 	    continue
 	fi
 	# Some issue bodies have all \n and others have all \r\n. Go figure.
 	echo "$issue" | $jq -r .body | tr -d '\r' > "$ftitle".md
 
 	# Save metadata: number, id, milestone and labels
-	mkdir "$ftitle"
-	if cd "$ftitle"
+	mkdir ./"$ftitle"
+	if cd ./"$ftitle"
 	then
 	    # Forgejo includes pull requests as issues with a non-null
 	    # .pull_request field. We don't want them in the issues.
@@ -803,6 +816,7 @@ getissues() {
 	    id="$(echo "$issue" | $jq -r .id)"; echo "$id" > id
 	    echo "$issue" | $jq -r .state > state
 	    echo "$issue" | $jq -r .created_at > created_at
+	    echo "$issue" | $jq -r .updated_at > updated_at
 	    echo "$issue" | $jq -r .user.username > username
 
 	    # Items that may be present
@@ -888,12 +902,12 @@ putissues() {
 	# There could be an issue called "*" (!)
 	if [ "$ftitle" = "*.md" ] && [ ! -e "*.md" ]
 	then
-	    echo "There are no issues here!"
+	    echo "There are no issues in `pwd`"
 	    exit 1
 	fi
 
 	# Guard against issues whose title ends in .md
-	test -d "$ftitle" && continue
+	test -d ./"$ftitle" && continue
 
 	# and files called ".md"
 	if [ "$ftitle" = ".md" ]
@@ -903,7 +917,7 @@ putissues() {
 	fi
 
 	# Hereon, $ftitle is the issue's directory name
-	ftitle="$(basename "$ftitle" .md)"
+	ftitle="$(basename ./"$ftitle" .md)"
 
 	# Ignore any pull requests left over from when we used to store them
 	if [ -f "$ftitle"/pull_request ]
@@ -912,13 +926,13 @@ putissues() {
 	fi
 
 	# New issues may not have a directory
-	mkdir -p "$ftitle"
+	mkdir -p ./"$ftitle"
 
 	# Read its metadata
 
 	if [ -f "$ftitle/title" ]
 	then
-	    title="$(cat "$ftitle"/title)"
+	    title="$(cat ./"$ftitle"/title)"
 	else
 	    # Probably a new issue
 	    title="$ftitle"
@@ -928,27 +942,27 @@ putissues() {
 	    if echo "$ftitle" | grep -q '/:\\"'
 	    then echo "Warning: On Windows, characters /\\:\" are invalid in ${ftitle}.md" 1>&2
 	    fi
-	    echo "$title" > "$ftitle"/title
+	    $dryrun || echo "$title" > "$ftitle"/title
 	fi
 	if [ -f "$ftitle"/number ]
-	then number="$(cat "$ftitle"/number)"
+	then number="$(cat ./"$ftitle"/number)"
 	else number=
 	fi
 	if [ -f "$ftitle/id" ]
-	then id="$(cat "$ftitle"/id)"
+	then id="$(cat ./"$ftitle"/id)"
 	else id=
 	fi
 	if [ -f "$ftitle/state" ]
-	then state="$(cat "$ftitle"/state)"
+	then state="$(cat ./"$ftitle"/state)"
 	else state=open
-	     echo open > "$ftitle"/state
+	     $dryrun || echo open > "$ftitle"/state
 	fi
 	if [ -f "$ftitle/milestone" ]
-	then milestone="$(cat "$ftitle"/milestone)"
+	then milestone="$(cat ./"$ftitle"/milestone)"
 	else milestone=
 	fi
 	if [ -f "$ftitle/labels" ]
-	then labels="$(cat "$ftitle"/labels)"
+	then labels="$(cat ./"$ftitle"/labels)"
 	else labels=
 	fi
 
@@ -1098,13 +1112,14 @@ putissues() {
 		echo "$id" > "$ftitle"/id
 	    echo "$result" | $jq -r .user.login > "$ftitle"/username
 	    echo "$result" | $jq -r .created_at > "$ftitle"/created_at
+	    echo "$result" | $jq -r .updated_at > "$ftitle"/updated_at
 
 	    # You have to create the issue and then add attachments to it
 	    if [ -d "$ftitle"/assets ]
 	    then
 		test -d "$ftitle"/assets && \
-		(cd "$ftitle"/assets && find . -maxdepth 1 -type f | \
-					sed 's|^\./||') | \
+		(cd ./"$ftitle"/assets && find . -maxdepth 1 -type f | \
+					  sed 's|^\./||') | \
 		while read -r name
 		do
 		    result="$(puturl POST -a \
@@ -1112,7 +1127,21 @@ putissues() {
 			      "$ftitle/assets/$name" \
 			      "#$number '$title': Failed to attach '$name'")"
 		done
+	        # That may have updated its updated_at field
+		if result="$(geturl GET -r "$apirepo/issues/$number" \
+				    "#$number '$title': Failed to refetch")"
+		then
+		    old="$(cat ./"$ftitle"/updated_at)"
+		    new="$(echo "$result" | $jq -r .updated_at > "$ftitle"/updated_at)"
+		    if [ "$old" != "$new" ]
+		    then
+			echo "Updating local last-modified time from $old to $new"
+			echo "$result" | $jq -r .updated_at > "$ftitle"/updated_at
+		    fi
+		fi
 	    fi
+
+	    echo "https://$site/$owner/$repo/issues/$number"
 
 	    continue
 	fi
@@ -1131,6 +1160,8 @@ putissues() {
 	then
 	    # The local issue has a number
 	    # but the issue doesn't exist on the remote server.
+	    # This probably means we are updating an old copy
+	    # of the repository that we pulled from.
 	    # We can't create a new issue with a specified number
 	    # so remember it and create them all afterwards.
 	    new_issue_nums="$new_issue_nums $number"
@@ -1147,9 +1178,21 @@ putissues() {
 	    continue
 	fi
 
-	body="$(tr -d '\r' < "$ftitle".md)"
+	# Make sure older local copies don't overwrite issues that have been
+	# updated on the server.
+
+	if [ -f "$ftitle"/updated_at ] && \
+	   [ "$(cat ./"$ftitle"/updated_at)" != \
+	     "$(echo "$rissue_json" | $jq -r ".updated_at")" ]
+	then
+	    echo "Remote issue '$ftitle' has been updated since we got it" 1>&2
+	    echo "Here: '$(cat ./"$ftitle"/updated_at)' There: '$(echo "$rissue_json" | $jq -r ".updated_at")'" 1>&2
+	    continue
+	fi
 
 	# Update the remote issue from the local one.
+
+	body="$(tr -d '\r' < "$ftitle".md)"
 
 	data="{"	#}
 	rtitle="$(echo "$rissue_json" | $jq -r .title)"
@@ -1274,8 +1317,8 @@ putissues() {
 	    echo "$rassets_json" > "$tmp"
 
 	    test -d "$ftitle"/assets && \
-	    (cd "$ftitle"/assets && find . -maxdepth 1 -type f | \
-				    sed 's|^\./||') | \
+	    (cd ./"$ftitle"/assets && find . -maxdepth 1 -type f | \
+				      sed 's|^\./||') | \
 	    while read -r name
 	    do
 		rasset_json="$(echo "$rassets_json" | \
@@ -1310,7 +1353,7 @@ putissues() {
 		    *)
 			geturl GET -r "$url" \
 			       "#$number '$title': Failed to fetch asset '$name'" > $rasset ;;
-		    esac && cmp -s "$ftitle/assets/$name" "$rasset" || {
+		    esac && cmp -s ./"$ftitle/assets/$name" "$rasset" || {
 			# geturl succeeded and the files are different
 
 			echo "#$number '$title': Updating asset '$name'"
@@ -1469,24 +1512,24 @@ putissues() {
 	    fi
 
 	    # Hereon, $ftitle is the issue's directory name
-	    ftitle="$(basename "$ftitle" .md)"
+	    ftitle="$(basename ./"$ftitle" .md)"
 
-	    test "$(cat "$ftitle"/number)" -ne "$number" && continue
+	    test "$(cat ./"$ftitle"/number)" -ne "$number" && continue
 
 	    data="{"	# }
-	    title="$(cat "$ftitle"/title)"
+	    title="$(cat ./"$ftitle"/title)"
 	    data="$data,\"title\":$(ecma_quote -n "$title")"
 	    data="$data,\"body\":$(ecma_quote "$(tr -d '\r' < "$ftitle".md)")"
 
 	    # New issues by default are created open
-	    if [ -f "$ftitle"/state ] && [ "$(cat "$ftitle"/state)" = closed ]
+	    if [ -f "$ftitle"/state ] && [ "$(cat ./"$ftitle"/state)" = closed ]
 	    then data="$data,\"state\":\"closed\""
 	    fi
 
 	    # You can't set the created_at field or username when PATCHING
 	    # an issue, nor when creating it.
 
-	    milestone="$(cat "$ftitle"/milestone 2> /dev/null)"
+	    milestone="$(cat ./"$ftitle"/milestone 2> /dev/null)"
 	    if [ -n "$milestone" ]
 	    then
 		# Find the milestone id from its name
@@ -1549,8 +1592,8 @@ putissues() {
 	    if [ -d "$ftitle"/assets ]
 	    then
 		test -d "$ftitle"/assets && \
-		(cd "$ftitle"/assets && find . -maxdepth 1 -type f | \
-					sed 's|^\./||') | \
+		(cd ./"$ftitle"/assets && find . -maxdepth 1 -type f | \
+					  sed 's|^\./||') | \
 		while read -r name
 		do
 		    result="$(puturl POST -a \
