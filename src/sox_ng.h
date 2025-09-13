@@ -1025,7 +1025,7 @@ if clipping occurs.
 #define SOX_FILE_STEREO  0x0200 /**< Client API: Do channel restrictions allow stereo? */
 #define SOX_FILE_QUAD    0x0400 /**< Client API: Do channel restrictions allow quad? */
 
-#define SOX_FILE_CHANS   (SOX_FILE_MONO | SOX_FILE_STEREO | SOX_FILE_QUAD) /**< Client API: No channel restrictions */
+#define SOX_FILE_CHANS   (SOX_FILE_MONO | SOX_FILE_STEREO | SOX_FILE_QUAD) /**< Client API: Mask to interrogate channels restrictions. If a sox_format_handler_t.flags & SOX_FILE_CHANS is 0 there are no restrictions. */
 #define SOX_FILE_LIT_END (SOX_FILE_ENDIAN | 0)                             /**< Client API: File is little-endian */
 #define SOX_FILE_BIG_END (SOX_FILE_ENDIAN | SOX_FILE_ENDBIG)               /**< Client API: File is big-endian */
 
