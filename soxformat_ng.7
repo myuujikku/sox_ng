@@ -58,6 +58,12 @@ To see if SoX has support for an optional format or device, enter
 .B sox_ng \-h
 and look for its name under
 `AUDIO FILE FORMATS' or `AUDIO DEVICE DRIVERS'.
+.SP
+To know everything about a format \- whether it reads it or writes it or both
+and what encodings it can write \- enter something like
+.B \-\-help\-format wav
+or, to see details for all formats,
+.BR \-\-help\-format\ all .
 .SS FORMATS & DEVICE DRIVERS
 .TP
 \fB.raw\fR (also with \fB\-t sndfile\fR), \
