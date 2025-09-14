@@ -13,7 +13,7 @@ ${sox:-sox} -n -n synth 1 sinc -9.0 || status=$?
 ${sox:-sox} -n -n synth 1 sinc 430-450 || status=$?
 ${sox:-sox} -n -n synth 1 sinc 450-430 || status=$?
 ${sox:-sox} -n -n synth 1 sinc -t .044k 3k-4k || status=$?
-# SoX has always taken single digits as an invalid option
+# Classic SoX has always taken single digits as an invalid option
 ${sox:-sox} -n -n synth 1 sinc -9 || status=$?
 
 # These should be invalid... and exit 1, not dump core!

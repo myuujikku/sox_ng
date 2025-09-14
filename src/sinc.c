@@ -63,26 +63,40 @@ static int create(sox_effect_t * effp, int argc, char * * argv)
       GETOPT_LOCAL_NUMERIC(optstate, 'n', taps, 11, 32767)
       case 't': p->tbw1 = lsx_parse_frequency(optstate.arg, &parse_ptr2);
         if (p->tbw1 < 1) {
-      lsx_fail("transition bandwidth must be 1 Hz or more");
+          lsx_fail("transition bandwidth must be 1 Hz or more");
           return SOX_EOF;
         }
         if (*parse_ptr2) {
-          lsx_fail("don't understand `%s' after a frequency", parse_ptr2);
+          lsx_fail("don't understand `%s' after -t", parse_ptr2);
           return SOX_EOF;
         }
         break;
       case 'd': p->delete = sox_true; break;
       case '?': case ':':
-	if (optstate.ind < argc &&
-	    argv[optstate.ind][0] == '-' && isdigit(argv[optstate.ind][1]))
-	  /* "-1000" */
-	  goto endwhile;
-        if (optstate.ind > argc)
-	  /* Missing obbligatory parameter */
-	  lsx_fail("%s what?", argv[optstate.ind - 2]);
-          return SOX_EOF;
+        if (optstate.ind < argc) {
+	  /* '-' and more than one character or something that doesn't
+	   * start with '-' (which should be a frequency range).
+	   + optstate.ind is left indexing the unrecognized option.
+	   */
+	  if (argv[optstate.ind][0] == '-') {
+	    char c1 = argv[optstate.ind][1];
+	    if (isdigit(c1) || c1 == '%' || (c1 >= 'A' && c1 <= 'G'))
+	      /* "-1000" or "-A4" or "-%[0-9.]*" or "-%-[0-9.]*" */
+              goto endwhile;
+	  }
 	}
-	/* Invalid option flag */
+        if (optstate.ind > argc) {
+          /* Missing obligatory parameter */
+          lsx_fail("%s requires an argument", argv[optstate.ind - 2]);
+          return SOX_EOF;
+        }
+        if (isdigit(argv[optstate.ind - 1][1])) {
+          /* -1 to -9: optstate.ind advances for an unknown single-char flag */
+	  /* Not sure what -0 is supposed to mean - it gives silence */
+          optstate.ind--;
+          goto endwhile;
+        }
+        /* Invalid option flag */
         lsx_fail("unknown option `-%c'", optstate.opt);
 	return lsx_usage(effp);
 
@@ -98,7 +112,7 @@ endwhile: /* Alas, poor "break" */
       return SOX_EOF;
     }
     if (p->tbw1 && p->num_taps[1]) {
-      lsx_fail("You can only give one of -t and -n");
+      lsx_fail("you can only give one of -t and -n");
       return SOX_EOF;
     }
     if (!i || !p->Fc1)
@@ -115,11 +129,11 @@ endwhile: /* Alas, poor "break" */
     return SOX_EOF;
   }
   if (p->Fc0 < 0 && p->Fc1 < 0) {
-    lsx_fail("frequencies missing: LO=highpass -HI=lowpass LO-HI=bandpass HI-LO=bandreject");
+    lsx_fail("missing frequency range");
     return SOX_EOF;
   }
   if (p->Fc0 < 0 || p->Fc1 < 0) {
-    lsx_fail("bad frequency range: 3k=highpass -4k=lowpass 3k-4k=bandpass 4k-3k=bandreject");
+    lsx_fail("invalid frequency range");
     return SOX_EOF;
   }
   if (*parse_ptr) {
