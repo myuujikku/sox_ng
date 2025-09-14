@@ -18,20 +18,20 @@
 #include "sox_i.h"
 
 typedef struct {
-  double gain, colour, last_in, last_out, b0, b1, a1;
+  double gain, color, last_in, last_out, b0, b1, a1;
 } priv_t;
 
 static int create(sox_effect_t * effp, int argc, char * * argv)
 {
   priv_t * p = (priv_t *)effp->priv;
   --argc, ++argv;
-  p->gain = p->colour = 20;
+  p->gain = p->color = 20;
   do {
     NUMERIC_PARAMETER(gain, 0, 100)
-    NUMERIC_PARAMETER(colour, 0, 100)
+    NUMERIC_PARAMETER(color, 0, 100)
   } while (0);
   p->gain = dB_to_linear(p->gain);
-  p->colour /= 200;
+  p->color /= 200;
   return argc? lsx_usage(effp) : SOX_SUCCESS;
 }
 
@@ -54,7 +54,7 @@ static int flow(sox_effect_t * effp, const sox_sample_t * ibuf,
     SOX_SAMPLE_LOCALS;
     double d = SOX_SAMPLE_TO_FLOAT_64BIT(*ibuf++, dummy), d0 = d;
     d *= p->gain;
-    d += p->colour;
+    d += p->color;
     d = d < -1? -2./3 : d > 1? 2./3 : d - d * d * d * (1./3);
     p->last_out = d - p->last_in + .995 * p->last_out;
     /* Denormalized floating point values run between 7 and 113 times slower
@@ -69,7 +69,7 @@ static int flow(sox_effect_t * effp, const sox_sample_t * ibuf,
 sox_effect_handler_t const * lsx_overdrive_effect_fn(void)
 {
   static sox_effect_handler_t handler = {
-    "overdrive", "[gain(20) [colour(20)]]", NULL,
+    "overdrive", "[gain(20) [color(20)]]", NULL,
     SOX_EFF_GAIN, create, start, flow, NULL, NULL, NULL, sizeof(priv_t)};
   return &handler;
 }

@@ -66,7 +66,7 @@ typedef struct {
   /* Parameters */
   double     pixels_per_sec, window_adjust;
   int        x_size0, y_size, Y_size, dB_range, gain, spectrum_points, perm;
-  sox_bool   monochrome, light_background, high_colour, slack_overlap, no_axes;
+  sox_bool   monochrome, light_background, high_color, slack_overlap, no_axes;
   sox_bool   normalize, raw, alt_palette, truncate;
   win_type_t win_type;
   char const * out_name, * title, * comment;
@@ -253,7 +253,7 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
     case 'm': p->monochrome       = sox_true;   break;
     case 'n': p->normalize        = sox_true;   break;
     case 'l': p->light_background = sox_true;   break;
-    case 'h': p->high_colour      = sox_true;   break;
+    case 'h': p->high_color       = sox_true;   break;
     case 'T': p->truncate         = sox_true;   break;
     case 'L': p->log10_axis       = sox_true;   break;
     case 't': p->title            = optstate.arg; break;
@@ -585,7 +585,7 @@ static int drain(sox_effect_t * effp, sox_sample_t * obuf_, size_t * osamp)
 
 enum {Background, Text, Labels, Grid, fixed_palette};
 
-static unsigned colour(priv_t const * p, double x)
+static unsigned color(priv_t const * p, double x)
 {
   unsigned c = x < -p->dB_range? 0 : x >= 0? p->spectrum_points - 1 :
       1 + (1 + x / p->dB_range) * (p->spectrum_points - 2);
@@ -612,7 +612,7 @@ static void make_palette(priv_t const * p, png_color * palette)
     int at = p->light_background? p->spectrum_points - 1 - i : i;
     if (p->monochrome) {
       c[2] = c[1] = c[0] = x;
-      if (p->high_colour) {
+      if (p->high_color) {
         c[(1 + p->perm) % 3] = x < .4? 0 : 5 / 3. * (x - .4);
         if (p->perm < 3)
           c[(2 + p->perm) % 3] = x < .4? 0 : 5 / 3. * (x - .4);
@@ -622,7 +622,7 @@ static void make_palette(priv_t const * p, png_color * palette)
       palette[at].blue = .5 + 255 * c[2];
       continue;
     }
-    if (p->high_colour) {
+    if (p->high_color) {
       static const int states[3][7] = {
         {4,5,0,0,2,1,1}, {0,0,2,1,1,3,2}, {4,1,1,3,0,0,2}};
       int j, phase_num = min(7 * x, 6);
@@ -804,7 +804,7 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
 	}
 	for (col = 0; col < p->cols; ++col) {
 	  pixel(!p->raw * left + col, base + row) =
-	    colour(p, pdBfs(q, dBfsi, col));
+	    color(p, pdBfs(q, dBfsi, col));
 	}
 	/* Y-axis lines */
 	if (!p->raw && !p->no_axes) {
@@ -976,7 +976,7 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
         int y;
 
 	for (y = 0; y < k; ++y) {                          /* Spectrum */
-	  png_byte b = colour(p, p->dB_range * (y / (k - 1.) - 1));
+	  png_byte b = color(p, p->dB_range * (y / (k - 1.) - 1));
 	  int x;
 
 	  for (x = 0; x < spectrum_width; ++x)
@@ -1080,11 +1080,11 @@ sox_effect_handler_t const * lsx_spectrogram_effect_fn(void)
 "-r      Raw spectrogram; no axes or legends",
 "-l      Light background",
 "-m      Monochrome",
-"-h      High colour",
+"-h      High color",
 "-L      Plot the frequency on logarithmic axis",
 "-R L:H  Specify the frequency range (from L to H)",
-"-p num  Permute colours (1-6); default 1",
-"-A      Alternative, inferior, fixed colour-set (for compatibility only)",
+"-p num  Permute colors (1-6); default 1",
+"-A      Alternative, inferior, fixed color-set (for compatibility only)",
 "-t text Title text",
 "-c text Comment text",
 "-o text Output file name; default `spectrogram.png'",

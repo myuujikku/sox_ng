@@ -442,13 +442,13 @@ static int start(sox_effect_t * effp)
       /* Exitation: */
       lsx_vcalloc(chan->buffer, chan->buffer_len);
       for (k = 0, p2 = chan->p2; k < 2 && p2 >= 0; ++k, p2 = chan->p3) {
-        double d1 = 0, d2, colour = pow(2., 4 * (p2 - 1));
+        double d1 = 0, d2, color = pow(2., 4 * (p2 - 1));
         int32_t r = p2 * 100 + .5;
         for (j = 0; j < chan->buffer_len; ++j) {
-          do d2 = d1 + (chan->phase? DRANQD1:dranqd1(r)) * colour;
+          do d2 = d1 + (chan->phase? DRANQD1:dranqd1(r)) * color;
           while (fabs(d2) > 1);
           chan->buffer[j] += d2 * (1 - .3 * k);
-          d1 = d2 * (colour != 1);
+          d1 = d2 * (color != 1);
 #ifdef TEST_PLUCK
           chan->buffer[j] = sin(2 * M_PI * j / chan->buffer_len);
 #endif
