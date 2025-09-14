@@ -62,13 +62,13 @@ static int create(sox_effect_t * effp, int argc, char * * argv)
       GETOPT_LOCAL_NUMERIC(optstate, 'n', taps, 11, 32767)
       case 't': p->tbw1 = lsx_parse_frequency(optstate.arg, &parse_ptr2);
         if (p->tbw1 < 1) {
-	  lsx_fail("transition bandwidth must be 1 Hz or more");
-	  return SOX_EOF;
-	}
-	if (*parse_ptr2) {
-	  lsx_fail("don't understand `%s' after a frequency", parse_ptr2);
-	  return SOX_EOF;
-	}
+      lsx_fail("transition bandwidth must be 1 Hz or more");
+          return SOX_EOF;
+        }
+        if (*parse_ptr2) {
+          lsx_fail("don't understand `%s' after a frequency", parse_ptr2);
+          return SOX_EOF;
+        }
         break;
       case '?': case ':':
 	if (optstate.ind < argc &&
@@ -76,20 +76,21 @@ static int create(sox_effect_t * effp, int argc, char * * argv)
 	  /* "-1000" */
 	  goto endwhile;
         if (optstate.ind > argc)
-	  /* Missing obligatory parameter */
+	  /* Missing obbligatory parameter */
 	  lsx_fail("%s what?", argv[optstate.ind - 2]);
-	else {
-	  /* Invalid option flag */
-          lsx_fail("unknown option `-%c'", optstate.opt);
-	  lsx_usage(effp);
+          return SOX_EOF;
 	}
-	return SOX_EOF;
+	/* Invalid option flag */
+        lsx_fail("unknown option `-%c'", optstate.opt);
+	return lsx_usage(effp);
+
       default: goto endwhile; /* Alas, poor "break" */
       }
       p->att = att; p->beta = beta; p->phase = phase;
       p->num_taps[1] = taps;
     }
-endwhile:
+endwhile: /* Alas, poor "break" */
+
     if (p->att && p->beta >= 0) {
       lsx_fail("You can only give one of -a and -b");
       return SOX_EOF;
