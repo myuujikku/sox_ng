@@ -3370,9 +3370,9 @@ See \fB\-X\fR and \fB\-d\fR.
 X axis pixels per second; the default is auto-calculated to fit the
 audio to the X axis size if its duration is known or given with \fR\-d\fR,
 or 100 otherwise.
-If given in conjunction with \fB\-d\fR, this option affects the width of
-the spectrogram; otherwise, it affects the duration of the
-spectrogram.
+If given without a \fB\-x\fR option when the length of the audio is known,
+this option determines the width of the spectrogram;
+otherwise, it affects the duration of the spectrogram.
 .I num
 can be from 1 (low time resolution) to 5000 (high time resolution)
 and need not be an integer.  SoX
@@ -3505,7 +3505,10 @@ effect is used), the following options may be used:
 .IP \fB\-d\ \fIduration\fR
 This option sets the X axis resolution such that audio with the given
 .I duration
-(a time specification) fits the selected (or default) X axis width.  For
+(a time specification) fits the selected (or default) X axis width.
+It defaults, if the audio length is known, to the audio length minus
+the start time.
+For
 example,
 .XE
    sox_ng input.mp3 output.wav \-n spectrogram \-d 1:00 stats
