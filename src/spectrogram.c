@@ -377,7 +377,7 @@ static int start(sox_effect_t * effp)
   uint64_t d;
 
   if (p->duration_str) {
-    lsx_parsesamples(effp->in_signal.rate, p->duration_str, &d, 't');
+      lsx_parsesamples(effp->in_signal.rate, p->duration_str, &d, 't');
     duration = d / effp->in_signal.rate;
   }
   if (p->start_time_str) {
@@ -400,8 +400,8 @@ static int start(sox_effect_t * effp)
     if (!duration && effp->in_signal.length != SOX_UNKNOWN_LEN) {
       duration = effp->in_signal.length / (effp->in_signal.rate * effp->in_signal.channels);
       duration -= start_time;
-      if (duration <= 0)
-        duration = 1;
+      if (duration < 0)
+        duration = 0;
       continue;
     } else if (!p->x_size) {
       p->x_size = 800;
@@ -1063,8 +1063,8 @@ sox_effect_handler_t const * lsx_spectrogram_effect_fn(void)
 {
   static char const usage[] = "[options]";
   static char const * const extra_usage[] = {
-"-x num  X-axis size in pixels; default: derived or 800",
-"-X num  X-axis pixels/second; default: derived or 100",
+"-x num  X-axis size in pixels; default: derived from -X and -d, or 800",
+"-X num  X-axis pixels/second; default: derived from -x and -d, or 100",
 "-y num  Y-axis size in pixels per channel",
 "-Y num  Total height; default 550",
 "-z num  Z-axis range in dB; default 120",
@@ -1075,14 +1075,14 @@ sox_effect_handler_t const * lsx_spectrogram_effect_fn(void)
 "-W num  Window adjust parameter (-10-10); applies only to Kaiser/Dolph",
 "-s      Slack overlap of windows",
 "-a      Suppress axis lines",
-"-r      Raw spectrogram; no axes or legends",
+"-r      Raw spectrogram: no axes or legends",
 "-l      Light background",
 "-m      Monochrome",
 "-h      High colour",
 "-L      Plot the frequency on logarithmic axis",
 "-R L:H  Specify the frequency range (from L to H)",
-"-p num  Permute colours (1-6); default 1",
-"-A      Alternative, inferior, fixed colour-set (for compatibility only)",
+"-p num  Permute colors (1-6); default 1",
+"-A      Alternative, inferior, fixed color-set",
 "-t text Title text",
 "-c text Comment text",
 "-o text Output file name; default `spectrogram.png'",
