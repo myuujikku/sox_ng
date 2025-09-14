@@ -533,9 +533,15 @@ static int sox_ladspa_kill(sox_effect_t * effp)
   return SOX_SUCCESS;
 }
 
+static char const * const extra_usage[] = {
+  "-l  Compensate for the plugin's latency from its \"latency\" output port",
+  "-r  Replicate a mono plugin to handle multichannel input",
+  NULL
+};
+
 static sox_effect_handler_t sox_ladspa_effect = {
   "ladspa",
-  "module [plugin] {argument}", NULL, 
+  "[-l] [-r] module [plugin] {argument}", extra_usage,
   SOX_EFF_MCHAN | SOX_EFF_CHAN | SOX_EFF_GAIN,
   sox_ladspa_getopts,
   sox_ladspa_start,
