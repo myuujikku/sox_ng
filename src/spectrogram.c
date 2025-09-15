@@ -410,16 +410,13 @@ static int start(sox_effect_t * effp)
     break;
   }
 
-  if (p->y_size) {
-    p->dft_size = 2 * (p->y_size - 1);
+  if (!p->y_size && !p->Y_size) p->Y_size = 550;
+  if (p->Y_size) p->y_size = p->Y_size / effp->in_signal.channels;
+  p->dft_size = 2 * (p->y_size - 1);
 #if !HAVE_FFTW
-    if (!is_p2(p->dft_size) && !effp->flow)
-      p->shared = rdft_init(p->dft_size);
+  if (!is_p2(p->dft_size) && !effp->flow)
+    p->shared = rdft_init(p->dft_size);
 #endif
-  } else {
-   int y = max(32, (p->Y_size? p->Y_size : 550) / effp->in_signal.channels - 2);
-   for (p->dft_size = 128; p->dft_size <= y; p->dft_size <<= 1);
-  }
 
   /* Now that dft_size is set, allocate variable-sized elements of priv_t */
   lsx_vcalloc(p->buf, p->dft_size);
