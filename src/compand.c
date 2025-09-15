@@ -64,7 +64,7 @@ static int getopts(sox_effect_t * effp, int argc, char * * argv)
   lsx_vcalloc(l->channels, pairs);
   l->expectedChannels = pairs;
 
-  /* Now tokenise the rates string and set up these arrays.  Keep
+  /* Now tokenize the rates string and set up these arrays.  Keep
      them in seconds at the moment: we don't know the sample rate yet. */
   for (i = 0, s = strtok(l->arg0, ","); s != NULL; ++i) {
     for (j = 0; j < 2; ++j) {

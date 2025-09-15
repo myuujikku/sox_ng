@@ -742,7 +742,7 @@ static FILE * open_url(char const * identifier)
 	case 63: s = "Maximum file size exceeded"; break;
 	case 64: s = "FTP SSL level failed"; break;
 	case 65: s = "Rewind failed"; break;
-	case 66: s = "Failed to initialise SSL Engine"; break;
+	case 66: s = "Failed to initialize SSL Engine"; break;
 	case 67: s = "Failed to log in"; break;
 	case 68: s = "File not found on TFTP server"; break;
 	case 69: s = "Permission problem on TFTP server"; break;

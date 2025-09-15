@@ -111,7 +111,7 @@ int main(int argc, char * argv[])
 
   assert(argc == 3);
 
-  /* All libSoX applications must start by initialising the SoX library */
+  /* All libSoX applications must start by initializing the SoX library */
   assert(sox_init() == SOX_SUCCESS);
 
   /* Open the input file (with default parameters) */
@@ -136,14 +136,14 @@ int main(int argc, char * argv[])
   assert(sox_add_effect(chain, e, &in->signal, &in->signal) == SOX_SUCCESS);
   free(e);
 
-  /* Create the `vol' effect, and initialise it with the desired parameters: */
+  /* Create the `vol' effect, and initialize it with the desired parameters: */
   e = sox_create_effect(sox_find_effect("vol"));
   assert(sox_effect_options(e, 1, vol) == SOX_SUCCESS);
   /* Add the effect to the end of the effects processing chain: */
   assert(sox_add_effect(chain, e, &in->signal, &in->signal) == SOX_SUCCESS);
   free(e);
 
-  /* Create the `flanger' effect, and initialise it with default parameters: */
+  /* Create the `flanger' effect, and initialize it with default parameters: */
   e = sox_create_effect(sox_find_effect("flanger"));
   assert(sox_effect_options(e, 0, NULL) == SOX_SUCCESS);
   /* Add the effect to the end of the effects processing chain: */

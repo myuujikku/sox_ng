@@ -1072,7 +1072,7 @@ sox_effect_handler_t const * lsx_spectrogram_effect_fn(void)
 "-z num  Z-axis range in dB; default 120",
 "-Z num  Z-axis maximum in dBFS; default 0",
 "-n      normalize: Set Z-axis maximum to the brightest pixel",
-"-q num  Z-axis quantisation (0-249); default 249",
+"-q num  Z-axis quantization (0-249); default 249",
 "-w name Window: Hann(default)/Hamming/Bartlett/Rectangular/Kaiser/Dolph",
 "-W num  Window adjust parameter (-10-10); applies only to Kaiser/Dolph",
 "-s      Slack overlap of windows",

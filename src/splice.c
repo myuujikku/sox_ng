@@ -23,7 +23,7 @@ static double difference(
   double diff = 0;
   size_t i = 0;
 
-  #define _ diff += sqr((double)a[i] - b[i]), ++i; /* Loop optimisation */
+  #define _ diff += sqr((double)a[i] - b[i]), ++i; /* Loop optimization */
   do {_ _ _ _ _ _ _ _} while (i < length); /* N.B. length ≡ 0 (mod 8) */
   #undef _
   return diff;
@@ -149,7 +149,7 @@ static int parse(sox_effect_t * effp, char * * argv, sox_rate_t rate)
     }
     if (*next != '\0') break;
     p->splices[i].overlap = max(p->splices[i].overlap + 4, 16);
-    p->splices[i].overlap &= ~7; /* Make divisible by 8 for loop optimisation */
+    p->splices[i].overlap &= ~7; /* Make divisible by 8 for loop optimization */
 
     if (!argv) {
       if (i > 0 && p->splices[i].start <= p->splices[i-1].start) break;

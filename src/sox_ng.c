@@ -2016,7 +2016,7 @@ static void usage(void)
 "--multi-threaded         Enable parallel effects channels processing"
   };
   static char const * const lines3[] = {
-"--norm                   Guard (see --guard) & normalise",
+"--norm                   Guard (see --guard) and normalize",
 "--play-rate-arg ARG      Default `rate' argument for auto-resample with `play'",
 "--plot gnuplot|octave    Generate script to plot response of filter effect",
 "-q, --no-show-progress   Run in quiet mode; opposite of -S",
@@ -3101,7 +3101,7 @@ int main(int argc, char **argv)
     sox_globals.ranqd1 = (int32_t)(now.tv_sec - now.tv_usec);
   }
 
-  /* Save things that sox_sequence needs to be reinitialised for each segued
+  /* Save things that sox_sequence needs to be reinitialized for each segued
    * block of input files.*/
   ofile_signal_options = ofile->signal;
   ofile_encoding_options = ofile->encoding;

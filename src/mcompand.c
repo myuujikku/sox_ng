@@ -90,7 +90,7 @@ static int sox_mcompand_getopts_1(comp_band_t * l, size_t n, char **argv)
       l->expectedChannels = rates;
       l->delay_buf = NULL;
 
-      /* Now tokenise the rates string and set up these arrays.  Keep
+      /* Now tokenize the rates string and set up these arrays.  Keep
          them in seconds at the moment: we don't know the sample rate yet. */
 
       s = strtok(argv[0], ","); i = 0;

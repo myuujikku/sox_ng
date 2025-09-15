@@ -397,7 +397,7 @@ double * lsx_design_lpf(
   int n = *num_taps, phases = max(k, 1), modulo = max(-k, 1);
   double tr_bw, Fc, rho = phases == 1? .5 : att < 120? .63 : .75;
 
-  Fp /= fabs(Fn), Fs /= fabs(Fn);        /* Normalise to Fn = 1 */
+  Fp /= fabs(Fn), Fs /= fabs(Fn);        /* Normalize to Fn = 1 */
   tr_bw = .5 * (Fs - Fp); /* Transition band-width: 6dB to stop points */
   tr_bw /= phases, Fs /= phases;
   tr_bw = min(tr_bw, .5 * Fs);

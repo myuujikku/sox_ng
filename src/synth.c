@@ -470,7 +470,7 @@ static int start(sox_effect_t * effp)
         max = max(max, chan->buffer[j]);
       }
 
-      /* Normalise: */
+      /* Normalize: */
       for (j = 0, d = 0; j < chan->buffer_len; ++j) {
         chan->buffer[j] = (2 * chan->buffer[j] - max - min) / (max - min);
         d += sqr(chan->buffer[j]);

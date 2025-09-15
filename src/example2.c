@@ -46,7 +46,7 @@ int main(int argc, char * argv[])
   char dummy;
   uint64_t seek;
 
-  /* All libSoX applications must start by initialising the SoX library */
+  /* All libSoX applications must start by initializing the SoX library */
   assert(sox_init() == SOX_SUCCESS);
 
   assert(argc > 1);

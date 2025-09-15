@@ -295,7 +295,7 @@ static int rate_init(
   sox_bool use_hi_prec_clock,/* Increase irrational ratio accuracy.   false   */
   int interpolator,          /* Force a particular coef interpolator.   -1    */
   int max_coefs_size,        /* k bytes of coefs to try to keep below.  400   */
-  sox_bool noSmallIntOpt)    /* Disable small integer optimisations.  false   */
+  sox_bool noSmallIntOpt)    /* Disable small integer optimizations.  false   */
 {
   double att = (bits + 1) * linear_to_dB(2.), attArb = att;    /* pass + stop */
   double tbw0 = 1 - bw_pc / 100, Fs_a = 2 - anti_aliasing_pc / 100;

@@ -49,7 +49,7 @@ static float difference(const float * a, const float * b, size_t length)
   float diff = 0;
   size_t i = 0;
 
-  #define _ diff += sqr(a[i] - b[i]), ++i; /* Loop optimisation */
+  #define _ diff += sqr(a[i] - b[i]), ++i; /* Loop optimization */
   do {_ _ _ _ _ _ _ _} while (i < length); /* N.B. length == 0 (mod 8) */
   #undef _
   return diff;
@@ -174,7 +174,7 @@ static void tempo_setup(tempo_t * t,
   t->segment = sample_rate * segment_ms / 1000 + .5;
   t->search  = sample_rate * search_ms / 1000 + .5;
   t->overlap = max(sample_rate * overlap_ms / 1000 + 4.5, 16);
-  t->overlap &= ~7; /* Make divisible by 8 for loop optimisation */
+  t->overlap &= ~7; /* Make divisible by 8 for loop optimization */
   if (t->overlap * 2 > t->segment)
     t->overlap -= 8;
   lsx_valloc(t->overlap_buf, t->overlap * t->channels);

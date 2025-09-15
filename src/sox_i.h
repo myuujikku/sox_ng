@@ -63,7 +63,7 @@ void lsx_debug_most_impl(char const * fmt, ...) LSX_PRINTF12;
 #define lsx_debug_more sox_get_globals()->subsystem=__FILE__,lsx_debug_more_impl
 #define lsx_debug_most sox_get_globals()->subsystem=__FILE__,lsx_debug_most_impl
 
-/* Digitise one cycle of a wave and store it as
+/* Digitize one cycle of a wave and store it as
  * a table of samples of a specified data-type.
  */
 void lsx_generate_wave_table(

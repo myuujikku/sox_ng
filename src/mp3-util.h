@@ -94,7 +94,7 @@ static size_t mp3_duration_ms(sox_format_t * ft)
   struct mad_header   mad_header;
   struct mad_frame    mad_frame;
   mad_timer_t         time = mad_timer_zero;
-  size_t              initial_bitrate = 0; /* Initialised to prevent warning */
+  size_t              initial_bitrate = 0; /* Initialized to prevent warning */
   size_t              tagsize = 0, consumed = 0, frames = 0;
   sox_bool            vbr = sox_false, depadded = sox_false;
 

@@ -168,7 +168,7 @@ static int startread(sox_format_t * ft)
   else if (encoding == 0x100001a1)
     ft->encoding.encoding = SOX_ENCODING_IMA_ADPCM;
   else {
-    lsx_fail_errno(ft, SOX_EHDR, "unrecognised encoding");
+    lsx_fail_errno(ft, SOX_EHDR, "unrecognized encoding");
     return SOX_EOF;
   }
 

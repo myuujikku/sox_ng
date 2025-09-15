@@ -161,7 +161,7 @@ static float float_conv_dec(float const *fp1, float const *fp2)
  * some remarks about the implementation of the CVSD decoder
  * the principal integrator is integrated into the output filter
  * to achieve this, the coefficients of the output filter are multiplied
- * with (1/(1-1/z)) in the initialisation code.
+ * with (1/(1-1/z)) in the initialization code.
  * the output filter must have a sharp zero at f=0 (i.e. the sum of the
  * filter parameters must be zero). This prevents an accumulation of
  * DC voltage at the principal integration.
