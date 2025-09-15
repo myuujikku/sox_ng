@@ -727,7 +727,7 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
   priv_t *    p        = (priv_t *) effp->priv;
   uLong       font_len = 96 * font_y;
   int         chans    = effp->in_signal.channels;
-  int         c_rows   = p->rows * chans + chans - 1;
+  int         c_rows   = p->rows * chans + (!(p->raw||p->no_axes) ? chans-1 : 0);
   int         rows     = p->raw? c_rows : below + c_rows + 30 + 20 * !!p->title;
   int         cols     = p->raw? p->cols : left + p->cols + between + spectrum_width + right;
   png_byte *  pixels;
@@ -783,7 +783,7 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
 	    pdBfs(q, row, col) += autogain;
       }
 
-      base = !p->raw * below + (chans - 1 - chan) * (p->rows + 1);
+      base = !p->raw * below + (chans - 1 - chan) * (p->rows + !(p->raw || p->no_axes));
 
       for (row = 0; row < p->rows; ++row) {
 	int dBfsi, col, freq;
