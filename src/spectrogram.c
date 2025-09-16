@@ -862,7 +862,7 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
 	  }
 	}
 	/* Used subsequently to position the vertical text of the Y axis */
-	label_width = font_X * strlen(text);
+	label_width = font_X * (int)strlen(text);
       }
 
       /* Y-axis */
@@ -930,7 +930,7 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
 			    (p->rows - 1) / ((font_y * 3 + 1) >> 1),
 			    &limit, &prefix);
 	sprintf(text, "Frequency (%.1sHz)", prefix);         /* Axis label */
-	print_up(10, below + (c_rows - font_X * strlen(text)) / 2, Text, text);
+	print_up(10, below + (c_rows - font_X * (int)strlen(text)) / 2, Text, text);
 	{ int chan;
 	  for (chan = 0; chan < chans; ++chan) {
 	    int base = below + chan * (p->rows + 1);
