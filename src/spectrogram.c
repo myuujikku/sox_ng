@@ -1062,8 +1062,8 @@ sox_effect_handler_t const * lsx_spectrogram_effect_fn(void)
 {
   static char const usage[] = "[options]";
   static char const * const extra_usage[] = {
-"-x num  X-axis size in pixels; default: derived or 800",
-"-X num  X-axis pixels/second; default: derived or 100",
+"-x num  X-axis size in pixels; default: derived from -X and -d or 800",
+"-X num  X-axis pixels/second; default: derived from -x and -d or 100",
 "-y num  Y-axis size in pixels per channel",
 "-Y num  Total height; default 550",
 "-z num  Z-axis range in dB; default 120",
@@ -1085,7 +1085,7 @@ sox_effect_handler_t const * lsx_spectrogram_effect_fn(void)
 "-t text Title text",
 "-c text Comment text",
 "-o text Output file name; default `spectrogram.png'",
-"-d time Audio duration to fit to the X-axis",
+"-d time Time to fit to the X-axis (default: all of it unless -X and -x)",
 "-S pos  Start the spectrogram at the given input time",
     NULL
   };
