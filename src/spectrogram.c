@@ -306,11 +306,10 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
   return optstate.ind !=argc || p->win_type == INT_MAX? lsx_usage(effp) : SOX_SUCCESS;
 }
 
-
 static double make_window(priv_t * p, int end)
 {
   double sum = 0, * w = end < 0? p->window : p->window + end;
-  int i, n = p->dft_size - abs(end);
+  int i, n = 1 + p->dft_size - abs(end);
 
   if (end) memset(p->window, 0, sizeof(*p->window) * (p->dft_size + 1));
   for (i = 0; i < n; ++i) w[i] = 1;
@@ -325,7 +324,7 @@ static double make_window(priv_t * p, int end)
         (p->dB_range + p->gain) * (1.005 + p->window_adjust / 50) + 6);
   }
   for (i = 0; i < p->dft_size; ++i) sum += p->window[i];
-  for (i = 0; i < p->dft_size; ++i) p->window[i] *= 2 / sum
+  for (--n, i = 0; i < p->dft_size; ++i) p->window[i] *= 2 / sum
     * sqr((double)n / p->dft_size);    /* empirical small window adjustment */
   return sum;
 }
@@ -749,7 +748,6 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
   if (p->log10_axis && p->low_freq==0) {
     p->low_freq = 1;
   }
-
   log10_low_freq = log10f((float)p->low_freq);
   log10_high_freq = log10f((float)p->high_freq);
 
