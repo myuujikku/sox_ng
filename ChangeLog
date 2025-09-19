@@ -5,30 +5,18 @@ This file contains a list of all changes starting after the release of
 sox-11gamma, followed by a list of prior authors and features.
 
 
-sox_ng-14.4.5-rc3	2025-09-12
------------------
-
-Bug fixes:
-  o Make dynamic loading of file format handlers work
-  o Fix symlink creation with --enable-replace
-
-
-sox_ng-14.4.5-rc2	2025-08-24
------------------
-
-Bug fixes:
-  o Fix compilation with old libsndfiles that don't do MP3
-  o Fix compilation with gcc-2.95
-  o Add system LADSPA plugin directories on Haiku
-
-
-sox_ng-14.4.5-rc1	2025-08-24
------------------
+sox_ng-14.4.5	2025-09-19
+-------------
 
 New features:
   o On Windows you no longer need to set AUDIODRIVER=waveaudio beforehand
 
 Bug fixes:
+  o Make dynamic loading of file format handlers work
+  o Fix symlink creation with --enable-replace
+  o Fix compilation with old libsndfiles that don't do MP3
+  o Fix compilation with gcc-2.95
+  o Add system LADSPA plugin directories on Haiku
   o On Windows, delete temporary files and output files with write errors
   o Fix opusfile detection when using pkg-config
   o Fix compilation on AIX 7.3, MSYS2/MinGW, Sortix and on
