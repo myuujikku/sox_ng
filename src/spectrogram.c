@@ -289,6 +289,10 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
     lsx_fail("only one of -y, -Y may be given");
     return SOX_EOF;
   }
+  if (p->log10_axis && p->low_freq == 0) {
+    lsx_fail("With the logarithmic low frequency must be > 0");
+    return SOX_EOF;
+  }
   p->gain = -p->gain;
   --p->perm;
   p->spectrum_points += 2;
