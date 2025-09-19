@@ -4,6 +4,14 @@ Change History
 This file contains a list of all changes since the release of sox-11gamma.
 
 
+sox_ng-14.5.2-rc4	2025-09-19
+-----------------
+
+Bug fixes:
+  o Fix two errors in the spectrogram logarithmic axis and frequency range
+    and a segmentation fault when -y < 70
+
+
 sox_ng-14.5.2-rc3	2025-09-12
 -----------------
 
