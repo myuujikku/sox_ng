@@ -773,7 +773,7 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
 
     for (chan = 0; chan < chans; ++chan) {
       float log_scale_factor = (log10_high_freq- log10_low_freq)/(float)p->rows;
-      float lin_scale_factor = (p->high_freq-p->low_freq)/(float)(p->rows - 1);
+      float lin_scale_factor = (p->high_freq-p->low_freq)/(float)(p->rows);
       priv_t * q = (priv_t *)(effp - effp->flow + chan)->priv;
       int row, base;
 
@@ -788,15 +788,16 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
       base = !p->raw * below + (chans - 1 - chan) * (p->rows + !(p->raw || p->no_axes));
 
       for (row = 0; row < p->rows; ++row) {
-	int dBfsi, col, freq;
+	int dBfsi, col;
+	float freq;
 
 	if (p->log10_axis) {
-	  freq = (int)powf(10.0, (float)row * log_scale_factor + log10_low_freq);
+	  freq = powf(10.0f, (float)row * log_scale_factor + log10_low_freq);
 	} else {
 	  freq = (float)row * lin_scale_factor + p->low_freq;
 	}
 	/* dBfsi: index into dBfs[] corresponding to frequency at this row */
-	dBfsi = (freq * p->rows) / nyquist_freq;
+	dBfsi = lrint(freq * p->rows / nyquist_freq);
 	/* It is possible that upper freq > Nyquist freq: deal with that */
 	if (dBfsi >= p->rows) {
 	  dBfsi = p->rows - 1;
