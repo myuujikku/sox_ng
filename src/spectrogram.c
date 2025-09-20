@@ -891,9 +891,9 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
 
 		if (y >= 0) {
 		  char text[16];
-		  sprintf(text, i ? "%5i" : "   DC", f);  /* Tick label (left) */
+		  sprintf(text, "%5i", f);  /* Tick label (left) */
 		  print_at(left - 4 - font_X * 5, base + y + 5, Labels, text);
-		  sprintf(text, i ? "%i" : "DC",  f);     /* Tick label (right) */
+		  sprintf(text, "%i",  f);     /* Tick label (right) */
 		  print_at(left + p->cols + 6, base + y + 5, Labels, text);
 		}
 	      }
