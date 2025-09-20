@@ -5,6 +5,14 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
+sox_ng-14.6.1-rc5	2025-09-20
+-----------------
+
+Bug fixes:
+  o spectrogram: Fix another error in the frequency range code
+    and a mistake in -rc4
+
+
 sox_ng-14.6.1-rc4	2025-09-19
 -----------------
 
