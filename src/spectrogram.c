@@ -232,7 +232,7 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
 
   /* Default to 0 -> nyquist freq. But don't have sample rate at this point so
    * set high_freq=-1 as flag. Replace with nyquist freq in stop() function. */
-  p->low_freq = 0;
+  p->low_freq = -1;
   p->high_freq = -1;
 
   while ((c = lsx_getopt(&optstate)) != -1) switch (c) {
@@ -290,7 +290,7 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
     return SOX_EOF;
   }
   if (p->log10_axis && p->low_freq == 0) {
-    lsx_fail("With the logarithmic low frequency must be > 0");
+    lsx_fail("the logarithmic axis' low frequency must be > 0");
     return SOX_EOF;
   }
   p->gain = -p->gain;
@@ -744,14 +744,14 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
   float log10_low_freq, log10_high_freq;
   float nyquist_freq = (float)effp->in_signal.rate / 2;
 
-  /* No chart upper freq set, so use nyquist freq as default */
+  /* set default values for frequency range */
   if (p->high_freq == -1) {
     p->high_freq = effp->in_signal.rate/2;
   }
-  /* Cannot have 0Hz on log axis. Use 1Hz instead. */
-  if (p->log10_axis && p->low_freq==0) {
-    p->low_freq = 1;
+  if (p->low_freq == -1) {
+    p->low_freq = p->log10_axis ? 1 : 0;
   }
+
   log10_low_freq = log10f((float)p->low_freq);
   log10_high_freq = log10f((float)p->high_freq);
 
