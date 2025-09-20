@@ -837,40 +837,34 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
     if ((int)strlen(p->comment) * font_X < cols + 1)     /* Footer comment */
       print_at(1, font_y, Text, p->comment);
 
+    /* X-axis */
     {
-      int label_width;
+      int step;
+      double dstep;
+      double limit;
+      char *prefix;
+      char text[16];
 
-      /* X-axis */
-      {
-	int step;
-	double dstep;
-	double limit;
-	char *prefix;
-	char text[16];
+      dstep = step =
+	axis(secs(p->cols), p->cols / (font_X * 9 / 2), &limit, &prefix);
+      sprintf(text, "Time (%.1ss)", prefix);               /* Axis label */
+      print_at(left + (p->cols - font_X * (int)strlen(text)) / 2, 24, Text, text);
+      { int i, di;
+	for (i = 0, di = 0; i <= limit; i += step, di += dstep) {
+	  int x = limit? di / limit * p->cols + .5 : 0;
+	  int y;
 
-	dstep = step =
-	  axis(secs(p->cols), p->cols / (font_X * 9 / 2), &limit, &prefix);
-	sprintf(text, "Time (%.1ss)", prefix);               /* Axis label */
-	print_at(left + (p->cols - font_X * (int)strlen(text)) / 2, 24, Text, text);
-	{ int i, di;
-	  for (i = 0, di = 0; i <= limit; i += step, di += dstep) {
-	    int x = limit? di / limit * p->cols + .5 : 0;
-	    int y;
-
-	    for (y = 0; y < tick_len; ++y) {                   /* Ticks */
-	      pixel(left-1+x, below-1-y) = Grid;
-	      pixel(left-1+x, below+c_rows+y) = Grid;
-	    }
-	    if (step == 5 && (i%10))
-	      continue;
-	    sprintf(text, "%g", .1 * di);     /* Tick labels */
-	    x = left + x - 3 * strlen(text);
-	    print_at(x, below - 6, Labels, text);
-	    print_at(x, below + c_rows + 14, Labels, text);
+	  for (y = 0; y < tick_len; ++y) {                   /* Ticks */
+	    pixel(left-1+x, below-1-y) = Grid;
+	    pixel(left-1+x, below+c_rows+y) = Grid;
 	  }
+	  if (step == 5 && (i%10))
+	    continue;
+	  sprintf(text, "%g", .1 * di);     /* Tick labels */
+	  x = left + x - 3 * strlen(text);
+	  print_at(x, below - 6, Labels, text);
+	  print_at(x, below + c_rows + 14, Labels, text);
 	}
-	/* Used subsequently to position the vertical text of the Y axis */
-	label_width = font_X * (int)strlen(text);
       }
 
       /* Y-axis */
@@ -880,7 +874,8 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
 	int end_decade = (int)log10_high_freq;
 	float log_scale = (float)p->rows / (log10_high_freq - log10_low_freq);
 
-	print_up(10, below + (c_rows - label_width) / 2, Text, "Frequency (Hz)");
+	sprintf(text, "Frequency (Hz)");
+	print_up(10, below + (c_rows - font_X * (int)strlen(text)) / 2, Text, text);
 
 	{
 	  int chan;
