@@ -3,6 +3,9 @@
 # https://sourceforge.net/p/sox/bugs/305:
 # Sox blocking in an infinite loop when decoding AMR files
 
+# Check SoX was compiled with amr support
+${sox:-sox} | grep "AUDIO FILE FORMATS" | grep -q ' amr' || exit 254
+
 rm -f core a.amr a.wav
 
 printf '#!AMR\n\x60' > a.amr
