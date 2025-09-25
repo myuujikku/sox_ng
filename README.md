@@ -84,10 +84,10 @@ audio and video formats.
 
 ## Build dependencies
 
-To compile a release tarball you will need `make`, `libtool`
-and `gcc` or `clang` (`./configure CC=clang`)
+To compile a release tarball you will need `make`, and `gcc` or `clang`
 
-To build the git repository you will also need `autoconf` and `automake`.
+To build the git repository you will also need `autoconf`, `automake`
+and `libtool`.
 
 To enable all of SoX's optional modules you can install
 `ladspa-sdk`
@@ -114,7 +114,7 @@ To enable all of SoX's optional modules you can install
 apt install gcc make libtool ladspa-sdk libao-dev libasound2-dev libfftw3-dev \
 	libgsm1-dev libid3tag0-dev libltdl-dev libmad0-dev libmagic-dev \
 	libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev \
-	libopusfile-dev libpng-dev libpulse-dev libsamplerate0-dev \
+	libopusfile-dev libpng-dev libpulse-dev \
 	libsndfile1-dev libspeex-dev libspeexdsp-dev libtwolame-dev \
 	libvorbis-dev libwavpack-dev
 ```
@@ -127,8 +127,8 @@ apt-get install jq libtext-multimarkdown-perl
 ```
 yum install gcc make libtool \
 	alsa-lib-devel fftw-devel file-devel flac-devel gsm-devel \
-	ladspa-devel lame-devel libao-devel libcaca-devel libid3tag-devel \
-	libmad-devel libpng-devel libsamplerate-devel libsndfile-devel \
+	ladspa-devel lame-devel libao-devel libid3tag-devel \
+	libmad-devel libpng-devel libsndfile-devel \
 	libtool-ltdl-devel libvorbis-devel opencore-amr-devel \
 	opusfile-devel pulseaudio-libs-devel speex-devel speexdsp-devel \
 	twolame-devel wavpack-devel
@@ -136,6 +136,29 @@ yum install gcc make libtool \
 and to run `issues/getissues.sh` and the `makehtml.sh` scripts you will need
 ```
 yum install jq multimarkdown
+```
+
+### FreeBSD
+```
+pkg install gcc dmake fftw3 file ladspa libid3tag png \
+	flac gsm lame libmad libsndfile libvorbis opencore-amr \
+	opusfile speex speexdsp twolame wavpack
+```
+but you can almost certainly omit `file` which it wants for `libmagic`
+which is installed in a default FreeBSD installation in `/usr/lib`.
+If you install it with `pkg`, you get a second copy under `/usr/local`.
+
+You can also install `pulseaudio` `alsa-libs` and `libao`
+if you want support for those alternative sound I/O systems.
+
+If you are compiling its development git tree you will also need to
+```
+pkg install autotools libtool
+```
+
+To run `issues/getissues.sh` and the `makehtml.sh` scripts you will need
+```
+pkg install jq multimarkdown
 ```
 
 ## Accessibility
