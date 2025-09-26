@@ -645,15 +645,8 @@ AC_OPTIONAL_FORMAT(oggvorbis, OGG_VORBIS, [AC_CHECK_HEADER(vorbis/codec.h,
 # so we have to work round it by changing all -I dirs to */opus
 # before checking opusfile.
 
-if test x"$using_pkgconfig" = "xyes"
-then
-    PKG_CHECK_MODULES(OPUS, opus opusfile, using_opus=yes, using_opus=no)
-else
-    opus_old_cflags="$CFLAGS"
-    # Extra square brackets are required otherwise m4 mangles them
-    OPUS_CFLAGS="$(echo $CFLAGS | sed 's|\(-I[[^ ]]*\)|\1 \1/opus|g') -I/usr/local/include/opus -I/usr/include/opus"
-fi
-CFLAGS="$CFLAGS $OPUS_CFLAGS"
+# Extra square brackets are required otherwise m4 mangles them
+CFLAGS="$(echo "$CFLAGS" | sed 's|\(-I[[^ ]]*\)|\1 \1/opus|g') -I/usr/local/include/opus -I/usr/include/opus"
 
 AC_OPTIONAL_FORMAT(opus, OPUS, [AC_CHECK_HEADER(opus/opusfile.h,
   [AC_CHECK_LIB(opus, opus_decoder_create, OPUS_LIBS="$OPUS_LIBS -lopus", using_opus=no)
