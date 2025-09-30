@@ -25,14 +25,15 @@
 /README
 /Docs.Features
 /CMakeCache.txt
-/CMakeFiles
-/cmake_install.cmake
+CMakeFiles
+cmake_install.cmake
 /wiki
 /*.pdf
 /*.html
 Makefile
 Makefile.in
 .deps
+*.a
 *.o
 *.lo
 *.la

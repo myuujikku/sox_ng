@@ -844,7 +844,7 @@ AC_SUBST(REPLACE)
 AM_CONDITIONAL(STATIC_LIBSOX_ONLY, test "$enable_shared" = "no" -a "$enable_static" = "yes")
 
 dnl Generate output files.
-AC_CONFIG_FILES(Makefile src/Makefile libdolbyb/Makefile libgsm/Makefile lpc10/Makefile test/Makefile msvc9/Makefile msvc10/Makefile sox_ng.pc)
+AC_CONFIG_FILES(Makefile src/Makefile libdolbyb/Makefile libgsm/Makefile lpc10/Makefile test/Makefile sox_ng.pc)
 AC_OUTPUT
 
 if test "$using_dolbyb" != "no"; then

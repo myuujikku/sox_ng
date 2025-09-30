@@ -19,7 +19,7 @@
 ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = libdolbyb lpc10 libgsm src test
-DIST_SUBDIRS = libdolbyb lpc10 libgsm src msvc9 msvc10 test
+DIST_SUBDIRS = libdolbyb lpc10 libgsm src test
 
 RM = rm -f
 

@@ -17,10 +17,10 @@ All were compiled using the M Cross Environment MXE
 See http://codeberg.org/sox_ng/sox_ng/wiki/Distro-MXE.md
 and http://mxe.cc
 
-The msvc* directories and CMake files are old and may or may not still work.
+The CMake files may or may not still work.
 
-sox_ng.1.txt/pdf -- manual for sox_ng
-soxi_ng.1.txt/pdf -- manual for soxi or sox_ng --info
+sox_ng.txt/pdf -- manual for sox_ng
+soxi_ng.txt/pdf -- manual for soxi or sox_ng --info
 soxformat_ng.txt/pdf -- list of supported file formats
 
 SoX Helper Applications
