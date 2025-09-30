@@ -259,7 +259,7 @@ static inline void *sox_aligned_alloc_m(size_t align, size_t size)
 #define M_LN10  2.30258509299404568402  /* natural log of 10 */
 #endif
 #ifndef M_SQRT2
-#define M_SQRT2  sqrt(2.)
+#define M_SQRT2 1.41421356237309504880  /* square root of 2 */
 #endif
 
 #define sqr(a) ((a) * (a))
