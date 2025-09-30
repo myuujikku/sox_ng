@@ -108,6 +108,7 @@ if(NEED_LIBM)
 else(NEED_LIBM)
   check_function_exists("lrint" HAVE_LRINT)
 endif(NEED_LIBM)
+optional(EXTERNAL_DOLBYB dolbyb.h dolbyb dolbyb_init "")
 optional(EXTERNAL_GSM gsm/gsm.h gsm gsm_create "")
 optional(EXTERNAL_LPC10 lpc10/lpc10.h lpc10 lpc10_create "")
 optional(HAVE_ALSA alsa/asoundlib.h asound snd_pcm_open alsa)
@@ -190,6 +191,10 @@ install_files(/lib/pkgconfig FILES sox_ng.pc)
 
 subdirs(src)
 
+if (NOT EXTERNAL_DOLBYB)
+  add_subdirectory(libdolbyb)
+endif (NOT EXTERNAL_DOLBYB)
+
 if (NOT EXTERNAL_GSM)
   add_subdirectory(libgsm)
 endif (NOT EXTERNAL_GSM)
@@ -207,5 +212,3 @@ if(APPLE)
 	endif(COREAUDIO_LIBRARY)
 	set(optional_libs ${optional_libs} ${COREAUDIO_LIBRARY})
 endif(APPLE)
-
-

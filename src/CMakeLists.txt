@@ -16,6 +16,10 @@ if(CMAKE_COMPILER_IS_GNUCC)
   #add_definitions(-Werror)
 endif(CMAKE_COMPILER_IS_GNUCC)
 
+if (NOT EXTERNAL_DOLBYB)
+  set(optional_libs ${optional_libs} dolbyb)
+endif (NOT EXTERNAL_DOLBYB)
+
 if (NOT EXTERNAL_GSM)
   set(optional_libs ${optional_libs} gsm)
 endif (NOT EXTERNAL_GSM)
@@ -32,7 +36,8 @@ set(effects_srcs
   delay
   dft_filter
   dither
-  divide
+  dolbyb
+  dop
   downsample
   earwax
   echo
@@ -58,9 +63,11 @@ set(effects_srcs
   repeat
   reverb
   reverse
+  sdm
   silence
   sinc
   skeleff
+  softvol
   speed
   speexdsp
   splice
@@ -90,6 +97,8 @@ set(formats_srcs
   cvsd
   cvsd-fmt
   dat
+  dsdiff
+  dsf
   dvms-fmt
   f4-fmt
   f8-fmt
@@ -117,6 +126,7 @@ set(formats_srcs
   s2-fmt
   s3-fmt
   s4-fmt
+  sdm
   sf
   skelform
   smp
