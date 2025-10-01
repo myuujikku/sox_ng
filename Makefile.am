@@ -82,6 +82,9 @@ uninstall-pdf:
 	  $(RM) "$(DESTDIR)$(pdfdir)/$$f"; \
 	  done
 
+clean-local:
+	$(RM) -r -f cmake_install.cmake CMakeFiles */CMakeFiles CMakeCache.txt
+
 distclean-local:
 	$(RM) mingw32-config.cache
 	$(RM) -r -f soxpng
