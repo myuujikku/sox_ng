@@ -4,6 +4,16 @@ Change History
 This file contains a list of all changes since the release of sox-11gamma.
 
 
+sox_ng-14.5.2-rc6	2025-10-02
+-----------------
+
+Bug fixes:
+  o Don't use pkgconfig to locate opus libraries
+  o Fix SEGV in spectrogram -n due to off-by-one error
+  o spectrogram: Don't put a "DC" label on the log frequency axis
+  o spectrogram: Fix position of "Frequency (Hz)" on logarithmic axis
+
+
 sox_ng-14.5.2-rc5	2025-09-20
 -----------------
 
