@@ -111,8 +111,10 @@ static int parse(sox_effect_t * effp, char **argv, sox_rate_t rate)
 
     p->bends[i].duration -= p->bends[i].start;
   }
-  if (i < p->nbends)
-    return lsx_usage(effp);
+  if (i < p->nbends) {
+    lsx_fail("cannot parse `%s' as start,cents,end", p->bends[i].str);
+    return SOX_EOF;
+  }
   return SOX_SUCCESS;
 }
 
