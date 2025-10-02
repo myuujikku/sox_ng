@@ -52,8 +52,9 @@ static int create(sox_effect_t * effp, int argc, char * * argv)
   for (i = 0; i < p->argc; ++i) {
     char const * next = lsx_parseposition(0., p->args[i].str = lsx_strdup(argv[i]), NULL, (uint64_t)0, (uint64_t)0, '=');
     if (!next || *next) {
+      lsx_fail("cannot parse position `%s'", argv[i]);
       lsx_kill(effp);
-      return lsx_usage(effp);
+      return SOX_EOF;
     }
   }
   return SOX_SUCCESS;
