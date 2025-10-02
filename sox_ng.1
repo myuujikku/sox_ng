@@ -1971,7 +1971,7 @@ options.
 .SP
 See the section on \fBDithering\fR (above).
 .TP
-\fBdolbyb\fR [\fB\-e\fR|\fB\-d\fR] [\fB\-u\fIupsamp\fR] [\fB\-h\fR] [\fB\-t\fIgain\fR(1.0)] [\fB\-a prec\fR(-5.0)] [\fB\-f\fR{\fB1\fR|\fB2\fR|\fB3\fR|\fB4\fR}]
+\fBdolbyb\fR [\fB\-e\fR|\fB\-d\fR] [\fB\-u\ \fIupsamp\fR] [\fB\-h\fR] [\fB\-t\ \fIgain\fR(1.0)] [\fB\-a\ prec\fR(-5.0)] [\fB\-f\ \fR{\fB1\fR|\fB2\fR|\fB3\fR|\fB4\fR}]
 \fBdolbyb\fR is a Dolby B decoder/encoder based on dolbybcsoftwaredecode
 which simulates the operation of a Dolby\ B en/decoder's electronic circuit.
 .SP
@@ -2892,8 +2892,8 @@ a bandwidth of 90%, at a 48k sampling rate and storing the output
 to a 24-bit AIFF file.
 .RE
 .TP
-\fBremix\fR [\fB\-a\fR\^|\^\fB\-m\fR\^|\^\fB\-p\fR] <\fIout-spec\fR>
-\fIout-spec\fR	= \fIin-spec\fR{\fB,\fIin-spec\fR} | \fB0\fR
+\fBremix\fR [\fB\-a\fR\^|\^\fB\-m\fR] [\fB\-p\fR] <\fIout-spec\fR>
+\fIout-spec\fR	= \fB0\fR | \fIin-spec\fR{\fB,\fIin-spec\fR}
 .br
 \fIin-spec\fR	= [\fIin-chan\fR]\^[\fB\-\fR[\fIin-chan2\fR]]\^[\fIvol-spec\fR]
 .br
@@ -3700,7 +3700,7 @@ before the end of f1.wav, i.e. the total length of the cross-fade is
 2 \(mu 3 = 6 seconds (\f(CW$(...)\fR is POSIX shell notation that is replaced
 by the output of the enclosed command).
 .TP
-\fBstat\fR [\fB\-s \fIscale\fR] [\fB\-rms\fR] [\fB\-freq\fR] [\fB\-v\fR] [\fB\-d\fR]
+\fBstat\fR [\fB\-s \fIscale\fR] [\fB\-rms\fR] [\fB\-freq\fR] [\fB\-v\fR] [\fB\-d\fR] [\fB\-a\fR]
 Display time and frequency domain statistical information about the audio.
 Audio is passed unmodified through the SoX processing chain.
 .SP
@@ -3779,14 +3779,14 @@ option converts all average values to `root mean square'
 format.
 .SP
 The
-.B \-v
-option displays only the `Volume Adjustment' value.
-.SP
-The
 .B \-freq
 option outputs the input's power spectrum (a 4096-point DFT) instead of the
 statistics listed above.  This should only be used with a single-channel
 audio file.
+.SP
+The
+.B \-v
+option displays only the `Volume Adjustment' value.
 .SP
 The
 .B \-d
@@ -3968,14 +3968,16 @@ option can only be \fBl\fR for \fBlinear\fR.
 .SP
 The
 .I shift
-ratio can be from 0 to 1 and its default depends on the stretch factor.
-Its default is 1 when speeding up, 0\*d8 when slowing down.
+ratio can be from 0 to 1 and its default depends on the stretch factor:
+1 when speeding up, 0\*d8 when slowing down.
 .SP
 The
 .I fading
 ratio, from 0 to 0\*d5, seems to be how much of each window is cross-faded
 with the adjacent ones.
-The default value depends on \fI\A\fRfactor and \fIshift\fR.
+The default value depends on \fIfactor\fR and \fIshift\fR:
+1\*d0\ \(mi\ (\fIfactor\fR\ \(mu\ \fIshift\fR) if speeding up,
+1\*d0\ \(mi\ \fIshift\fR if slowing down, with a maximum of 0\*d5.
 .SP
 The duration of \fBstretch\fR's output is slightly longer than
 the duration of the input multiplied by \fIfactor\fR as it has to empty
@@ -3993,8 +3995,9 @@ for an effect that allows arbitrary channel selection, ordering and mixing.
 .TP
 .nh
 .na
-\fBsynth\fR [\fB\-j \fIkey\fR] [\fB\-n\fR] [\fIlength\fR [\fIoffset\fR [\fIphase\fR [\fIp1\fR [\fIp2\fR [\fIp3\fR]]]]]]
-{\fItype\fR [\fIcombine\fR [\fIfixed\fR[\fB,\fIextra\fR[\fB,\fImix\fR]]]] \:[\fIfreq\fR[\fB:\fR\^|\^\fB+\fR\^|\^\fB/\fR\^|\^\fB\-\fIfreq2\fR]] [\fIoffset\fR [\fIphase\fR [\fIp1\fR [\fIp2\fR [\fIp3\fR]]]]]}
+\fBsynth\fR [\fB\-j \fIkey\fR] [\fB\-n\fR] [\fIlength\fR\ [\fIoffset\fR\ [\fIphase\fR\ [\fIp1\fR\ [\fIp2\fR\ [\fIp3\fR]]]]]]
+{\fItype\fR\ [\fIcombine\fR\ [\fIfixed\fR[\fB,\fIextra\fR[\fB,\fImix\fR]]]]
+\:[\fIfreq\fR[\fB:\fR\^|\^\fB+\fR\^|\^\fB/\fR\^|\^\fB\-\fIfreq2\fR]\ [\fIoffset\fR\ [\fIphase\fR\ [\fIp1\fR\ [\fIp2\fR\ [\fIp3\fR]]]]]]}
 .ad
 .hy
 .SP
