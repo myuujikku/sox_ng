@@ -125,14 +125,18 @@ static int create(sox_effect_t * effp, int argc, char **argv)
   int c;
   lsx_getopt_t optstate;
   lsx_getopt_init(argc, argv, opts, NULL, lsx_getopt_flag_none, 1, &optstate);
+  int frame_rate, over_sample;
 
-  p->frame_rate = 25;
-  p->ovsamp = 16;
+  frame_rate = 25;
+  over_sample = 16;
   while ((c = lsx_getopt(&optstate)) != -1) switch (c) {
-    GETOPT_NUMERIC(optstate, 'f', frame_rate, 10 , 80)
-    GETOPT_NUMERIC(optstate, 'o', ovsamp,  4 , 32)
-    default: lsx_fail("unknown option `-%c'", optstate.opt); return lsx_usage(effp);
+    GETOPT_LOCAL_NUMERIC(optstate, 'f', frame_rate, 10, 80)
+    GETOPT_LOCAL_NUMERIC(optstate, 'o', over_sample, 4, 32)
+    default: lsx_fail("unknown option `-%c'", optstate.opt);
+             return lsx_usage(effp);
   }
+  p->frame_rate = frame_rate;
+  p->ovsamp = over_sample;
   argc -= optstate.ind, argv += optstate.ind;
 
   p->nbends = argc;
