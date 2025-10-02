@@ -56,20 +56,22 @@ typedef struct {
 static int getopts(sox_effect_t * effp, int argc, char **argv)
 {
   priv_t * p = (priv_t *) effp->priv;
+  char dummy;
+
   --argc, ++argv;
 
   /* default options */
   p->factor = 1.0; /* default is no change */
   p->window = DEFAULT_STRETCH_WINDOW;
 
-  if (argc > 0 && !sscanf(argv[0], "%lf", &p->factor)) {
-    lsx_fail("error while parsing factor");
-    return lsx_usage(effp);
+  if (argc > 0 && sscanf(argv[0], "%lf %c", &p->factor, &dummy) != 1) {
+    lsx_fail("factor `%s' must be a number", argv[0]);
+    return SOX_EOF;
   }
 
-  if (argc > 1 && !sscanf(argv[1], "%lf", &p->window)) {
-    lsx_fail("error while parsing window size");
-    return lsx_usage(effp);
+  if (argc > 1 && sscanf(argv[1], "%lf %c", &p->window, &dummy) != 1) {
+    lsx_fail("window size `%s' must be a number of milliseconds", argv[1]);
+    return SOX_EOF;
   }
 
   if (argc > 2) {
@@ -78,8 +80,8 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
     case 'L':
       break;
     default:
-      lsx_fail("error while parsing fade type");
-      return lsx_usage(effp);
+      lsx_fail("fade type must be `l' for `linear', not `%s'", argv[2]);
+      return SOX_EOF;
     }
   }
 
@@ -87,14 +89,14 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
   p->shift = (p->factor <= 1.0) ?
     DEFAULT_FAST_SHIFT_RATIO: DEFAULT_SLOW_SHIFT_RATIO;
 
-  if (argc > 3 && !sscanf(argv[3], "%lf", &p->shift)) {
-    lsx_fail("error while parsing shift ratio");
-    return lsx_usage(effp);
+  if (argc > 3 && sscanf(argv[3], "%lf %c", &p->shift, &dummy) != 1) {
+    lsx_fail("cannot parse shift ratio `%s'", argv[3]);
+    return SOX_EOF;
   }
 
   if (p->shift > 1.0 || p->shift <= 0.0) {
-    lsx_fail("error with shift ratio value");
-    return lsx_usage(effp);
+    lsx_fail("shift ratio must be > 0 and <= 1.0");
+    return SOX_EOF;
   }
 
   /* default fading stuff...
@@ -106,14 +108,14 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
   if (p->fading > 0.5)
     p->fading = 0.5;
 
-  if (argc > 4 && !sscanf(argv[4], "%lf", &p->fading)) {
-    lsx_fail("error while parsing fading ratio");
-    return lsx_usage(effp);
+  if (argc > 4 && sscanf(argv[4], "%lf %c", &p->fading, &dummy) != 1) {
+    lsx_fail("cannot parse fading ratio `%s'", argv[4]);
+    return SOX_EOF;
   }
 
   if (p->fading > 0.5 || p->fading < 0.0) {
-    lsx_fail("error with fading ratio value");
-    return lsx_usage(effp);
+    lsx_fail("fading ratio `%s' must be from 0.0 to 0.5", argv[4]);
+    return SOX_EOF;
   }
 
   return SOX_SUCCESS;
