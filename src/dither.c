@@ -344,7 +344,9 @@ static int getopts(sox_effect_t * effp, int argc, char * * argv)
   int c;
   lsx_getopt_t optstate;
   lsx_getopt_init(argc, argv, "+aSsf:p:", NULL, lsx_getopt_flag_none, 1, &optstate);
+  size_t precision;
 
+  precision = p->prec;
   while ((c = lsx_getopt(&optstate)) != -1) switch (c) {
     case 'a': p->auto_detect = sox_true; break;
     case 'S': p->alt_tpdf = sox_true; break;
@@ -354,11 +356,23 @@ static int getopts(sox_effect_t * effp, int argc, char * * argv)
       if (p->filter_name == INT_MAX)
         return SOX_EOF;
       break;
-    GETOPT_NUMERIC(optstate, 'p', prec, 1, 24)
-    default: lsx_fail("invalid option `-%c'", optstate.opt); return lsx_usage(effp);
+    GETOPT_LOCAL_NUMERIC(optstate, 'p', precision, 1, 24)
+    default: /* invalid option or missing obligatory argument */
+      if (optstate.ind > argc) {
+        lsx_fail("-%c what?", optstate.opt);
+      } else {
+        lsx_fail("invalid option `-%c'", optstate.opt);
+	return lsx_usage(effp);
+      }
+      return SOX_EOF;
   }
+  p->prec = precision;
   argc -= optstate.ind, argv += optstate.ind;
-  return argc? lsx_usage(effp) : SOX_SUCCESS;
+  if (argc) {
+    lsx_fail("extra argument `%s'", argv[0]);
+    return SOX_EOF;
+  }
+  return SOX_SUCCESS;
 }
 
 static int start(sox_effect_t * effp)
