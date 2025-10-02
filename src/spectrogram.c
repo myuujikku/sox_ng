@@ -780,8 +780,8 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
       if (p->normalize) {
 	int row, col;
 
-	for (row=p->rows; row >=0; row--)
-	  for (col=p->cols; col >=0; col--)
+	for (row=p->rows-1; row >=0; row--)
+	  for (col=p->cols-1; col >=0; col--)
 	    pdBfs(q, row, col) += autogain;
       }
 
