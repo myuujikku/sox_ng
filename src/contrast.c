@@ -17,15 +17,15 @@
 
 #include "sox_i.h"
 
-typedef struct {double contrast;} priv_t;
+typedef struct {double amount;} priv_t;
 
 static int create(sox_effect_t * effp, int argc, char * * argv)
 {
   priv_t * p = (priv_t *)effp->priv;
-  p->contrast = 75;
+  p->amount = 75;
   --argc, ++argv;
-  do {NUMERIC_PARAMETER(contrast, 0, 100)} while (0);
-  p->contrast /= 750; /* shift range to 0 to 0.1333, default 0.1 */
+  do {NUMERIC_PARAMETER(amount, 0, 100)} while (0);
+  p->amount /= 750; /* shift range to 0 to 0.1333, default 0.1 */
   return argc? lsx_usage(effp) : SOX_SUCCESS;
 }
 
@@ -36,7 +36,7 @@ static int flow(sox_effect_t * effp, const sox_sample_t * ibuf,
   size_t len = *isamp = *osamp = min(*isamp, *osamp);
   while (len--) {
     double d = *ibuf++ * (-M_PI_2 / SOX_SAMPLE_MIN);
-    *obuf++ = sin(d + p->contrast * sin(d * 4)) * SOX_SAMPLE_MAX;
+    *obuf++ = sin(d + p->amount * sin(d * 4)) * SOX_SAMPLE_MAX;
   }
   return SOX_SUCCESS;
 }
