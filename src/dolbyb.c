@@ -43,19 +43,42 @@ static int init(sox_effect_t * effp, int argc, char **argv)
   dolbyb_t *dolbyb = &(p->dolbyb);
   lsx_getopt_t optstate;
   int c;
+  /* Give meaningful names to parameters in error messages */
+  int16_t upsamp, filter_type;
+  double gain, precision;
 
   dolbyb_init(dolbyb);
   lsx_getopt_init(argc, argv, "dehu:t:a:f:", NULL, lsx_getopt_flag_none, 1, &optstate);
+
+  upsamp = dolbyb->UpSamp;
+  gain = dolbyb->ThGndB;
+  precision = dolbyb->DecAdB;
+  filter_type = dolbyb->FltTyp;
 
   while((c = lsx_getopt(&optstate)) != -1) switch (c) {
   case 'd': p->Encode = sox_false; break;
   case 'e': p->Encode = sox_true; break;
   case 'h': dolbyb->AllHig = sox_true; break;
-  GETOPT_NUMERIC(optstate, 'u', dolbyb.UpSamp, 0, 100)
-  GETOPT_NUMERIC(optstate, 't', dolbyb.ThGndB, -100.0, 100.0)
-  GETOPT_NUMERIC(optstate, 'a', dolbyb.DecAdB, -100, 0.0)
-  GETOPT_NUMERIC(optstate, 'f', dolbyb.FltTyp, 1, 4)
+  GETOPT_LOCAL_NUMERIC(optstate, 'u', upsamp, 0, 100)
+  GETOPT_LOCAL_NUMERIC(optstate, 't', gain, -100.0, 100.0)
+  GETOPT_LOCAL_NUMERIC(optstate, 'a', precision, -100, 0.0)
+  GETOPT_LOCAL_NUMERIC(optstate, 'f', filter_type, 1, 4)
+  default:
+    if (optstate.ind > argc) {
+      /* Missing parameter */
+      lsx_fail("-%c what?", optstate.opt);
+      return SOX_EOF;
+    } else {
+      /* Invalid option */
+      lsx_fail("invalid option -%c", optstate.opt);
+      return lsx_usage(effp);
+    }
   }
+  dolbyb->UpSamp = upsamp;
+  dolbyb->ThGndB = gain;
+  dolbyb->DecAdB = precision;
+  dolbyb->FltTyp = filter_type;
+
   argc -= optstate.ind, argv -= optstate.ind;
   return argc ? lsx_usage(effp) : SOX_SUCCESS;
 }
