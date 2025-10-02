@@ -18,7 +18,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.62])
 
-AC_INIT([sox_ng], [14.6.1-rc5], [sox-ng@groups.io])
+AC_INIT([sox_ng], [14.6.1-rc6], [sox-ng@groups.io])
 
 AC_CONFIG_MACRO_DIR([m4])
 

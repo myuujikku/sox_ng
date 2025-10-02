@@ -5,6 +5,20 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
+sox_ng-14.6.1-rc6	2025-10-02
+-----------------
+
+Bug fixes:
+  o spectrogram: Fix SEGV when using -n
+  o spectrogram: Don't put a "DC" label on the log frequency axis
+  o spectrogram: Fix position of "Frequency (Hz)" on logarithmic axis
+  o libgsm: Removing aliases.h, now handled by export-symbols-regex
+  o echos: Correct the gain_out hint
+  o Map \f(CW to \fR for nroff
+  o Don't use pkgconfig to locate opus libraries
+  o Add extra_usage to all effects
+
+
 sox_ng-14.6.1-rc5	2025-09-20
 -----------------
 
