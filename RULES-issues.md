@@ -31,9 +31,9 @@ but for the moment the preferred way to edit the issues is via the
 web interface.
 
 It is possible to make a new issue from the command line by creating
-`issues/"Don't worry, be happy".md` and in a directory
-`issues/"Don't worry, be happy"` placing files `milestone`
-and maybe `labels` and then saying
+`issues/"Don't worry, be happy".md` and, if you want, a directory
+`issues/"Don't worry, be happy"` with files `milestone`, `labels` etc.
+and then saying
 `issues/putissues.sh` using your Codeberg username and password.
 It will fill in the `number` file with whatever forgejo assigns to it.
 
@@ -68,18 +68,19 @@ Unfortunately, `forgejo` renders all line breaks in its pages
 for the issues even though it doesn't do this to the wiki.
 
 [The Markdown Guide](https://www.markdownguide.org/basic-syntax/#line-breaks)
-recommends ending a line with two spaces or <BR>
+recommends ending a line with two spaces or `<BR>`
 to get an explicit line break. `forgejo` viewing an
 `.md` file in the source tree doesn't honour double spaces,
 but the `forgejo` wiki and `makehtml.sh` (i.e. `multimarkdown`) do.
 
 For further info on the Markdown used in issues and the wiki
-see RULES-issues.md
+see RULES-wiki.md
 
 ### Attachments
 
-Test files (small ones only please!) and patches
-need to be attached to the main description.
+Test files (small ones only please!) and patches need to be attached
+to the main description as comments are not downloaded.
+Locally they are stored in Title/assets/.
 
 ### Comments
 
@@ -89,6 +90,9 @@ If people add them on the web version, other webby people can edit
 the wisdom in them into the main description; that way our
 command-line friends get the best version of the problem description
 and are spared wading through the chitchat in search of gems.
+
+Big attachments that most people don't want to download
+can be attached to comments using the Forgejo web interface.
 
 ### Milestone
 
@@ -105,6 +109,7 @@ the conventional labels `bug` or `enhancement`.
 
 All optional:
 * `bounty`: Someone has offered money to whoever resolves this issue
+* `bugfix`: This repairs a defect in SoX
 * `copyright`: The issue impacts on `sox_ng`'s copyright status
 * `duplicate`: This report has the same cause as another issue; go there
 * `invalid`: This reported bug does not affect `sox_ng`
