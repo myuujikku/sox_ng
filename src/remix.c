@@ -217,9 +217,15 @@ static int channels_create(sox_effect_t * effp, int argc, char * * argv)
   char dummy;     /* To check for extraneous chars. */
 
   if (argc == 2) {
-    if (sscanf(argv[1], "%d %c", (int *)&p->num_out_channels,
-          &dummy) != 1 || (int)p->num_out_channels <= 0)
-      return lsx_usage(effp);
+    if (sscanf(argv[1], "%d %c", (int *)&p->num_out_channels, &dummy) != 1) {
+      lsx_fail("invalid number of channels `%s'", argv[1]);
+      return SOX_EOF;
+    }
+    if ((int)p->num_out_channels <= 0) {
+      lsx_fail("number of channels must be 1 or more");
+      return SOX_EOF;
+    }
+
     effp->out_signal.channels = p->num_out_channels;
   }
   else if (argc != 1)
