@@ -406,7 +406,7 @@ sox_effect_handler_t const * lsx_##name##_effect_fn(void) { \
 static char const one_two[] =
   "-1/-2  Use a 1-pole or 2-pole filter instead of width";
 
-static char const * const highpass_extra[] = { NULL };
+static char const * const highpass_extra[] = { one_two, NULL };
 static char const * const lowpass_extra[] = { one_two, NULL };
 static char const * const bandpass_extra[] = {
   "-c  Use a constant skirt gain instead of a constant 0dB peak gain", NULL };
