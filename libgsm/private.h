@@ -9,9 +9,12 @@
 #ifndef	PRIVATE_H
 #define	PRIVATE_H
 
+#include "aliases.h"
+
 #ifdef __cplusplus
  	extern "C" {
 #endif
+
 
 typedef short			word;		/* 16 bit signed int	*/
 typedef long			longword;	/* 32 bit signed int	*/

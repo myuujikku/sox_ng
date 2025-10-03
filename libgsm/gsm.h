@@ -9,6 +9,8 @@
 #ifndef	GSM_H
 #define	GSM_H
 
+#include "aliases.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
