@@ -9,8 +9,6 @@
 #ifndef	GSM_H
 #define	GSM_H
 
-#include "aliases.h"
-
 #ifdef __cplusplus
 #	define	NeedFunctionPrototypes	1
 #endif
