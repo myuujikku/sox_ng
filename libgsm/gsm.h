@@ -4,6 +4,8 @@
  * details.  THERE IS ABSOLUTELY NO WARRANTY FOR THIS SOFTWARE.
  */
 
+#include "aliases.h"
+
 /*$Header: /cvsroot/sox/sox/libgsm/gsm.h,v 1.2 2008/03/21 13:34:21 robs Exp $*/
 
 #ifndef	GSM_H
