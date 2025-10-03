@@ -275,6 +275,7 @@ sox_effect_handler_t const * lsx_channels_effect_fn(void)
   handler = *lsx_remix_effect_fn();
   handler.name = "channels";
   handler.usage = "number";
+  handler.extra_usage = NULL;
   handler.flags &= ~SOX_EFF_GAIN;
   handler.getopts = channels_create;
   handler.start = channels_start;
@@ -296,6 +297,7 @@ sox_effect_handler_t const * lsx_oops_effect_fn(void)
   handler = *lsx_remix_effect_fn();
   handler.name = "oops";
   handler.usage = NULL;
+  handler.extra_usage = NULL;
   handler.getopts = oops_getopts;
   return &handler;
 }
