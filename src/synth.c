@@ -811,7 +811,7 @@ const sox_effect_handler_t *lsx_synth_effect_fn(void)
 "  vdelay  fixed[,extra[,mix]] Synth wave offsets into a delay from",
 "          fixed to fixed+extra(0) ms. mix=0: all input; mix=100: all delay",
 "freq?freq2  : = linear sweep; + = frequency is proportional to time squared;",
-"            / = exponential;  - = stepped exponential",
+"            / = exponential;  - = stepped exponential starting at phase 0",
     NULL
   };
 
