@@ -265,7 +265,7 @@ sox_effect_handler_t const * lsx_compand_effect_fn(void)
   static const char usage[] =
     "attack,decay{,attack,decay} [soft-knee-dB:]in-dB1[,out-dB1]{,in-dB2,out-dB2} [gain [initial-volume-dB [delay]]]";
   static char const * const extra_usage[] = {
-"dB values are floating point or -inf'; times are in seconds.",
+"dB values are floating point or -inf; times are in seconds.",
 "",
 "Flow diagram for one channel:",
 "         ____________      _______________",

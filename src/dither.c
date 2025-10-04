@@ -466,7 +466,7 @@ sox_effect_handler_t const * lsx_dither_effect_fn(void)
     "-s       Shape noise (with a Shibata filter)",
     "-f name  Set shaping filter to one of: lipshitz, f-weighted,",
     "         modified-e-weighted, improved-e-weighted, gesemann,",
-    "         shibata, low-shibata, high-shibata.",
+    "         shibata, low-shibata, high-shibata",
     "-a       Automatically turn dithering on & off as needed (use with caution!)",
     "-p bits  Override the target sample precision",
     NULL
