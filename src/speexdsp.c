@@ -91,7 +91,7 @@ static int getopts(sox_effect_t* effp, int argc, char** argv)
                If specified, it must be from 1 to 100. */
             if (!get_param(&argc, &argv, &p->denoise, denoiseDefault, 1, 100))
             {
-                lsx_fail("invalid argument \"%s\" to -denoise parameter - expected number from 0 to 100", argv[1]);
+                lsx_fail("invalid argument \"%s\" to -denoise parameter - expected number from 1 to 100", argv[1]);
                 return SOX_EOF;
             }
         }
@@ -321,17 +321,16 @@ const sox_effect_handler_t* lsx_speexdsp_effect_fn(void)
   static const char usage[] = "[options]";
 
   static char const * const extra_usage[] = {
-"Use the Speex DSP library to improve perceived sound quality.",
-"-agc [target_level]    Enable automatic gain control and optionally specify",
-"                       a target volume level from 1-100. The default is 100.",
-"-denoise [max_dB]      Enable noise reduction and optionally specify the",
-"                       maximum attenuation from 1 to 100. The default is 15.",
-"-dereverb              Enable reverb reduction.",
-"-fps frames_per_second Specify the number of frames per second from 1-100",
-"                       The default is 20.",
-"-spf samples_per_frame Specify the number of samples per frame.",
-"                       The default is to use the -fps setting.",
-"If no options are specified, the -agc and -denoise features are enabled.",
+"Use the Speex DSP library to improve perceived sound quality",
+"OPTION         RANGE DEFLT DESCRIPTION",
+"-agc [target]  1-100  100  Enable automatic gain control and optionally",
+"                           specify a target volume level",
+"-denoise [max] 1-100   15  Enable noise reduction and optionally specify",
+"                           the maximum attenuation in dB",
+"-dereverb                  Enable reverb reduction",
+"-fps N         1-100   20  Specify the number of frames per second",
+"-spf N         1-     fps  Specify the number of samples per frame",
+"If no options are specified, the -agc and -denoise features are enabled",
     NULL
   };
 
