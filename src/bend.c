@@ -62,7 +62,7 @@ typedef struct {
   float gSynFreq[MAX_FRAME_LENGTH];
   float gSynMagn[MAX_FRAME_LENGTH];
   long gRover;
-  int fftFrameSize, ovsamp;
+  int fftFrameSize, over_sample;
 } priv_t;
 
 static int parse(sox_effect_t * effp, char **argv, sox_rate_t rate)
@@ -125,18 +125,15 @@ static int create(sox_effect_t * effp, int argc, char **argv)
   int c;
   lsx_getopt_t optstate;
   lsx_getopt_init(argc, argv, opts, NULL, lsx_getopt_flag_none, 1, &optstate);
-  int frame_rate, over_sample;
 
-  frame_rate = 25;
-  over_sample = 16;
+  p->frame_rate = 25;
+  p->over_sample = 16;
   while ((c = lsx_getopt(&optstate)) != -1) switch (c) {
-    GETOPT_LOCAL_NUMERIC(optstate, 'f', frame_rate, 10, 80)
-    GETOPT_LOCAL_NUMERIC(optstate, 'o', over_sample, 4, 32)
+    GETOPT_NUMERIC(optstate, 'f', frame_rate, 10, 80)
+    GETOPT_NUMERIC(optstate, 'o', over_sample, 4, 32)
     default: lsx_fail("unknown option `-%c'", optstate.opt);
              return lsx_usage(effp);
   }
-  p->frame_rate = frame_rate;
-  p->ovsamp = over_sample;
   argc -= optstate.ind, argv += optstate.ind;
 
   p->nbends = argc;
@@ -176,7 +173,7 @@ static int flow(sox_effect_t * effp, const sox_sample_t * ibuf,
 
   /* set up some handy variables */
   fftFrameSize2 = p->fftFrameSize / 2;
-  stepSize = p->fftFrameSize / p->ovsamp;
+  stepSize = p->fftFrameSize / p->over_sample;
   freqPerBin = effp->in_signal.rate / p->fftFrameSize;
   expct = 2. * M_PI * (double) stepSize / (double) p->fftFrameSize;
   inFifoLatency = p->fftFrameSize - stepSize;
@@ -244,7 +241,7 @@ static int flow(sox_effect_t * effp, const sox_sample_t * ibuf,
         tmp -= M_PI * (double) qpd;
 
         /* get deviation from bin frequency from the +/- Pi interval */
-        tmp = p->ovsamp * tmp / (2. * M_PI);
+        tmp = p->over_sample * tmp / (2. * M_PI);
 
         /* compute the k-th partials' true frequency */
         tmp = (double) k *freqPerBin + tmp * freqPerBin;
@@ -271,7 +268,7 @@ static int flow(sox_effect_t * effp, const sox_sample_t * ibuf,
         magn = p->gSynMagn[k], tmp = p->gSynFreq[k];
         tmp -= (double) k *freqPerBin; /* subtract bin mid frequency */
         tmp /= freqPerBin; /* get bin deviation from freq deviation */
-        tmp = 2. * M_PI * tmp / p->ovsamp; /* take p->ovsamp into account */
+        tmp = 2. * M_PI * tmp / p->over_sample; /* take p->over_sample into account */
         tmp += (double) k *expct; /* add the overlap phase advance back in */
         p->gSumPhase[k] += tmp; /* accumulate delta phase to get bin phase */
         phase = p->gSumPhase[k];
@@ -290,7 +287,7 @@ static int flow(sox_effect_t * effp, const sox_sample_t * ibuf,
         window =
             -.5 * cos(2. * M_PI * (double) k / (double) p->fftFrameSize) + .5;
         p->gOutputAccum[k] +=
-            2. * window * p->gFFTworksp[2 * k] / (fftFrameSize2 * p->ovsamp);
+            2. * window * p->gFFTworksp[2 * k] / (fftFrameSize2 * p->over_sample);
       }
       for (k = 0; k < stepSize; k++)
         p->gOutFIFO[k] = p->gOutputAccum[k];

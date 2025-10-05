@@ -279,17 +279,24 @@ int lsx_usage(sox_effect_t * effp);
   } \
 }
 
-#define GETOPT_LOCAL_NUMERIC(state, ch, name, min, max) case ch:{ \
+#define GETOPT_NUMERIC_IMPL(state, ch, var, name, min, max) case ch:{ \
   char * end_ptr; \
   double d = strtod(state.arg, &end_ptr); \
   if (end_ptr == state.arg || d < min || d > max || *end_ptr != '\0') {\
     lsx_fail("parameter `%s' must be from %g to %g", #name, (double)min, (double)max); \
     return lsx_usage(effp); \
   } \
-  name = d; \
+  var = d; \
   break; \
 }
-#define GETOPT_NUMERIC(state, ch, name, min, max) GETOPT_LOCAL_NUMERIC(state, ch, p->name, min, max)
+/* GETOPT_NUMERIC is for parameters included in priv_t;
+ * GETOPT_LOCAL_NUMERIC is for parameters in a local variable.
+ * The above implements these without saying "p->name" in usage messages.
+ */
+#define GETOPT_LOCAL_NUMERIC(state, ch, name, min, max) \
+        GETOPT_NUMERIC_IMPL(state, ch, name, name, min, max)
+#define GETOPT_NUMERIC(state, ch, name, min, max) \
+        GETOPT_NUMERIC_IMPL(state, ch, p->name, name, min, max)
 
 int lsx_effect_set_imin(sox_effect_t * effp, size_t imin);
 

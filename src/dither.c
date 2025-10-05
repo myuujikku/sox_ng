@@ -257,7 +257,7 @@ typedef struct {
 
   double        previous_errors[MAX_N * 2];
   double        previous_outputs[MAX_N * 2];
-  size_t        pos, prec;
+  size_t        pos, precision;
   uint64_t      num_output;
   int32_t       history, ranqd1, r;
   double const  * coefs;
@@ -309,7 +309,7 @@ static int flow_no_shape(sox_effect_t * effp, const sox_sample_t * ibuf,
   while (len--) {
     if (p->auto_detect) {
       p->history = (p->history << 1) +
-          !!(*ibuf & (((unsigned)-1) >> p->prec));
+          !!(*ibuf & (((unsigned)-1) >> p->precision));
       if (p->history && p->dither_off) {
         p->dither_off = sox_false;
         lsx_debug("flow %" PRIuPTR ": on  @ %" PRIu64, effp->flow, p->num_output);
@@ -320,15 +320,15 @@ static int flow_no_shape(sox_effect_t * effp, const sox_sample_t * ibuf,
     }
 
     if (!p->dither_off) {
-      int32_t r = RANQD1 >> p->prec;
-      double d = ((double)*ibuf++ + r + (p->alt_tpdf? -p->r : (RANQD1 >> p->prec))) / (1 << (32 - p->prec));
+      int32_t r = RANQD1 >> p->precision;
+      double d = ((double)*ibuf++ + r + (p->alt_tpdf? -p->r : (RANQD1 >> p->precision))) / (1 << (32 - p->precision));
       int i = d < 0? d - .5 : d + .5;
       p->r = r;
-      if (i <= (int)((unsigned)-1 << (p->prec-1)))
+      if (i <= (int)((unsigned)-1 << (p->precision-1)))
         ++effp->clips, *obuf = SOX_SAMPLE_MIN;
-      else if (i > (int)SOX_INT_MAX(p->prec))
-        ++effp->clips, *obuf = SOX_INT_MAX(p->prec) << (32 - p->prec);
-      else *obuf = i << (32 - p->prec);
+      else if (i > (int)SOX_INT_MAX(p->precision))
+        ++effp->clips, *obuf = SOX_INT_MAX(p->precision) << (32 - p->precision);
+      else *obuf = i << (32 - p->precision);
       ++obuf;
     }
     else
@@ -344,9 +344,7 @@ static int getopts(sox_effect_t * effp, int argc, char * * argv)
   int c;
   lsx_getopt_t optstate;
   lsx_getopt_init(argc, argv, "+aSsf:p:", NULL, lsx_getopt_flag_none, 1, &optstate);
-  size_t precision;
 
-  precision = p->prec;
   while ((c = lsx_getopt(&optstate)) != -1) switch (c) {
     case 'a': p->auto_detect = sox_true; break;
     case 'S': p->alt_tpdf = sox_true; break;
@@ -356,7 +354,7 @@ static int getopts(sox_effect_t * effp, int argc, char * * argv)
       if (p->filter_name == INT_MAX)
         return SOX_EOF;
       break;
-    GETOPT_LOCAL_NUMERIC(optstate, 'p', precision, 1, 24)
+    GETOPT_NUMERIC(optstate, 'p', precision, 1, 24)
     default: /* invalid option or missing obligatory argument */
       if (optstate.ind > argc) {
         lsx_fail("-%c what?", optstate.opt);
@@ -366,7 +364,6 @@ static int getopts(sox_effect_t * effp, int argc, char * * argv)
       }
       return SOX_EOF;
   }
-  p->prec = precision;
   argc -= optstate.ind, argv += optstate.ind;
   if (argc) {
     lsx_fail("extra argument `%s'", argv[0]);
@@ -380,15 +377,15 @@ static int start(sox_effect_t * effp)
   priv_t * p = (priv_t *)effp->priv;
   double mult = 1; /* Amount the noise shaping multiplies up the TPDF (+/-1) */
 
-  if (p->prec == 0)
-    p->prec = effp->out_signal.precision;
+  if (p->precision == 0)
+    p->precision = effp->out_signal.precision;
 
-  if (effp->in_signal.precision <= p->prec || p->prec > 24)
+  if (effp->in_signal.precision <= p->precision || p->precision > 24)
     return SOX_EFF_NULL;   /* Dithering not needed at this resolution */
 
   effp->out_signal.precision = effp->in_signal.precision;
 
-  if (p->prec == 1) {
+  if (p->precision == 1) {
     p->sdm = sdm_init(NULL, effp->in_signal.rate, 0, 0, 0);
     if (!p->sdm)
       return SOX_EOF;
@@ -428,8 +425,8 @@ static int start(sox_effect_t * effp)
   }
   p->ranqd1 = ranqd1(sox_globals.ranqd1) + effp->flow;
   if (effp->in_signal.mult) /* (Takes account of ostart mult (sox.c). */
-    *effp->in_signal.mult *= (SOX_SAMPLE_MAX - (1 << (31 - p->prec)) *
-        (2 * mult + 1)) / (SOX_SAMPLE_MAX - (1 << (31 - p->prec)));
+    *effp->in_signal.mult *= (SOX_SAMPLE_MAX - (1 << (31 - p->precision)) *
+        (2 * mult + 1)) / (SOX_SAMPLE_MAX - (1 << (31 - p->precision)));
   return SOX_SUCCESS;
 }
 

@@ -43,23 +43,18 @@ static int create(sox_effect_t * effp, int argc, char * * argv)
   p->beta = -1;
   while (i < 2) {
     int c = 1;
-    while (c && (c = lsx_getopt(&optstate)) != -1) {
-      /* Make error messages say "`att' must be from X to Y"
-       * instead of "`p->att' must be from X to Y"
-       * or "`p->num_taps[1]' must be from X to Y"
-       */
-      double att = p->att, beta = p->beta, phase=p->phase;
-      int taps = p->num_taps[1];
+    int taps = p->num_taps[1]; /* Local alias for better usage message */
 
+    while (c && (c = lsx_getopt(&optstate)) != -1) {
       switch (c) {
         char * parse_ptr2;
       case 'r': p->round = sox_true; break;
-      GETOPT_LOCAL_NUMERIC(optstate, 'a', att,  40 , 180)
-      GETOPT_LOCAL_NUMERIC(optstate, 'b', beta,  0 , 256)
-      GETOPT_LOCAL_NUMERIC(optstate, 'p', phase, 0, 100)
-      case 'M': phase =  0; break;
-      case 'I': phase = 25; break;
-      case 'L': phase = 50; break;
+      GETOPT_NUMERIC(optstate, 'a', att,  40 , 180)
+      GETOPT_NUMERIC(optstate, 'b', beta,  0 , 256)
+      GETOPT_NUMERIC(optstate, 'p', phase, 0, 100)
+      case 'M': p->phase =  0; break;
+      case 'I': p->phase = 25; break;
+      case 'L': p->phase = 50; break;
       GETOPT_LOCAL_NUMERIC(optstate, 'n', taps, 11, 32767)
       case 't': p->tbw1 = lsx_parse_frequency(optstate.arg, &parse_ptr2);
         if (p->tbw1 < 1) {
@@ -102,10 +97,9 @@ static int create(sox_effect_t * effp, int argc, char * * argv)
 
       default: goto endwhile; /* Alas, poor "break" */
       }
-      p->att = att; p->beta = beta; p->phase = phase;
-      p->num_taps[1] = taps;
     }
 endwhile: /* Alas, poor "break" */
+    p->num_taps[1] = taps;
 
     if (p->att && p->beta >= 0) {
       lsx_fail("You can only give one of -a and -b");
