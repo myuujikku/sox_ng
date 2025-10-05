@@ -3339,9 +3339,16 @@ See also the \fR\-R\fR option below. With
 the given options control the size of the spectrogram's X, Y & Z axes
 (in this case, the spectrogram area of the produced image will be 600
 by 200 pixels in size and the Z axis range will be 100 dB).  Note that
-the produced image includes axes legends etc. and so will be a little
-larger than the specified spectrogram size unless the \fB\-r\fR option
-is given.  In this example
+the produced image includes axes, legends etc. and will be larger than the
+specified spectrogram size unless the \fB\-r\fR option is given:
+if each spectrogram is \fIx\fR\ \(mu\ \fIy\fR and there are \fIc\fR channels,
+the image will be
+\fIx\fR\ \(pl\ 144 by (\fIy\fR\ \(mu\ \fIc\fR)\ \(pl\ 78,
+plus \fIc\fR\ \(mi\ 1 if \fB\-a\fR was not given,
+and 20 pixels higher than this if you gave \fB\-t\fR\ \fITitle\fR.
+A raw spectrogram will be \fIx\fR\ by\ \fIy\fR\ \(mu\ \fIc\fR.
+.SP
+In this example
 .XE
    sox_ng \-n \-n synth 6 tri 10k:14k spectrogram \-z 100 \-w kaiser
 .XX
