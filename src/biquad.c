@@ -53,7 +53,7 @@ int lsx_biquad_getopts(sox_effect_t * effp, int argc, char **argv,
   if (argc > width_pos) {
     if ((unsigned)(sscanf(argv[width_pos], "%lf%c %c", &p->width, &width_type, &dummy)-1) > 1) {
       lsx_fail("cannot parse width `%s'", argv[width_pos]);
-      return lsx_usage(effp);
+      return SOX_EOF;
     }
     if (p->width <= 0) {
       lsx_fail("width `%s' must be positive", argv[width_pos]);
@@ -73,7 +73,7 @@ int lsx_biquad_getopts(sox_effect_t * effp, int argc, char **argv,
   if (argc > gain_pos) {
     if (sscanf(argv[gain_pos], "%lf %c", &p->gain, &dummy) != 1) {
       lsx_fail("cannot parse gain `%s'", argv[gain_pos]);
-      return lsx_usage(effp);
+      return SOX_EOF;
     }
   }
 
@@ -193,7 +193,10 @@ static int create(sox_effect_t * effp, int argc, char * * argv)
   char               c;
 
   --argc, ++argv;
-  if (argc != 6) return lsx_usage(effp);
+  if (argc != 6) {
+    lsx_fail("six coefficients are required");
+    return SOX_EOF;
+  }
 
   for (; argc ; --argc, ++argv, ++d) {
     if (sscanf(*argv, "%lf%c", d, &c) != 1) {

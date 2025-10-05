@@ -260,26 +260,37 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
     case 'c': p->comment          = optstate.arg; break;
     case 'o': p->out_name         = optstate.arg; break;
     case 'S': next = lsx_parseposition(0., optstate.arg, NULL, (uint64_t)0, (uint64_t)0, '=');
-      if (next && !*next) {p->start_time_str = lsx_strdup(optstate.arg); break;}
-      return lsx_usage(effp);
+      if (!next || *next) {
+        lsx_fail("cannot parse position `%s'", optstate.arg);
+        return SOX_EOF;
+      }
+      p->start_time_str = lsx_strdup(optstate.arg);
+      break;
     case 'd': next = lsx_parsesamples(1e5, optstate.arg, &dummy, 't');
-      if (next && !*next) {p->duration_str = lsx_strdup(optstate.arg); break;}
-      return lsx_usage(effp);
+      if (!next || *next) {
+        lsx_fail("cannot parse duration `%s'", optstate.arg);
+        return SOX_EOF;
+      }
+      p->duration_str = lsx_strdup(optstate.arg);
+      break;
     case 'R':
       if (parse_range (optstate.arg, &p->low_freq, &p->high_freq)) {
-         lsx_fail("frequency range `%s' is invalid.", optstate.arg);
+         lsx_fail("cannot parse frequency range `%s'", optstate.arg);
          return SOX_EOF;
       }
       if (p->low_freq < 0 || p->high_freq <= 0) {
-        lsx_fail("frequency range `%s' is invalid. Frequencies must be positive.", optstate.arg);
+        lsx_fail("frequencies must be positive");
         return SOX_EOF;
       }
       if (p->low_freq >= p->high_freq) {
-        lsx_fail("frequency range `%s' is invalid. Lower frequency must be less than higher frequency.", optstate.arg);
-        exit(1);
+        lsx_fail("lower frequency must be less than higher frequency");
+        return SOX_EOF;
       }
       break;
-    default: lsx_fail("invalid option `-%c'", optstate.opt); return lsx_usage(effp);
+    default:
+      lsx_fail("invalid option `-%c'", optstate.opt);
+      /* No point printing the usage as it just says "spectrogram [options]" */
+      return SOX_EOF;
   }
   if (!!p->x_size + !!p->pixels_per_sec + !!p->duration_str > 2) {
     lsx_fail("only two of -x, -X, -d may be given");

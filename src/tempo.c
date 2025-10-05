@@ -226,7 +226,7 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
     case 'm': profile = Music; break;
     case 's': profile = Speech; break;
     case 'l': profile = Linear; p->search_ms = 0; break;
-    default: lsx_fail("unknown option `-%c'", optstate.opt); return lsx_usage(effp);
+    default: lsx_fail("invalid option `-%c'", optstate.opt); return lsx_usage(effp);
   }
   argc -= optstate.ind, argv += optstate.ind;
   if (argc < 1) {	/* The "factor" parameter is obbligatory */
@@ -346,8 +346,10 @@ static int pitch_getopts(sox_effect_t * effp, int argc, char **argv)
   int result, pos = (argc > 1 && !strcmp(argv[1], "-q"))? 2 : 1;
 
   lsx_valloc(argv2, argc);
-  if (argc <= pos || sscanf(argv[pos], "%lf %c", &d, &dummy) != 1)
-    return lsx_usage(effp);
+  if (argc <= pos || sscanf(argv[pos], "%lf %c", &d, &dummy) != 1) {
+    lsx_fail("cannot parse shift factor `%s'", argv[pos]);
+    return SOX_EOF;
+  }
 
   d = pow(2., d / 1200);  /* cents --> factor */
   sprintf(arg, "%g", 1 / d);

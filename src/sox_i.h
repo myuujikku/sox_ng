@@ -284,7 +284,7 @@ int lsx_usage(sox_effect_t * effp);
   double d = strtod(state.arg, &end_ptr); \
   if (end_ptr == state.arg || d < min || d > max || *end_ptr != '\0') {\
     lsx_fail("parameter `%s' must be from %g to %g", #name, (double)min, (double)max); \
-    return lsx_usage(effp); \
+    return SOX_EOF; \
   } \
   var = d; \
   break; \

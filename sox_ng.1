@@ -3780,9 +3780,9 @@ option can be used to scale the input data by a given factor.
 The default value of
 .I scale
 is 2147483647 (i.e. the maximum value of a 32-bit signed integer).
-Internal effects
-always work with signed long PCM data and so the value should relate to this
-fact.
+as internal effects always work with signed long PCM data.
+A lower value means that a different sample value should be
+considered as the full-scale amplitude.
 .SP
 The
 .B \-rms
@@ -4483,15 +4483,15 @@ you also need to change \fB\-m\fR to 2 divided by its value
 to keep a 50% overlap.
 .IP "\fB\-M \fInum\fR (0.4) [0-1 \- 1]"
 Time constant used to smooth spectral measurements.
-.IP "\fB\-h \fInum\fR (50) [10 \-\^]"
+.IP "\fB\-h \fIfreq\fR (50) [10 \-\^]"
 `Brick-wall' frequency of the high-pass filter applied at the
 detector algorithm's input.
-.IP "\fB\-l \fInum\fR (6000) [1000 \-\^]"
+.IP "\fB\-l \fIfreq\fR (6000) [1000 \-\^]"
 `Brick-wall' frequency of the low-pass filter applied at the
 detector algorithm's input.
-.IP "\fB\-H \fInum\fR (150) [10 \-\^]"
+.IP "\fB\-H \fIfreq\fR (150) [10 \-\^]"
 `Brick-wall' frequency of the high-pass lifter used in the detector algorithm.
-.IP "\fB\-L \fInum\fR (2000) [1000 \-\^]"
+.IP "\fB\-L \fIfreq\fR (2000) [1000 \-\^]"
 `Brick-wall' frequency of the low-pass lifter used in the detector algorithm.
 .RE
 .TP

@@ -120,11 +120,11 @@ static int sox_chorus_getopts (sox_effect_t *effp,
          * and all stages must have parameters */
         if (argc < FIXED_PARAM_COUNT + PARAM_COUNT_PER_STAGE) {
 	    lsx_fail("there must be at least one stage");
-	    return lsx_usage(effp);
+	    return SOX_EOF;
 	}
         if ((argc - FIXED_PARAM_COUNT) % PARAM_COUNT_PER_STAGE != 0) {
             lsx_fail("all stages must have %d arguments", PARAM_COUNT_PER_STAGE);
-	    return lsx_usage(effp);
+	    return SOX_EOF;
         }
 
         /* read the global parameters gain_in and gain_out */

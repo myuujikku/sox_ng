@@ -92,7 +92,7 @@ static int create(sox_effect_t * effp, int argc, char * * argv)
           goto endwhile;
         }
         /* Invalid option flag */
-        lsx_fail("unknown option `-%c'", optstate.opt);
+        lsx_fail("invalid option `-%c'", optstate.opt);
 	return lsx_usage(effp);
 
       default: goto endwhile; /* Alas, poor "break" */
