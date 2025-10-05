@@ -65,7 +65,7 @@ static lsx_enum_item const window_options[] = {
 typedef struct {
   /* Parameters */
   double     pixels_per_sec, window_adjust;
-  int        x_size0, y_size, Y_size, dB_range, gain, spectrum_points, perm;
+  int        x_size, y_size, Y_size, dB_range, gain, spectrum_points, perm;
   sox_bool   monochrome, light_background, high_color, slack_overlap, no_axes;
   sox_bool   normalize, raw, alt_palette, truncate;
   win_type_t win_type;
@@ -81,7 +81,7 @@ typedef struct {
   /* Per-channel work area */
   uint64_t   skip;
   int        dft_size, step_size, block_steps, block_num, rows, cols, read;
-  int        x_size, end, end_min, last_end;
+  int        end, end_min, last_end;
   sox_bool   truncated;
   double     * buf;             /* [dft_size] */
   double     * dft_buf;         /* [dft_size] */
@@ -236,7 +236,7 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
   p->high_freq = -1;
 
   while ((c = lsx_getopt(&optstate)) != -1) switch (c) {
-    GETOPT_NUMERIC(optstate, 'x', x_size0       , 100, MAX_X_SIZE)
+    GETOPT_NUMERIC(optstate, 'x', x_size        , 100, MAX_X_SIZE)
     GETOPT_NUMERIC(optstate, 'X', pixels_per_sec,  1 , 5000)
     GETOPT_NUMERIC(optstate, 'y', y_size        , 64 , MAX_Y_SIZE)
     GETOPT_NUMERIC(optstate, 'Y', Y_size        , 130, MAX_Y_SIZE)
@@ -281,7 +281,7 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
       break;
     default: lsx_fail("invalid option `-%c'", optstate.opt); return lsx_usage(effp);
   }
-  if (!!p->x_size0 + !!p->pixels_per_sec + !!p->duration_str > 2) {
+  if (!!p->x_size + !!p->pixels_per_sec + !!p->duration_str > 2) {
     lsx_fail("only two of -x, -X, -d may be given");
     return SOX_EOF;
   }
@@ -391,7 +391,6 @@ static int start(sox_effect_t * effp)
     p->skip = d;
   }
 
-  p->x_size = p->x_size0;
   while (sox_true) {
     if (!pixels_per_sec && p->x_size && duration)
       pixels_per_sec = min(5000, p->x_size / duration);
