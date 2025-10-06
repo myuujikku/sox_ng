@@ -30,12 +30,23 @@ source repository and the web version will be a copy of it (#80)
 but for the moment the preferred way to edit the issues is via the
 web interface.
 
-It is possible to make a new issue from the command line by creating
+## Working offline
+
+It is possible to make a new issue locally from the command line by creating
 `issues/"Don't worry, be happy".md` and, if you want, a directory
 `issues/"Don't worry, be happy"` with files `milestone`, `labels` etc.
-and then saying
-`issues/putissues.sh` using your Codeberg username and password.
-It will fill in the `number` file with whatever forgejo assigns to it.
+
+If the issue persists, when online you can say `issues/putissues.sh`
+using your Codeberg username and password and it will fill in
+the `number` file with whatever forgejo assigns it.
+
+If you've downloaded the interesting issues, you can modify their `.md`
+files, add attachments, change labels and so on and when online
+`issues/putissues.sh` will replace the contents on Codeberg with yours,
+deleting anything that has been updated there except for comments.
+Something gitty or diffy is being thought of, like keeping a separate copy
+of each issue as it was downloaded and diffing those against the upstream
+versions when thinking of updating an element of an issue.
 
 ## Format of an issue
 
