@@ -119,6 +119,7 @@ static void output_message(
 }
 
 static sox_globals_t s_sox_globals = {
+  NULL,            /* char *       progname */
   2,               /* unsigned     verbosity */
   output_message,  /* sox_output_message_handler */
   sox_false,       /* sox_bool     repeatable */
