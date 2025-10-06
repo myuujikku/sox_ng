@@ -294,7 +294,7 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
       lsx_fail("invalid option `-%c'", optstate.opt);
       /* No point printing the usage as it just says "spectrogram [options]" */
       lsx_fail("for help, say %s --help-effect %s",
-               sox_get_globals()->progname, effp->handler.name);
+               sox_globals.progname, effp->handler.name);
       return SOX_EOF;
   }
   if (!!p->x_size + !!p->pixels_per_sec + !!p->duration_str > 2) {

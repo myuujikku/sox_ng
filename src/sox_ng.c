@@ -2949,7 +2949,7 @@ int main(int argc, char **argv)
   size_t i;
   char mybase[8];
 
-  sox_get_globals()->progname = argv[0];
+  sox_globals.progname = argv[0];
 
   if (argc < 2) { usage(); exit(1); }
 
