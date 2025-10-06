@@ -139,7 +139,6 @@ convertToAndFrom () {
             echo "*FAIL vector* channels=$channels \"$format1Text\" ---> \"$format2Text\"."
             exit 1    # This allows failure inspection.
           fi
-	  vectors=`expr $vectors + 1`
         fi
 
         if cmp -s input.$format1Ext output.$format1Ext
@@ -250,8 +249,6 @@ ${builddir}/sox_sample_test${EXEEXT} || exit 1
 
 skip_check caf flac mat4 mat5 paf w64 wv
 
-vectors=0
-
 rate=44100
 samples=23493
 
@@ -288,9 +285,6 @@ else
   echo "*FAIL* synth size"
 fi
 rm output.u8
-
-echo "Checked $vectors vectors"
-
 
 if $timeio
 then
