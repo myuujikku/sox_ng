@@ -245,7 +245,10 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
     GETOPT_NUMERIC(optstate, 'q', spectrum_points, 0 , p->spectrum_points)
     GETOPT_NUMERIC(optstate, 'p', perm          ,  1 , 6)
     GETOPT_NUMERIC(optstate, 'W', window_adjust , -10, 10)
-    case 'w': p->win_type = lsx_enum_option(c, optstate.arg, window_options);   break;
+    case 'w':
+      p->win_type = lsx_enum_option(c, optstate.arg, window_options);
+      if (p->win_type == INT_MAX) return SOX_EOF;
+      break;
     case 's': p->slack_overlap    = sox_true;   break;
     case 'A': p->alt_palette      = sox_true;   break;
     case 'a': p->no_axes          = sox_true;   break;
@@ -290,6 +293,8 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
     default:
       lsx_fail("invalid option `-%c'", optstate.opt);
       /* No point printing the usage as it just says "spectrogram [options]" */
+      lsx_fail("for help, say %s --help-effect %s",
+               sox_get_globals()->progname, effp->handler.name);
       return SOX_EOF;
   }
   if (!!p->x_size + !!p->pixels_per_sec + !!p->duration_str > 2) {
@@ -318,7 +323,12 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
     effp->global_info->global_info->stdout_in_use_by = effp->handler.name;
     p->using_stdout = sox_true;
   }
-  return optstate.ind !=argc || p->win_type == INT_MAX? lsx_usage(effp) : SOX_SUCCESS;
+  if (optstate.ind < argc) {
+    lsx_fail("extra argument: %s", argv[optstate.ind]);
+    return SOX_EOF;
+  }
+  if (optstate.ind > argc) return lsx_usage(effp);
+  return SOX_SUCCESS;
 }
 
 static double make_window(priv_t * p, int end)
