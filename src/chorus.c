@@ -219,9 +219,10 @@ static int sox_chorus_start (sox_effect_t *effp)
                 /* delay line */
                 dll = ceil((stage->delay + stage->depth) * effp->in_signal.rate);
                 if (dll > SOX_UINT_MAX(32)) {
-		    lsx_fail("delay + depth can't be more than %.0f ms at a sample rate of %.0fHz",
+		    lsx_fail("delay + depth can't be more than %.0f ms at sample rate %.0fHz",
 			     SOX_UINT_MAX(32) / effp->in_signal.rate * 1000,
 			     effp->in_signal.rate);
+		    lsx_fail("Lower sr to increase the maximum depth of the delay");
 		    return SOX_EOF;
 		}
                 stage->delay_line_length = dll;
