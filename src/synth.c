@@ -252,7 +252,17 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
     lsx_enum_item const * enum_p = lsx_find_enum_text(argv[argn], synth_type, lsx_find_enum_item_case_sensitive);
 
     if (enum_p == NULL) {
-      lsx_fail("no type given");
+      if (argv[argn][0] == '-') {
+        lsx_fail("invalid option `%s'", argv[argn]);
+      } else {
+        /* We could get here for a misspelled effect name,
+	 * a misspelled synth wave name or junk that doesn't start with '-'.
+	 * Malformed numbers that start with a digit
+	 * are probably taken as numeric parameters and rejected there
+	 * and malformed numbers that start with '-', who knows?
+	 */
+        lsx_fail("unknown type `%s'", argv[argn]);
+      }
       return SOX_EOF;
     }
     lsx_revalloc(p->getopts_channels, p->getopts_nchannels + 1);
