@@ -1643,7 +1643,7 @@ See
 .B remix
 for an effect that allows channels to be mixed and selected arbitrarily.
 .TP
-\fBchorus \fIgain-in gain-out\fR <\fIdelay decay speed depth \fB\-s\fR\^|\^\fB\-t\fR>
+\fBchorus [\fIgain-in [gain-out\fR {\fIdelay [decay [speed [depth [\fB\-s\fR\^|\^\fB\-t\fR]]]]}]]
 Add a chorus effect to the audio.  This can make a single voice sound
 like a chorus but can also be applied to instrumentation.
 .SP
@@ -1653,16 +1653,31 @@ varies by a sinusoidal or triangular modulation.
 .SP
 See [3] for further discussion of the chorus effect.
 .SP
-The parameters for each chorus give its fixed delay in milliseconds,
-the volume of the delayed output,
-the frequency in Hz of the modulation,
-the depth of the modulation in milliseconds \- each delay ranges from
-the fixed \fIdelay\fR to \fIdelay\fR\ \(pl\ \fIdepth\fR \-
-and whether the modulation is sinusoidal (\fB\-s\fR) or triangular (\fB\-t\fR).
+.SP
+All parameters are all optional and, if missing, assume the following values:
+.TS
+lb lb lb lb
+l c c le.
+Parameter	Range	Default	Description
+gain-in	-1-1	0.5	T{
+Proportion of input
+.br
+delivered clean to the adder
+T}
+gain-out	-1-1	1	Final volume adjustment
+delay	0-1000	40-60	Fixed delay in milliseconds
+decay	-1-1	0.5	Volume of delayed output
+speed	0-192k	0.25	Modulation frequency
+depth	0-1000	2	Extra delay in milliseconds
+wave	-s|-t	-s	Sinusoidal/triangular modulation
+.TE
+Each delay ranges from the fixed \fIdelay\fR to \fIdelay\fR\ \(pl\ \fIdepth\fR.
+.SP
 \fIGain-out\fR is then applied to the sum of the input scaled by \fIgain-in\fP
 and the outputs from the delays scaled by their \fIdecay\fRs.
 .SP
-For internal reasons, there is a limit of 256 chorus stages.
+For internal reasons regarding the speed of \fBchorus\fR,
+there is a limit of 256 chorus stages.
 .SP
 For a flow diagram of how \fBchorus\fR works,
 say \fBsox_ng \-\-help\-effect chorus\fR.

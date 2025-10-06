@@ -116,18 +116,9 @@ static int sox_chorus_getopts (sox_effect_t *effp,
         argc--;
         argv++;
 
-        /* there must be at least one stage
-         * and all stages must have parameters */
-        if (argc < FIXED_PARAM_COUNT + PARAM_COUNT_PER_STAGE) {
-	    lsx_fail("there must be at least one stage");
-	    return SOX_EOF;
-	}
-        if ((argc - FIXED_PARAM_COUNT) % PARAM_COUNT_PER_STAGE != 0) {
-            lsx_fail("all stages must have %d arguments", PARAM_COUNT_PER_STAGE);
-	    return SOX_EOF;
-        }
-
         /* read the global parameters gain_in and gain_out */
+	chorus->gain_in = 0.5;
+	chorus->gain_out = 1;
         do {
             chorus_priv_t* p = chorus;
             NUMERIC_PARAMETER(gain_in, -1.0, 1.0);
@@ -144,11 +135,16 @@ static int sox_chorus_getopts (sox_effect_t *effp,
 	    p = &chorus->stage[chorus->stage_count];
             memset(p, 0, sizeof(*p));
 
-            NUMERIC_PARAMETER(delay,  0, 86400000);
-            NUMERIC_PARAMETER(decay, -1, 1);
-            NUMERIC_PARAMETER(speed,  0, 192000);
-            NUMERIC_PARAMETER(depth,  0, 86400000);
-            TEXTUAL_PARAMETER(wave_type, modulation_kind_map);
+            p->delay = 50;
+            p->decay = 0.5;
+            p->speed = 0.25;
+            p->depth = 2;
+            p->wave_type = SOX_WAVE_SINE;
+            if (argc > 0) NUMERIC_PARAMETER(delay,  0, 86400000);
+            if (argc > 0) NUMERIC_PARAMETER(decay, -1, 1);
+            if (argc > 0) NUMERIC_PARAMETER(speed,  0, 192000);
+            if (argc > 0) NUMERIC_PARAMETER(depth,  0, 86400000);
+            if (argc > 0) TEXTUAL_PARAMETER(wave_type, modulation_kind_map);
 
             /* normalize time parameters to seconds */
             p->delay /= 1000.0;
@@ -411,7 +407,7 @@ static int sox_chorus_stop (sox_effect_t * effp)
 const sox_effect_handler_t *lsx_chorus_effect_fn(void)
 {
   static char const usage[] =
-"gain-in gain-out <delay decay speed depth -s|-t>";
+"[gain-in [gain-out {delay [decay [speed [depth [-s|-t]]]]}]]";
   static char const * const extra_usage[] = {
 "                                              ___",
 "In---+-------------------------------------->|   |",
@@ -434,10 +430,10 @@ const sox_effect_handler_t *lsx_chorus_effect_fn(void)
 "       | sine/triangle |<--speed n",
 "       +---------------+",
 "",
-"         RANGE TYPICAL DESCRIPTION",
+"         RANGE DEFAULT DESCRIPTION",
 "gain-in  -1-1    0.5   Proportion of input delivered clean to the adder",
 "gain-out -1-1     1    Final volume adjustment",
-"delay   0-1000  40-60  Fixed delay in milliseconds",
+"delay   0-1000   50    Fixed delay in milliseconds",
 "decay    -1-1    0.5   Proportion of delay's output delivered to the adder",
 "speed   0-192k   0.25  Modulation frequency (no more than the sample rate)",
 "depth   0-1000    2    Additional variable delay in milliseconds",
