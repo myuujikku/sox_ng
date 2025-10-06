@@ -254,6 +254,7 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
     if (enum_p == NULL) {
       if (argv[argn][0] == '-') {
         lsx_fail("invalid option `%s'", argv[argn]);
+        lsx_usage(effp);
       } else {
         /* We could get here for a misspelled effect name,
 	 * a misspelled synth wave name or junk that doesn't start with '-'.
@@ -262,6 +263,7 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
 	 * and malformed numbers that start with '-', who knows?
 	 */
         lsx_fail("unknown type `%s'", argv[argn]);
+        lsx_fail("sine square saw triangle trapezium exp white tpdf pink brown pluck");
       }
       return SOX_EOF;
     }
