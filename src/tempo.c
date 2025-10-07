@@ -205,7 +205,7 @@ static tempo_t * tempo_create(size_t channels)
 typedef struct {
   tempo_t     * tempo;
   sox_bool    quick_search;
-  double      factor, segment_ms, search_ms, overlap_ms;
+  double      factor, segment, search, overlap; /* the last three are in ms */
 } priv_t;
 
 static int getopts(sox_effect_t * effp, int argc, char **argv)
@@ -220,12 +220,12 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
   lsx_getopt_t optstate;
   lsx_getopt_init(argc, argv, "+qmls", NULL, lsx_getopt_flag_none, 1, &optstate);
 
-  p->factor = p->segment_ms = p->search_ms = p->overlap_ms = HUGE_VAL;
+  p->factor = p->segment = p->search = p->overlap = HUGE_VAL;
   while ((c = lsx_getopt(&optstate)) != -1) switch (c) {
     case 'q': p->quick_search  = sox_true;   break;
     case 'm': profile = Music; break;
     case 's': profile = Speech; break;
-    case 'l': profile = Linear; p->search_ms = 0; break;
+    case 'l': profile = Linear; p->search = 0; break;
     default: lsx_fail("invalid option `-%c'", optstate.opt); return lsx_usage(effp);
   }
   argc -= optstate.ind, argv += optstate.ind;
@@ -234,39 +234,39 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
     return SOX_EOF;
   }
   do {                    /* break-able block */
-    NUMERIC_PARAMETER(factor      ,0.1 , 100 )
-    NUMERIC_PARAMETER(segment_ms  , 10 , 120)
-    NUMERIC_PARAMETER(search_ms   , 0  , 30 )
-    NUMERIC_PARAMETER(overlap_ms  , 0  , 30 )
+    NUMERIC_PARAMETER(factor   ,0.1 , 100 )
+    NUMERIC_PARAMETER(segment  , 10 , 120)
+    NUMERIC_PARAMETER(search   , 0  , 30 )
+    NUMERIC_PARAMETER(overlap  , 0  , 30 )
   } while (0);
 
   if (argc) {
     /* Either there was stuff that we didn't understand as numbers
      * (starting with something not a digit, plus or minus)
      * or they gave more than four arguments */
-    if (p->overlap_ms != HUGE_VAL)
+    if (p->overlap != HUGE_VAL)
       lsx_fail("superfluous argument `%s'", *argv);
     else
       lsx_fail("%s `%s' is not a number",
         p->factor == HUGE_VAL ? "factor" :
-        p->segment_ms == HUGE_VAL ? "segment" :
-        p->search_ms == HUGE_VAL ? "search" :
-        p->overlap_ms == HUGE_VAL ? "overlap" :
+        p->segment == HUGE_VAL ? "segment" :
+        p->search == HUGE_VAL ? "search" :
+        p->overlap == HUGE_VAL ? "overlap" :
 	"argument", /* "can't happen" */
       *argv);
     return SOX_EOF;
   }
 
-  if (p->segment_ms == HUGE_VAL)
-    p->segment_ms = max(10, segments_ms[profile] / max(pow(p->factor, segments_pow[profile]), 1));
-  if (p->overlap_ms == HUGE_VAL)
-    p->overlap_ms = p->segment_ms / overlaps_div[profile];
-  if (p->search_ms == HUGE_VAL)
-    p->search_ms = p->segment_ms / searches_div[profile];
+  if (p->segment == HUGE_VAL)
+    p->segment = max(10, segments_ms[profile] / max(pow(p->factor, segments_pow[profile]), 1));
+  if (p->overlap == HUGE_VAL)
+    p->overlap = p->segment / overlaps_div[profile];
+  if (p->search == HUGE_VAL)
+    p->search = p->segment / searches_div[profile];
 
-  p->overlap_ms = min(p->overlap_ms, p->segment_ms / 2);
+  p->overlap = min(p->overlap, p->segment / 2);
   lsx_report("quick_search=%u factor=%g segment=%g search=%g overlap=%g",
-    p->quick_search, p->factor, p->segment_ms, p->search_ms, p->overlap_ms);
+    p->quick_search, p->factor, p->segment, p->search, p->overlap);
   return SOX_SUCCESS;
 }
 
@@ -279,7 +279,7 @@ static int start(sox_effect_t * effp)
 
   p->tempo = tempo_create((size_t)effp->in_signal.channels);
   tempo_setup(p->tempo, effp->in_signal.rate, p->quick_search, p->factor,
-      p->segment_ms, p->search_ms, p->overlap_ms);
+      p->segment, p->search, p->overlap);
 
   effp->out_signal.length = SOX_UNKNOWN_LEN;
   if (effp->in_signal.length != SOX_UNKNOWN_LEN) {
