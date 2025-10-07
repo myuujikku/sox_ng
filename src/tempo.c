@@ -220,7 +220,7 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
   lsx_getopt_t optstate;
   lsx_getopt_init(argc, argv, "+qmls", NULL, lsx_getopt_flag_none, 1, &optstate);
 
-  p->segment_ms = p->search_ms = p->overlap_ms = HUGE_VAL;
+  p->factor = p->segment_ms = p->search_ms = p->overlap_ms = HUGE_VAL;
   while ((c = lsx_getopt(&optstate)) != -1) switch (c) {
     case 'q': p->quick_search  = sox_true;   break;
     case 'm': profile = Music; break;
@@ -230,7 +230,7 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
   }
   argc -= optstate.ind, argv += optstate.ind;
   if (argc < 1) {	/* The "factor" parameter is obbligatory */
-    lsx_usage(effp);
+    lsx_fail("the `factor' parameter is obligatory");
     return SOX_EOF;
   }
   do {                    /* break-able block */
@@ -239,6 +239,23 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
     NUMERIC_PARAMETER(search_ms   , 0  , 30 )
     NUMERIC_PARAMETER(overlap_ms  , 0  , 30 )
   } while (0);
+
+  if (argc) {
+    /* Either there was stuff that we didn't understand as numbers
+     * (starting with something not a digit, plus or minus)
+     * or they gave more than four arguments */
+    if (p->overlap_ms != HUGE_VAL)
+      lsx_fail("superfluous argument `%s'", *argv);
+    else
+      lsx_fail("%s `%s' is not a number",
+        p->factor == HUGE_VAL ? "factor" :
+        p->segment_ms == HUGE_VAL ? "segment" :
+        p->search_ms == HUGE_VAL ? "search" :
+        p->overlap_ms == HUGE_VAL ? "overlap" :
+	"argument", /* "can't happen" */
+      *argv);
+    return SOX_EOF;
+  }
 
   if (p->segment_ms == HUGE_VAL)
     p->segment_ms = max(10, segments_ms[profile] / max(pow(p->factor, segments_pow[profile]), 1));
@@ -250,7 +267,7 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
   p->overlap_ms = min(p->overlap_ms, p->segment_ms / 2);
   lsx_report("quick_search=%u factor=%g segment=%g search=%g overlap=%g",
     p->quick_search, p->factor, p->segment_ms, p->search_ms, p->overlap_ms);
-  return argc? lsx_usage(effp) : SOX_SUCCESS;
+  return SOX_SUCCESS;
 }
 
 static int start(sox_effect_t * effp)
