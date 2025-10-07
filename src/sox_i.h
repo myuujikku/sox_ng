@@ -260,9 +260,14 @@ int lsx_usage(sox_effect_t * effp);
   if (argc == 0) break; \
   d = strtod(*argv, &end_ptr); \
   if (end_ptr != *argv) { \
-    if (d < min || d > max || *end_ptr != '\0') {\
-      lsx_fail("parameter `%s' must be from %g to %g", #name, (double)min, (double)max); \
-      return lsx_usage(effp); \
+    if (*end_ptr != '\0') { \
+      lsx_fail("%s `%s' is not a number", #name, *argv); \
+      return SOX_EOF; \
+    } \
+    if (d < min || d > max) { \
+      lsx_fail("%s `%s' must be from %g to %g", #name, *argv, \
+               (double)min, (double)max); \
+      return SOX_EOF; \
     } \
     p->name = d; \
     --argc, ++argv; \
@@ -282,8 +287,12 @@ int lsx_usage(sox_effect_t * effp);
 #define GETOPT_NUMERIC_IMPL(state, ch, var, name, min, max) case ch:{ \
   char * end_ptr; \
   double d = strtod(state.arg, &end_ptr); \
+  if (end_ptr == state.arg || *end_ptr != '\0') {\
+    lsx_fail("%s `%s' is not a number", #name, state.arg); \
+    return SOX_EOF; \
+  } \
   if (end_ptr == state.arg || d < min || d > max || *end_ptr != '\0') {\
-    lsx_fail("parameter `%s' must be from %g to %g", #name, (double)min, (double)max); \
+    lsx_fail("%s must be from %g to %g", #name, (double)min, (double)max); \
     return SOX_EOF; \
   } \
   var = d; \
