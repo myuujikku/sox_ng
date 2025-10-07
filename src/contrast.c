@@ -46,6 +46,7 @@ sox_effect_handler_t const * lsx_contrast_effect_fn(void)
   static char const * const extra_usage[] = {
     "OPTION  RANGE  DEFAULT  DESCRIPTION",
     "amount  0-100    75     How much to make it sound louder",
+    NULL
   };
   static sox_effect_handler_t handler = {
     "contrast", "[amount]", extra_usage,
