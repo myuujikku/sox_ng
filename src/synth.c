@@ -192,9 +192,15 @@ char * end_ptr_np; \
 double d_np = strtod(argv[argn], &end_ptr_np); \
 if (end_ptr_np == argv[argn]) \
   break; \
-if (d_np < min || d_np > max || *end_ptr_np != '\0') { \
+if (*end_ptr_np != '\0') { \
+  /* Say "not a phase" or "not an offset" */ \
   lsx_fail("%s is not a%s %s", argv[argn], isvowel(expecting[0])?"n":"", \
            expecting); \
+  return SOX_EOF; \
+} \
+if (d_np < min || d_np > max) { \
+  lsx_fail("%s `%s' must be from %g to %g", expecting, argv[argn], \
+           (double)min, (double)max); \
   return SOX_EOF; \
 } \
 chan->p = d_np / 100; /* adjust so abs(parameter) <= 1 */\
