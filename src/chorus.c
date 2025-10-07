@@ -41,7 +41,7 @@
 /** the function for checking for a clipped sample in the resolution
  * after downscaling */
 #define CLIP_COUNT_PROC SOX_24BIT_CLIP_COUNT
- 
+
 /** the allowed options for the modulation kind mapped onto a wave
  * type */
 static lsx_enum_item modulation_kind_map[] ={
@@ -49,6 +49,11 @@ static lsx_enum_item modulation_kind_map[] ={
     { "-t", SOX_WAVE_TRIANGLE },
     { NULL, 0 }
 };
+
+
+
+/** the allowed interpolation types, mirroring those of flanger */
+typedef enum {INTERP_NONE, INTERP_LINEAR} interp_t;
 
 /** the type used in the delay lines */
 typedef sox_sample_t chorus_delay_sample_t;
@@ -73,7 +78,8 @@ typedef struct {
         sox_uint32_t           depth_sample_count;
         sox_uint32_t           wave_index;
         sox_uint32_t           wave_length;
-        int                    *wave_table;
+        int                    *wave_table_i;
+        float                  *wave_table_f;
 } chorus_stage_t;
 
 /*--------------------*/
@@ -81,6 +87,7 @@ typedef struct {
 /** the chorus effect */
 typedef struct {
         /* command line parameters */
+        interp_t        interpolation;
         float           gain_in;
         float           gain_out;
 
@@ -116,9 +123,14 @@ static int sox_chorus_getopts (sox_effect_t *effp,
         argc--;
         argv++;
 
+        if (argc > 0 && !strcmp(*argv, "-l")) {
+            chorus->interpolation = INTERP_LINEAR;
+            argc--; argv++;
+        }
+
         /* read the global parameters gain_in and gain_out */
-	chorus->gain_in = 0.5;
-	chorus->gain_out = 1;
+        chorus->gain_in = 0.5;
+        chorus->gain_out = 1;
         do {
             chorus_priv_t* p = chorus;
             NUMERIC_PARAMETER(gain_in, -1.0, 1.0);
@@ -131,8 +143,8 @@ static int sox_chorus_getopts (sox_effect_t *effp,
         do {
             chorus_stage_t *p;
 
-	    lsx_revalloc(chorus->stage, chorus->stage_count + 1);
-	    p = &chorus->stage[chorus->stage_count];
+            lsx_revalloc(chorus->stage, chorus->stage_count + 1);
+            p = &chorus->stage[chorus->stage_count];
             memset(p, 0, sizeof(*p));
 
             p->delay = 50;
@@ -237,13 +249,25 @@ static int sox_chorus_start (sox_effect_t *effp)
 		    lsx_fail("speed can't be more than the sample rate");
 		    return SOX_EOF;
 		}
-                lsx_valloc(stage->wave_table, stage->wave_length);
-                lsx_generate_wave_table(stage->wave_type, SOX_INT,
-                                        stage->wave_table,
-                                        stage->wave_length,
-                                        0., stage->depth_sample_count,
-                                        M_PI_2);
- 
+		switch (chorus->interpolation) {
+		case INTERP_NONE:
+                    lsx_valloc(stage->wave_table_i, stage->wave_length);
+                    lsx_generate_wave_table(stage->wave_type, SOX_INT,
+                                 stage->wave_table_i,
+				 stage->wave_length,
+                                 0., stage->depth_sample_count,
+				 M_PI_2);
+		    break;
+		case INTERP_LINEAR:
+                    lsx_valloc(stage->wave_table_f, stage->wave_length);
+                    lsx_generate_wave_table(stage->wave_type, SOX_FLOAT,
+                                 stage->wave_table_f,
+                                 stage->wave_length,
+                                 0., stage->depth_sample_count,
+				 M_PI_2);
+		    break;
+		}
+
                 /* find maximum delay line length across all stages */
                 chorus->remaining_samples =
                         max(chorus->remaining_samples,
@@ -288,7 +312,9 @@ static int sox_chorus_flow_or_drain (sox_effect_t *effp,
 
         *isamp = *osamp = len;
 
-        while (len--) {
+	switch (chorus->interpolation) {
+	case INTERP_NONE:
+            while (len--) {
                 sox_uint32_t i;
                 sox_sample_t output_sample;
 
@@ -302,21 +328,21 @@ static int sox_chorus_flow_or_drain (sox_effect_t *effp,
                 /* Compute output */
                 chorus_delay_sample_t d_out = d_in * chorus->gain_in;
 
-                for (i = 0; i < chorus->stage_count; i++) {
-                    chorus_stage_t *stage = &chorus->stage[i];
-                    sox_uint32_t wave_index = stage->wave_index;
-                    sox_uint32_t offset = stage->wave_table[wave_index];
-                    sox_uint32_t delay_line_index =
-                        ((stage->delay_line_index + offset)
-                         % stage->delay_line_length);
-                    chorus_delay_sample_t sample =
-                        stage->delay_line[delay_line_index];
-                    d_out += sample * stage->decay;
-                    stage->delay_line[stage->delay_line_index] = d_in;
-                    MODULAR_INCREMENT(stage->delay_line_index,
-                                      stage->delay_line_length);
-                    MODULAR_INCREMENT(stage->wave_index, stage->wave_length);
-                }
+		for (i = 0; i < chorus->stage_count; i++) {
+		    chorus_stage_t *stage = &chorus->stage[i];
+		    sox_uint32_t wave_index = stage->wave_index;
+		    sox_uint32_t offset_i = stage->wave_table_i[wave_index];
+		    sox_uint32_t delay_line_index =
+			((stage->delay_line_index + offset_i)
+			 % stage->delay_line_length);
+		    chorus_delay_sample_t sample =
+			stage->delay_line[delay_line_index];
+		    d_out += sample * stage->decay;
+		    stage->delay_line[stage->delay_line_index] = d_in;
+		    MODULAR_INCREMENT(stage->delay_line_index,
+				      stage->delay_line_length);
+		    MODULAR_INCREMENT(stage->wave_index, stage->wave_length);
+	       }
 
                 /* Adjust the output volume by gain_out, check for
                  * clipping and scale output up again */
@@ -324,6 +350,50 @@ static int sox_chorus_flow_or_drain (sox_effect_t *effp,
                 output_sample = CLIP_COUNT_PROC((sox_sample_t) d_out,
                                                 effp->clips);
                 *obuf++ = output_sample * SCALING_FACTOR;
+             }
+	     break;
+         case INTERP_LINEAR:
+            while (len--) {
+                sox_uint32_t i;
+                sox_sample_t output_sample;
+
+                /* Scale samples down to prevent arithmetic overflow
+                 * when adding up many delay lines */
+                const chorus_delay_sample_t d_in =
+                    (is_drain
+                     ? 0
+                     : (chorus_delay_sample_t) *ibuf++ / SCALING_FACTOR);
+
+                /* Compute output */
+                chorus_delay_sample_t d_out = d_in * chorus->gain_in;
+
+		for (i = 0; i < chorus->stage_count; i++) {
+		    chorus_stage_t *stage = &chorus->stage[i];
+		    sox_uint32_t wave_index = stage->wave_index;
+		    double       offset_f = stage->wave_table_f[wave_index];
+		    sox_uint32_t offset_i = floor(offset_f);
+		    double       frac     = offset_f - offset_i;
+		    sox_uint32_t delay_line_index =
+			((stage->delay_line_index + offset_i)
+			 % stage->delay_line_length);
+		    chorus_delay_sample_t sample =
+			stage->delay_line[delay_line_index] * (1 - frac) +
+			stage->delay_line[(delay_line_index + 1) % stage->delay_line_length] * frac;
+		    d_out += sample * stage->decay;
+		    stage->delay_line[stage->delay_line_index] = d_in;
+		    MODULAR_INCREMENT(stage->delay_line_index,
+				      stage->delay_line_length);
+		    MODULAR_INCREMENT(stage->wave_index, stage->wave_length);
+		}
+
+                /* Adjust the output volume by gain_out, check for
+                 * clipping and scale output up again */
+                d_out = d_out * chorus->gain_out;
+                output_sample = CLIP_COUNT_PROC((sox_sample_t) d_out,
+                                                effp->clips);
+                *obuf++ = output_sample * SCALING_FACTOR;
+            }
+	    break;
         }
 
         return result;
@@ -396,7 +466,10 @@ static int sox_chorus_stop (sox_effect_t * effp)
 
         for (i = 0;  i < chorus->stage_count;  i++) {
                 chorus_stage_t *stage = &chorus->stage[i];
-                free(stage->wave_table);
+		switch (chorus->interpolation) {
+		case INTERP_NONE:   free(stage->wave_table_i); break;
+		case INTERP_LINEAR: free(stage->wave_table_f); break;
+		}
                 free(stage->delay_line);
         }
         free(chorus->stage);

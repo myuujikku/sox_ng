@@ -1643,7 +1643,7 @@ See
 .B remix
 for an effect that allows channels to be mixed and selected arbitrarily.
 .TP
-\fBchorus [\fIgain-in [gain-out\fR {\fIdelay [decay [speed [depth [\fB\-s\fR\^|\^\fB\-t\fR]]]]}]]
+\fBchorus [\fB\-l\fR] [\fIgain-in [gain-out\fR {\fIdelay [decay [speed [depth [\fB\-s\fR\^|\^\fB\-t\fR]]]]}]]
 Add a chorus effect to the audio.  This can make a single voice sound
 like a chorus but can also be applied to instrumentation.
 .SP
@@ -1653,6 +1653,9 @@ varies by a sinusoidal or triangular modulation.
 .SP
 See [3] for further discussion of the chorus effect.
 .SP
+The \fB\-l\fR flag makes \fBchorus\fR do linear interpolation between samples
+when the offset in the delay is not a whole number,
+which is about 10% slower but makes it considerably less noisy.
 .SP
 All parameters are all optional and, if missing, assume the following values:
 .TS
