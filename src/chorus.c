@@ -25,12 +25,6 @@
 
 #include "sox_i.h"
 
-/** the number of parameter for a chorus stage */
-#define PARAM_COUNT_PER_STAGE 5
-
-/** the number of global chorus parameters */
-#define FIXED_PARAM_COUNT    2
-
 /** the downscaling factor for the samples in the delay line
  * to prevent overflow; best if it's a power of 2 */
 #define SCALING_FACTOR 256
@@ -326,7 +320,16 @@ static int sox_chorus_flow_or_drain (sox_effect_t *effp,
                 sox_sample_t output_sample;
 
                 /* Scale samples down to prevent arithmetic overflow
-                 * when adding up many delay lines */
+                 * when adding up many delay lines.
+                 *
+                 * Dividing by scale_factor rounds the positive and
+                 * negative halves of the wave towards zero, thereby
+                 * crushing the wave towards zero by an average of half
+                 * a sample value at the scaled resolution.
+                 * The correction is *ibuf + (*ibuf < 0 ? -128 : +128) but
+                 * this can overflow, and the scaled resolution is 24-bit
+                 * so the error is negligable.
+                 */
                 const chorus_delay_sample_t d_in =
                     (is_drain
                      ? 0
@@ -365,7 +368,8 @@ static int sox_chorus_flow_or_drain (sox_effect_t *effp,
                 sox_sample_t output_sample;
 
                 /* Scale samples down to prevent arithmetic overflow
-                 * when adding up many delay lines */
+                 * when adding up many delay lines.
+                 */
                 const chorus_delay_sample_t d_in =
                     (is_drain
                      ? 0
