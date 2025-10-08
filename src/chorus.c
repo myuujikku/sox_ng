@@ -164,10 +164,13 @@ static int sox_chorus_getopts (sox_effect_t *effp,
             chorus->stage_count++;
         } while (argc > 0 && chorus->stage_count < MAX_STAGE_COUNT);
 
-	if (argc > 0) {
-	    lsx_fail("there is a maximum of %d chorus stages", MAX_STAGE_COUNT);
-	    return SOX_EOF;
-	}
+        if (argc > 0) {
+            if (chorus->stage_count == MAX_STAGE_COUNT)
+                lsx_fail("there is a maximum of %d chorus stages", MAX_STAGE_COUNT);
+            else
+                lsx_fail("invalid argument `%s'", *argv);
+            return SOX_EOF;
+        }
 
         /* issue warning about possible clipping when parameters are
          * above some threshold */
