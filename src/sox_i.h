@@ -259,19 +259,22 @@ int lsx_usage(sox_effect_t * effp);
   double d; \
   if (argc == 0) break; \
   d = strtod(*argv, &end_ptr); \
-  if (end_ptr != *argv) { \
-    if (*end_ptr != '\0') { \
-      lsx_fail("%s `%s' is not a number", #name, *argv); \
-      return SOX_EOF; \
-    } \
-    if (d < min || d > max) { \
-      lsx_fail("%s `%s' must be from %g to %g", #name, *argv, \
-               (double)min, (double)max); \
-      return SOX_EOF; \
-    } \
-    p->name = d; \
-    --argc, ++argv; \
+  if (end_ptr == *argv) { \
+    /* No valid number was found */ \
+    break; \
   } \
+  if (*end_ptr != '\0') { \
+    /* A number with trailing garbage */ \
+    lsx_fail("%s `%s' is not a number", #name, *argv); \
+    return SOX_EOF; \
+  } \
+  if (d < min || d > max) { \
+    lsx_fail("%s `%s' must be from %g to %g", #name, *argv, \
+             (double)min, (double)max); \
+    return SOX_EOF; \
+  } \
+  p->name = d; \
+  --argc, ++argv; \
 }
 
 #define TEXTUAL_PARAMETER(name, enum_table) { \
