@@ -186,26 +186,29 @@ static void set_default_parameters(channel_t *  chan)
 
 
 
+/* A version of sox_i.h's NUMERIC_PARAMETER()
+ * that works with argn instead of modifying argc and argv,
+ * that knows the name of the parameter it was expecting
+ * and which scales all values from 0-100 to 0.0-1.0
+ */
 #undef NUMERIC_PARAMETER
 #define NUMERIC_PARAMETER(p, min, max, expecting) { \
-char * end_ptr_np; \
-double d_np = strtod(argv[argn], &end_ptr_np); \
-if (end_ptr_np == argv[argn]) \
-  break; \
-if (*end_ptr_np != '\0') { \
-  /* Say "not a phase" or "not an offset" */ \
-  lsx_fail("%s is not a%s %s", argv[argn], isvowel(expecting[0])?"n":"", \
-           expecting); \
-  return SOX_EOF; \
-} \
-if (d_np < min || d_np > max) { \
-  lsx_fail("%s `%s' must be from %g to %g", expecting, argv[argn], \
-           (double)min, (double)max); \
-  return SOX_EOF; \
-} \
-chan->p = d_np / 100; /* adjust so abs(parameter) <= 1 */\
-if (++argn == argc) \
-  break; \
+  char * end_ptr; \
+  double d = strtod(argv[argn], &end_ptr); \
+  if (end_ptr == argv[argn]) break; \
+  if (*end_ptr != '\0') { \
+    /* Say "not a phase" or "not an offset" */ \
+    lsx_fail("%s is not a%s %s", argv[argn], isvowel(expecting[0])?"n":"", \
+             expecting); \
+    return SOX_EOF; \
+  } \
+  if (d < min || d > max) { \
+    lsx_fail("%s `%s' must be from %g to %g", expecting, argv[argn], \
+             (double)min, (double)max); \
+    return SOX_EOF; \
+  } \
+  chan->p = d / 100; /* adjust so abs(parameter) <= 1 */\
+  if (++argn == argc) break; \
 }
 
 #define isvowel(c) ((c)=='a'||(c)=='e'||(c)=='i'||(c)=='o'||(c)=='u')
