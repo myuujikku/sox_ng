@@ -4166,7 +4166,9 @@ lower the shoulders, increasing the pointedness of the spike.
 Random noise with equal power at every frequency.
 All noise generators ignore the \fIfrequency\fR and \fIphase\fR parameters
 but if a DC offset is given, the signal's amplitude is automatically adjusted
-to prevent clipping, so for noise in the range 0 to 1, an offset of 0.5.
+to prevent clipping so, for noise in the range 0 to 1, an offset of 0.5 would
+give a signal ranging from 0\*d0 to 1\*d0 and -0.9 from -1.0 to -0.8
+.SP
 \fBnoise\fR is a handy alias for \fBwhitenoise\fR
 .TP
 .B tpdfnoise
