@@ -127,6 +127,10 @@ static int sox_chorus_getopts (sox_effect_t *effp,
             chorus->interpolation = INTERP_LINEAR;
             argc--; argv++;
         }
+        if (argc > 0 && !strcmp(*argv, "-n")) {
+            chorus->interpolation = INTERP_NONE;
+            argc--; argv++;
+        }
 
         /* read the global parameters gain_in and gain_out */
         chorus->gain_in = 0.5;
@@ -483,7 +487,7 @@ static int sox_chorus_stop (sox_effect_t * effp)
 const sox_effect_handler_t *lsx_chorus_effect_fn(void)
 {
   static char const usage[] =
-"[gain-in [gain-out {delay [decay [speed [depth [-s|-t]]]]}]]";
+"[-l|-n] [gain-in [gain-out {delay [decay [speed [depth [-s|-t]]]]}]]";
   static char const * const extra_usage[] = {
 "                                              ___",
 "In---+-------------------------------------->|   |",
@@ -507,14 +511,14 @@ const sox_effect_handler_t *lsx_chorus_effect_fn(void)
 "       +---------------+",
 "",
 "         RANGE DEFAULT DESCRIPTION",
+"interp   -n|-l   -n    Interpolation type: none or linear",
 "gain-in  -1-1    0.5   Proportion of input delivered clean to the adder",
 "gain-out -1-1     1    Final volume adjustment",
 "delay   0-1000   50    Fixed delay in milliseconds",
 "decay    -1-1    0.5   Proportion of delay's output delivered to the adder",
 "speed   0-192k   0.25  Modulation frequency (no more than the sample rate)",
 "depth   0-1000    2    Additional variable delay in milliseconds",
-"-s                     Modulate sinusoidally",
-"-t                     Modulate triangularly",
+"wave     -s|-t   -s    Modulate with a sinusoidal or a triangular wave",
 "Hint: gain-out <= 1 / ( gain-in + decay 1 + ... + decay n )",
           NULL
 	};
