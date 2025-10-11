@@ -392,6 +392,15 @@ static int start(sox_effect_t * effp)
   }
 
   p->x_size = p->x_size0;
+
+  /* If we're supposed to scale the spectrogram to the length of the audio
+   * but the audio length is unknown, emit a warning to this effect */
+  if (!duration && effp->in_signal.length == SOX_UNKNOWN_LEN &&
+      !pixels_per_sec) {
+    lsx_warn("cannot scale to an unknown audio length; use -d if you know it");
+    /* pixels_per_sec will get 100 below */
+  }
+
   while (sox_true) {
     if (!pixels_per_sec && p->x_size && duration)
       pixels_per_sec = min(5000, p->x_size / duration);
