@@ -263,8 +263,10 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
     case 'c': p->comment          = optstate.arg; break;
     case 'o': p->out_name         = optstate.arg; break;
     case 'S': next = lsx_parseposition(0., optstate.arg, NULL, (uint64_t)0, (uint64_t)0, '=');
+      /* Preliminary parse of start position; its value may only be usable
+       * when the length of the audio is known */
       if (!next || *next) {
-        lsx_fail("cannot parse position `%s'", optstate.arg);
+        lsx_fail("cannot parse start position `%s'", optstate.arg);
         return SOX_EOF;
       }
       p->start_time_str = lsx_strdup(optstate.arg);
@@ -395,17 +397,24 @@ static int start(sox_effect_t * effp)
   priv_t * p = (priv_t *)effp->priv;
   double actual, duration = 0.0, start_time = 0.0,
          pixels_per_sec = p->pixels_per_sec;
-  uint64_t d;
 
   if (p->duration_str) {
-      lsx_parsesamples(effp->in_signal.rate, p->duration_str, &d, 't');
+    uint64_t d;
+    /* lsx_parsesamples() cannot fail because of the preliminary parse
+     * during getopt */
+    (void) lsx_parsesamples(effp->in_signal.rate, p->duration_str, &d, 't');
     duration = d / effp->in_signal.rate;
   }
   if (p->start_time_str) {
     uint64_t in_length = effp->in_signal.length != SOX_UNKNOWN_LEN ?
       effp->in_signal.length / effp->in_signal.channels : SOX_UNKNOWN_LEN;
-    if (!lsx_parseposition(effp->in_signal.rate, p->start_time_str, &d, (uint64_t)0, in_length, '=') || d == SOX_UNKNOWN_LEN) {
-      lsx_fail("-S option: audio length is unknown");
+    uint64_t d;
+
+    /* lsx_parseposition() cannot fail because of the preliminary parse
+     * during getopt */
+    (void) lsx_parseposition(effp->in_signal.rate, p->start_time_str, &d, (uint64_t)0, in_length, '=');
+    if (d == SOX_UNKNOWN_LEN) {
+      lsx_fail("-S: the audio length is unknown");
       return SOX_EOF;
     }
     start_time = d / effp->in_signal.rate;
