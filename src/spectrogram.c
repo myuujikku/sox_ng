@@ -425,7 +425,7 @@ static int start(sox_effect_t * effp)
    * but the audio length is unknown, emit a warning to this effect */
   if (!duration && effp->in_signal.length == SOX_UNKNOWN_LEN &&
       !pixels_per_sec) {
-    lsx_warn("cannot scale to an unknown audio length; use -d if you know it");
+    lsx_warn("audio length is unknown; use -d if you know it");
     /* pixels_per_sec will get 100 below */
   }
 
@@ -503,7 +503,7 @@ static int do_column(sox_effect_t * effp)
   if (p->cols == p->x_size) {
     p->truncated = sox_true;
     if (!effp->flow)
-      lsx_report("PNG truncated at %g seconds", secs(p->cols));
+      lsx_report("truncated at %g seconds", secs(p->cols));
     return p->truncate? SOX_EOF : SOX_SUCCESS;
   }
 
