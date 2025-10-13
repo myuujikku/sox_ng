@@ -647,17 +647,18 @@ filename_quote() {
 ecma_quote() {
     local minus_n
     # We should quote newline too but that's hard with sed.
-    # Sed has hijacked \b as a word-edge pattern matcher.
+    # Sed has hijacked \b as a word-edge pattern matcher
+    # and FreeBSD's sed doesn't recognise \f
     minus_n=
     case "$1" in
     -n) minus_n=-n; shift ;;
     esac
 
-    echo "\"$(echo $minus_n "$1" | sed 's/["\\/]/\\&/g
-		     s/\x08/\\b/g
-		     s/\f/\\f/g
-		     s/\r/\\r/g
-		     s/\t/\\t/g' | tr '\n' '\r' | sed 's/\r/\\n/g')\""
+    echo "\"$(echo $minus_n "$1" | sed 's/["\/]/\\&/g' | \
+		     sed 's/\x08/\\b/g' | \
+		     sed 's/\r/\\r/g' | \
+		     sed 's/\x0C/\\f/g' | \
+		     sed 's/\t/\\t/g' | tr '\n' '\r' | sed 's/\r/\\n/g')\""
 }
 
 # url_quote: Encode special characters in URLs
@@ -974,7 +975,7 @@ putissues() {
 	    continue
 	fi
 	# Make sure there are no newlines in its title
-	if [ 1 != "$(echo "$title" | wc -l)" ]
+	if [ 1 -ne "$(echo "$title" | wc -l)" ]
 	then
 	    echo "There's a newline in the title of '$ftitle'" 1>&2
 	    continue
