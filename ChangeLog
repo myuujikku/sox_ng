@@ -4,61 +4,28 @@ Change History
 This file contains a list of all changes since the release of sox-11gamma.
 
 
-sox_ng-14.5.2-rc6	2025-10-02
------------------
+sox_ng-14.5.2	2025-10-13
+-------------
+
+New features:
+  o On Windows you no longer need to set AUDIODRIVER=waveaudio beforehand
 
 Bug fixes:
   o Don't use pkgconfig to locate opus libraries
   o Fix SEGV in spectrogram -n due to off-by-one error
   o spectrogram: Don't put a "DC" label on the log frequency axis
   o spectrogram: Fix position of "Frequency (Hz)" on logarithmic axis
-
-
-sox_ng-14.5.2-rc5	2025-09-20
------------------
-
-Bug fixes:
-  o spectrogram: Fix another error in the frequency range code
-    and a mistake in -rc4
-
-
-sox_ng-14.5.2-rc4	2025-09-19
------------------
-
-Bug fixes:
-  o Fix two errors in the spectrogram logarithmic axis and frequency range
+  o spectrogram: Fix errors in the logarithmic axis and frequency range
     and a segmentation fault when -y < 70
-
-
-sox_ng-14.5.2-rc3	2025-09-12
------------------
-
-Bug fixes:
   o Make dynamic loading of file format handlers work
   o Fix symlink creation with --enable-replace
   o Don't list "mp4" twice in AUDIO FILE FORMAT usage
-
-
-sox_ng-14.5.2-rc2	2025-08-29
------------------
-
-Bug fixes:
   o Haiku: fix compilation and add system LADSPA plugin directories
   o Fix setting of -fstack-protector for GCCs that don't have it
-
-
-sox_ng-14.5.2-rc1	2025-08-24
------------------
-
-New features:
-  o On Windows you no longer need to set AUDIODRIVER=waveaudio beforehand
-
-Bug fixes:
   o On Windows, delete temporary files and output files with write errors
   o Fix opusfile detection when using pkg-config
   o Fix compilation on AIX 7.3, MSYS2/MinGW, Sortix and on
     MacOS X with older SDKs
-  o On Windows you no longer have to "set AUDIODRIVER=waveaudio"
   o Spell-check and revise the manuals, fix some usage messages
   o Make reading MP2/3 and Ogg files work with -t sndfile
   o Make writing MP3 files work with -t sndfile
