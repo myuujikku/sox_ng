@@ -551,7 +551,7 @@ static int create(sox_effect_t * effp, int argc, char **argv)
   priv_t * p = (priv_t *) effp->priv;
   int c, quality;
   char * dummy_p, * found_at;
-  char const * opts = "+i:c:b:B:A:p:Q:R:d:MILafnost" "qlmghevu";
+  char const * opts = "+i:c:b:B:A:p:Q:R:d:MILafnst" "qlmghevu";
   char const * qopts = strchr(opts, 'q');
   double rej = 0, bw_3dB_pc = 0;
   sox_bool allow_aliasing = sox_false;
