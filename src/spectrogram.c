@@ -1099,8 +1099,11 @@ sox_effect_handler_t const * lsx_spectrogram_effect_fn(void)
   static char const * const extra_usage[] = {
 "-x num  X-axis size in pixels; default: derived from -X and -d, or 800",
 "-X num  X-axis pixels/second; default: derived from -x and -d, or 100",
+"-d time Time to fit to the X-axis (default: all of it unless -X and -x)",
 "-y num  Y-axis size in pixels per channel",
 "-Y num  Total height; default 550",
+"-L      Plot the frequency on a logarithmic axis",
+"-R L:H  Specify the frequency range (from L to H)",
 "-z num  Z-axis range in dB; default 120",
 "-Z num  Z-axis maximum in dBFS; default 0",
 "-n      normalize: Set Z-axis maximum to the brightest pixel",
@@ -1113,14 +1116,11 @@ sox_effect_handler_t const * lsx_spectrogram_effect_fn(void)
 "-l      Light background",
 "-m      Monochrome",
 "-h      High color",
-"-L      Plot the frequency on logarithmic axis",
-"-R L:H  Specify the frequency range (from L to H)",
 "-p num  Permute colors (1-6); default 1",
 "-A      Alternative, inferior, fixed color-set",
 "-t text Title text",
 "-c text Comment text",
 "-o text Output file name; default `spectrogram.png'",
-"-d time Time to fit to the X-axis (default: all of it unless -X and -x)",
 "-S pos  Start the spectrogram at the given input time",
     NULL
   };
