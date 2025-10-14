@@ -19,7 +19,7 @@
 
 #include "sox_i.h"
 
-typedef enum {INTERP_LINEAR, INTERP_QUADRATIC} interp_t;
+typedef enum {INTERP_NONE, INTERP_LINEAR, INTERP_QUADRATIC} interp_t;
 
 #define MAX_CHANNELS 4
 
@@ -52,6 +52,7 @@ typedef struct {
 
 
 static lsx_enum_item const interp_enum[] = {
+  LSX_ENUM_ITEM(INTERP_,NONE)
   LSX_ENUM_ITEM(INTERP_,LINEAR)
   LSX_ENUM_ITEM(INTERP_,QUADRATIC)
   {0, 0}};
@@ -180,45 +181,102 @@ static int flow(sox_effect_t * effp, sox_sample_t const * ibuf,
 
   *isamp = *osamp = len * channels;
 
-  while (len--) {
-    f->delay_buf_pos =
-      (f->delay_buf_pos + f->delay_buf_length - 1) % f->delay_buf_length;
-    for (c = 0; c < channels; ++c) {
-      double delayed_0, delayed_1;
-      double delayed;
-      double in, out;
-      size_t phase = c * f->lfo_length * f->phase + .5;
-      double delay = f->lfo[(f->lfo_pos + phase) % f->lfo_length];
-      double frac_delay = modf(delay, &delay);
-      size_t int_delay = (size_t)delay;
+  /* Switch on the interpolation type outside the per-sample loop
+   * for speed (~20% faster than a switch in the middle) */
+  switch (f->interpolation) {
+  case INTERP_NONE:
+    while (len--) {
+      f->delay_buf_pos =
+	(f->delay_buf_pos + f->delay_buf_length - 1) % f->delay_buf_length;
+      for (c = 0; c < channels; ++c) {
+	double delayed;
+	double in, out;
+	size_t phase = c * f->lfo_length * f->phase + .5;
+	float  delay = f->lfo[(f->lfo_pos + phase) % f->lfo_length];
+	size_t int_delay = (size_t)(delay + 0.5f); /* Round to nearest */
 
-      in = *ibuf++;
-      f->delay_bufs[c][f->delay_buf_pos] = in + f->delay_last[c] * f->regen;
+	in = *ibuf++;
+	f->delay_bufs[c][f->delay_buf_pos] = in + f->delay_last[c] * f->regen;
 
-      delayed_0 = f->delay_bufs[c]
-        [(f->delay_buf_pos + int_delay++) % f->delay_buf_length];
-      delayed_1 = f->delay_bufs[c]
-        [(f->delay_buf_pos + int_delay++) % f->delay_buf_length];
+	delayed = f->delay_bufs[c]
+	  [(f->delay_buf_pos + int_delay++) % f->delay_buf_length];
 
-      if (f->interpolation == INTERP_LINEAR)
-        delayed = delayed_0 + (delayed_1 - delayed_0) * frac_delay;
-      else /* if (f->interpolation == INTERP_QUADRATIC) */
-      {
-        double a, b;
-        double delayed_2 = f->delay_bufs[c]
-          [(f->delay_buf_pos + int_delay++) % f->delay_buf_length];
-        delayed_2 -= delayed_0;
-        delayed_1 -= delayed_0;
-        a = delayed_2 *.5 - delayed_1;
-        b = delayed_1 * 2 - delayed_2 *.5;
-        delayed = delayed_0 + (a * frac_delay + b) * frac_delay;
+	f->delay_last[c] = delayed;
+	out = in * f->gain_in + delayed * f->width;
+	*obuf++ = SOX_ROUND_CLIP_COUNT(out, effp->clips);
       }
-
-      f->delay_last[c] = delayed;
-      out = in * f->gain_in + delayed * f->width;
-      *obuf++ = SOX_ROUND_CLIP_COUNT(out, effp->clips);
+      f->lfo_pos = (f->lfo_pos + 1) % f->lfo_length;
     }
-    f->lfo_pos = (f->lfo_pos + 1) % f->lfo_length;
+    break;
+  case INTERP_LINEAR:
+    while (len--) {
+      f->delay_buf_pos =
+	(f->delay_buf_pos + f->delay_buf_length - 1) % f->delay_buf_length;
+      for (c = 0; c < channels; ++c) {
+	double delayed_0, delayed_1;
+	double delayed;
+	double in, out;
+	size_t phase = c * f->lfo_length * f->phase + .5;
+	double delay = f->lfo[(f->lfo_pos + phase) % f->lfo_length];
+	double frac_delay = modf(delay, &delay);
+	size_t int_delay = (size_t)delay;
+
+	in = *ibuf++;
+	f->delay_bufs[c][f->delay_buf_pos] = in + f->delay_last[c] * f->regen;
+
+	delayed_0 = f->delay_bufs[c]
+	  [(f->delay_buf_pos + int_delay++) % f->delay_buf_length];
+	delayed_1 = f->delay_bufs[c]
+	  [(f->delay_buf_pos + int_delay++) % f->delay_buf_length];
+
+	delayed = delayed_0 + (delayed_1 - delayed_0) * frac_delay;
+
+	f->delay_last[c] = delayed;
+	out = in * f->gain_in + delayed * f->width;
+	*obuf++ = SOX_ROUND_CLIP_COUNT(out, effp->clips);
+      }
+      f->lfo_pos = (f->lfo_pos + 1) % f->lfo_length;
+    }
+    break;
+  case INTERP_QUADRATIC:
+    while (len--) {
+      f->delay_buf_pos =
+	(f->delay_buf_pos + f->delay_buf_length - 1) % f->delay_buf_length;
+      for (c = 0; c < channels; ++c) {
+	double delayed_0, delayed_1, delayed_2;
+	double delayed;
+	double in, out;
+	size_t phase = c * f->lfo_length * f->phase + .5;
+	double delay = f->lfo[(f->lfo_pos + phase) % f->lfo_length];
+	double frac_delay = modf(delay, &delay);
+	size_t int_delay = (size_t)delay;
+
+	in = *ibuf++;
+	f->delay_bufs[c][f->delay_buf_pos] = in + f->delay_last[c] * f->regen;
+
+	delayed_0 = f->delay_bufs[c]
+	  [(f->delay_buf_pos + int_delay++) % f->delay_buf_length];
+	delayed_1 = f->delay_bufs[c]
+	  [(f->delay_buf_pos + int_delay++) % f->delay_buf_length];
+	delayed_2 = f->delay_bufs[c]
+          [(f->delay_buf_pos + int_delay++) % f->delay_buf_length];
+
+	{
+	  double a, b;
+	  delayed_2 -= delayed_0;
+	  delayed_1 -= delayed_0;
+	  a = delayed_2 *.5 - delayed_1;
+	  b = delayed_1 * 2 - delayed_2 *.5;
+	  delayed = delayed_0 + (a * frac_delay + b) * frac_delay;
+	}
+
+	f->delay_last[c] = delayed;
+	out = in * f->gain_in + delayed * f->width;
+	*obuf++ = SOX_ROUND_CLIP_COUNT(out, effp->clips);
+      }
+      f->lfo_pos = (f->lfo_pos + 1) % f->lfo_length;
+    }
+    break;
   }
 
   return SOX_SUCCESS;
@@ -273,7 +331,7 @@ sox_effect_handler_t const * lsx_flanger_effect_fn(void)
 "shape    s|t   sine   swept wave shape: sine|triangle",
 "phase   0-100   25    percent phase shift of swept wave in multichannel flange",
 "                      0 = 100 = same phase on each channel",
-"interp   l|q  linear  delay-line interpolation: linear|quadratic",
+"interp  n|l|q linear  delay-line interpolation: none|linear|quadratic",
     NULL
   };
 
