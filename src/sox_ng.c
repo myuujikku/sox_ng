@@ -83,10 +83,6 @@
   #include <sys/time.h>
 #endif
 
-#ifdef HAVE_SYS_TIMEB_H
-  #include <sys/timeb.h>
-#endif
-
 #ifdef HAVE_SYS_UTSNAME_H
   #include <sys/utsname.h>
 #endif
@@ -102,6 +98,9 @@
 #ifdef HAVE_GETTIMEOFDAY
   #define TIME_FRAC 1e6
 #else
+  #ifdef HAVE_SYS_TIMEB_H
+    #include <sys/timeb.h>
+  #endif
   #define timeval timeb
   #define gettimeofday(a,b) ftime(a)
   #define tv_sec time
