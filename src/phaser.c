@@ -1,4 +1,4 @@
-/* SoX flanger effect
+/* SoX phaser effect
  * Copyright (C) 24 August 1998, Juergen Mueller And Sundry Contributors
  *
  * This source code is freely redistributable and may be used for
@@ -9,11 +9,19 @@
 
 #include "sox_i.h"
 
+/** the allowed interpolation types, mirroring those of flanger */
+typedef enum {INTERP_NONE, INTERP_LINEAR} interp_t;
+
+/** an auxiliary macro for doing a modular increment */
+#define MODULAR_INCREMENT(a, b)     a = ((a) + 1) % (b)
+
 typedef struct {
+  interp_t   interpolation;
   double     gain_in, gain_out, delay, decay, speed;
   lsx_wave_t mod_type;
 
-  int        * mod_buf;
+  int        * mod_buf_i;  /* Used when not interpolating */
+  float      * mod_buf_f;  /* Used when interpolating */
   size_t     mod_buf_len;
   int        mod_pos;
             
@@ -34,7 +42,17 @@ static int getopts(sox_effect_t * effp, int argc, char * * argv)
   p->decay     = .4;
   p->speed = .5;
 
-  --argc, ++argv;
+  --argc, ++argv;  /* Skip the effect name */
+
+  if (argc > 0 && !strcmp(*argv, "-n")) {
+      p->interpolation = INTERP_NONE;
+      argc--; argv++;
+  }
+  if (argc > 0 && !strcmp(*argv, "-l")) {
+      p->interpolation = INTERP_LINEAR;
+      argc--; argv++;
+  }
+
   do { /* break-able block */
     NUMERIC_PARAMETER(gain_in  , -1, 1)
     NUMERIC_PARAMETER(gain_out , -1, 1)
@@ -72,9 +90,18 @@ static int start(sox_effect_t * effp)
     lsx_fail("speed can't be more than %g", effp->in_signal.rate);
     return SOX_EOF;
   }
-  lsx_valloc(p->mod_buf, p->mod_buf_len);
-  lsx_generate_wave_table(p->mod_type, SOX_INT, p->mod_buf, p->mod_buf_len,
-      1., (double)p->delay_buf_len, M_PI_2);
+  switch (p->interpolation) {
+  case INTERP_NONE:
+    lsx_valloc(p->mod_buf_i, p->mod_buf_len);
+    lsx_generate_wave_table(p->mod_type, SOX_INT, p->mod_buf_i, p->mod_buf_len,
+                            1., (double)p->delay_buf_len, M_PI_2);
+    break;
+  case INTERP_LINEAR:
+    lsx_valloc(p->mod_buf_f, p->mod_buf_len);
+    lsx_generate_wave_table(p->mod_type, SOX_FLOAT, p->mod_buf_f, p->mod_buf_len,
+                            1., (double)p->delay_buf_len, M_PI_2);
+    break;
+  }
 
   p->delay_pos = p->mod_pos = 0;
 
@@ -88,15 +115,37 @@ static int flow(sox_effect_t * effp, const sox_sample_t *ibuf,
   priv_t * p = (priv_t *) effp->priv;
   size_t len = *isamp = *osamp = min(*isamp, *osamp);
 
-  while (len--) {
-    double d = *ibuf++ * p->gain_in + p->delay_buf[
-      (p->delay_pos + p->mod_buf[p->mod_pos]) % p->delay_buf_len] * p->decay;
-    p->mod_pos = (p->mod_pos + 1) % p->mod_buf_len;
-    
-    p->delay_pos = (p->delay_pos + 1) % p->delay_buf_len;
-    p->delay_buf[p->delay_pos] = d;
+  switch (p->interpolation) {
+  case INTERP_NONE:
+    while (len--) {
+      double d = *ibuf++ * p->gain_in + p->decay * p->delay_buf[
+             (p->delay_pos + p->mod_buf_i[p->mod_pos]) % p->delay_buf_len];
 
-    *obuf++ = SOX_ROUND_CLIP_COUNT(d * p->gain_out, effp->clips);
+      MODULAR_INCREMENT(p->mod_pos, p->mod_buf_len);
+      MODULAR_INCREMENT(p->delay_pos, p->delay_buf_len);
+      p->delay_buf[p->delay_pos] = d;
+
+      *obuf++ = SOX_ROUND_CLIP_COUNT(d * p->gain_out, effp->clips);
+    }
+    break;
+
+  case INTERP_LINEAR:
+    while (len--) {
+      float offset_f = p->mod_buf_f[p->mod_pos];
+      int   offset_i = offset_f;  /* == floorf() */
+      float frac = offset_f - offset_i;
+      sox_uint32_t delay_index = (p->delay_pos + offset_i) % p->delay_buf_len;
+      double d = *ibuf++ * p->gain_in + p->decay * (
+                 p->delay_buf[delay_index] * (1 - frac) +
+                 p->delay_buf[(delay_index + 1) % p->delay_buf_len] * frac);
+
+      MODULAR_INCREMENT(p->mod_pos, p->mod_buf_len);
+      MODULAR_INCREMENT(p->delay_pos, p->delay_buf_len);
+      p->delay_buf[p->delay_pos] = d;
+
+      *obuf++ = SOX_ROUND_CLIP_COUNT(d * p->gain_out, effp->clips);
+    }
+    break;
   }
   return SOX_SUCCESS;
 }
@@ -106,13 +155,16 @@ static int stop(sox_effect_t * effp)
   priv_t * p = (priv_t *) effp->priv;
 
   free(p->delay_buf);
-  free(p->mod_buf);
+  switch (p->interpolation) {
+  case INTERP_NONE:   free(p->mod_buf_i); break;
+  case INTERP_LINEAR: free(p->mod_buf_f); break;
+  }
   return SOX_SUCCESS;
 }
 
 sox_effect_handler_t const * lsx_phaser_effect_fn(void)
 {
-  static const char usage[] = "[gain-in [gain-out [delay [decay [speed [-s|-t]]]]]]";
+  static const char usage[] = "[-n|-l] [gain-in [gain-out [delay [decay [speed [-s|-t]]]]]]";
   static char const * const extra_usage[] = {
 "               ___",
 "In ---------->|   |------------> Out",
@@ -124,7 +176,8 @@ sox_effect_handler_t const * lsx_phaser_effect_fn(void)
 "         +--| delay |<--| sine/triangle |<-- speed",
 "            |_______|   +---------------+",
 "",
-"         RANGE  DEFAULT  DESCRIPTION",
+"PARAM    RANGE  DEFAULT  DESCRIPTION",
+"interp   -n|-l    -n     Interpolation type: none or linear",
 "gain-in  -1-1     0.4    Proportion of input delivered to output and delay",
 "gain-out -1-1     0.74   Final output volume adjustment",
 "delay     0-1000   3     Delay in milliseconds",
