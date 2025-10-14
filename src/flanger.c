@@ -70,6 +70,20 @@ static int getopts(sox_effect_t * effp, int argc, char *argv[])
   p->speed = 0.5;
   p->phase = 25;
 
+  while (argc > 0 && argv[0][0] == '-') {
+    switch (argv[0][1]) {
+    case 'n': p->interpolation = INTERP_NONE; break;
+    case 'l': p->interpolation = INTERP_LINEAR; break;
+    case 'q': p->interpolation = INTERP_QUADRATIC; break;
+    case 's': p->wave_shape = SOX_WAVE_SINE; break;
+    case 't': p->wave_shape = SOX_WAVE_TRIANGLE; break;
+    default:
+      lsx_fail("invalid option `%s'", argv[0]);
+      return SOX_EOF;
+    }
+    argc--; argv++;
+  }
+
   do { /* break-able block */
     NUMERIC_PARAMETER(delay, 0   , 1000 )
     NUMERIC_PARAMETER(depth, 0   , 1000 )
@@ -305,7 +319,7 @@ static int stop(sox_effect_t * effp)
 sox_effect_handler_t const * lsx_flanger_effect_fn(void)
 {
   static const char usage[] =
-"[delay [depth [regen [width [speed [shape [phase [interp]]]]]]]";
+"[-n|l|q|s|t] [delay(0) [depth(2) [regen(0) [width(71) [speed(0.5) [shape(s)] [[phase(25) [interp(linear)]]]]]]]";
   static char const * const extra_usage[] = {
 "",
 "            +----------------+",
@@ -332,6 +346,7 @@ sox_effect_handler_t const * lsx_flanger_effect_fn(void)
 "phase   0-100   25    percent phase shift of swept wave in multichannel flange",
 "                      0 = 100 = same phase on each channel",
 "interp  n|l|q linear  delay-line interpolation: none|linear|quadratic",
+"-n, -l, -q, -s and -t are alternative ways to set interp and shape",
     NULL
   };
 

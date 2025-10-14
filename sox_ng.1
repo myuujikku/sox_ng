@@ -2294,7 +2294,7 @@ approximates the response of a carbon microphone telephone.
 .SP
 This effect supports the \fB\-\-plot\fR global option.
 .TP
-\fBflanger\fR [\fIdelay\fR(0) [\fIdepth\fR(2) [\fIregen\fR(0) [\fIwidth\fR(71) [\fIspeed\fR(0\*d5) [\fIshape\fR(sine) [\fIphase\fR(25) [\fIinterp\fR(linear)]]]]]]]]
+\fBflanger\fR [-n|-l|-q] [-s|-t] [\fIdelay\fR(0) [\fIdepth\fR(2) [\fIregen\fR(0) [\fIwidth\fR(71) [\fIspeed\fR(0\*d5) [\fIshape\fR(sine)] [\fIphase\fR(25) [\fIinterp\fR(linear)]]]]]]]
 Apply a flanging effect to the audio.
 See [3] for a detailed description of flanging.
 .SP
@@ -2320,7 +2320,16 @@ For a flow diagram of how \fBflanger\fR works,
 say \fBsox_ng \-\-help\-effect flanger\fR.
 .DT
 .SP
-\fBsine\fR, \fBtriangle\fR, \fBlinear\fR and \fBquadratic\fR can be abbreviated.
+\fBsine\fR, \fBtriangle\fR, \fBnone\fR, \fBlinear\fR and \fBquadratic\fR can be abbreviated
+and
+.BR \-s ,
+.BR \-t ,
+.BR \-n ,
+.B \-l
+and
+.B \-q
+are alternative ways to set the waveshape and the interpolation type
+without having to specify the rest of the parameters.
 .TP
 \fBgain \fR[\fB\-e\fR\^|\^\fB\-B\fR\^|\^\fB\-b\fR\^|\^\fB\-r\fR] [\fB\-n\fR] [\fB\-l\fR\^|\^\fB\-h\fR] [\fIgain-dB\fR(0)]
 Apply amplification or attenuation to the audio signal or, in some
