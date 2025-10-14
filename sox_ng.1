@@ -2745,7 +2745,7 @@ effect for a description of the other parameters.
 .SP
 See the \fBbend\fR, \fBspeed\fR and \fBtempo\fR effects.
 .TP
-\fBrate\fR [\fB\-q\fR\^|\^\fB\-l\fR\^|\^\fB\-m\fR\^|\^\fB\-h\fR\^|\^\fB\-v\fR] [override-options] \fIfrequency\fR]
+\fBrate\fR [\fB\-q\fR\^|\^\fB\-l\fR\^|\^\fB\-m\fR\^|\^\fB\-g\fR\^|\^\fB\-h\fR\^|\^\fB\-e\fR\^|\^\fB\-v\fR\^|\^\fB\-u\fR] [override-options] [\fIfrequency\fR]
 Change the audio sampling rate (i.e. resample the audio) to any given
 .I frequency
 (even non-integer if this is supported by the output file format)
@@ -2781,20 +2781,32 @@ T}
 .na
 audio playback
 T}
+\-g	generic	95%	100	T{
+.na
+16-bit
+T}
 \-h	high	95%	125	T{
 .na
-16-bit mastering (use with dither)
+20-bit for 16-bit mastering
+T}
+\-e	extreme	95%	150	T{
+.na
+24-bit
 T}
 \-v	T{
 .na
 very high
-T}	95%	175	24-bit mastering
+T}	95%	175	28-bit for 24-bit mastering
+\-u	T{
+.na
+ultra
+T}	95%	200	32-bit
 .TE
 .DT
 .SP
-where
-.I B/W
-(bandwidth) is the percentage of the audio frequency band that is preserved and
+These can also be selected with \fB\-Q\ \fIn\fR with \fIn\fR from 0 to 7.
+.SP
+B/W (bandwidth) is the percentage of the audio frequency band that is preserved and
 .I Rej dB
 is the level of noise rejection.  Increasing levels of resampling
 quality come at the expense of increasing amounts of time to process the
@@ -2804,8 +2816,8 @@ See \fBPlaying & Recording Audio\fR above.
 .SP
 The `quick' algorithm uses cubic interpolation; all others use
 band-limited interpolation.  By default, all algorithms have
-a linear phase response; for `medium', `high' and
-`very high', the phase response is configurable (see below).
+a linear phase response; for `medium' and above,
+the phase response is configurable (see below).
 .SP
 The
 .B rate
@@ -2828,12 +2840,14 @@ A user notes that resampling tracks and then concatenating them
 is more likely to create clicks at the joints than joining them first
 and resampling the result, due to edge effects.
 .SP
+.ne 3
 .B "Override Options"
-.RS
+.SP
 The simple quality selection described above provides settings that
 satisfy the needs of the vast majority of resampling tasks.
 Occasionally, however, it may be desirable to fine-tune the resampler's
-filter response; this can be achieved using the override options
+filter response; for qualities `medium' and above,
+this can be achieved using the override options
 in the following table:
 .ne 6
 .TS
@@ -2849,8 +2863,6 @@ Any phase response (0=minimum, 25=intermediate, 50=linear, 100=maximum)
 T}
 .TE
 .DT
-.SP
-These cannot be used with the `quick' or `low' algorithms.
 .SP
 All resamplers use filters that can sometimes create `echo' (a.k.a.
 `ringing') artefacts with transient signals such as those that occur
@@ -2905,6 +2917,12 @@ above the highest frequency of interest/audibility), this may not be a
 problem.  The benefits of allowing aliasing/imaging are reduced processing time
 and reduced (by almost half) transient echo artefacts.
 .SP
+The
+.B \-d
+option sets the bit-accuracy in the range 15 to 33, or
+.B \-R
+sets the bit-accuracy to obtain rejection of a specified number of dB.
+.SP
 Examples:
 .XE
    sox_ng input.wav \-b 16 output.wav rate \-s \-a 44100 dither \-s
@@ -2918,7 +2936,35 @@ to a 16-bit WAV file.
 is very high quality resampling with overrides for an intermediate phase,
 a bandwidth of 90%, at a 48k sampling rate and storing the output
 to a 24-bit AIFF file.
-.RE
+.SP
+.ne 3
+.B "Advanced Options"
+.SP
+The
+.B \-i
+option forces the use of a particular interpolator coefficient from -1 to 2.
+.SP
+The
+.B \-c
+option tries to limit the number of coefficients to a number of kilobytes;
+its argument can be from 100 up.
+.SP
+The
+.B \-B
+option sets the percentage of the pass-band to preserve, from 53 to 95.
+.SP
+The
+.B \-A
+option sets the percentage of the bandwith without aliasing, from 85 to 100.
+.SP
+.B \-f
+sets zero pass-band roll-off instead of 0.01dB for -Q 0-2.
+.SP
+.B \-n
+disables internal small-integer optimizations and
+.SP
+.B \-t
+increases the irrational ratio accuracy.
 .TP
 \fBremix\fR [\fB\-a\fR\^|\^\fB\-m\fR] [\fB\-p\fR] <\fIout-spec\fR>
 \fIout-spec\fR	= \fB0\fR | \fIin-spec\fR{\fB,\fIin-spec\fR}
