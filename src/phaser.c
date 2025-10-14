@@ -10,7 +10,7 @@
 #include "sox_i.h"
 
 /** the allowed interpolation types, mirroring those of flanger */
-typedef enum {INTERP_NONE, INTERP_LINEAR} interp_t;
+typedef enum {INTERP_NONE, INTERP_LINEAR, INTERP_QUADRATIC} interp_t;
 
 /** an auxiliary macro for doing a modular increment */
 #define MODULAR_INCREMENT(a, b)     a = ((a) + 1) % (b)
@@ -50,6 +50,10 @@ static int getopts(sox_effect_t * effp, int argc, char * * argv)
   }
   if (argc > 0 && !strcmp(*argv, "-l")) {
       p->interpolation = INTERP_LINEAR;
+      argc--; argv++;
+  }
+  if (argc > 0 && !strcmp(*argv, "-q")) {
+      p->interpolation = INTERP_QUADRATIC;
       argc--; argv++;
   }
 
@@ -97,6 +101,7 @@ static int start(sox_effect_t * effp)
                             1., (double)p->delay_buf_len, M_PI_2);
     break;
   case INTERP_LINEAR:
+  case INTERP_QUADRATIC:
     lsx_valloc(p->mod_buf_f, p->mod_buf_len);
     lsx_generate_wave_table(p->mod_type, SOX_FLOAT, p->mod_buf_f, p->mod_buf_len,
                             1., (double)p->delay_buf_len, M_PI_2);
@@ -135,10 +140,38 @@ static int flow(sox_effect_t * effp, const sox_sample_t *ibuf,
       int   offset_i = offset_f;  /* == floorf() */
       float frac = offset_f - offset_i;
       sox_uint32_t delay_index = (p->delay_pos + offset_i) % p->delay_buf_len;
-      double d = *ibuf++ * p->gain_in + p->decay * (
-                 p->delay_buf[delay_index] * (1 - frac) +
-                 p->delay_buf[(delay_index + 1) % p->delay_buf_len] * frac);
+      double delayed_0 = p->delay_buf[delay_index];
+      double delayed_1 = p->delay_buf[(delay_index + 1) % p->delay_buf_len];
+      double d = *ibuf++ * p->gain_in + p->decay *
+                 (delayed_0 * (1 - frac) + delayed_1 * frac);
 
+      MODULAR_INCREMENT(p->mod_pos, p->mod_buf_len);
+      MODULAR_INCREMENT(p->delay_pos, p->delay_buf_len);
+      p->delay_buf[p->delay_pos] = d;
+
+      *obuf++ = SOX_ROUND_CLIP_COUNT(d * p->gain_out, effp->clips);
+    }
+    break;
+
+  case INTERP_QUADRATIC:
+    while (len--) {
+      float offset_f = p->mod_buf_f[p->mod_pos];
+      int   offset_i = offset_f;  /* == floorf() */
+      float frac = offset_f - offset_i;
+      sox_uint32_t delay_index = (p->delay_pos + offset_i) % p->delay_buf_len;
+      double delayed_0 = p->delay_buf[delay_index];
+      double delayed_1 = p->delay_buf[(delay_index + 1) % p->delay_buf_len];
+      double delayed_2 = p->delay_buf[(delay_index + 2) % p->delay_buf_len];
+      double d;
+      {
+        double a, b, delayed;
+        delayed_2 -= delayed_0;
+        delayed_1 -= delayed_0;
+        a = delayed_2 *.5 - delayed_1;
+        b = delayed_1 * 2 - delayed_2 *.5;
+        delayed = delayed_0 + (a * frac + b) * frac;
+        d = *ibuf++ * p->gain_in + p->decay * delayed;
+      }
       MODULAR_INCREMENT(p->mod_pos, p->mod_buf_len);
       MODULAR_INCREMENT(p->delay_pos, p->delay_buf_len);
       p->delay_buf[p->delay_pos] = d;
@@ -156,8 +189,9 @@ static int stop(sox_effect_t * effp)
 
   free(p->delay_buf);
   switch (p->interpolation) {
-  case INTERP_NONE:   free(p->mod_buf_i); break;
-  case INTERP_LINEAR: free(p->mod_buf_f); break;
+  case INTERP_NONE:      free(p->mod_buf_i); break;
+  case INTERP_LINEAR:
+  case INTERP_QUADRATIC: free(p->mod_buf_f); break;
   }
   return SOX_SUCCESS;
 }
@@ -177,7 +211,7 @@ sox_effect_handler_t const * lsx_phaser_effect_fn(void)
 "            |_______|   +---------------+",
 "",
 "PARAM    RANGE  DEFAULT  DESCRIPTION",
-"interp   -n|-l    -n     Interpolation type: none or linear",
+"interp -n|-l|-q   -n     Interpolation type: none, linear or quadratic",
 "gain-in  -1-1     0.4    Proportion of input delivered to output and delay",
 "gain-out -1-1     0.74   Final output volume adjustment",
 "delay     0-1000   3     Delay in milliseconds",

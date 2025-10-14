@@ -2690,7 +2690,7 @@ See
 for an effect that can add silence at the beginning of
 the audio on a channel-by-channel basis.
 .TP
-\fBphaser\fR [\fB\-n\fR|\fB\-l\fR] [\fIgain-in\fR(.4) \fIgain-out\fR(.74) \fIdelay\fR(3) \fIdecay\fR(.4) \fIspeed\fR(.5) [\fB\-s\fR\^|\^\fB\-t\fR(\fB\-s\fR)]
+\fBphaser\fR [\fB\-n\fR|\fB\-l\fR|\fB\-q\fR] [\fIgain-in\fR(.4) \fIgain-out\fR(.74) \fIdelay\fR(3) \fIdecay\fR(.4) \fIspeed\fR(.5) [\fB\-s\fR\^|\^\fB\-t\fR(\fB\-s\fR)]
 Add a phasing effect to the audio.
 See [3] for a detailed description of phasing.
 .SP
@@ -2707,7 +2707,8 @@ feedback, and usually no less than 0\*d1.
 .SP
 The \fB\-l\fR flag makes \fBphaser\fR do linear interpolation between samples
 when the offset into the delay line is not a whole number,
-which is about 15% slower but much less noisy.
+which is about 15% slower but much less noisy,
+\fB\-q\fR does quadratic interpolation, which is even less noisy, and
 \fB\-n\fR explicitly asks for no interpolation, the default, fast and fuzzy.
 .SP
 Technically, the SoX \fBphaser\fP is not a phaser; it is a flanger.
