@@ -607,7 +607,6 @@ static int create(sox_effect_t * effp, int argc, char **argv)
       if (quality <= 2)
         p->rolloff = rolloff_medium;
     }
-    fprintf(stderr, "linear_to_dB(2) is %g\n", linear_to_dB(2.));
     rej = p->bit_depth * linear_to_dB(2.);
   }
 
