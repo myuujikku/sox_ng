@@ -20,6 +20,7 @@ Effects:
   o flanger: Add -n option for no interpolation
   o flanger: Allow an initial -[s|t] to set the wave shape
   o flanger: Allow delay+depth=0
+  o saturation: New effect for soft clipping from subtle warmth to crunchy fuzz
   o sinc: Add -d flag to copy through when the lowpass frequency is
     above the Nyquist frequency
   o spectogram: Make -Y give exactly the requested height

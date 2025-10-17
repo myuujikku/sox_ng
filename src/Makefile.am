@@ -92,7 +92,7 @@ libsox_ng_la_SOURCES += \
 	mcompand_xover.h noiseprof.c noisered.c \
 	noisered.h output.c overdrive.c pad.c phaser.c rate.c \
 	rate_filters.h rate_half_fir.h rate_poly_fir0.h rate_poly_fir.h \
-	remix.c repeat.c reverb.c reverse.c silence.c sinc.c \
+	remix.c repeat.c reverb.c reverse.c saturation.c silence.c sinc.c \
 	sdm.c sdm.h sdm_x86.h softvol.c softvol.h \
 	speed.c speexdsp.c splice.c stat.c stats.c stretch.c swap.c \
 	synth.c tempo.c tremolo.c trim.c upsample.c vad.c vol.c \

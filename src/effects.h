@@ -71,6 +71,7 @@
   EFFECT(reverb)
   EFFECT(reverse)
   EFFECT(riaa)
+  EFFECT(saturation)
   EFFECT(sdm)
   EFFECT(silence)
   EFFECT(sinc)

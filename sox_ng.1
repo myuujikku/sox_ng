@@ -3183,6 +3183,40 @@ The sampling rate must be 44\*d1, 48, 88\*d2, 96 or 192kHz.
 .SP
 This effect supports the \fB\-\-plot\fR global option.
 .TP
+\fBsaturation\fR [\fItype\fR [\fIblend\fR [\fIoffset\fR [\fIdrive|color|threshold\fR]]]]
+Add saturation, which can produce effects ranging from subtle warmth to
+crunchy fuzz. The \fItype\fR parameter selects the saturation type:
+\fBtanh\fR (the default), \fBsqrt\fR or \fBdiode\fR.
+.SP
+For all types, the \fIblend\fR parameter (default 1) controls the mixture
+of wet and dry signals in the output, with 1 being fully wet. The
+\fIoffset\fR parameter (default 0) adds a DC offset to the input to produce
+asymmetric distortion. The offset is removed from the output, so that a zero
+input level produces a zero output level, but when the input is non-zero the
+output waveform is likely to be asymmetric.
+.SP
+The \fBtanh\fR saturation type uses the hyperbolic tangent function to
+apply soft clipping. The \fIdrive\fR parameter (default 1) controls the
+input gain and thus the amount of distortion.
+.SP
+The \fBsqrt\fR saturation type uses a mixture of two functions:
+\fIx*sqrt(|x|)\fR and \fIsgn(x)*sqrt(|x|)\fR, which give different
+tonal qualities to the output. The \fIcolor\fR parameter (default 0.5)
+controls the mixture of these functions, with 0 being purely
+\fIx*sqrt(|x|)\fR and 1 being purely \fIsgn(x)*sqrt(|x|)\fR.
+.SP
+The \fBdiode\fR saturation type models the effect of using a pair of
+diodes to clip the signal when it exceeds a \fIthreshold\fR
+(default 0.5). The \fIblend\fR parameter, by mixing the wet and dry
+signals, effectively controls the amount of attenuation that occurs above
+the threshold, from no attenuation when \fIblend\fR is 0 to complete
+attenuation (hard clipping) when \fIblend\fR is 1.
+.SP
+See the \fBoverdrive\fR effect for another kind of non-linear distortion.
+When the \fIoffset\fR parameter is used to produce asymmetric distortion,
+the \fBhighpass\fR effect can be used to rebalance the waveform's positive
+and negative amplitude.
+.TP
 \fBsdm\fR [\fB\-f \fIfilter\fR] [\fB\-t \fIorder\fR] [\fB\-n \fInum\fR] [\fB-l \fIlatency\fR]
 Apply a 1-bit sigma-delta modulator producing DSD output.  The input
 should be previously upsampled, e.g. with the \fBrate\fR effect, to a

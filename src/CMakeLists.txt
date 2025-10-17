@@ -63,6 +63,7 @@ set(effects_srcs
   repeat
   reverb
   reverse
+  saturation
   sdm
   silence
   sinc
