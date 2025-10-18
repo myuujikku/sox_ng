@@ -210,7 +210,7 @@ sox_effect_handler_t const * lsx_phaser_effect_fn(void)
 "         +--| delay |<--| sine/triangle |<-- speed",
 "            |_______|   +---------------+",
 "",
-"PARAM    RANGE  DEFAULT  DESCRIPTION",
+"OPTION   RANGE  DEFAULT  DESCRIPTION",
 "interp -n|-l|-q   -n     Interpolation type: none, linear or quadratic",
 "gain-in  -1-1     0.4    Proportion of input delivered to output and delay",
 "gain-out -1-1     0.74   Final output volume adjustment",

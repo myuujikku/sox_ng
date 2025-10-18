@@ -581,7 +581,7 @@ const sox_effect_handler_t *lsx_chorus_effect_fn(void)
 "       | sine/triangle |<--speed n",
 "       +---------------+",
 "",
-"PARAM    RANGE DEFAULT DESCRIPTION",
+"OPTION   RANGE DEFAULT DESCRIPTION",
 "interp -n|-l|-q  -n    Interpolation type: none, linear or quadratic",
 "gain-in  -1-1    0.5   Proportion of input delivered clean to the adder",
 "gain-out -1-1     1    Final volume adjustment",
