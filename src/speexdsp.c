@@ -322,14 +322,14 @@ const sox_effect_handler_t* lsx_speexdsp_effect_fn(void)
 
   static char const * const extra_usage[] = {
 "Use the Speex DSP library to improve perceived sound quality",
-"OPTION         RANGE DEFLT DESCRIPTION",
-"-agc [target]  1-100  100  Enable automatic gain control and optionally",
-"                           specify a target volume level",
-"-denoise [max] 1-100   15  Enable noise reduction and optionally specify",
-"                           the maximum attenuation in dB",
-"-dereverb                  Enable reverb reduction",
-"-fps N         1-100   20  Specify the number of frames per second",
-"-spf N         1-     fps  Specify the number of samples per frame",
+"OPTION         RANGE DEFAULT DESCRIPTION",
+"-agc [target]  1-100  100    Enable automatic gain control and optionally",
+"                             specify a target volume level",
+"-denoise [max] 1-100   15    Enable noise reduction and optionally specify",
+"                             the maximum attenuation in dB",
+"-dereverb                    Enable reverb reduction",
+"-fps N         1-100   20    Specify the number of frames per second",
+"-spf N         1-    sr/fps  Specify the number of samples per frame",
 "If no options are specified, the -agc and -denoise features are enabled",
     NULL
   };
