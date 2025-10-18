@@ -321,11 +321,10 @@ sox_effect_handler_t const * lsx_flanger_effect_fn(void)
   static const char usage[] =
 "[-n|l|q|s|t] [delay(0) [depth(2) [regen(0) [width(71) [speed(0.5) [shape(s)] [[phase(25) [interp(linear)]]]]]]]";
   static char const * const extra_usage[] = {
-"",
 "            +----------------+",
 "            |    * regen     |",
-"           _V_     _______   |            ___",
-"          |   |   |       |  |           |   |",
+"           _V_     _______   |",
+"          |   |   |       |  |            ___",
 "    +---->| + |-->| delay |--+---------->|   |",
 "    |     |___|   |_______| * width/100  |   |",
 "    |                 ^                  |   |",
@@ -333,9 +332,7 @@ sox_effect_handler_t const * lsx_flanger_effect_fn(void)
 "--->+         +---------------+          | + |------------------>",
 "    | speed-->| sine/triangle |          |   | / (1 + width/100)",
 "    |         +---------------+          |   |",
-"    |                                    |   |",
-"    +----------------------------------->|   |",
-"                                         |___|",
+"    +----------------------------------->|___|",
 "        RANGE DEFAULT DESCRIPTION",
 "delay  0-1000    0    Base delay in milliseconds",
 "depth  0-1000    2    Added swept delay in milliseconds",
