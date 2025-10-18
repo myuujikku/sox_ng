@@ -716,9 +716,9 @@ sox_effect_handler_t const * lsx_rate_effect_fn(void)
 
   static char const * const extra_usage[] = {
 "  -Q QUALITY BANDWIDTH REJ dB   TYPICAL USE",
-"-q 0 quick      n/a  ~30 @ Fs/4 playback on ancient hardware",
-"-l 1 low        80%     100     playback on old hardware (default for play)",
-"-m 2 medium     95%     100     audio playback",
+"-q 0 quick      n/a  ~30 @ Fs/4 Playback on ancient hardware",
+"-l 1 low        80%     100     Playback on old hardware (default for play)",
+"-m 2 medium     95%     100     Audio playback",
 "-g 3 generic    95%     100     16-bit",
 "-h 4 high       95%     125     20-bit for 16-bit mastering (default for sox)",
 "-e 5 extreme    95%     150     24-bit",

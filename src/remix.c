@@ -204,13 +204,13 @@ sox_effect_handler_t const * lsx_remix_effect_fn(void)
   static char const usage[] =
     "[-a|-m] [-p] <0|in-chan[(v|p|i)[volume]]{,in-chan[(v|p|i)[volume]]}>";
   static char const * const extra_usage[] = {
-    "-a  automatically adjust channel levels",
-    "-m  disable all automatic level adjustments",
-    "-p  use power (1/sqrt(n)) scaling",
-    "0   a silent channel",
-    "p   power adjustment in dB (0 is no change)",
-    "i   power adjustment in dB, inverted",
-    "v   voltage multiplier (1 is no change)",
+    "-a  Automatically adjust channel levels",
+    "-m  Disable all automatic level adjustments",
+    "-p  Use power (1/sqrt(n)) scaling",
+    "0   A silent channel",
+    "p   Power adjustment in dB (0 is no change)",
+    "i   Power adjustment in dB, inverted",
+    "v   Voltage multiplier (1 is no change)",
     NULL
   };
   static sox_effect_handler_t handler = {
