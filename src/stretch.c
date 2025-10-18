@@ -77,6 +77,10 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
     lsx_fail("window size `%s' must be a number of milliseconds", argv[1]);
     return SOX_EOF;
   }
+  if (p->window < 1) {
+    lsx_fail("the minimum window size is one millisecond");
+    return SOX_EOF;
+  }
 
   if (argc > 2) {
     switch (argv[2][0]) {
@@ -349,7 +353,7 @@ const sox_effect_handler_t *lsx_stretch_effect_fn(void)
   static char const * const extra_usage[] = {
 "OPTION RANGE DEFAULT DESCRIPTION",
 "factor  0-      1    Change in length; >1 lengthens, <1 shortens",
-"window         20    Length of the crossfading window in milliseconds",
+"window  1-     20    Length of the crossfading window in milliseconds",
 "fade  l|s|q|h   l    Crossfading type: linear and half-cosine are equal-gain;",
 "                     sqrt and quarter-cosine are equal-power",
 "shift   0-1     ?    Shift ratio, (1 when speeding up, 0.8 when slowing down)",
