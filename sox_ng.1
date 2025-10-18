@@ -2700,20 +2700,20 @@ See
 for an effect that can add silence at the beginning of
 the audio on a channel-by-channel basis.
 .TP
-\fBphaser\fR [\fB\-n\fR|\fB\-l\fR|\fB\-q\fR] [\fIgain-in\fR(.4) \fIgain-out\fR(.74) \fIdelay\fR(3) \fIdecay\fR(.4) \fIspeed\fR(.5) [\fB\-s\fR\^|\^\fB\-t\fR(\fB\-s\fR)]
+\fBphaser\fR [\fB\-n\fR|\fB\-l\fR|\fB\-q\fR] [\fIgain-in\fR(.4) \fIgain-out\fR(.74) \fIdelay\fR(3) \fIregen\fR(.4) \fIspeed\fR(.5) [\fB\-s\fR\^|\^\fB\-t\fR(\fB\-s\fR)]
 Add a phasing effect to the audio.
 See [3] for a detailed description of phasing.
 .SP
 \fIdelay\fR gives the maximum delay in milliseconds,
-\fIdecay\fR the amount of feedback from the delay
+\fIregen\fR the amount of feedback from the delay
 and \fIspeed\fR the frequency of delay-time modulation wave in Hz.
 .SP
 The modulation is either sinusoidal (\fB\-s\fR), which is preferable
 for multiple instruments, or triangular
 (\fB\-t\fR) which gives single instruments a sharper phasing effect.
-The decay should be less than 0\*d5 to avoid
+\fIregen\fR should be less than 0\*d5 to avoid
 feedback, and usually no less than 0\*d1.
-\fIGain-out\fR is the volume of the output.
+\fIgain-out\fR is the final volume adjustment.
 .SP
 The \fB\-l\fR flag makes \fBphaser\fR do linear interpolation between samples
 when the offset into the delay line is not a whole number,

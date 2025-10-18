@@ -17,7 +17,7 @@ typedef enum {INTERP_NONE, INTERP_LINEAR, INTERP_QUADRATIC} interp_t;
 
 typedef struct {
   interp_t   interpolation;
-  double     gain_in, gain_out, delay, decay, speed;
+  double     gain_in, gain_out, delay, regen, speed;
   lsx_wave_t mod_type;
 
   int        * mod_buf_i;  /* Used when not interpolating */
@@ -39,7 +39,7 @@ static int getopts(sox_effect_t * effp, int argc, char * * argv)
   p->gain_in   = .4;
   p->gain_out  = .74;
   p->delay  = 3.;
-  p->decay     = .4;
+  p->regen     = .4;
   p->speed = .5;
 
   --argc, ++argv;  /* Skip the effect name */
@@ -61,7 +61,7 @@ static int getopts(sox_effect_t * effp, int argc, char * * argv)
     NUMERIC_PARAMETER(gain_in  , -1, 1)
     NUMERIC_PARAMETER(gain_out , -1, 1)
     NUMERIC_PARAMETER(delay    ,  0, 1000)
-    NUMERIC_PARAMETER(decay    ,  0, 1)
+    NUMERIC_PARAMETER(regen    ,  0, 1)
     NUMERIC_PARAMETER(speed    ,  0, 192000)
   } while (0);
 
@@ -70,9 +70,9 @@ static int getopts(sox_effect_t * effp, int argc, char * * argv)
     --argc, ++argv;
   }
 
-  if (p->gain_in > (1 - p->decay * p->decay))
+  if (p->gain_in > (1 - p->regen * p->regen))
     lsx_warn("warning: gain-in might cause clipping");
-  if (p->gain_in / (1 - p->decay) > 1 / p->gain_out)
+  if (p->gain_in / (1 - p->regen) > 1 / p->gain_out)
     lsx_warn("warning: gain-out might cause clipping");
 
   return argc? lsx_usage(effp) : SOX_SUCCESS;
@@ -123,7 +123,7 @@ static int flow(sox_effect_t * effp, const sox_sample_t *ibuf,
   switch (p->interpolation) {
   case INTERP_NONE:
     while (len--) {
-      double d = *ibuf++ * p->gain_in + p->decay * p->delay_buf[
+      double d = *ibuf++ * p->gain_in + p->regen * p->delay_buf[
              (p->delay_pos + p->mod_buf_i[p->mod_pos]) % p->delay_buf_len];
 
       MODULAR_INCREMENT(p->mod_pos, p->mod_buf_len);
@@ -142,7 +142,7 @@ static int flow(sox_effect_t * effp, const sox_sample_t *ibuf,
       sox_uint32_t delay_index = (p->delay_pos + offset_i) % p->delay_buf_len;
       double delayed_0 = p->delay_buf[delay_index];
       double delayed_1 = p->delay_buf[(delay_index + 1) % p->delay_buf_len];
-      double d = *ibuf++ * p->gain_in + p->decay *
+      double d = *ibuf++ * p->gain_in + p->regen *
                  (delayed_0 * (1 - frac) + delayed_1 * frac);
 
       MODULAR_INCREMENT(p->mod_pos, p->mod_buf_len);
@@ -170,7 +170,7 @@ static int flow(sox_effect_t * effp, const sox_sample_t *ibuf,
         a = delayed_2 *.5 - delayed_1;
         b = delayed_1 * 2 - delayed_2 *.5;
         delayed = delayed_0 + (a * frac + b) * frac;
-        d = *ibuf++ * p->gain_in + p->decay * delayed;
+        d = *ibuf++ * p->gain_in + p->regen * delayed;
       }
       MODULAR_INCREMENT(p->mod_pos, p->mod_buf_len);
       MODULAR_INCREMENT(p->delay_pos, p->delay_buf_len);
@@ -198,14 +198,14 @@ static int stop(sox_effect_t * effp)
 
 sox_effect_handler_t const * lsx_phaser_effect_fn(void)
 {
-  static const char usage[] = "[-n|-l] [gain-in [gain-out [delay [decay [speed [-s|-t]]]]]]";
+  static const char usage[] = "[-n|-l] [gain-in [gain-out [delay [regen [speed [-s|-t]]]]]]";
   static char const * const extra_usage[] = {
 "               ___",
 "In ---------->|   |------------> Out",
 "    * gain-in | + | * gain-out",
 "         +--->|___|",
 "         |      |",
-" * decay |   ___v___",
+" * regen |   ___v___",
 "         |  |       |   +---------------+",
 "         +--| delay |<--| sine/triangle |<-- speed",
 "            |_______|   +---------------+",
@@ -215,12 +215,12 @@ sox_effect_handler_t const * lsx_phaser_effect_fn(void)
 "gain-in  -1-1     0.4    Proportion of input delivered to output and delay",
 "gain-out -1-1     0.74   Final output volume adjustment",
 "delay     0-1000   3     Delay in milliseconds",
-"decay    -1-1     0.4    Proportion of delay that is fed back",
+"regen    -1-1     0.4    Proportion of delay that is fed back",
 "speed     0-192k  0.5    Modulation speed (no more than the sample rate)",
 "-s|-t             sine   Sinusoidal or triangular modulation",
 "",
-"Hint: gain-in  < (1 - decay * decay)",
-"      gain-out < (1 - decay) / gain-in",
+"Hint: gain-in  < (1 - regen * regen)",
+"      gain-out < (1 - regen) / gain-in",
     NULL
   };
 
