@@ -231,8 +231,8 @@ static char const * const extra_usage[] = {
   "-M/-I/-L                   Phase response: minimum/intermediate/linear",
   "-t tbw    1-      5% band  Transition bandwidth",
   "-n taps  11-32767  varies  Number of filter taps",
-  "freq(s): 3k = high-pass; -4k = low-pass; 3k-4k = band-pass; 4k-3k = band-reject"
-  "-t or -n before the frequency range applies to both; after only affects freqLP",
+  "freq(s): 3k=high-pass; -4k=low-pass; 3k-4k=band-pass; 4k-3k=band-reject",
+  "-t or -n before frequency range applies to both; after only affects freqLP",
 
   "-r  Round `taps' to the closest integer instead of the next lower one",
   "-d  If a low-pass filter's frequency is Nyquist or above, copy, don't fail",
