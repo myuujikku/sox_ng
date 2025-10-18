@@ -61,7 +61,7 @@ static int getopts(sox_effect_t * effp, int argc, char * * argv)
     NUMERIC_PARAMETER(gain_in  , -1, 1)
     NUMERIC_PARAMETER(gain_out , -1, 1)
     NUMERIC_PARAMETER(delay    ,  0, 1000)
-    NUMERIC_PARAMETER(regen    ,  0, 1)
+    NUMERIC_PARAMETER(regen    , -1, 1)
     NUMERIC_PARAMETER(speed    ,  0, 192000)
   } while (0);
 

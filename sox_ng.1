@@ -2704,8 +2704,8 @@ the audio on a channel-by-channel basis.
 Add a phasing effect to the audio.
 See [3] for a detailed description of phasing.
 .SP
-\fIdelay\fR gives the maximum delay in milliseconds,
-\fIregen\fR the amount of feedback from the delay
+\fIdelay\fR gives the maximum delay in milliseconds from 0 to 1000,
+\fIregen\fR the amount of feedback from the delay from \(mi1 to \(pl1
 and \fIspeed\fR the frequency of delay-time modulation wave in Hz.
 .SP
 The modulation is either sinusoidal (\fB\-s\fR), which is preferable
@@ -2724,7 +2724,7 @@ but even less noisy.
 .SP
 Technically, the SoX \fBphaser\fP is not a phaser; it is a flanger.
 A flanger does comb filtering with equidistant spacing
-(e.g. 100Hz, 200Hz, 300Hz, 400Hz, ...), while a phaser does
+(e.g. 100Hz, 200Hz, 300Hz, 400Hz, ...), while a real phaser does
 comb filtering with factored spacing
 (e.g. 100Hz, 200Hz, 400Hz, 800Hz, ...) that sounds more harmonic.
 .SP
