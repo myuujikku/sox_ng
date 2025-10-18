@@ -4064,7 +4064,9 @@ is the length of the cross-fading window in milliseconds with a default of 20.
 .SP
 The
 .I fade
-option can only be \fBl\fR for \fBlinear\fR.
+option chooses the type of crossfading:
+\fBlinear\fR and \fBhalf-cosine\fR give equal-gain crossfading and cannot clip;
+\fBsqrt\fR and \fBquarter-cosine\fR give two kinds of equal-power crossfading.
 .SP
 The
 .I shift

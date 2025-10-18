@@ -23,6 +23,9 @@
 #define DEFAULT_STRETCH_WINDOW          20.0  /* ms */
 
 typedef enum { input_state, output_state } stretch_status_t;
+typedef enum {
+  fade_linear, fade_sqrt, fade_half_cosine, fade_quarter_cosine
+} stretch_fade_t;
 
 typedef struct {
   /* options
@@ -32,6 +35,7 @@ typedef struct {
   double window;   /* window in ms */
   double shift;    /* shift ratio wrt window. <1.0 */
   double fading;   /* fading ratio wrt window. <0.5 */
+  stretch_fade_t fade_type;
 
   /* internal stuff */
   stretch_status_t state; /* automaton status */
@@ -76,11 +80,20 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
 
   if (argc > 2) {
     switch (argv[2][0]) {
-    case 'l':
-    case 'L':
+    case 'l': case 'L':
+      p->fade_type = fade_linear;
+      break;
+    case 's': case 'S':
+      p->fade_type = fade_sqrt;
+      break;
+    case 'h': case 'H':
+      p->fade_type = fade_half_cosine;
+      break;
+    case 'q': case 'Q':
+      p->fade_type = fade_quarter_cosine;
       break;
     default:
-      lsx_fail("fade type must be `l' for `linear', not `%s'", argv[2]);
+      lsx_fail("fade type must be linear, sqrt, half or quarter, not `%s'", argv[2]);
       return SOX_EOF;
     }
   }
@@ -163,14 +176,32 @@ static int start(sox_effect_t * effp)
   for (i = 0; i<p->segment; i++)
     p->obuf[i] = 0.0;
 
-  if (p->overlap>1) {
+  if (p->overlap == 1)
+    p->fade_coefs[0] = 1.0;
+  else if (p->overlap>1) {
     double slope = 1.0 / (p->overlap - 1);
+
     p->fade_coefs[0] = 1.0;
-    for (i = 1; i < p->overlap - 1; i++)
-      p->fade_coefs[i] = slope * (p->overlap - i - 1);
+    switch (p->fade_type) {
+    case fade_linear:
+      for (i = 1; i < p->overlap - 1; i++)
+        p->fade_coefs[i] = slope * (p->overlap - i - 1);
+      break;
+    case fade_sqrt:
+      for (i = 1; i < p->overlap - 1; i++)
+        p->fade_coefs[i] = sqrt(slope * (p->overlap - i - 1));
+      break;
+    case fade_quarter_cosine:
+      for (i = 1; i < p->overlap - 1; i++)
+        p->fade_coefs[i] = cos(((double)i / (p->overlap - 1)) * M_PI/2);
+      break;
+    case fade_half_cosine:
+      for (i = 1; i < p->overlap - 1; i++)
+        p->fade_coefs[i] = 0.5 + cos(((double)i / (p->overlap - 1)) * M_PI) / 2;
+      break;
+    }
     p->fade_coefs[p->overlap - 1] = 0.0;
-  } else if (p->overlap == 1)
-    p->fade_coefs[0] = 1.0;
+  }
 
   lsx_debug("start: (factor=%g segment=%g shift=%g overlap=%g)\nstate=%d\n"
       "segment=%" PRIuPTR "\nindex=%" PRIuPTR "\n"
@@ -319,7 +350,8 @@ const sox_effect_handler_t *lsx_stretch_effect_fn(void)
 "OPTION RANGE DEFAULT DESCRIPTION",
 "factor  0-      1    Change in length; >1 lengthens, <1 shortens",
 "window         20    Length of the crossfading window in milliseconds",
-"fade     l      l    Can only be `l' for `linear'",
+"fade  l|s|q|h   l    Crossfading type: linear and half-cosine are equal-gain;",
+"                     sqrt and quarter-cosine are equal-power",
 "shift   0-1     ?    Shift ratio, (1 when speeding up, 0.8 when slowing down)",
 "fading  0-.5    ?    Fading ratio: how much of each window is cross-faded;",
 "                     its default value depends on factor and shift",
