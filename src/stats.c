@@ -292,7 +292,7 @@ sox_effect_handler_t const * lsx_stats_effect_fn(void)
   static char const * const extra_usage[] = {
     "-b N     Scale DC offset and Min/Max levels to signed value of N bits",
     "-x N     The same, but display them as signed hexadecimal",
-    "-s N     The same, but scale them by a floating poiint value",
+    "-s N     The same, but scale them by a floating-point value",
     "-w time  Show Pk/RMS levels for a window of N seconds (default: 0.05)",
     NULL
   };
