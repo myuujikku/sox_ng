@@ -575,19 +575,31 @@ if test "$with_twolame" != "no"; then
     fi
 fi
 
+
+
 # Check for libdolbyb
-found_libdolbyb=yes
-AC_CHECK_HEADERS(dolbyb.h, ,
-    [AC_CHECK_HEADERS(dolbyb.h, ,found_libdolbyb=no)])
-    AC_CHECK_LIB(dolbyb, dolbyb_init, DOLBYB_LIBS="$DOLBYB_LIBS -ldolbyb", found_libdolbyb=no)
-if test "$found_libdolbyb" = yes; then
-    AC_DEFINE(EXTERNAL_DOLBYB, 1, [Define if you are using an external dolbyb library])
+AC_ARG_WITH(dolbyb,
+    AS_HELP_STRING([--without-dolbyb],
+        [Don't try to use libdolbyb]))
+if test "$with_dolbyb" != "no"
+then
+    AC_CHECK_HEADERS(dolbyb.h,
+        [AC_CHECK_LIB(dolbyb, dolbyb_init, found_libdolbyb=yes; DOLBYB_LIBS="$DOLBYB_LIBS -ldolbyb", found_libdolbyb=no)])
+    if test "$found_libdolbyb" = yes; then
+	AC_DEFINE(EXTERNAL_DOLBYB, 1, [Define if you are using an external dolbyb library])
+    else
+	LIBDOLBYB_LIBADD=../libdolbyb/libdolbyb.la
+        AC_DEFINE(HAVE_DOLBYB_H, 1, [Define if including dolbyb support])
+    fi
+    AM_CONDITIONAL(EXTERNAL_DOLBYB, test x$found_libdolbyb = xyes)
+    AC_SUBST(LIBDOLBYB_LIBADD)
+    AC_SUBST(DOLBYB_LIBS)
+    using_dolbyb=yes
 else
-    LIBDOLBYB_LIBADD=../libdolbyb/libdolbyb.la
+    # Don't compile libdolbyb but do distribute its sources
+    AM_CONDITIONAL(EXTERNAL_DOLBYB, true)
+    using_dolbyb=no
 fi
-AM_CONDITIONAL(EXTERNAL_DOLBYB, test x$found_libdolbyb = xyes)
-AC_SUBST(LIBDOLBYB_LIBADD)
-AC_SUBST(DOLBYB_LIBS)
 
 
 
@@ -909,7 +921,6 @@ if test "x$using_amrwb" = "xyes"; then
 echo " dlopen amrwb..............$enable_dl_amrwb"
 fi
 echo "flac.......................$using_flac"
-echo "dolbyb.....................$using_dolbyb $dolbyb_option"
 echo "gsm........................$using_gsm $gsm_option"
 echo "lpc10......................$using_lpc10 $lpc10_option"
 echo "mp2/mp3....................$using_mp3"
@@ -939,6 +950,7 @@ echo "wavpack....................$using_wavpack"
 echo
 echo "OTHER OPTIONS"
 echo "prefer curl to wget........$using_curl"
+echo "dolbyb support.............$using_dolbyb $dolbyb_option"
 echo "ffmpeg support.............$using_ffmpeg"
 echo "ladspa effects.............$using_ladspa"
 echo "magic support..............$using_magic"

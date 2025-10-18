@@ -33,7 +33,9 @@
   EFFECT(delay)
   EFFECT(dft_filter) /* abstract */
   EFFECT(dither)
+#if HAVE_DOLBYB_H
   EFFECT(dolbyb)
+#endif
   EFFECT(dop)
   EFFECT(downsample)
   EFFECT(earwax)

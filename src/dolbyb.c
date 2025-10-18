@@ -19,6 +19,8 @@
 
 #include "sox_i.h"
 
+#if HAVE_DOLBYB_H
+
 #ifdef EXTERNAL_DOLBYB
 #include <dolbyb.h>
 #else
@@ -203,3 +205,5 @@ const sox_effect_handler_t *lsx_dolbyb_effect_fn(void)
   };
   return &sox_dolbyb_effect;
 }
+
+#endif /* HAVE_DOLBYB_H */
