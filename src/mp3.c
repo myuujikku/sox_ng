@@ -122,6 +122,9 @@ static mad_timer_t const mad_timer_zero_stub = {0, 0};
 #define MAXFRAMESIZE 2880
 #define ID3PADDING 128
 
+/* Twolame takes float values as input. */
+#define MP2_TWOLAME_PRECISION   24
+
 /* LAME takes float values as input. */
 #define MP3_LAME_PRECISION   24
 
@@ -930,132 +933,124 @@ static void rewrite_tags(sox_format_t * ft, uint64_t num_samples)
 
 #define LAME_BUFFER_SIZE(num_samples) (((num_samples) + 3) / 4 * 5 + 7200)
 
-static int startwrite(sox_format_t * ft)
+static int startwrite_mp2(sox_format_t * ft)
 {
+#if !HAVE_TWOLAME
+  lsx_fail_errno(ft,SOX_EOF,"SoX was compiled without MP2 encoding support");
+  return SOX_EOF;
+#else
   priv_t *p = (priv_t *) ft->priv;
   int openlibrary_result;
-  int fail = 0;
 
-  if (ft->encoding.encoding != SOX_ENCODING_MP3) {
-    if(ft->encoding.encoding != SOX_ENCODING_UNKNOWN)
-      lsx_report("Encoding forced to MP2/MP3");
-    ft->encoding.encoding = SOX_ENCODING_MP3;
-  }
-
-  if(strchr(ft->filetype, '2'))
-      p->mp2 = 1;
-
-  if (p->mp2) {
-#ifdef HAVE_TWOLAME
-    LSX_DLLIBRARY_OPEN(
-        p,
-        twolame_dl,
-        TWOLAME_FUNC_ENTRIES,
-        "Twolame encoder library",
-        twolame_library_names,
-        openlibrary_result);
-#else
-    lsx_fail_errno(ft,SOX_EOF,"SoX was compiled without MP2 encoding support");
-    return SOX_EOF;
-#endif
-  } else {
-#ifdef HAVE_LAME
-    LSX_DLLIBRARY_OPEN(
-        p,
-        lame_dl,
-        LAME_FUNC_ENTRIES,
-        "LAME encoder library",
-        lame_library_names,
-        openlibrary_result);
-#else
-    lsx_fail_errno(ft,SOX_EOF,"SoX was compiled without MP3 encoding support");
-    return SOX_EOF;
-#endif
-  }
+  LSX_DLLIBRARY_OPEN(
+      p,
+      twolame_dl,
+      TWOLAME_FUNC_ENTRIES,
+      "Twolame encoder library",
+      twolame_library_names,
+      openlibrary_result);
   if (openlibrary_result)
     return SOX_EOF;
 
-  p->mp3_buffer_size = LAME_BUFFER_SIZE(sox_globals.bufsiz / max(ft->signal.channels, 1));
-  p->mp3_buffer = lsx_malloc(p->mp3_buffer_size);
-
-  p->pcm_buffer_size = sox_globals.bufsiz * sizeof(float);
-  p->pcm_buffer = lsx_malloc(p->pcm_buffer_size);
-
-  if (p->mp2) {
-#ifdef HAVE_TWOLAME
-    p->opt = p->twolame_init();
-
-    if (p->opt == NULL){
-      lsx_fail_errno(ft,SOX_EOF,"initialization of Twolame library failed");
-      return(SOX_EOF);
-    }
-#endif
-  } else {
-#ifdef HAVE_LAME
-    p->gfp = p->lame_init();
-
-    if (p->gfp == NULL){
-      lsx_fail_errno(ft,SOX_EOF,"initialization of LAME library failed");
-      return(SOX_EOF);
-    }
-
-    /* First set message callbacks so we don't miss any messages: */
-    p->lame_set_errorf(p->gfp,errorf);
-    p->lame_set_debugf(p->gfp,debugf);
-    p->lame_set_msgf  (p->gfp,msgf);
-
-    p->num_samples = ft->signal.length == SOX_IGNORE_LENGTH ? 0 : ft->signal.length / max(ft->signal.channels, 1);
-    p->lame_set_num_samples(p->gfp, p->num_samples > ULONG_MAX ? 0 : (unsigned long)p->num_samples);
-#endif
+  if ((p->opt = p->twolame_init()) == NULL){
+    lsx_fail_errno(ft,SOX_EOF,"initialization of Twolame library failed");
+    return SOX_EOF;
   }
+
+  ft->signal.precision = MP2_TWOLAME_PRECISION;
+
+  if (ft->signal.channels != SOX_ENCODING_UNKNOWN) {
+    if (p->twolame_set_num_channels(p->opt,(int)ft->signal.channels) != 0) {
+      lsx_fail_errno(ft,SOX_EOF,"unsupported number of channels");
+      return(SOX_EOF);
+    }
+  } else {
+    ft->signal.channels = p->twolame_get_num_channels(p->opt); /* Twolame default */
+  }
+
+  p->twolame_set_in_samplerate(p->opt,(int)ft->signal.rate);
+  p->twolame_set_out_samplerate(p->opt,(int)ft->signal.rate);
+
+  lsx_debug("-C option is %f", ft->encoding.compression);
+
+  if (ft->encoding.compression == HUGE_VAL) {
+    /* Do nothing, use defaults: */
+    lsx_report("using MP2 encoding defaults");
+  } else {
+    double abs_compression = fabs(ft->encoding.compression);
+    double floor_compression = floor(abs_compression);
+    int bitrate_q = (int)floor_compression;
+
+    if (ft->encoding.compression < 0.5) {
+        lsx_fail_errno(ft,SOX_EOF,"variable bitrate encoding not supported for MP2 audio");
+        return(SOX_EOF);
+    } else {
+      if (p->twolame_set_brate(p->opt, bitrate_q) != 0) {
+        lsx_fail_errno(ft, SOX_EOF,
+          "twolame_set_brate(%d) failed", bitrate_q);
+        return(SOX_EOF);
+      }
+      lsx_report("twolame_set_brate(%d)", bitrate_q);
+    }
+  }
+
+  if (p->twolame_init_params(p->opt) != 0) {
+    lsx_fail_errno(ft,SOX_EOF,"Twolame initialization failed");
+    return(SOX_EOF);
+  }
+
+  return(SOX_SUCCESS);
+#endif
+}
+
+static int startwrite_mp3(sox_format_t * ft)
+{
+#if !HAVE_LAME
+  lsx_fail_errno(ft,SOX_EOF,"SoX was compiled without MP3 encoding support");
+  return SOX_EOF;
+#else
+  priv_t *p = (priv_t *) ft->priv;
+  int openlibrary_result;
+
+  LSX_DLLIBRARY_OPEN(
+      p,
+      lame_dl,
+      LAME_FUNC_ENTRIES,
+      "LAME encoder library",
+      lame_library_names,
+      openlibrary_result);
+  if (openlibrary_result)
+    return SOX_EOF;
+
+  if ((p->gfp = p->lame_init()) == NULL){
+    lsx_fail_errno(ft,SOX_EOF,"initialization of LAME library failed");
+    return SOX_EOF;
+  }
+
+  /* First set message callbacks so we don't miss any messages: */
+  p->lame_set_errorf(p->gfp,errorf);
+  p->lame_set_debugf(p->gfp,debugf);
+  p->lame_set_msgf  (p->gfp,msgf);
+
+  p->num_samples = ft->signal.length == SOX_IGNORE_LENGTH ? 0 : ft->signal.length / max(ft->signal.channels, 1);
+  p->lame_set_num_samples(p->gfp, p->num_samples > ULONG_MAX ? 0 : (unsigned long)p->num_samples);
 
   ft->signal.precision = MP3_LAME_PRECISION;
 
   if (ft->signal.channels != SOX_ENCODING_UNKNOWN) {
-    if (p->mp2) {
-#ifdef HAVE_TWOLAME
-      fail = (p->twolame_set_num_channels(p->opt,(int)ft->signal.channels) != 0);
-#endif
-    } else {
-#ifdef HAVE_LAME
-      fail = (p->lame_set_num_channels(p->gfp,(int)ft->signal.channels) < 0);
-#endif
-    }
-    if (fail) {
+    if (p->lame_set_num_channels(p->gfp,(int)ft->signal.channels) < 0) {
       lsx_fail_errno(ft,SOX_EOF,"unsupported number of channels");
       return(SOX_EOF);
     }
-  }
-  else {
-    if (p->mp2) {
-#ifdef HAVE_TWOLAME
-      ft->signal.channels = p->twolame_get_num_channels(p->opt); /* Twolame default */
-#endif
-    } else {
-#ifdef HAVE_LAME
-      ft->signal.channels = p->lame_get_num_channels(p->gfp); /* LAME default */
-#endif
-    }
-  }
-
-  if (p->mp2) {
-#ifdef HAVE_TWOLAME
-    p->twolame_set_in_samplerate(p->opt,(int)ft->signal.rate);
-    p->twolame_set_out_samplerate(p->opt,(int)ft->signal.rate);
-#endif
   } else {
-#ifdef HAVE_LAME
-    p->lame_set_in_samplerate(p->gfp,(int)ft->signal.rate);
-    p->lame_set_out_samplerate(p->gfp,(int)ft->signal.rate);
-#endif
+    ft->signal.channels = p->lame_get_num_channels(p->gfp); /* LAME default */
   }
 
-  if (!p->mp2) {
-#ifdef HAVE_LAME
-    if (!LSX_DLFUNC_IS_STUB(p, id3tag_init))
-      write_comments(ft);
-#endif
-  }
+  p->lame_set_in_samplerate(p->gfp,(int)ft->signal.rate);
+  p->lame_set_out_samplerate(p->gfp,(int)ft->signal.rate);
+
+  if (!LSX_DLFUNC_IS_STUB(p, id3tag_init))
+    write_comments(ft);
 
   /* The primary parameter to the LAME encoder is the bit rate. If the
    * value of encoding.compression is a positive integer, it's taken as
@@ -1090,13 +1085,13 @@ static int startwrite(sox_format_t * ft)
    * Note: It would have been nice to simply use low values, 0-9, to trigger
    * VBR mode, but 8 kbps is a valid bit rate, so negative values were
    * used instead.
-  */
+   */
 
   lsx_debug("-C option is %f", ft->encoding.compression);
 
   if (ft->encoding.compression == HUGE_VAL) {
     /* Do nothing, use defaults: */
-    lsx_report("using %s encoding defaults", p->mp2? "MP2" : "MP3");
+    lsx_report("using MP3 encoding defaults");
   } else {
     double abs_compression = fabs(ft->encoding.compression);
     double floor_compression = floor(abs_compression);
@@ -1108,11 +1103,6 @@ static int startwrite(sox_format_t * ft)
         : (int)(fraction_compression * 10.0 + 0.5);
 
     if (ft->encoding.compression < 0.5) {
-      if (p->mp2) {
-        lsx_fail_errno(ft,SOX_EOF,"variable bitrate encoding not supported for MP2 audio");
-        return(SOX_EOF);
-      }
-#ifdef HAVE_LAME
       if (p->lame_get_VBR(p->gfp) == vbr_off)
         p->lame_set_VBR(p->gfp, vbr_default);
 
@@ -1130,63 +1120,60 @@ static int startwrite(sox_format_t * ft)
         return(SOX_EOF);
       }
       lsx_report("lame_set_VBR_q(%d)", bitrate_q);
-#endif
     } else {
-      if (p->mp2) {
-#ifdef HAVE_TWOLAME
-        fail = (p->twolame_set_brate(p->opt, bitrate_q) != 0);
-#endif
-      } else {
-#ifdef HAVE_LAME
-        fail = (p->lame_set_brate(p->gfp, bitrate_q) < 0);
-#endif
-      }
-      if (fail) {
+      if (p->lame_set_brate(p->gfp, bitrate_q) < 0) {
         lsx_fail_errno(ft, SOX_EOF,
-          "%slame_set_brate(%d) failed", p->mp2? "two" : "", bitrate_q);
+          "lame_set_brate(%d) failed", bitrate_q);
         return(SOX_EOF);
       }
-      lsx_report("(two)lame_set_brate(%d)", bitrate_q);
+      lsx_report("lame_set_brate(%d)", bitrate_q);
     }
 
     /* Set Quality */
 
-    if (encoder_q < 0 || p->mp2) {
+    if (encoder_q < 0) {
       /* use default quality value */
-      lsx_report("using %s default quality", p->mp2? "MP2" : "MP3");
+      lsx_report("using MP3 default quality");
     } else {
-#ifdef HAVE_LAME
       if (p->lame_set_quality(p->gfp, encoder_q) < 0) {
         lsx_fail_errno(ft, SOX_EOF,
           "lame_set_quality(%d) failed", encoder_q);
         return(SOX_EOF);
       }
       lsx_report("lame_set_quality(%d)", encoder_q);
-#endif
     }
   }
 
-  if (!p->mp2) {
-#ifdef HAVE_LAME
-    p->lame_set_bWriteVbrTag(p->gfp, p->vbr_tag);
-#endif
-  }
+  p->lame_set_bWriteVbrTag(p->gfp, p->vbr_tag);
 
-  if (p->mp2) {
-#ifdef HAVE_TWOLAME
-    fail = (p->twolame_init_params(p->opt) != 0);
-#endif
-  } else {
-#ifdef HAVE_LAME
-    fail = (p->lame_init_params(p->gfp) < 0);
-#endif
-  }
-  if (fail) {
-    lsx_fail_errno(ft,SOX_EOF,"%s initialization failed", p->mp2? "Twolame" : "LAME");
+  if (p->lame_init_params(p->gfp) < 0) {
+    lsx_fail_errno(ft,SOX_EOF,"LAME initialization failed");
     return(SOX_EOF);
   }
 
   return(SOX_SUCCESS);
+#endif
+}
+
+static int startwrite(sox_format_t * ft)
+{
+  priv_t *p = (priv_t *) ft->priv;
+
+  if (ft->encoding.encoding != SOX_ENCODING_MP3) {
+    if(ft->encoding.encoding != SOX_ENCODING_UNKNOWN)
+      lsx_report("Encoding forced to MP2/MP3");
+    ft->encoding.encoding = SOX_ENCODING_MP3;
+  }
+
+  p->mp3_buffer_size = LAME_BUFFER_SIZE(sox_globals.bufsiz / max(ft->signal.channels, 1));
+  p->mp3_buffer = lsx_malloc(p->mp3_buffer_size);
+
+  p->pcm_buffer_size = sox_globals.bufsiz * sizeof(float);
+  p->pcm_buffer = lsx_malloc(p->pcm_buffer_size);
+
+  p->mp2 = !!strchr(ft->filetype, '2');
+
+  return p->mp2 ? startwrite_mp2(ft) : startwrite_mp3(ft);
 }
 
 #define MP3_SAMPLE_TO_FLOAT(d,clips) ((float)(32768*SOX_SAMPLE_TO_FLOAT_32BIT(d,clips)))
