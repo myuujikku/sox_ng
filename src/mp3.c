@@ -128,6 +128,10 @@ static mad_timer_t const mad_timer_zero_stub = {0, 0};
 /* LAME takes float values as input. */
 #define MP3_LAME_PRECISION   24
 
+/* Note: sox_precision() returns 0 for SOX_ENCODING_MP3 as it varies
+ * according to whether you're encoding or decoding but sox_ng.c knows
+ * about this and has a special case and reports 24 as the Writes: precision */
+
 /* MAD returns values with MAD_F_FRACBITS (28) bits of precision, though it's
    not certain that all of them are meaningful. Default to 16 bits to
    align with most users expectation of output file should be 16 bits. */

@@ -2154,19 +2154,23 @@ static void usage_format1(sox_format_handler_t const * f)
 #define enc_arg(T) (T)f->write_formats[i++]
       i = 0;
       puts("Writes:");
-      while ((e = enc_arg(sox_encoding_t)))
+      while ((e = enc_arg(sox_encoding_t))) {
         do {
+	  unsigned prec;
           s = enc_arg(unsigned);
-          if (sox_precision(e, s)) {
+	  if (e == SOX_ENCODING_MP3) prec = 24;
+	  else prec = sox_precision(e, s);
+          if (prec) {
             printf("  ");
             if (s)
               printf("%2u-bit ", s);
-            printf("%s (%u-bit precision)\n", sox_encodings_info[e].desc, sox_precision(e, s));
+            printf("%s (%u-bit precision)\n", sox_encodings_info[e].desc, prec);
           }
         } while (s);
       }
-      else puts("Writes: yes");
     }
+    else puts("Writes: yes");
+  }
   else puts("Writes: no");
 }
 
