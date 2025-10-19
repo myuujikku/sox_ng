@@ -9,7 +9,7 @@ ${sox:-sox} -t txw BD.W01 bd.wav
 bitrate="$(${sox:-sox} --info bd.wav | grep '^Bit Rate' | sed 's/.*: //')"
 
 # See what's in the WAV file
-byterate="$(od -t dL bd.wav | head -2 | tail -1 | sed 's/.* //')"
+byterate="$(od -t d4 bd.wav | head -2 | tail -1 | sed 's/.* //')"
 case "$byterate" in
 66666) status=0;;
 66667) status=2;;
