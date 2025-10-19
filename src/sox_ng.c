@@ -1351,7 +1351,8 @@ static void adjust_volume(int delta)
 #elif defined(HAVE_AUDIOIO_H)
 static void adjust_volume(int delta)
 {
-  int vol1 = 0, vol2 = 0, fd = fileno((FILE*)ofile->ft->fp);
+  int vol1 = 0, vol2 = 0, fd;
+  fd = ofile->ft->fp != NULL ? *((int *)ofile->ft->fp) : -1;
   if (lsx_adjust_softvol(delta) == SOX_SUCCESS) return;
   if (fd >= 0) {
     audio_info_t audio_info;
@@ -1360,7 +1361,9 @@ static void adjust_volume(int delta)
       vol2 = range_limit(vol1 + delta, 0, 100);
       AUDIO_INITINFO(&audio_info);
       audio_info.play.gain = (vol2 * AUDIO_MAX_GAIN + 50) / 100;
+#if defined(__sun)
       audio_info.output_muted = 0;
+#endif
       lsx_debug("%04x %04x", vol1, vol2);
       if (vol1 != vol2 && ioctl(fd, AUDIO_SETINFO, &audio_info) < 0)
         vol2 = vol1;
