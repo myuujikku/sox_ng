@@ -42,7 +42,7 @@
 #include "../libgsm/gsm.h"
 #endif
 
-/* Magic length writen when its not possible to write valid lengths.
+/* Magic length written when its not possible to write valid lengths.
  * This can be either because of non-seekable output or because
  * the length can not be represented by the 32-bits used in WAV files.
  * When magic length is detected on inputs, disable any length
@@ -50,28 +50,7 @@
  */
 #define MS_UNSPEC 0x7ffff000
 
-#define WAVE_FORMAT_UNKNOWN             (0x0000U)
-#define WAVE_FORMAT_PCM                 (0x0001U)
-#define WAVE_FORMAT_ADPCM               (0x0002U)
-#define WAVE_FORMAT_IEEE_FLOAT          (0x0003U)
-#define WAVE_FORMAT_ALAW                (0x0006U)
-#define WAVE_FORMAT_MULAW               (0x0007U)
-#define WAVE_FORMAT_OKI_ADPCM           (0x0010U)
-#define WAVE_FORMAT_IMA_ADPCM           (0x0011U)
-#define WAVE_FORMAT_DIGISTD             (0x0015U)
-#define WAVE_FORMAT_DIGIFIX             (0x0016U)
-#define WAVE_FORMAT_SONARC              (0x0021U)
-#define WAVE_FORMAT_DOLBY_AC2           (0x0030U)
-#define WAVE_FORMAT_GSM610              (0x0031U)
-#define WAVE_FORMAT_ROCKWELL_ADPCM      (0x003bU)
-#define WAVE_FORMAT_ROCKWELL_DIGITALK   (0x003cU)
-#define WAVE_FORMAT_G721_ADPCM          (0x0040U)
-#define WAVE_FORMAT_G728_CELP           (0x0041U)
-#define WAVE_FORMAT_MPEG                (0x0050U)
-#define WAVE_FORMAT_MPEGLAYER3          (0x0055U)
-#define WAVE_FORMAT_G726_ADPCM          (0x0064U)
-#define WAVE_FORMAT_G722_ADPCM          (0x0065U)
-#define WAVE_FORMAT_EXTENSIBLE          (0xfffeU)
+#include "wav-formats.h"
 
 /* To allow padding to samplesPerBlock. Works, but currently never true. */
 static const size_t pad_nsamps = sox_false;
@@ -496,10 +475,303 @@ static int findChunk(sox_format_t * ft, const char *Label, uint64_t *len)
 }
 
 
-static int wavfail(sox_format_t * ft, const char *format)
+static int wavfail(sox_format_t * ft)
 {
-    lsx_fail_errno(ft, SOX_EHDR, "file encoding `%s' is not supported", format);
-    return SOX_EOF;
+  static struct subtype_name {
+    uint16_t subtype;
+    char const *name;
+  } subtype_names[] = {
+    /* References:
+     * https://datatracker.ietf.org/doc/html/rfc2361#appendix-A
+     * https://py-waveinfo.readthedocs.io/en/stable/ref_enums
+     * https://www.recordingblogs.com/wiki/format-chunk-of-a-wave-file
+     * https://codec.kyiv.ua/audio.html
+     */
+    { WAVE_FORMAT_VSELP,             "Compaq VSELP" },
+    { WAVE_FORMAT_IBM_CVSD,          "IBM CVSD" },
+    { WAVE_FORMAT_DTS,               "Microsoft DTS" },
+    { WAVE_FORMAT_DRM,               "DRM" },
+    { WAVE_FORMAT_WMAVOICE9,         "WMA 9 Speech" },
+    { WAVE_FORMAT_WMAVOICE10,        "WMA 10 Speech" },
+    { WAVE_FORMAT_OKI_ADPCM,         "OKI-ADPCM" },
+    { WAVE_FORMAT_MEDIASPACE_ADPCM,  "Videologic Mediaspace ADPCM" },
+    { WAVE_FORMAT_SIERRA_ADPCM,      "Sierra ADPCM" },
+    { WAVE_FORMAT_G723_ADPCM,        "Antex G.723 ADPCM" },
+    { WAVE_FORMAT_DIGISTD,           "DSP Solutions DIGISTD" },
+    { WAVE_FORMAT_DIGIFIX,           "DSP Solutions DIGIFIX" },
+    { WAVE_FORMAT_DIALOGIC_OKI_ADPCM,"Dialogic OKI ADPCM" },
+    { WAVE_FORMAT_MEDIAVISION_ADPCM, "Media Vision ADPCM" },
+    { WAVE_FORMAT_CU_CODEC,          "HP CU" },
+    { WAVE_FORMAT_HP_DYN_VOICE,      "HP Dynamic Voice" },
+    { WAVE_FORMAT_YAMAHA_ADPCM,      "Yamaha ADPCM" },
+    { WAVE_FORMAT_SONARC,            "SONARC Speech Compression" },
+    { WAVE_FORMAT_DSPGROUP_TRUESPEECH,"DSP Group True Speech" },
+    { WAVE_FORMAT_ECHOSC1,           "Echo Speech" },
+    { WAVE_FORMAT_AUDIOFILE_AF36,    "Virtual Music Audiofile AF36" },
+    { WAVE_FORMAT_APTX,              "Audio Processing Tech." },
+    { WAVE_FORMAT_AUDIOFILE_AF10,    "Virtual Music Audiofile AF10" },
+    { WAVE_FORMAT_PROSODY_1612,      "Aculab Prosody 1612" },
+    { WAVE_FORMAT_LRC, "Merging Tech. LRC" },
+    { WAVE_FORMAT_DOLBY_AC2,         "Dolby AC2" },
+    { WAVE_FORMAT_MSNAUDIO,          "MSN Audio" },
+    { WAVE_FORMAT_ANTEX_ADPCME,      "Antex ADPCME" },
+    { WAVE_FORMAT_CONTROL_RES_VQLPC, "Control Resources VQLPC" },
+    { WAVE_FORMAT_DIGIREAL,          "DSP Solutions DIGIREAL" },
+    { WAVE_FORMAT_DIGIADPCM,         "DSP Solutions DIGIADPCM" },
+    { WAVE_FORMAT_CONTROL_RES_CR10,  "Control Resources CR10" },
+    { WAVE_FORMAT_NMS_VBXADPCM,      "Natural MiscroSystems VBX ADPCM" },
+    { WAVE_FORMAT_CS_IMAADPCM,       "Crystal Semiconductors IMA ADPCM" },
+    { WAVE_FORMAT_ECHOSC3,           "Echo Speech SC3" },
+    { WAVE_FORMAT_ROCKWELL_ADPCM,    "Rockwell ADPCM" },
+    { WAVE_FORMAT_ROCKWELL_DIGITALK, "Rockwell DIGITALK" },
+    { WAVE_FORMAT_XEBEC,             "Xebec Multimedia" },
+    { WAVE_FORMAT_G721_ADPCM,        "Antex G.721 ADPCM" },
+    { WAVE_FORMAT_G728_CELP,         "Antex G.728 CELP" },
+    { WAVE_FORMAT_MSG723,            "Microsoft G.723" },
+    { WAVE_FORMAT_INTEL_G723_1,      "IBM AVC ADPCM" },
+    { WAVE_FORMAT_INTEL_G729,        "Intel G.729" },
+    { WAVE_FORMAT_SHARP_G726,        "Sharp G.726" },
+    { WAVE_FORMAT_MPEG,              "Microsoft MPEG" },
+    { WAVE_FORMAT_RT23,              "RT32 or PAC" },
+    { WAVE_FORMAT_RT24,              "InSoft RT24" },
+    { WAVE_FORMAT_PAC,               "InSoft PAC" },
+    { WAVE_FORMAT_MPEGLAYER3,        "MP3" },
+    { WAVE_FORMAT_LUCENT_G723,       "Lucent G.723" },
+    { WAVE_FORMAT_CIRRUS,            "Cirrus Logic" },
+    { WAVE_FORMAT_ESPCM,             "ESS Tech. PCM" },
+    { WAVE_FORMAT_VOXWARE,           "Voxware Inc." },
+    { WAVE_FORMAT_CANOPUS_ATRAC,     "Canopus ATRAC" },
+    { WAVE_FORMAT_G726_ADPCM,        "APICOM G.726 ADPCM" },
+    { WAVE_FORMAT_G722_ADPCM,        "APICOM G.722 ADPCM" },
+    { WAVE_FORMAT_DSAT,              "Microsoft DSAT" },
+    { WAVE_FORMAT_DSAT_DISPLAY,      "Microsoft DSAT-DISPLAY" },
+    { WAVE_FORMAT_VOXWARE_BYTE_ALIGNED, "Voxware Byte Aligned" },
+    { WAVE_FORMAT_VOXWARE_AC8,       "Voxware AC8" },
+    { WAVE_FORMAT_VOXWARE_AC10,      "Voxware AC10" },
+    { WAVE_FORMAT_VOXWARE_AC16,      "Voxware AC16" },
+    { WAVE_FORMAT_VOXWARE_AC20,      "Voxware AC20" },
+    { WAVE_FORMAT_VOXWARE_RT24,      "Voxware RT24 MetaVoice" },
+    { WAVE_FORMAT_VOXWARE_RT29,      "Voxware RT29 MetaSound" },
+    { WAVE_FORMAT_VOXWARE_RT29HW,    "Voxware RT29HW" },
+    { WAVE_FORMAT_VOXWARE_VR12,      "Voxware VR12" },
+    { WAVE_FORMAT_VOXWARE_VR18,      "Voxware VR18" },
+    { WAVE_FORMAT_VOXWARE_TQ40,      "Voxware TQ40" },
+    { WAVE_FORMAT_VOXWARE_SC3,       "Voxware SC3" },
+    { WAVE_FORMAT_VOXWARE_SC3_1,     "Voxware SC3.1" },
+    { WAVE_FORMAT_SOFTSOUND,         "Soundsoft" },
+    { WAVE_FORMAT_VOXWARE_TQ60,      "Voxware TQ60" },
+    { WAVE_FORMAT_MSRT24,            "Microsoft MSRT24" },
+    { WAVE_FORMAT_G729A,             "AT&T G.729a" },
+    { WAVE_FORMAT_MVI_MVI2,          "Motion Pixels MVI-MVI2" },
+    { WAVE_FORMAT_DF_G726,           "DataFusion G.726" },
+    { WAVE_FORMAT_DF_GSM610,         "DataFusion GSM610" },
+    { WAVE_FORMAT_ISIAUDIO,          "Iterated Systems Audio" },
+    { WAVE_FORMAT_ONLIVE,            "OnLive" },
+    { WAVE_FORMAT_MULTITUDE_FT_SX20, "Multitude FT SX20" },
+    { WAVE_FORMAT_INFOCOM_ITS_G721_ADPCM, "Infocom ITS A/SG.721 ADPCM" },
+    { WAVE_FORMAT_CONVEDIA_G729,     "Convedia G.729" },
+    { WAVE_FORMAT_CONGRUENCY,        "Congruency Inc." },
+    { WAVE_FORMAT_SBC24,             "Siemens SBC24" },
+    { WAVE_FORMAT_DOLBY_AC3_SPDIF,   "Sonic Foundry Dolby AC3 S/PDIF" },
+    { WAVE_FORMAT_MEDIASONIC_G723,   "Mediasonic G.723" },
+    { WAVE_FORMAT_PROSODY_8KBPS,     "Aculab Prosody 8kbps" },
+    { WAVE_FORMAT_ZYXEL_ADPCM,       "ZyXEL ADPCM" },
+    { WAVE_FORMAT_PHILIPS_LPCBB,     "Philips LPCBB" },
+    { WAVE_FORMAT_PACKED,            "Studer Professional Audio Packed" },
+    { WAVE_FORMAT_MALDEN_PHONYTALK,  "Malden PhonyTalk" },
+    { WAVE_FORMAT_RACAL_RECORDER_GSM,"Racal Recorder GSM" },
+    { WAVE_FORMAT_RACAL_RECORDER_G720_A, "Racal Recorder G.720a" },
+    { WAVE_FORMAT_RACAL_RECORDER_G723_1, "Racal Recorder G.723.1" },
+    { WAVE_FORMAT_RACAL_RECORDER_TETRA_ACELP, "Racal Recorder Tetra ACELP" },
+    { WAVE_FORMAT_NEC_AAC,           "NEC AAC" },
+    { WAVE_FORMAT_RAW_AAC1,          "Raw AAC1" },
+    { WAVE_FORMAT_RHETOREX_ADPCM,    "Rhetorex ADPCM" },
+    { WAVE_FORMAT_IRAT,              "BeCubed Software IRAT" },
+    { WAVE_FORMAT_VIVO_G723,         "Vivo G.723" },
+    { WAVE_FORMAT_VIVO_SIREN,        "Vivo Siren" },
+    { WAVE_FORMAT_PHILIPS_CELP,      "Philips Speech Processing CELP" },
+    { WAVE_FORMAT_PHILIPS_GRUNDIG,   "Philips Speech Processing GRUNDIG" },
+    { WAVE_FORMAT_DIGITAL_G723,      "Digital G.723" },
+    { WAVE_FORMAT_SANYO_LD_ADPCM,    "Sanyo LD ADPCM" },
+    { WAVE_FORMAT_SIPROLAB_ACEPLNET, "Sipro Lab ACEPLNET" },
+    { WAVE_FORMAT_SIPROLAB_ACELP4800,"Sipro Lab ACELP4800" },
+    { WAVE_FORMAT_SIPROLAB_ACELP8V3, "Sipro Lab ACELP8V3" },
+    { WAVE_FORMAT_SIPROLAB_G729,     "Sipro Lab G.729" },
+    { WAVE_FORMAT_SIPROLAB_G729A,    "Sipro Lab G.729a" },
+    { WAVE_FORMAT_SIPROLAB_KELVIN,   "Sipro Lab KELVIN" },
+    { WAVE_FORMAT_VOICEAGE_AMR,      "VoiceAge AMR" },
+    { WAVE_FORMAT_G726ADPCM,         "Dictaphone G.726 ADPCM" },
+    { WAVE_FORMAT_DICTAPHONE_CELP68, "Dictaphone CELP68" },
+    { WAVE_FORMAT_DICTAPHONE_CELP54, "Dictaphone CELP54" },
+    { WAVE_FORMAT_QUALCOMM_PUREVOICE,"Qualcomm Purevoice" },
+    { WAVE_FORMAT_QUALCOMM_HALFRATE, "Qualcomm Halfrate" },
+    { WAVE_FORMAT_TUBGSM,            "Ring Zero Systems TUBGSM" },
+    { WAVE_FORMAT_MSAUDIO1,          "Microsoft Audio 1" },
+    { WAVE_FORMAT_WMAUDIO2,          "Windows Media Audio V2" },
+    { WAVE_FORMAT_WMAUDIO3,          "Windows Media Audio Professional V9" },
+    { WAVE_FORMAT_WMAUDIO_LOSSLESS,  "Windows Media Audio Lossless V9" },
+    { WAVE_FORMAT_WMASPDIF,          "WMA Pro over S(PDIF" },
+    { WAVE_FORMAT_UNISYS_NAP_ADPCM,  "Unisys NAP ADPCM" },
+    { WAVE_FORMAT_UNISYS_NAP_ULAW,   "Unisys NAP ULAW" },
+    { WAVE_FORMAT_UNISYS_NAP_ALAW,   "Unisys NAP ALAW" },
+    { WAVE_FORMAT_UNISYS_NAP_16K,    "Unisys NAP 16K" },
+    { WAVE_FORMAT_SYCOM_ACM_SYC008,  "Sycom ACM SYC008" },
+    { WAVE_FORMAT_SYCOM_ACM_SYC701_G726L, "Sycom ACM SYC701 G.726L" },
+    { WAVE_FORMAT_SYCOM_ACM_SYC701_CELP54, "Sycom ACM CELP54" },
+    { WAVE_FORMAT_SYCOM_ACM_SYC701_CELP68, "Sycom ACM CELP68" },
+    { WAVE_FORMAT_KNOWLEDGE_ADVENTURE_ADPCM, "Knowledge Adventure ADPCM" },
+    { WAVE_FORMAT_FRAUNHOFER_IIS_MPEG2_AAC, "Fraunhofer IIS MPEG2 AAC" },
+    { WAVE_FORMAT_DTS_DS,            "Digital Theatre Systems DS" },
+    { WAVE_FORMAT_CREATIVE_ADPCM,    "Creative Labs ADPCM" },
+    { WAVE_FORMAT_CREATIVE_FASTSPEECH8, "Creative Labs FastSpeech 8" },
+    { WAVE_FORMAT_CREATIVE_FASTSPEECH10, "Creative Labs FastSpeech 10" },
+    { WAVE_FORMAT_UHER_ADPCM,        "Uher ADPCM" },
+    { WAVE_FORMAT_ULEAD_DV_AUDIO,    "Ulead DV ACM" },
+    { WAVE_FORMAT_ULEAD_DV_AUDIO_1,  "Ulead DV ACM" },
+    { WAVE_FORMAT_QUARTERDECK,       "Quarterdeck" },
+    { WAVE_FORMAT_ILINK_VC,          "I-Link VC" },
+    { WAVE_FORMAT_RAW_SPORT,         "Aureal Semiconductor Raw Sport" },
+    { WAVE_FORMAT_ESST_AC3,          "ESST AC3" },
+    { WAVE_FORMAT_GENERIC_PASSTHRU,  "Generic Passthru" },
+    { WAVE_FORMAT_IPI_HSX,           "Interactive Products HSX" },
+    { WAVE_FORMAT_IPI_RPELP,         "Interactive Products RPELP" },
+    { WAVE_FORMAT_CS2,               "Consistent CS2" },
+    { WAVE_FORMAT_SONY_SCX,          "Sony SCX" },
+    { WAVE_FORMAT_SONY_SCY,          "Sony SCY" },
+    { WAVE_FORMAT_SONY_ATRAC3,       "Sony ATRAC3" },
+    { WAVE_FORMAT_SONY_SPC,          "Sony SPC" },
+    { WAVE_FORMAT_TELUM_AUDIO,       "Telum Audio" },
+    { WAVE_FORMAT_TELUM_IA_AUDIO,    "Telum IA Audio" },
+    { WAVE_FORMAT_NORCOM_VOICE_SYSTEMS_ADPCM, "Norcom Voice Systems ADPCM" },
+    { WAVE_FORMAT_FM_TOWNS_SND,      "Fujitsu FM Towns SND" },
+    { WAVE_FORMAT_MICRONAS,          "Micronas Semiconductors Development" },
+    { WAVE_FORMAT_MICRONAS_CELP833,  "Micronas Semiconductors CELP833" },
+    { WAVE_FORMAT_BTV_DIGITAL,       "Brooktree Digital" },
+    { WAVE_FORMAT_INTEL_MUSIC_CODER, "Intel Music Coder" },
+    { WAVE_FORMAT_INDEO_AUDIO,       "Ligos Indeo Audio" },
+    { WAVE_FORMAT_QDESIGN_MUSIC,     "QDesign Music" },
+    { WAVE_FORMAT_ON2_VP7_AUDIO,     "On2 VP7" },
+    { WAVE_FORMAT_ON2_VP6_AUDIO,     "On2 VP6" },
+    { WAVE_FORMAT_VME_VMPCM,         "AT&T VME VMPCM" },
+    { WAVE_FORMAT_TPC,               "AT&T TPC" },
+    { WAVE_FORMAT_YMPEG,             "YMPEG" },
+    { WAVE_FORMAT_LIGHTWAVE_LOSSLESS,"ClearJump LightWave Lossless" },
+    { WAVE_FORMAT_OLIGSM,            "Olivetti GSM" },
+    { WAVE_FORMAT_OLIADPCM,          "Olivetti ADPCM" },
+    { WAVE_FORMAT_OLICELP,           "Olivetti CELP" },
+    { WAVE_FORMAT_OLISBC,            "Olivetti SBC" },
+    { WAVE_FORMAT_OLIOPR,            "Olivetti OPR" },
+    { WAVE_FORMAT_LH_CODEC,          "Lernout & Hauspie" },
+    { WAVE_FORMAT_LH_CODEC_CELP,     "Lernout & Hauspie CELP" },
+    { WAVE_FORMAT_LH_CODEC_SBC8,     "Lernout & Hauspie SBC8" },
+    { WAVE_FORMAT_LH_CODEC_SBC12,    "Lernout & Hauspie SBC12" },
+    { WAVE_FORMAT_LH_CODEC_SBC16,    "Lernout & Hauspie SBC16" },
+    { WAVE_FORMAT_NORRIS,            "Norris Comm. Inc." },
+    { WAVE_FORMAT_ISIAUDIO_2,        "Iterated Systems Audio 2" },
+    { WAVE_FORMAT_SOUNDSPACE_MUSICOMPRESS, "AT&T Soundspace Music Compression" },
+    { WAVE_FORMAT_MPEG_ADTS_AAC,     "MPEG ADTS AAC" },
+    { WAVE_FORMAT_MPEG_RAW_AAC,      "MPEG Raw AAC" },
+    { WAVE_FORMAT_MPEG_LOAS,         "MPEG LOAS" },
+    { WAVE_FORMAT_NOKIA_MPEG_ADTS_AAC, "Nokia MPEG ADTS AAC" },
+    { WAVE_FORMAT_NOKIA_MPEG_RAW_AAC,"Nokia MPEG RAW AAC" },
+    { WAVE_FORMAT_VODAFONE_MPEG_ADTS_AAC, "Vodafone MPEG ADTS_AAC" },
+    { WAVE_FORMAT_VODAFONE_MPEG_RAW_AAC, "Vodafone MPEG RAW AAC" },
+    { WAVE_FORMAT_MPEG_HEAAC,        "MPEG HEAAC" },
+    { WAVE_FORMAT_VOXWARE_RT24_SPEECH, "Voxware ToolVox RT24 Speech codec" },
+    { WAVE_FORMAT_LUCENT_AX24000P,   "Lucent AX24000P" },
+    { WAVE_FORMAT_SONICFOUNDRY_LOSSLESS, "Sonic Foundry LOSSLESS" },
+    { WAVE_FORMAT_INNINGS_TELECOM_ADPCM, "Innings Telecom ADPCM" },
+    { WAVE_FORMAT_LUCENT_SX8300P,    "Lucent SX8300P speech codec" },
+    { WAVE_FORMAT_LUCENT_SX5363S,    "Lucent SX5363S G.723 compliant codec" },
+    { WAVE_FORMAT_CUSEEME,           "CU-SeeMe Digitalk" },
+    { WAVE_FORMAT_NTCSOFT_ALF2CM_ACM,"NTC Soft ALF2CM ACM" },
+    { WAVE_FORMAT_DVM,               "FAST Multimedia DVM" },
+    { WAVE_FORMAT_DTS2,              "Dolby Digital Theatre System" },
+    { WAVE_FORMAT_RA_14,             "RealAudio 1/2 14.4" },
+    { WAVE_FORMAT_RA_28,             "RealAudio 1/2 28.8" },
+    { WAVE_FORMAT_RA_G2,             "RealAudio 2/8 Cook (low bitrate)" },
+    { WAVE_FORMAT_RA_DNET,           "RealAudio 3/4/5 DNET" },
+    { WAVE_FORMAT_RA_RAAC,           "RealAudio 10 AAC (RAAC)" },
+    { WAVE_FORMAT_RA_RACP,           "RealAudio 10 AAC+ (RACP)" },
+    { WAVE_FORMAT_FFMPEG_SONIC,      "FFmpeg Sonic" },
+    { WAVE_FORMAT_MAKEAVIS,          "AviSynth" },
+    { WAVE_FORMAT_DIVIO_MPEG4_AAC,   "Divio MPEG-4 AAC" },
+    { WAVE_FORMAT_NOKIA_ADAPTIVE_MULTIRATE, "Nokia adaptive multirate" },
+    { WAVE_FORMAT_DIVIO_G726,        "Divio G.726" },
+    { WAVE_FORMAT_LEAD_SPEECH,       "LEAD Speech" },
+    { WAVE_FORMAT_FFMPEG_ADPCM,      "FFmpeg ADPCM" },
+    { WAVE_FORMAT_LEAD_VORBIS,       "LEAD Vorbis" },
+    { WAVE_FORMAT_WAVPACK_AUDIO,     "WavPack" },
+    { WAVE_FORMAT_OGG_VORBIS_MODE_1, "Ogg Vorbis" },
+    { WAVE_FORMAT_OGG_VORBIS_MODE_2, "Ogg Vorbis" },
+    { WAVE_FORMAT_OGG_VORBIS_MODE_3, "Ogg Vorbis" },
+    { WAVE_FORMAT_OGG_VORBIS_MODE_1_PLUS, "Ogg Vorbis" },
+    { WAVE_FORMAT_OGG_VORBIS_MODE_2_PLUS, "Ogg Vorbis" },
+    { WAVE_FORMAT_OGG_VORBIS_MODE_3_PLUS, "Ogg Vorbis" },
+    { WAVE_FORMAT_ALAC,              "ALAC" },
+    { WAVE_FORMAT_3COM_NBX,          "3Com NBX" },
+    { WAVE_FORMAT_OPUS,              "Opus" },
+    { WAVE_FORMAT_FAAD_AAC,          "FAAD AAC" },
+    { WAVE_FORMAT_AMR_NB,            "AMR (narrow band)" },
+    { WAVE_FORMAT_AMR_WB,            "AMR (wide band)" },
+    { WAVE_FORMAT_AMR_WP,            "AMR (adaptive multi-rate)" },
+    { WAVE_FORMAT_GSM_AMR_CBR,       "GSM-AMR CBR" },
+    { WAVE_FORMAT_GSM_AMR_VBR_SID,   "GSM-AMR VBR with SID)" },
+    { WAVE_FORMAT_COMVERSE_INFOSYS_G723_1, "Comverse Infosys G.723.1" },
+    { WAVE_FORMAT_COMVERSE_INFOSYS_AVQSBC, "Comverse Infosys AVQSBC" },
+    { WAVE_FORMAT_COMVERSE_INFOSYS_SBC, "Comverse Infosys OLDSBC" },
+    { WAVE_FORMAT_SYMBOL_G729_A,     "Symbol Technologies G.729a" },
+    { WAVE_FORMAT_VOICEAGE_AMR_WB,   "Voiceage AMR WB" },
+    { WAVE_FORMAT_INGENIENT_G726,    "Ingenient Technologies G.726" },
+    { WAVE_FORMAT_MPEG4_AAC,         "ISO/MPEG4 AAC" },
+    { WAVE_FORMAT_ENCORE_G726,       "Encore Software G.726" },
+    { WAVE_FORMAT_ZOLL_ASAO,         "Zoll ASAO" },
+    { WAVE_FORMAT_SPEEX_VOICE,       "Xiph Speex" },
+    { WAVE_FORMAT_VIANIX_MASC,       "Vianix MASC" },
+    { WAVE_FORMAT_WM9_SPECTRUM_ANALYZER, "WM9 Spectrum Analyzer" },
+    { WAVE_FORMAT_WMF_SPECTRUM_ANAYZER, "WMF Spectrum Anayzer" },
+    { WAVE_FORMAT_GSM_610,           "GSM610" },
+    { WAVE_FORMAT_GSM_620,           "GSM620" },
+    { WAVE_FORMAT_GSM_660,           "GSM660" },
+    { WAVE_FORMAT_GSM_690,           "GSM690" },
+    { WAVE_FORMAT_GSM_ADAPTIVE_MULTIRATE_WB, "GSM Adaptive Multirate WB" },
+    { WAVE_FORMAT_POLYCOM_G722,      "Polycom G.722" },
+    { WAVE_FORMAT_POLYCOM_G728,      "Polycom G.728" },
+    { WAVE_FORMAT_POLYCOM_G729_A,    "Polycom G.729a" },
+    { WAVE_FORMAT_POLYCOM_SIREN,     "Polycom Siren" },
+    { WAVE_FORMAT_GLOBAL_IP_ILBC,    "Global IP ILBC" },
+    { WAVE_FORMAT_RADIOTIME_TIME_SHIFT_RADIO, "Radiotime time shift radio" },
+    { WAVE_FORMAT_NICE_ACA,          "NICE ACA" },
+    { WAVE_FORMAT_NICE_ADPCM,        "NICE ADPCM" },
+    { WAVE_FORMAT_VOCORD_G721,       "Vocord G.721" },
+    { WAVE_FORMAT_VOCORD_G726,       "Vocord G.726" },
+    { WAVE_FORMAT_VOCORD_G722_1,     "Vocord G.722.1" },
+    { WAVE_FORMAT_VOCORD_G728,       "Vocord G.728" },
+    { WAVE_FORMAT_VOCORD_G729,       "Vocord G.729" },
+    { WAVE_FORMAT_VOCORD_G729_A,     "Vocord G.729a" },
+    { WAVE_FORMAT_VOCORD_G723_1,     "VOCORD G.723.1" },
+    { WAVE_FORMAT_VOCORD_LBC,        "VOCORD LBC" },
+    { WAVE_FORMAT_NICE_G728,         "NICE_G.728" },
+    { WAVE_FORMAT_FRACE_TELECOM_G729,"France Telecom G.729a" },
+    { WAVE_FORMAT_CODIAN,            "Codian" },
+    { WAVE_FORMAT_DOLBY_AC4,         "Dolby AC4" },
+    { WAVE_FORMAT_DFAC,              "DebugMode FrameServer ACM" },
+    { WAVE_FORMAT_FLAC,              "FLAC" },
+    { 0, NULL }
+  };
+  struct subtype_name *snp;
+  unsigned short subtype = ((priv_t *)ft->priv)->formatTag;
+  char const *name = "Unknown";
+
+  for (snp=subtype_names; snp->subtype != 0; snp++) {
+    if (snp->subtype == subtype) {
+      name = snp->name;
+      break;
+    }
+  }
+
+  lsx_fail_errno(ft, SOX_EHDR, "file encoding 0x%04x (%s) is not supported", subtype, name);
+  return SOX_EOF;
 }
 
 static const char read_error_msg[] = "file is truncated";
@@ -665,21 +937,10 @@ static int startread(sox_format_t * ft)
         lsx_fail_errno(ft,SOX_EHDR,"file is in unsupported Microsoft Official Unknown format");
         return SOX_EOF;
 
-    case WAVE_FORMAT_SONARC:
-        lsx_fail_errno(ft,SOX_EHDR,"file is in unsupported WAV Sonarc format");
-        return SOX_EOF;
-
     case WAVE_FORMAT_PCM:
         /* Default (-1) depends on sample size.  Set that later on. */
         if (ft->encoding.encoding != SOX_ENCODING_UNKNOWN && ft->encoding.encoding != SOX_ENCODING_UNSIGNED &&
             ft->encoding.encoding != SOX_ENCODING_SIGN2)
-            lsx_report("User options overriding encoding read in .wav header");
-        break;
-
-    case WAVE_FORMAT_IMA_ADPCM:
-        if (ft->encoding.encoding == SOX_ENCODING_UNKNOWN || ft->encoding.encoding == SOX_ENCODING_IMA_ADPCM)
-            ft->encoding.encoding = SOX_ENCODING_IMA_ADPCM;
-        else
             lsx_report("User options overriding encoding read in .wav header");
         break;
 
@@ -711,39 +972,22 @@ static int startread(sox_format_t * ft)
             lsx_report("User options overriding encoding read in .wav header");
         break;
 
-    case WAVE_FORMAT_OKI_ADPCM:
-        return wavfail(ft, "OKI ADPCM");
-    case WAVE_FORMAT_DIGISTD:
-        return wavfail(ft, "Digistd");
-    case WAVE_FORMAT_DIGIFIX:
-        return wavfail(ft, "Digifix");
-    case WAVE_FORMAT_DOLBY_AC2:
-        return wavfail(ft, "Dolby AC2");
+    case WAVE_FORMAT_IMA_ADPCM:
+        if (ft->encoding.encoding == SOX_ENCODING_UNKNOWN || ft->encoding.encoding == SOX_ENCODING_IMA_ADPCM)
+            ft->encoding.encoding = SOX_ENCODING_IMA_ADPCM;
+        else
+            lsx_report("User options overriding encoding read in .wav header");
+        break;
+
     case WAVE_FORMAT_GSM610:
         if (ft->encoding.encoding == SOX_ENCODING_UNKNOWN || ft->encoding.encoding == SOX_ENCODING_GSM )
             ft->encoding.encoding = SOX_ENCODING_GSM;
         else
             lsx_report("User options overriding encoding read in .wav header");
         break;
-    case WAVE_FORMAT_ROCKWELL_ADPCM:
-        return wavfail(ft, "Rockwell ADPCM");
-    case WAVE_FORMAT_ROCKWELL_DIGITALK:
-        return wavfail(ft, "Rockwell DIGITALK");
-    case WAVE_FORMAT_G721_ADPCM:
-        return wavfail(ft, "G.721 ADPCM");
-    case WAVE_FORMAT_G728_CELP:
-        return wavfail(ft, "G.728 CELP");
-    case WAVE_FORMAT_MPEG:
-        return wavfail(ft, "MPEG");
-    case WAVE_FORMAT_MPEGLAYER3:
-        return wavfail(ft, "MP3");
-    case WAVE_FORMAT_G726_ADPCM:
-        return wavfail(ft, "G.726 ADPCM");
-    case WAVE_FORMAT_G722_ADPCM:
-        return wavfail(ft, "G.722 ADPCM");
+
     default:
-        lsx_fail_errno(ft, SOX_EHDR, "unknown file encoding (type %x)", wav->formatTag);
-        return SOX_EOF;
+        return wavfail(ft);
     }
 
     /* User options take precedence */
