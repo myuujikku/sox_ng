@@ -262,6 +262,8 @@ static const char* const twolame_library_names[] =
   TWOLAME_FUNC(f,x, int, twolame_set_in_samplerate, (twolame_options *, int)) \
   TWOLAME_FUNC(f,x, int, twolame_set_out_samplerate, (twolame_options *, int)) \
   TWOLAME_FUNC(f,x, int, twolame_set_brate, (twolame_options *, int)) \
+  TWOLAME_FUNC(f,x, int, twolame_set_VBR, (twolame_options *, int)) \
+  TWOLAME_FUNC(f,x, int, twolame_set_VBR_level, (twolame_options *, float)) \
   TWOLAME_FUNC(f,x, int, twolame_init_params, (twolame_options *)) \
   TWOLAME_FUNC(f,x, int, twolame_encode_buffer_float32_interleaved, (twolame_options *, const float [], int, unsigned char *, int)) \
   TWOLAME_FUNC(f,x, int, twolame_encode_flush, (twolame_options *, unsigned char *, int)) \
@@ -977,20 +979,27 @@ static int startwrite_mp2(sox_format_t * ft)
     /* Do nothing, use defaults: */
     lsx_report("using MP2 encoding defaults");
   } else {
-    double abs_compression = fabs(ft->encoding.compression);
-    double floor_compression = floor(abs_compression);
-    int bitrate_q = (int)floor_compression;
-
-    if (ft->encoding.compression < 0.5) {
-        lsx_fail_errno(ft,SOX_EOF,"variable bitrate encoding not supported for MP2 audio");
-        return(SOX_EOF);
+    /* Twolame's CBR rates are exactly 32,48,64... and VBR rates a float
+     * from -50 to +50 with "useful" values from -10 to +10 so we count
+     * any floating point value from -50 to 50 as VBR unless it is exactly
+     * 32 or 48, and anything else as CBR.
+     */
+    if (ft->encoding.compression >=-50 && ft->encoding.compression <= 50 &&
+        ft->encoding.compression != 32 && ft->encoding.compression != 48) {
+        if (p->twolame_set_VBR(p->opt, 1) != 0) {
+          lsx_fail_errno(ft,SOX_EOF,"failed to enable MP2 VBR");
+          return(SOX_EOF);
+        }
+        if (p->twolame_set_VBR_level(p->opt, ft->encoding.compression) != 0) {
+          lsx_fail_errno(ft,SOX_EOF,"failed to set MP2 VBR level");
+          return(SOX_EOF);
+        }
     } else {
-      if (p->twolame_set_brate(p->opt, bitrate_q) != 0) {
-        lsx_fail_errno(ft, SOX_EOF,
-          "twolame_set_brate(%d) failed", bitrate_q);
+      if (p->twolame_set_brate(p->opt, (int)ft->encoding.compression) != 0) {
+        lsx_fail_errno(ft, SOX_EOF, "invalid MP2 bitrate");
         return(SOX_EOF);
       }
-      lsx_report("twolame_set_brate(%d)", bitrate_q);
+      lsx_report("twolame set bitrate(%d)", (int)ft->encoding.compression);
     }
   }
 

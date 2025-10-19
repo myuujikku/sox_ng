@@ -519,11 +519,13 @@ SoX can only autodetect MP2 files from their filename extension;
 if they are read from `standard input' (stdin) or from a file whose name
 does not end in `.mp2', prefix them with `-t mp2'.
 .SP
-When writing MP2 files, SoX uses \fBtwolame\fR but does not use twolame's
-Variable Bit Rate (VBR) encoding yet, only Constant Bit Rate (CBR).
 The bit rate is set using the \fB\-C\fR option in kbps:
-32, 48, 56, 64, 80, 96, 112, 128, 160 or 192 for mono files
-and double those for stereo ones.
+32, 48, 56, 64, 80, 96, 112, 128, 160 or 192 for a constant bit rate (CBR)
+for mono files and double those for stereo ones.
+Variable bit rate encoding (VBR) is selected by values from \(mi50 to \50
+(of which only \(mi10 to 10 are said to be useful); if you really want
+VBR at qualities 32 or 48, use something like 32.01 or 48.01.
+.SP
 At present, \fBtwolame\fR outputs 0.005 seconds of quiet garbage
 at the start and truncates the end by 0.002 seconds.
 .TP
