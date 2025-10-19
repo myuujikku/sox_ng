@@ -534,7 +534,7 @@ typedef enum sox_encoding_t {
   SOX_ENCODING_DWVW      , /**< Delta Width Variable Word */
   SOX_ENCODING_DWVWN     , /**< Delta Width Variable Word N-bit */
   SOX_ENCODING_GSM       , /**< GSM 6.10 33byte frame lossy compression */
-  SOX_ENCODING_MP3       , /**< MP3 compression */
+  SOX_ENCODING_MP3       , /**< MP2 or MP3 compression */
   SOX_ENCODING_VORBIS    , /**< Vorbis compression */
   SOX_ENCODING_AMR_WB    , /**< AMR-WB compression */
   SOX_ENCODING_AMR_NB    , /**< AMR-NB compression */
