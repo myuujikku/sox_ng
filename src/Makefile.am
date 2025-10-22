@@ -139,13 +139,14 @@ endif
 #libsox_ng_la_SOURCES += coreaudio.c sndio.c sunaudio.c
 #libsox_ng_la_CFLAGS += -Ibit-rot
 
-libsox_ng_la_SOURCES += raw-fmt.c s1-fmt.c s2-fmt.c s3-fmt.c \
-  s4-fmt.c u1-fmt.c u2-fmt.c u3-fmt.c u4-fmt.c al-fmt.c la-fmt.c ul-fmt.c \
-  lu-fmt.c 8svx.c aiff-fmt.c aifc-fmt.c au.c avr.c cdr.c cvsd-fmt.c \
-  dvms-fmt.c dat.c hcom.c htk.c maud.c prc.c sf.c smp.c \
-  sounder.c soundtool.c sphere.c tx16w.c voc.c vox-fmt.c ima-fmt.c adpcm.c adpcm.h \
-  id3.c id3.h dsf.c dsdiff.c \
-  ima_rw.c ima_rw.h wav.c wve.c xa.c nulfile.c f4-fmt.c f8-fmt.c gsrt.c nsp.c
+libsox_ng_la_SOURCES += raw-fmt.c \
+  f4-fmt.c f8-fmt.c s1-fmt.c s2-fmt.c s3-fmt.c s4-fmt.c \
+  u1-fmt.c u2-fmt.c u3-fmt.c u4-fmt.c al-fmt.c la-fmt.c ul-fmt.c lu-fmt.c \
+  8svx.c adpcm.c adpcm.h aiff-fmt.c aifc-fmt.c au.c avr.c cdr.c cvsd-fmt.c \
+  dat.c dsf.c dsdiff.c dvms-fmt.c gsrt.c hcom.c htk.c id3.c id3.h \
+  ima-fmt.c ima_rw.c ima_rw.h maud.c nsp.c nulfile.c prc.c \
+  sf.c smp.c sounder.c soundtool.c sphere.c tx16w.c \
+  voc.c vox-fmt.c wav.c wav-formats.h wve.c xa.c
 
 libsox_ng_la_LIBADD += @DOLBYB_LIBS@ @LIBDOLBYB_LIBADD@
 libsox_ng_la_LIBADD += @GSM_LIBS@ @LIBGSM_LIBADD@
