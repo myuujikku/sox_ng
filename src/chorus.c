@@ -91,6 +91,7 @@ typedef struct {
 
         /* remaining samples for drain phase */
         sox_uint32_t    remaining_samples;
+        lsx_wave_t      default_wave;  /* If -t was given */
 } chorus_priv_t;
 
 /*--------------------*/
@@ -117,17 +118,32 @@ static int sox_chorus_getopts (sox_effect_t *effp,
         argc--;
         argv++;
 
-        if (argc > 0 && !strcmp(*argv, "-n")) {
-            chorus->interpolation = INTERP_NONE;
-            argc--; argv++;
-        }
-        if (argc > 0 && !strcmp(*argv, "-l")) {
-            chorus->interpolation = INTERP_LINEAR;
-            argc--; argv++;
-        }
-        if (argc > 0 && !strcmp(*argv, "-q")) {
-            chorus->interpolation = INTERP_QUADRATIC;
-            argc--; argv++;
+        while (argc > 0 && argv[0][0] == '-') {
+          switch (argv[0][1]) {
+          case 'n':
+              chorus->interpolation = INTERP_NONE;
+              argc--; argv++;
+              break;
+          case 'l':
+              chorus->interpolation = INTERP_LINEAR;
+              argc--; argv++;
+              break;
+          case 'q':
+              chorus->interpolation = INTERP_QUADRATIC;
+              argc--; argv++;
+              break;
+          case 's':
+              chorus->default_wave = SOX_WAVE_SINE;
+              argc--; argv++;
+              break;
+          case 't':
+              chorus->default_wave = SOX_WAVE_TRIANGLE;
+              argc--; argv++;
+              break;
+          default:
+              lsx_fail("invalid option  '%s'", argv[0]);
+              return SOX_EOF;
+          }
         }
 
         /* read the global parameters gain_in and gain_out */
@@ -153,7 +169,7 @@ static int sox_chorus_getopts (sox_effect_t *effp,
             p->decay = 0.5;
             p->speed = 0.25;
             p->depth = 2;
-            p->wave_type = SOX_WAVE_SINE;
+            p->wave_type = chorus->default_wave;
             if (argc > 0) NUMERIC_PARAMETER(delay,  0, 86400000);
             if (argc > 0) NUMERIC_PARAMETER(decay, -1, 1);
             if (argc > 0) NUMERIC_PARAMETER(speed,  0, 192000);
@@ -558,7 +574,7 @@ static int sox_chorus_stop (sox_effect_t * effp)
 const sox_effect_handler_t *lsx_chorus_effect_fn(void)
 {
   static char const usage[] =
-"[-n|-l|-q] [gain-in [gain-out {delay [decay [speed [depth [-s|-t]]]]}]]";
+"[-n|-l|-q] [-s|-t] [gain-in [gain-out {delay [decay [speed [depth [-s|-t]]]]}]]";
   static char const * const extra_usage[] = {
 "                                              ___",
 "In---+-------------------------------------->|   |",
