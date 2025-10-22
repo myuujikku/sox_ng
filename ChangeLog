@@ -5,51 +5,103 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
-sox_ng-14.6.1-rc2	2025-08-29
------------------
-
-Bug fixes:
-  o Haiku: fix compilation and add system LADSPA plugin directories
-  o Fix setting of -fstack-protector for GCCs that don't have it
-  o Fix compilation with version of libsndfile that don't have MPEG
-
-
-sox_ng-14.6.1-rc1	2025-08-24
------------------
+sox_ng-14.6.1+git   2025-10-22
+-------------
 
 New features:
-  o Create sparse audio files when the data is zeroes
-  o On Windows you no longer need to set AUDIODRIVER=waveaudio beforehand
+
+  o Make spectogram -Y give exactly the requested height
+  o Add sinc -d flag to copy through when lowpass freq above Nyquist
+  o chorus: Make all parameters optional
+  o chorus, phaser: Add -l/q options for linear/quadratic interpolation
+  o flanger: Add -n option for no interpolation
+  o chorus: Allow initial -[s|t] to change default wave shape
+  o flanger: Allow initial -[s|t] to set wave shape
+  o stretch: Add sqrt, quarter-cos and half-cos fading types
+  o audioio (Sun audio): Fix compilation and segfault on NetBSD
+  o wav: Decode names of all unsupported formats
+  o twolame: Enable VBR encoding with -C -10-10
 
 Bug fixes:
-  o On Windows, delete temporary files and output files with write errors
-  o Fix opusfile detection when using pkg-config
-  o Fix compilation on AIX 7.3, MSYS2/MinGW, Sortix and on
-    MacOS X with older SDKs
-  o On Windows you no longer have to "set AUDIODRIVER=waveaudio"
-  o Spell-check and revise the manuals, fix some usage messages
+  o Remove unmaintained msvc files
+  o Make CMake work again; still missing optional formats
+  o Re-enable the comments test
+  o flanger: Fix range of width from -100-100 to 0-inf
+  o phaser: Fix range of regen to -1-2
+  o stretch: Fix infinite loop by imposing minimum window size of 1ms
+  o Reject trailing garbage on numeric arguments
+  o Make --help-format mp3 report writing encodings
+
+Documentation:
+  o Make messages for syntax errors more helpful
+  o rate: Document undocumented options
+
+Internal:
+  o Allow ./configure --without-dolbyb
+
+sox_ng-14.6.1   2025-10-13
+-------------
+
+Bug fixes:
+
+Effects:
+
+  o flanger: Fix minumum and maximum values of "width" (the mix)
+  o noisered: Fix asymmetric drain
+  o pulseaudio: Initialize the channel map
+  o spectrogram: Don't put a "DC" label on the log frequency axis
+  o spectrogram: Fix position of "Frequency (Hz)" on logarithmic axis
+  o spectrogram: Fix errors in the logarithmic axis and frequency range code
+  o spectrogram: Fix segmentation fault when using -n
+  o spectrogram: Fix segmentation fault when -y < 70
+  o speexdsp: Fix maximum and minimum values of -agc and -denoise
+
+File formats:
+
   o Make reading MP2/3 and Ogg files work with -t sndfile
   o Make writing MP3 files work with -t sndfile
-  o Fix various floating point exceptions and segmentations faults
   o When writing WAV files >4GB, set the size to "unspecified"
-  o Reject negative sample rates
-  o Make the GSRT padding byte for odd numbers of samples silent
-  o Use sigaction() so that SoX is stoppable even when blocked by I/O.
-  o Make the status display adapt to the terminal width
-  o Fix reading of zero-length AIFF files
-  o Fix reading of AMR files with invalid block types
-  o Fix an input buffer overrun with OSS audio device
-  o Fix OSS drivers that treat mono output as stereo
-  o Fix ogg output (broken in 14.6.0, fixed in 14.6.0.4)
-  o Fix asymmetric drain in noisered
-  o Initialize the channel map when using pulseaudio
-  o Make it compile with C89 compilers
   o Correct WAV's byte rate for TXW's 33333.333Hz sample rate
   o Detect and report the unsupported Sonarc-in-WAV format
+  o Fix reading of zero-length AIFF files
+  o Fix reading of AMR files with invalid block types
   o Fix OKI ADPCM compression and decompression to respect the standard
+  o Make the GSRT padding byte for odd numbers of samples silent
+  o Fix ogg output (broken in 14.6.0, fixed in 14.6.0.4)
+  o Reject negative sample rates
+
+Internal improvements:
+
+  o Create sparse audio files when the data is zeroes
+  o Make the status display adapt to the terminal width
+  o Use sigaction() so that SoX is stoppable even when blocked by I/O
   o Give LADSPA_PATH a sensible system default
-  o Fix maximum and minimum values of speexdsp -agc and -denoise
+  o Fix OSS drivers that treat mono output as stereo
+  o Fix an input buffer overrun with OSS audio device
+  o Fix various floating point exceptions and segmentations faults
+  o Make dynamic loading of file format handlers work
+  o Fix symlink creation with --enable-replace
+  o Always support aligned heap allocation (for the sdm effect on AVX CPUs)
+  o Fix setting of -fstack-protector for GCCs that don't have it
+  o Fix compilation with versions of libsndfile that don't have MPEG
+  o Fix compilation on AIX 7.3, MSYS2/MinGW, Sortix and on MacOS X with old SDKs
+  o Make it compile with C89 compilers
   o Avoid slowdown of overdrive due to denormalized floating point values
+
+Operating System specific:
+
+  o On Windows you no longer need to "set AUDIODRIVER=waveaudio" beforehand
+  o On Windows delete temporary files and output files with write errors
+  o Haiku: fix compilation and add system LADSPA plugin directories
+  o Update issues.sh to work on FreeBSD
+
+Documentation:
+
+  o Spell-check and revise the manuals, fix some usage messages
+  o Map \f(CW to \fR for nroff
+  o echos: Correct the gain_out hint
+  o All effects now have extra usage
+
 
 sox_ng-14.6.0	2025-06-17
 -------------
