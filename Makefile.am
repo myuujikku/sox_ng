@@ -189,3 +189,11 @@ uninstall-hook:
 # Automatically update libtool script if it gets out-of-date
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status --recheck
+
+win32.exe:
+	cp sox_ng-*.tar.gz mxe/pkg/
+	sed -i '/_CHECKSUM := /s/:=.*/:= '\
+"`sha256sum sox_ng-*.tar.gz | sed 's/[ \t].*//'`"/ sox_ng.mk
+	cp sox_ng.mk mxe/src/
+	cd mxe && make sox_ng
+	cp mxe/usr/*/bin/sox_ng.exe win32.exe
