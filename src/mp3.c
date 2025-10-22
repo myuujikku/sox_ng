@@ -261,7 +261,6 @@ static const char* const twolame_library_names[] =
 
 #define TWOLAME_FUNC_ENTRIES(f,x) \
   TWOLAME_FUNC(f,x, twolame_options*, twolame_init, (void)) \
-  TWOLAME_FUNC(f,x, int, twolame_set_verbosity, (twolame_options*, int)) \
   TWOLAME_FUNC(f,x, int, twolame_get_num_channels, (twolame_options*)) \
   TWOLAME_FUNC(f,x, int, twolame_set_num_channels, (twolame_options*, int)) \
   TWOLAME_FUNC(f,x, int, twolame_set_in_samplerate, (twolame_options *, int)) \
@@ -963,7 +962,6 @@ static int startwrite_mp2(sox_format_t * ft)
     lsx_fail_errno(ft,SOX_EOF,"initialization of Twolame library failed");
     return SOX_EOF;
   }
-  (void) twolame_set_verbosity(p->opt, 0);
 
   ft->signal.precision = MP2_TWOLAME_PRECISION;
 
