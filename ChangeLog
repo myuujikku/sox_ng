@@ -18,7 +18,6 @@ New features:
   o chorus: Allow initial -[s|t] to change default wave shape
   o flanger: Allow initial -[s|t] to set wave shape
   o stretch: Add sqrt, quarter-cos and half-cos fading types
-  o audioio (Sun audio): Fix compilation and segfault on NetBSD
   o wav: Decode names of all unsupported formats
   o twolame: Enable VBR encoding with -C -10-10
 
@@ -30,7 +29,8 @@ Bug fixes:
   o phaser: Fix range of regen to -1-2
   o stretch: Fix infinite loop by imposing minimum window size of 1ms
   o Reject trailing garbage on numeric arguments
-  o Make --help-format mp3 report writing encodings
+  o Make --help-format mp3 report write encodings
+  o audioio (Sun audio): Fix compilation and segfault on NetBSD
 
 Documentation:
   o Make messages for syntax errors more helpful
