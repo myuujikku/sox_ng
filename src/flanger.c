@@ -69,6 +69,7 @@ static int getopts(sox_effect_t * effp, int argc, char *argv[])
   p->width = 71;
   p->speed = 0.5;
   p->phase = 25;
+  p->interpolation = INTERP_LINEAR;
 
   while (argc > 0 && argv[0][0] == '-') {
     switch (argv[0][1]) {
