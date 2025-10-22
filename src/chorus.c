@@ -306,8 +306,9 @@ static int sox_chorus_start (sox_effect_t *effp)
                              stage->delay_line_length);
         }
 
-        effp->out_signal.length = SOX_UNKNOWN_LEN;
-        /* TODO: calculate actual length */
+        effp->out_signal.length = effp->in_signal.length;
+        if (effp->out_signal.length != SOX_UNKNOWN_LEN)
+          effp->out_signal.length += chorus->remaining_samples;
 
         return (SOX_SUCCESS);
 }

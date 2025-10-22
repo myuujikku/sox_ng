@@ -120,7 +120,7 @@ static int start(sox_effect_t * effp)
 
   p->delay_pos = p->mod_pos = 0;
 
-  effp->out_signal.length = SOX_UNKNOWN_LEN; /* TODO: calculate actual length */
+  effp->out_signal.length = effp->in_signal.length;
   return SOX_SUCCESS;
 }
 
