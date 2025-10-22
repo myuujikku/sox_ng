@@ -260,6 +260,16 @@ static int sox_chorus_start (sox_effect_t *effp)
 			     1000 / effp->in_signal.rate);
 		    return SOX_EOF;
 		}
+                switch (chorus->interpolation) {
+                case INTERP_NONE:
+                  break;
+                case INTERP_LINEAR:
+                  stage->delay_line_length += 1;  /* Need 0 to n, i.e. n + 1 */
+                  break;
+                case INTERP_QUADRATIC:
+                  stage->delay_line_length += 2;  /* Quadratic needs one more */
+                  break;
+                }
                 stage->delay_line =
                     lsx_calloc(stage->delay_line_length,
                                sizeof(chorus_delay_sample_t));

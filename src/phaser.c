@@ -87,6 +87,16 @@ static int start(sox_effect_t * effp)
     lsx_fail("delay can't be less than %g", 1000 / effp->in_signal.rate);
     return SOX_EOF;
   }
+  switch (p->interpolation) {
+  case INTERP_NONE:
+        break;
+  case INTERP_LINEAR:
+        p->delay_buf_len += 1;  /* Need 0 to n, i.e. n + 1. */
+        break;
+  case INTERP_QUADRATIC:
+        p->delay_buf_len += 2;  /* Quadratic interpolator needs one more. */
+        break;
+  }
   lsx_vcalloc(p->delay_buf, p->delay_buf_len);
 
   p->mod_buf_len = effp->in_signal.rate / p->speed;
@@ -102,7 +112,7 @@ static int start(sox_effect_t * effp)
     break;
   case INTERP_LINEAR:
   case INTERP_QUADRATIC:
-    lsx_valloc(p->mod_buf_f, p->mod_buf_len);
+    lsx_valloc(p->mod_buf_i, p->mod_buf_len);
     lsx_generate_wave_table(p->mod_type, SOX_FLOAT, p->mod_buf_f, p->mod_buf_len,
                             1., (double)p->delay_buf_len, M_PI_2);
     break;
