@@ -405,7 +405,7 @@ static int sox_chorus_flow_or_drain (sox_effect_t *effp,
 		    chorus_stage_t *stage = &chorus->stage[i];
 		    sox_uint32_t wave_index = stage->wave_index;
 		    double       offset_f = stage->wave_table_f[wave_index];
-		    sox_uint32_t offset_i = floor(offset_f);
+		    sox_uint32_t offset_i = offset_f;
 		    double       frac     = offset_f - offset_i;
 		    sox_uint32_t delay_line_index =
 			((stage->delay_line_index + offset_i)
@@ -448,7 +448,7 @@ static int sox_chorus_flow_or_drain (sox_effect_t *effp,
 		    chorus_stage_t *stage = &chorus->stage[i];
 		    sox_uint32_t wave_index = stage->wave_index;
 		    double       offset_f = stage->wave_table_f[wave_index];
-		    sox_uint32_t offset_i = floor(offset_f);
+		    sox_uint32_t offset_i = offset_f;
 		    double       frac     = offset_f - offset_i;
 		    sox_uint32_t delay_line_index =
 			((stage->delay_line_index + offset_i)
