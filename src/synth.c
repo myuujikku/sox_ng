@@ -291,7 +291,7 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
         break;
     }
 
-    /* Combine type vdelay it followed by a three-part parameter giving the
+    /* Combine type vdelay is followed by a three-part parameter giving the
      * fixed delay, extra delay (effect depth) and mix.
      */
     if (chan->combine == synth_vdelay) {
@@ -769,7 +769,7 @@ static int flow(sox_effect_t * effp, const sox_sample_t * ibuf, sox_sample_t * o
         }
         break;
       }
-      *obuf++ = synth_out < 0? synth_out * p->gain - .5 : synth_out * p->gain + .5;
+      *obuf++ = SOX_ROUND_CLIP_COUNT(synth_out * p->gain, effp->clips);
     }
     if (++p->samples_done == p->samples_to_do)
       result = SOX_EOF;
