@@ -295,15 +295,17 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
      * fixed delay, extra delay (effect depth) and mix.
      */
     if (chan->combine == synth_vdelay) {
+      char dummy;
+
       if (argn == argc) {
 vwhat:  lsx_fail("vdelay what?");
         return SOX_EOF;
       }
 
       /* Scan the arg and give default values to missing parameters */
-      switch (sscanf(argv[argn], "%f,%f,%f", &chan->vdelay_fixed,
+      switch (sscanf(argv[argn], "%f,%f,%f%c", &chan->vdelay_fixed,
                                              &chan->vdelay_extra,
-                                             &chan->vdelay_mix)) {
+                                             &chan->vdelay_mix, &dummy)) {
       case 0: goto vwhat;
       case 1:
 	if (!isfinite(chan->vdelay_fixed)) goto vwhat;
@@ -328,6 +330,9 @@ case3:  if (!isfinite(chan->vdelay_mix)) goto vwhat;
           return SOX_EOF;
 	}
         break;
+      case 4: /* Trailing garbage */
+        lsx_fail("trailing garbage on `%s'", argv[argn]);
+	return SOX_EOF;
       }
       if (++argn == argc)
         break;
