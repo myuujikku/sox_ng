@@ -32,15 +32,11 @@
 /** the maximum number of stages in a chorus, because of SCALING_FACTOR */
 #define MAX_STAGE_COUNT SCALING_FACTOR
 
-/** the function for checking for a clipped sample in the resolution
- * after downscaling */
-#define CLIP_COUNT_PROC SOX_24BIT_CLIP_COUNT
-
 /** the allowed options for the modulation kind mapped onto a wave
  * type */
 static lsx_enum_item modulation_kind_map[] ={
-    { "-s", SOX_WAVE_SINE },
-    { "-t", SOX_WAVE_TRIANGLE },
+    { "-sine",     SOX_WAVE_SINE },
+    { "-triangle", SOX_WAVE_TRIANGLE },
     { NULL, 0 }
 };
 
@@ -349,7 +345,6 @@ static int sox_chorus_flow_or_drain (sox_effect_t *effp,
 	case INTERP_NONE:
             while (len--) {
                 sox_uint32_t i;
-                sox_sample_t output_sample;
 
                 /* Scale samples down to prevent arithmetic overflow
                  * when adding up many delay lines.
@@ -386,18 +381,14 @@ static int sox_chorus_flow_or_drain (sox_effect_t *effp,
 		    MODULAR_INCREMENT(stage->wave_index, stage->wave_length);
 	       }
 
-                /* Adjust the output volume by gain_out, check for
-                 * clipping and scale output up again */
-                d_out = d_out * chorus->gain_out;
-                output_sample = CLIP_COUNT_PROC((sox_sample_t) d_out,
-                                                effp->clips);
-                *obuf++ = output_sample * SCALING_FACTOR;
+                /* Adjust the output volume by gain_out, scale output up again
+		 * and check for clipping */
+                *obuf++ = SOX_ROUND_CLIP_COUNT(d_out * chorus->gain_out * SCALING_FACTOR, effp->clips);
              }
 	     break;
          case INTERP_LINEAR:
             while (len--) {
                 sox_uint32_t i;
-                sox_sample_t output_sample;
 
                 /* Scale samples down to prevent arithmetic overflow
                  * when adding up many delay lines.
@@ -433,18 +424,14 @@ static int sox_chorus_flow_or_drain (sox_effect_t *effp,
 		    MODULAR_INCREMENT(stage->wave_index, stage->wave_length);
 		}
 
-                /* Adjust the output volume by gain_out, check for
-                 * clipping and scale output up again */
-                d_out = d_out * chorus->gain_out;
-                output_sample = CLIP_COUNT_PROC((sox_sample_t) d_out,
-                                                effp->clips);
-                *obuf++ = output_sample * SCALING_FACTOR;
+                /* Adjust the output volume by gain_out, scale output up again
+		 * and check for clipping */
+                *obuf++ = SOX_ROUND_CLIP_COUNT(d_out * chorus->gain_out * SCALING_FACTOR, effp->clips);
             }
 	    break;
          case INTERP_QUADRATIC:
             while (len--) {
                 sox_uint32_t i;
-                sox_sample_t output_sample;
 
                 /* Scale samples down to prevent arithmetic overflow
                  * when adding up many delay lines.
@@ -490,12 +477,9 @@ static int sox_chorus_flow_or_drain (sox_effect_t *effp,
 		    MODULAR_INCREMENT(stage->wave_index, stage->wave_length);
 		}
 
-                /* Adjust the output volume by gain_out, check for
-                 * clipping and scale output up again */
-                d_out = d_out * chorus->gain_out;
-                output_sample = CLIP_COUNT_PROC((sox_sample_t) d_out,
-                                                effp->clips);
-                *obuf++ = output_sample * SCALING_FACTOR;
+                /* Adjust the output volume by gain_out, scale output up again
+		 * and check for clipping */
+                *obuf++ = SOX_ROUND_CLIP_COUNT(d_out * chorus->gain_out * SCALING_FACTOR, effp->clips);
             }
 	    break;
         }
