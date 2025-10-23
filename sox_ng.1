@@ -1688,21 +1688,6 @@ and the outputs from the delays scaled by their \fIdecay\fRs.
 For internal reasons regarding the speed of \fBchorus\fR,
 there is a limit of 256 chorus stages.
 .SP
-\fBflanger\fR can do everything that \fBchorus\fR does
-except for multiple stages and has a better signal-to-noise ratio,
-but works in floating point internally instead of integers so is slower.
-.XE
-chorus -l gain-in gain-out delay decay speed depth -wave
-.XX
-is equivalent to
-.XE
-flanger delay depth 0 100\(di(decay\(digain-in) speed wave 0 linear \e
-    vol (decay\(plgain-in)\(mugain-out
-.XX
-.SP
-For a flow diagram of how \fBchorus\fR works,
-say \fBsox_ng \-\-help\-effect chorus\fR.
-.SP
 A typical delay is around 40ms to 60ms; the modulation speed is best
 near 0\*d25Hz and the modulation depth around 2ms.
 For example, a single delay:
@@ -1721,6 +1706,19 @@ A fuller-sounding chorus (with three additional delays):
    play_ng guitar1.wav chorus 0.5 0.9 50 0.4 0.25 2 \-t \\
 	 60 0.32 0.4 2.3 \-t 40 0.3 0.3 1.3 \-s
 .XX
+\fBflanger\fR can do everything that \fBchorus\fR does except multiple stages
+but works in floating point internally instead of integers so is slower
+without a floating point processor:
+.XE
+    chorus -l gain-in gain-out delay decay speed depth -wave
+.XX
+is equivalent to
+.XE
+    flanger delay depth 0 100\(mudecay\(digain-in speed wave 0 \e
+        vol gain-out\(di(gain-in\(pldecay)
+.XX
+For a flow diagram of how \fBchorus\fR works,
+say \fBsox_ng \-\-help\-effect chorus\fR.
 .TP
 \fBcompand \fIattack1\fB,\fIdecay1\fR{\fB,\fIattack\fB,\fIdecay\fR}
 [\fIsoft-knee-dB\fB:\fR]\fIin-dB1\fR[\fB,\fIout-dB1\fR]{\fB,\fIin-dB\fB,\fIout-dB\fR}
