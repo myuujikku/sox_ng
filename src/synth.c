@@ -829,8 +829,8 @@ const sox_effect_handler_t *lsx_synth_effect_fn(void)
 "  mix     Mix 50:50 with the input",
 "  amod    Multiply input by synth wave considered as being 0 to 1",
 "  fmod    Multiply input by synth wave considered as being -1 to 1",
-"  vdelay  fixed[,extra[,mix]] Synth wave offsets into a delay from",
-"          fixed to fixed+extra(0) ms. mix=0: all input; mix=100: all delay",
+"  vdelay fixed[,extra(0)[,mix(50)]]  Synth wave offsets into a delay from",
+"          fixed to fixed+extra ms. mix=0: all input; mix=100: all delay",
 "freq?freq2  : = linear sweep; + = frequency is proportional to time squared;",
 "            / = exponential;  - = stepped exponential starting at phase 0",
     NULL

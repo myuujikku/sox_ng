@@ -4298,16 +4298,14 @@ Multiplies the input signal with the synthesized one (ring modulation).
 .B vdelay
 Mixes the input signal with a delayed version of it
 using the synthesized signal to modulate the depth of the delay.
-The following three-part option specifies
+The following three-part option \fIfixed\fR[,\fIextra\fR[,\fImix\fR]] specifies
 the fixed and additional parts of the delay in milliseconds
-and the percentage of the delayed signal in the output
+and what percentage of the output consists of the delayed signal
 from 0 for all input signal to 100 for all delayed signal
-with a default of half and half.
+with a default of 50 (half and half).
 .SP
 The synthesized signal's value from \-1 to +1 varies the delay
 from \fIfixed\fR seconds to \fIfixed\fR\ +\ (0\ to\ \fIextra\fR) seconds.
-\fIdepth\fR controls the proportion of the delayed signal that is mixed
-with the original, ranging from 0 to 1 with a default of 1.
 .SP
 It interpolates linearly between the input samples and can be used
 to make precision phaser, flanger and chorus-like effects, vibrato
@@ -4317,12 +4315,12 @@ as used in the Yamaha DX7).
 .ne 2
 A chorus-like effect:
 .XE
-   sox_ng solo.au -d synth sine vdelay -V 0.050 .25 0 75
+   sox_ng solo.au -d synth sine vdelay 50,2,50 .25 0 75
 .XX
 .ne 2
 A flanger:
 .XE
-   sox_ng solo.au -d synth triangle vdelay -V 0,0.002,.71 0.5 0 0
+   sox_ng solo.au -d synth triangle vdelay 0,2,41.52 0.5 0 0
 .XX
 .RE
 .TP
