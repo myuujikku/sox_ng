@@ -153,9 +153,10 @@ static int start(sox_effect_t * effp)
       f->gain_in, f->regen, f->width);
 
   /* Create the delay buffers, one for each channel: */
-  f->delay_buf_length = (f->delay + f->depth) * effp->in_signal.rate + 1;
-  ++f->delay_buf_length;  /* Need 0 to n, i.e. n + 1. */
-  ++f->delay_buf_length;  /* Quadratic interpolator needs one more. */
+  f->delay_buf_length = ceil((f->delay + f->depth) * effp->in_signal.rate);
+  /* Quadratic interpolator needs two more. */
+  f->delay_buf_length += 2;
+
   for (c = 0; c < channels; ++c)
     lsx_vcalloc(f->delay_bufs[c], f->delay_buf_length);
 
