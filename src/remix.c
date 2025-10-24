@@ -65,7 +65,6 @@ static int parse(sox_effect_t * effp, char * * argv, unsigned channels)
       double multiplier = HUGE_VAL;
 
       PARSE(sep1, "%i", chan1, 0, separators);
-      fprintf(stderr, "SEP=%c\n", sep1);
       if (!chan1) {
        if (j || *text) {
          /* in-spec 1,0 (j!=0) or 0-something (*text) */
