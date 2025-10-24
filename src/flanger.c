@@ -172,8 +172,8 @@ static int start(sox_effect_t * effp)
       SOX_FLOAT,
       f->lfo,
       f->lfo_length,
-      floor(f->delay * effp->in_signal.rate + .5),
-      f->delay_buf_length - 2.,
+      f->delay * effp->in_signal.rate,
+      (f->delay + f->depth) * effp->in_signal.rate,
       3 * M_PI_2);  /* Start the sweep at minimum delay (for mono at least) */
 
   lsx_debug("delay_buf_length=%" PRIuPTR " lfo_length=%" PRIuPTR "\n",
