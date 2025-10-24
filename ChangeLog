@@ -5,7 +5,7 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
-sox_ng-14.6.1+git   2025-10-22
+sox_ng-14.6.1+git20251024   2025-10-24
 -------------
 
 New features:
@@ -22,6 +22,8 @@ New features:
   o twolame: Enable VBR encoding with -C -10-10
 
 Bug fixes:
+  o Make chorus fetch "delayed" samples from the past, not the future
+  o Fix several more inaccuracies in chorus
   o Remove unmaintained msvc files
   o Make CMake work again; still missing optional formats
   o Re-enable the comments test
