@@ -236,6 +236,7 @@ static int sox_chorus_start (sox_effect_t *effp)
 
         for (i = 0;  i < chorus->stage_count;  i++) {
                 chorus_stage_t *stage = &chorus->stage[i];
+		sox_uint32_t delay_sample_count = (stage->delay * effp->in_signal.rate);
 		double dll;
 
                 stage->depth_sample_count =
@@ -282,8 +283,9 @@ static int sox_chorus_start (sox_effect_t *effp)
                     lsx_generate_wave_table(stage->wave_type, SOX_INT,
                                  stage->wave_table_i,
 				 stage->wave_length,
-                                 0., stage->depth_sample_count,
-				 M_PI_2);
+                                 delay_sample_count,
+				 delay_sample_count + stage->depth_sample_count,
+				 3 * M_PI_2);
 		    break;
 		case INTERP_LINEAR:
 		case INTERP_QUADRATIC:
@@ -291,8 +293,9 @@ static int sox_chorus_start (sox_effect_t *effp)
                     lsx_generate_wave_table(stage->wave_type, SOX_FLOAT,
                                  stage->wave_table_f,
                                  stage->wave_length,
-                                 0., stage->depth_sample_count,
-				 M_PI_2);
+                                 delay_sample_count,
+				 delay_sample_count + stage->depth_sample_count,
+				 3 * M_PI_2);
 		    break;
 		}
 
