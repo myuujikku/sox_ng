@@ -1782,9 +1782,6 @@ before being fed to the volume adjuster.  Specifying a delay
 approximately equal to the attack/decay times allows the compander to
 operate in a predictive rather than a reactive mode.
 A typical value is 0\*d2 seconds.
-.SP
-For a flow diagram of how \fBcompand\fR works,
-say \fBsox_ng \-\-help\-effect compand\fR.
 .TS
 center;
 c8 c8 c.
@@ -1824,6 +1821,9 @@ similar to a squelch effect):
    play_ng in.au compand .1,.1 \-45.1,\-45,\-inf,0,\-inf 45 \-90 .1
 .XX
 This effect supports the \fB\-\-plot\fR global option (for the transfer function).
+.SP
+For a flow diagram of how \fBcompand\fR works,
+say \fBsox_ng \-\-help\-effect compand\fR.
 .SP
 See
 .B mcompand
@@ -2134,9 +2134,6 @@ and gains and decays can be negative or greater than 1 if you wish.
 .SP
 \fBecho\fP extends the length of the signal by the maximum delay time.
 .SP
-For a flow diagram of how \fBecho\fR works,
-say \fBsox_ng \-\-help\-effect echo\fR.
-.SP
 For example,
 this makes it sound as if there are twice as many instruments as are
 actually playing:
@@ -2156,6 +2153,8 @@ One mountain more, and:
 .XE
    play_ng lead.aiff echo 0.8 0.9 1000 0.3 1800 0.25
 .XX
+For a flow diagram of how \fBecho\fR works,
+say \fBsox_ng \-\-help\-effect echo\fR.
 .TP
 \fBechos \fIgain-in gain-out\fR <\fIdelay decay\fR>
 .SP
@@ -2174,9 +2173,6 @@ their respective decays.
 .SP
 \fBechos\fP extends the length of the signal by the maximum delay time.
 .SP
-For a flow diagram of how \fBechos\fR works,
-say \fBsox_ng \-\-help\-effect echos\fR.
-.SP
 For example:
 .SP
 The sample is bounced twice in symmetric echos:
@@ -2191,6 +2187,8 @@ The sample sounds as if it were played in a garage:
 .XE
    play_ng lead.aiff echos 0.8 0.7 40 0.25 63 0.3
 .XX
+For a flow diagram of how \fBechos\fR works,
+say \fBsox_ng \-\-help\-effect echos\fR.
 .TP
 \fBequalizer \fIfrequency width\fR[\fBq\fR\^|\^\fBo\fR\^|\^\fBh\fR\^|\^\fBk\fR] \fIgain\fR
 Apply a two-pole peaking equalization filter.
@@ -2729,9 +2727,6 @@ A flanger does comb filtering with equidistant spacing
 comb filtering with factored spacing
 (e.g. 100Hz, 200Hz, 400Hz, 800Hz, ...) that sounds more harmonic.
 .SP
-For a flow diagram of how \fBphaser\fR works,
-say \fBsox_ng \-\-help\-effect phaser\fR.
-.SP
 For example:
 .XE
    play_ng snare.flac phaser 0.8 0.74 3 0.4 0.5 \-t
@@ -2748,6 +2743,8 @@ More severe:
 .XE
    play_ng snare.flac phaser 0.6 0.66 3 0.6 2 \-t
 .XX
+For a flow diagram of how \fBphaser\fR works,
+say \fBsox_ng \-\-help\-effect phaser\fR.
 .TP
 \fBpitch \fR[\fB\-q\fR] \fIshift\fR [\fIsegment\fR [\fIsearch\fR [\fIoverlap\fR]]]
 Change the audio pitch but not the tempo.
