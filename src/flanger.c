@@ -161,7 +161,7 @@ static int start(sox_effect_t * effp)
     lsx_vcalloc(f->delay_bufs[c], f->delay_buf_length);
 
   /* Create the LFO lookup table: */
-  f->lfo_length = effp->in_signal.rate / f->speed;
+  f->lfo_length = effp->in_signal.rate / f->speed + 0.5;
   if (f->lfo_length < 1) {
     lsx_fail("speed can't be more that the sample rate");
     return SOX_EOF;
