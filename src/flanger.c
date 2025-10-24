@@ -210,7 +210,7 @@ static int flow(sox_effect_t * effp, sox_sample_t const * ibuf,
 	f->delay_bufs[c][f->delay_buf_pos] = in + f->delay_last[c] * f->regen;
 
 	delayed = f->delay_bufs[c]
-	  [(f->delay_buf_pos + int_delay++) % f->delay_buf_length];
+	  [(f->delay_buf_pos + int_delay) % f->delay_buf_length];
 
 	f->delay_last[c] = delayed;
 	out = in * f->gain_in + delayed * f->width;
@@ -236,9 +236,9 @@ static int flow(sox_effect_t * effp, sox_sample_t const * ibuf,
 	f->delay_bufs[c][f->delay_buf_pos] = in + f->delay_last[c] * f->regen;
 
 	delayed_0 = f->delay_bufs[c]
-	  [(f->delay_buf_pos + int_delay++) % f->delay_buf_length];
+	  [(f->delay_buf_pos + int_delay) % f->delay_buf_length];
 	delayed_1 = f->delay_bufs[c]
-	  [(f->delay_buf_pos + int_delay++) % f->delay_buf_length];
+	  [(f->delay_buf_pos + int_delay + 1) % f->delay_buf_length];
 
 	delayed = delayed_0 + (delayed_1 - delayed_0) * frac_delay;
 
@@ -266,11 +266,11 @@ static int flow(sox_effect_t * effp, sox_sample_t const * ibuf,
 	f->delay_bufs[c][f->delay_buf_pos] = in + f->delay_last[c] * f->regen;
 
 	delayed_0 = f->delay_bufs[c]
-	  [(f->delay_buf_pos + int_delay++) % f->delay_buf_length];
+	  [(f->delay_buf_pos + int_delay) % f->delay_buf_length];
 	delayed_1 = f->delay_bufs[c]
-	  [(f->delay_buf_pos + int_delay++) % f->delay_buf_length];
+	  [(f->delay_buf_pos + int_delay + 1) % f->delay_buf_length];
 	delayed_2 = f->delay_bufs[c]
-          [(f->delay_buf_pos + int_delay++) % f->delay_buf_length];
+          [(f->delay_buf_pos + int_delay + 2) % f->delay_buf_length];
 
 	{
 	  double a, b;
