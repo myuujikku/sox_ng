@@ -1969,10 +1969,9 @@ static void display_supported_effects(void)
   printf("EFFECTS:");
   for (i = 0; sox_effect_fns[i]; i++) {
     e = sox_effect_fns[i]();
-    if (e && e->name)
-      printf(" %s%s", e->name, (e->flags & SOX_EFF_INTERNAL)? "#" : "");
+    if (e && e->name && !(e->flags & SOX_EFF_INTERNAL))
+      printf(" %s", e->name);
   }
-  puts("\n  # LibSoX-only effect");
 }
 
 static void usage(void)
@@ -2103,15 +2102,19 @@ static void usage_effect(char const * name)
 
     for (i = 0; sox_effect_fns[i]; i++) {
       const sox_effect_handler_t *e = sox_effect_fns[i]();
-      if (e && e->name && (!strcmp("all", name) || !strcmp(e->name, name))) {
-	char const * * linep;
+      if (e && e->name &&
+          /* Don't list internal effects in "all" output but do so
+           * if they explicitly ask for --help-effect input or output */
+          ((!strcmp("all", name) && !(e->flags & SOX_EFF_INTERNAL)) ||
+           !strcmp(e->name, name))) {
+        char const * * linep;
         if (first) first = sox_false;
         else printf("\n");
         printf("%s %s\n", e->name, e->usage? e->usage : "");
-	linep = (char const * *) e->extra_usage;
-	if (linep)
-	  while (*linep)
-	    printf("  %s\n", *linep++);
+        linep = (char const * *) e->extra_usage;
+        if (linep)
+          while (*linep)
+            printf("  %s\n", *linep++);
         if (e->flags & SOX_EFF_INTERNAL)
           printf("  `%s' is libSoX-only\n", e->name);
       }
