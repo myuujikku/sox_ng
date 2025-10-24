@@ -272,32 +272,32 @@ static int sox_chorus_start (sox_effect_t *effp)
                                sizeof(chorus_delay_sample_t));
 
                 /* modulation wave table */
-                stage->wave_length = effp->in_signal.rate / stage->speed;
-		if (stage->wave_length < 1) {
-		    lsx_fail("speed can't be more than the sample rate");
-		    return SOX_EOF;
-		}
-		switch (chorus->interpolation) {
-		case INTERP_NONE:
+                stage->wave_length = effp->in_signal.rate / stage->speed + 0.5;
+                if (stage->wave_length < 1) {
+                    lsx_fail("speed can't be more than the sample rate");
+                    return SOX_EOF;
+                }
+                switch (chorus->interpolation) {
+                case INTERP_NONE:
                     lsx_valloc(stage->wave_table_i, stage->wave_length);
                     lsx_generate_wave_table(stage->wave_type, SOX_INT,
                                  stage->wave_table_i,
-				 stage->wave_length,
+                                 stage->wave_length,
                                  delay_sample_count,
-				 delay_sample_count + stage->depth_sample_count,
-				 3 * M_PI_2);
-		    break;
-		case INTERP_LINEAR:
-		case INTERP_QUADRATIC:
+                                 delay_sample_count + stage->depth_sample_count,
+                                 3 * M_PI_2);
+                    break;
+                case INTERP_LINEAR:
+                case INTERP_QUADRATIC:
                     lsx_valloc(stage->wave_table_f, stage->wave_length);
                     lsx_generate_wave_table(stage->wave_type, SOX_FLOAT,
                                  stage->wave_table_f,
                                  stage->wave_length,
                                  delay_sample_count,
-				 delay_sample_count + stage->depth_sample_count,
-				 3 * M_PI_2);
-		    break;
-		}
+                                 delay_sample_count + stage->depth_sample_count,
+                                 3 * M_PI_2);
+                    break;
+                }
 
                 /* find maximum delay line length across all stages */
                 chorus->remaining_samples =
