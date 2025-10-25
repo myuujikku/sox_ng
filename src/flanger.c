@@ -317,21 +317,21 @@ static int stop(sox_effect_t * effp)
 sox_effect_handler_t const * lsx_flanger_effect_fn(void)
 {
   static const char usage[] =
-"[-n|l|q|s|t] [delay(0) [depth(2) [regen(0) [width(71) [speed(0.5) [shape(s)] [[phase(25) [interp(linear)]]]]]]]";
+"[-n|l|q|s|t] [delay [depth [regen [width [speed [shape] [[phase [interp]]]]]]]";
   static char const * const extra_usage[] = {
-"            +----------------+",
-"            |    * regen     |",
-"           _V_     _______   |",
-"          |   |   |       |  |            ___",
-"    +---->| + |-->| delay |--+---------->|   |",
-"    |     |___|   |_______| * width/100  |   |",
-"    |                 ^                  |   |",
-"In  |                 | * depth          |   |               Out",
-"--->+         +---------------+          | + |------------------>",
-"    | speed-->| sine/triangle |          |   | / (1 + width/100)",
-"    |         +---------------+          |   |",
-"    +----------------------------------->|___|",
-"        RANGE DEFAULT DESCRIPTION",
+"            +---------------+",
+"    speed-->| sine/triangle |",
+"            +---------------+",
+"                    | * depth",
+"         ___     ___v___",
+"In      |   |   |       |    * width/100    ___",
+"----+-->| + |-->| DELAY |--+-------------->|   |",
+"    |   |___|   |_______|  |               |   | / (1 + width/100)",
+"    |     ^                |               | + |------------------>",
+"    |     |  * regen/100   |               |   |                Out",
+"    |     +----------------+               |   |",
+"    +------------------------------------->|___|",
+"OPTION RANGE DEFAULT DESCRIPTION",
 "delay  0-1000    0    Base delay in milliseconds",
 "depth  0-1000    2    Added swept delay in milliseconds",
 "regen -100-100   0    Percentage regeneration (delayed signal feedback)",
@@ -339,9 +339,7 @@ sox_effect_handler_t const * lsx_flanger_effect_fn(void)
 "speed   0-192k  0.5   Sweeps per second (no more than the sample rate)",
 "shape    s|t   sine   Swept wave shape: sine|triangle",
 "phase   0-100   25    Percent phase shift of swept wave in multichannel flange",
-"                      0 = 100 = same phase on each channel",
 "interp  n|l|q linear  Delay-line interpolation: none|linear|quadratic",
-"-n, -l, -q, -s and -t are alternative ways to set interp and shape",
     NULL
   };
 
