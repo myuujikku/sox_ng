@@ -2962,6 +2962,19 @@ int main(int argc, char **argv)
   char mybase[8];
 
   sox_globals.myname = argv[0];
+  {
+    /* Reduce argv[0] to bare program name for error reports.
+     * On Windows, remove .exe too.
+     */
+#ifdef _WIN32
+    char *slash = strrchr(sox_globals.myname, '\\');
+    char *dot   = slash ? strrchr(slash, '.') : NULL;
+    if (dot) *dot = '\0';
+#else
+    char *slash = strrchr(sox_globals.myname, '/');
+#endif
+    if (slash) sox_globals.myname = slash + 1;
+  }
 
   if (argc < 2) { usage(); exit(1); }
 
