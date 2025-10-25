@@ -1891,11 +1891,15 @@ static void display_SoX_version(FILE * file)
 #endif
   const sox_version_info_t* info = sox_version_info();
 
+#ifdef VERSION
+  fprintf(file, "%s:      SoX_ng v%s\n", sox_globals.myname, VERSION);
+#else
   fprintf(file, "%s:      SoX_ng v%s%s%s\n",
       sox_globals.myname,
       info->version,
       info->version_extra ? "-" : "",
       info->version_extra ? info->version_extra : "");
+#endif
 
   if (sox_globals.verbosity > 3) {
     if (info->distro)
