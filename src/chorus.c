@@ -138,7 +138,7 @@ static int sox_chorus_getopts (sox_effect_t *effp,
               break;
           default:
               lsx_fail("invalid option  '%s'", argv[0]);
-              return SOX_EOF;
+              return lsx_usage(effp);
           }
         }
 

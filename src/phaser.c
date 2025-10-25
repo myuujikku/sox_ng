@@ -33,7 +33,6 @@ typedef struct {
 static int getopts(sox_effect_t * effp, int argc, char * * argv)
 {
   priv_t * p = (priv_t *) effp->priv;
-  char chars[2];
 
   /* Set non-zero defaults: */
   p->gain_in   = .4;
@@ -52,7 +51,7 @@ static int getopts(sox_effect_t * effp, int argc, char * * argv)
     case 's': p->mod_type = SOX_WAVE_SINE; break;
     case 't': p->mod_type = SOX_WAVE_TRIANGLE; break;
     default: lsx_fail("invalid option `%s'", *argv);
-             return SOX_EOF;
+             return lsx_usage(effp);
     }
     /* Ignore the rest of -sine -quad etc */
     argc--; argv++;
@@ -66,8 +65,13 @@ static int getopts(sox_effect_t * effp, int argc, char * * argv)
     NUMERIC_PARAMETER(speed    ,  0, 192000)
   } while (0);
 
-  if (argc && sscanf(*argv, "-%1[st]%c", chars, chars + 1) == 1) {
-    p->mod_type = *chars == 's'? SOX_WAVE_SINE : SOX_WAVE_TRIANGLE;
+  if (argc && argv[0][0] == '-') {
+    switch (argv[0][1]) {
+    case 's': p->mod_type = SOX_WAVE_SINE; break;
+    case 't': p->mod_type = SOX_WAVE_TRIANGLE; break;
+    default:  lsx_fail("invalid option `%s'", *argv);
+              return lsx_usage(effp);
+    }
     --argc, ++argv;
   }
 

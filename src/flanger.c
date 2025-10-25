@@ -80,7 +80,7 @@ static int getopts(sox_effect_t * effp, int argc, char *argv[])
     case 't': p->wave_shape = SOX_WAVE_TRIANGLE; break;
     default:
       lsx_fail("invalid option `%s'", argv[0]);
-      return SOX_EOF;
+      return lsx_usage(effp);
     }
     argc--; argv++;
   }
