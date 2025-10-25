@@ -2699,7 +2699,7 @@ See
 for an effect that can add silence at the beginning of
 the audio on a channel-by-channel basis.
 .TP
-\fBphaser\fR [\fB\-n\fR|\fB\-l\fR|\fB\-q\fR] [\fIgain-in\fR(.4) \fIgain-out\fR(.74) \fIdelay\fR(3) \fIregen\fR(.4) \fIspeed\fR(.5) [\fB\-s\fR\^|\^\fB\-t\fR(\fB\-s\fR)]
+\fBphaser\fR [\fB\-n\fR|\fBl\fR|\fBq\fR] [\fB\-s\fR|\fBt\fR] [\fIgain-in\fR(.4) \fIgain-out\fR(.74) \fIdelay\fR(3) \fIregen\fR(.4) \fIspeed\fR(.5) [\fB\-s\fR\^|\^\fB\-t\fR(\fB\-s\fR)]
 Add a phasing effect to the audio.
 See [3] for a detailed description of phasing.
 .SP
@@ -2710,9 +2710,9 @@ and \fIspeed\fR the frequency of delay-time modulation wave in Hz.
 The modulation is either sinusoidal (\fB\-s\fR), which is preferable
 for multiple instruments, or triangular
 (\fB\-t\fR) which gives single instruments a sharper phasing effect.
-\fIregen\fR should be less than 0\*d5 to avoid
-feedback, and usually no less than 0\*d1.
-\fIgain-out\fR is the final volume adjustment.
+\fIregen\fR can be from \(mi1 to \(pl1 but should usually be less than
+0\*d5 to avoid clipping and \fIgain-out\fR is the final volume adjustment
+from \(mi1 to \(pl1.
 .SP
 The \fB\-l\fR flag makes \fBphaser\fR do linear interpolation between samples
 when the offset into the delay line is not a whole number,
@@ -2720,6 +2720,12 @@ which is about 15% slower but much less noisy and
 \fB\-q\fR does quadratic interpolation, which is about 50% slower
 but even less noisy.
 \fB\-n\fR explicitly asks for no interpolation, the default, fast and fuzzy.
+.SP
+In sox_ng, \fB\-s\fR or \fB\-t\fR can be given at the start or the end;
+to be compatible with earlier versions of SoX, supply all the parameters
+with one of these at the end, use \fIgain-in\fR and \fIgain-out\fR from 0 to 1,
+\fIdelay\fR from 0 to 5, \fIspeed\fR from 0\*d1 to 2
+and don't use interpolation.
 .SP
 Technically, the SoX \fBphaser\fP is not a phaser; it is a flanger.
 A flanger does comb filtering with equidistant spacing

@@ -44,17 +44,18 @@ static int getopts(sox_effect_t * effp, int argc, char * * argv)
 
   --argc, ++argv;  /* Skip the effect name */
 
-  if (argc > 0 && !strcmp(*argv, "-n")) {
-      p->interpolation = INTERP_NONE;
-      argc--; argv++;
-  }
-  if (argc > 0 && !strcmp(*argv, "-l")) {
-      p->interpolation = INTERP_LINEAR;
-      argc--; argv++;
-  }
-  if (argc > 0 && !strcmp(*argv, "-q")) {
-      p->interpolation = INTERP_QUADRATIC;
-      argc--; argv++;
+  while (argc > 0 && argv[0][0] == '-') {
+    switch (argv[0][1]) {
+    case 'n': p->interpolation = INTERP_NONE; break;
+    case 'l': p->interpolation = INTERP_LINEAR; break;
+    case 'q': p->interpolation = INTERP_QUADRATIC; break;
+    case 's': p->mod_type = SOX_WAVE_SINE; break;
+    case 't': p->mod_type = SOX_WAVE_TRIANGLE; break;
+    default: lsx_fail("invalid option `%s'", *argv);
+             return SOX_EOF;
+    }
+    /* Ignore the rest of -sine -quad etc */
+    argc--; argv++;
   }
 
   do { /* break-able block */
@@ -208,7 +209,7 @@ static int stop(sox_effect_t * effp)
 
 sox_effect_handler_t const * lsx_phaser_effect_fn(void)
 {
-  static const char usage[] = "[-n|-l] [gain-in [gain-out [delay [regen [speed [-s|-t]]]]]]";
+  static const char usage[] = "[-n|l|q] [-s|t] [gain-in [gain-out [delay [regen [speed [-s|t]]]]]]";
   static char const * const extra_usage[] = {
 "               ___",
 "In ---------->|   |------------> Out",
