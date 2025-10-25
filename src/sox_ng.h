@@ -1282,7 +1282,7 @@ function.
 */
 typedef struct sox_globals {
 /* public: */
-  char *       progname;  /**< argv[0] */
+  char *       myname;  /**< argv[0] */
   unsigned     verbosity; /**< messages are only written if globals.verbosity >= message.level */
   sox_output_message_handler_t output_message_handler; /**< client-specified message output callback */
   sox_bool     repeatable; /**< true to use pre-determined timestamps and PRNG seed */

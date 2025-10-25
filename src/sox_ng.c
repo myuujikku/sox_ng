@@ -129,8 +129,6 @@
 static lsx_getopt_t optstate;
 
 /* argv[0] options */
-
-static char const * myname = NULL;
 static enum {sox_sox, sox_play, sox_rec, sox_soxi} sox_mode;
 
 
@@ -1475,7 +1473,7 @@ static sox_bool overwrite_permitted(char const * filename)
   lsx_warn("Output file `%s' already exists", filename);
   if (!stdin_is_a_tty)
     return sox_false;
-  do fprintf(stderr, "%s: overwrite `%s' (y/n)? ", myname, filename);
+  do fprintf(stderr, "%s: overwrite `%s' (y/n)? ", sox_globals.myname, filename);
   while (scanf(" %c%*[^\n]", &c) != 1 || !strchr("yYnN", c));
   return c == 'y' || c == 'Y';
 }
@@ -1894,7 +1892,7 @@ static void display_SoX_version(FILE * file)
   const sox_version_info_t* info = sox_version_info();
 
   fprintf(file, "%s:      SoX_ng v%s%s%s\n",
-      myname,
+      sox_globals.myname,
       info->version,
       info->version_extra ? "-" : "",
       info->version_extra ? info->version_extra : "");
@@ -2260,7 +2258,7 @@ static lsx_option_t const long_options[] = {
   {"replay-gain"     , lsx_option_arg_required, NULL, 0},
   {"version"         , lsx_option_arg_none    , NULL, 0},
   {"output"          , lsx_option_arg_required, NULL, 0},
-  {"effects-file"    , lsx_option_arg_required, NULL, 0}, /* 25 */
+  {"effects-file"    , lsx_option_arg_required, NULL, 0}, /* 15 */
   {"temp"            , lsx_option_arg_required, NULL, 0},
   {"single-threaded" , lsx_option_arg_none    , NULL, 0},
   {"ignore-length"   , lsx_option_arg_none    , NULL, 0},
@@ -2939,7 +2937,7 @@ static void output_message(unsigned level, const char *filename, const char *fmt
   if (sox_globals.verbosity >= level) {
     char base_name[128];
     sox_basename(base_name, sizeof(base_name), filename);
-    fprintf(stderr, "%s %s %s: ", myname, str[min(level - 1, 3)], base_name);
+    fprintf(stderr, "%s %s %s: ", sox_globals.myname, str[min(level - 1, 3)], base_name);
     vfprintf(stderr, fmt, ap);
     fprintf(stderr, "\n");
   }
@@ -2959,15 +2957,14 @@ int main(int argc, char **argv)
   size_t i;
   char mybase[8];
 
-  sox_globals.progname = argv[0];
+  sox_globals.myname = argv[0];
 
   if (argc < 2) { usage(); exit(1); }
 
   gettimeofday(&load_timeofday, NULL);
-  myname = argv[0];
   sox_globals.output_message_handler = output_message;
 
-  if (0 != sox_basename(mybase, sizeof(mybase), myname))
+  if (0 != sox_basename(mybase, sizeof(mybase), sox_globals.myname))
   {
     if (0 == lsx_strncasecmp(mybase, "play", 4))
       sox_mode = sox_play;
@@ -3015,7 +3012,7 @@ int main(int argc, char **argv)
 
   /* Make sure we got at least the required # of input filenames */
   if (input_count < 1) {
-    lsx_fail("no input filenames specified. For help say `%s -h'", myname);
+    lsx_fail("no input filenames specified. For help say `%s -h'", sox_globals.myname);
     exit(1);
   }
 
