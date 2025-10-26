@@ -10,6 +10,7 @@ sox_ng-14.6.1+git20251024   2025-10-24
 
 New features:
 
+  o EBU R 128 loudness measurements are included in the output of "stat"
   o Make spectogram -Y give exactly the requested height
   o Add sinc -d flag to copy through when lowpass freq above Nyquist
   o chorus: Make all parameters optional
@@ -37,6 +38,8 @@ Bug fixes:
 Documentation:
   o Make messages for syntax errors more helpful
   o rate: Document undocumented options
+  o Redraw flanger's flow diagram to be more similar to chorus/phaser
+  o Make --version include -rc1 or other extensions
 
 Internal:
   o Allow ./configure --without-dolbyb
