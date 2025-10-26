@@ -432,6 +432,7 @@ static char const * const extra_usage[] = {
   "-v     Output only the `Volume Adjustment' value",
   "-d     Output a hex dump of the 32-bit signed PCM audio data",
   "-a     Output the average power spectrum",
+  "-h     Use the histogram alrogithm for integrated EBU R 128 loudness",
   NULL
 };
 
