@@ -590,7 +590,7 @@ static size_t sox_mp3read(sox_format_t * ft, sox_sample_t *buf, size_t len)
                     continue;
                 else
                 {
-                    lsx_report("unrecoverable frame level error (%s).",
+                    lsx_report("unrecoverable frame level error (%s)",
                               p->mad_stream_errorstr(&p->Stream));
                     break;
                 }
@@ -834,10 +834,13 @@ static void rewrite_id3v2_tag(sox_format_t * ft, size_t id3v2_size, uint64_t num
 
   if (LSX_DLFUNC_IS_STUB(p, lame_get_id3v2_tag))
   {
-    if (p->num_samples)
-      lsx_warn("cannot update track length info - tag update not supported with this version of LAME. Track length will be incorrect.");
-    else
-      lsx_report("cannot update track length info - tag update not supported with this version of LAME. Track length will be unspecified.");
+    if (p->num_samples) {
+      lsx_warn("this version of LAME does not support tag update;");
+      lsx_warn("the track length will be incorrect");
+    } else {
+      lsx_report("this version of LAME does not support tag update;");
+      lsx_report("the track length will be unspecified");
+    }
     return;
   }
 
@@ -861,10 +864,13 @@ static void rewrite_id3v2_tag(sox_format_t * ft, size_t id3v2_size, uint64_t num
   if (new_size != id3v2_size) {
     if (LSX_DLFUNC_IS_STUB(p, id3tag_set_pad))
     {
-      if (p->num_samples)
-        lsx_warn("cannot update track length info - tag size adjustment not supported with this version of LAME. Track length will be invalid.");
-      else
-        lsx_report("cannot update track length info - tag size adjustment not supported with this version of LAME. Track length will be unspecified.");
+      if (p->num_samples) {
+        lsx_report("this version of LAME does not support tag size adjustment;");
+        lsx_report("the track length will be invalid");
+      } else {
+        lsx_report("this version of LAME does not support tag size adjustment;");
+        lsx_report("the track length will be unspecified");
+      }
     }
     else
       lsx_warn("cannot update track length info - failed to adjust tag size");
@@ -1174,7 +1180,7 @@ static int startwrite(sox_format_t * ft)
 
   if (ft->encoding.encoding != SOX_ENCODING_MP3) {
     if(ft->encoding.encoding != SOX_ENCODING_UNKNOWN)
-      lsx_report("Encoding forced to MP2/MP3");
+      lsx_report("encoding forced to MP2/MP3");
     ft->encoding.encoding = SOX_ENCODING_MP3;
   }
 

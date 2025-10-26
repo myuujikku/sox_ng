@@ -949,7 +949,7 @@ static void read_user_effects(char const *filename)
         exit(1);
     }
 
-    lsx_report("Reading effects from file `%s'", filename);
+    lsx_report("reading effects from file `%s'", filename);
 
     while(fgets(s + pos, (int) (buffer_size - pos), file)) {
       int len = strlen(s + pos);
@@ -1467,10 +1467,10 @@ static sox_bool overwrite_permitted(char const * filename)
   char c;
 
   if (!no_clobber) {
-    lsx_report("Overwriting `%s'", filename);
+    lsx_report("overwriting `%s'", filename);
     return sox_true;
   }
-  lsx_warn("Output file `%s' already exists", filename);
+  lsx_warn("output file `%s' already exists", filename);
   if (!stdin_is_a_tty)
     return sox_false;
   do fprintf(stderr, "%s: overwrite `%s' (y/n)? ", sox_globals.myname, filename);
@@ -1702,10 +1702,10 @@ static void calculate_combiner_signal_parameters(void)
       /* Don't exit quite yet; give the user any other message 1st */
     if (min_channels != max_channels) {
       if (combine_method == sox_concatenate) {
-        lsx_fail("input files must have the same # channels");
+        lsx_fail("input files must have the same number of channels");
         exit(1);
       } else if (combine_method != sox_merge)
-        lsx_warn("Input files don't have the same # channels");
+        lsx_warn("input files don't have the same number of channels");
     }
     if (min_rate != max_rate)
       exit(1);
@@ -1820,7 +1820,7 @@ static int process(void)
     }
   } else if (interactive) {
     /* User called for interactive mode, but ... */
-    lsx_warn("Standard input has to be a terminal for interactive mode");
+    lsx_warn("standard input has to be a terminal for interactive mode");
     interactive = sox_false;
   }
 #endif
@@ -2528,7 +2528,7 @@ static char parse_gopts_and_fopts(file_t * f)
       }
       uservolume = sox_true;
       if (f->volume < 0.0)
-        lsx_report("Volume adjustment is negative; "
+        lsx_report("volume adjustment is negative; "
                   "this will result in a phase change");
       break;
 

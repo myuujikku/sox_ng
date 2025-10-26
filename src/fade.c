@@ -310,7 +310,7 @@ static int sox_fade_drain(sox_effect_t * effp, sox_sample_t *obuf, size_t *osamp
     if (fade->do_out && fade->samplesdone < fade->out_stop &&
         !(fade->endpadwarned))
     { /* Warning about padding silence into end of sample */
-        lsx_warn("End time past end of audio. Padding with silence");
+        lsx_warn("end time is past the end of the audio. Padding with silence");
         fade->endpadwarned = 1;
     } /* endif endpadwarned */
 

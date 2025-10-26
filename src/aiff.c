@@ -424,8 +424,8 @@ int lsx_aiffstartread(sox_format_t * ft)
         || (ft->signal.rate == SOX_UNSPEC)
         || (ft->encoding.encoding == SOX_ENCODING_UNKNOWN)
         || (ft->encoding.bits_per_sample == 0)) {
-      lsx_report("You must specify # channels, sample rate, signed/unsigned,");
-      lsx_report("and -b 8/16 on the command line.");
+      lsx_report("you must specify the number of channels, sample rate, signed/unsigned,");
+      lsx_report("and -b 8/16 on the command line");
       lsx_fail_errno(ft,SOX_EFMT,"bogus file: no COMM section");
       return(SOX_EOF);
     }
@@ -438,7 +438,7 @@ OK:
     ft->encoding.reverse_bytes = !ft->encoding.reverse_bytes;
 
   if (!foundmark && foundinstr) {
-    lsx_warn("Ignoring INST chunk since no MARKs found.");
+    lsx_warn("ignoring INST chunk since no MARKs found.");
     foundinstr = 0;
   }
   if (foundmark && foundinstr) {
@@ -497,7 +497,7 @@ static void reportInstrument(sox_format_t * ft)
     lsx_report("AIFF Loop markers:");
   for(loopNum  = 0; loopNum < ft->oob.instr.nloops; loopNum++) {
     if (ft->oob.loops[loopNum].count) {
-      lsx_report("Loop %d: start: %6lu", loopNum, (unsigned long)ft->oob.loops[loopNum].start);
+      lsx_report("loop %d: start: %6lu", loopNum, (unsigned long)ft->oob.loops[loopNum].start);
       lsx_report(" end:   %6lu",
               (unsigned long)(ft->oob.loops[loopNum].start + ft->oob.loops[loopNum].length));
       lsx_report(" count: %6d", ft->oob.loops[loopNum].count);
@@ -635,7 +635,7 @@ int lsx_aiffstopread(sox_format_t * ft)
                     lsx_eof(ft))
                         break;
                 buf[4] = '\0';
-                lsx_warn("Ignoring AIFF tail chunk: `%s', %u bytes long",
+                lsx_warn("ignoring AIFF tail chunk: `%s', %u bytes long",
                         buf, chunksize);
                 if (! strcmp(buf, "MARK") || ! strcmp(buf, "INST"))
                         lsx_warn("       You're stripping MIDI/loop info!");

@@ -298,7 +298,7 @@ static int sox_smpstartread(sox_format_t * ft)
 
         lsx_report("SampleVision trailer:");
         for(i = 0; i < 8; i++) if (1 || trailer.loops[i].count) {
-                lsx_report("Loop %lu: start: %6d", (unsigned long)i, trailer.loops[i].start);
+                lsx_report("loop %lu: start: %6d", (unsigned long)i, trailer.loops[i].start);
                 lsx_report(" end:   %6d", trailer.loops[i].end);
                 lsx_report(" count: %6d", trailer.loops[i].count);
                 switch(trailer.loops[i].type) {

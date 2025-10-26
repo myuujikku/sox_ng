@@ -594,7 +594,7 @@ static int create(sox_effect_t * effp, int argc, char **argv)
 
   if ((unsigned)quality < 2 && (p->bw_0dB_pc || bw_3dB_pc || p->phase != 50 ||
         allow_aliasing || rej || p->bit_depth || p->anti_aliasing_pc)) {
-    lsx_fail("override options not allowed with this quality level");
+    lsx_fail("override options only work at higher quality levels");
     return SOX_EOF;
   }
   if (quality < 0 && rej == 0 && p->bit_depth == 0)

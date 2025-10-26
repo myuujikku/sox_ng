@@ -163,7 +163,7 @@ static int drain(sox_effect_t *effp, sox_sample_t *obuf UNUSED, size_t *osamp)
       p->copying) /* would stop here anyway */
     p->current_pos++;
   if (p->current_pos < p->num_pos)
-    lsx_warn("Last %u position(s) not reached%s.",
+    lsx_warn("last %u position(s) not reached%s.",
       p->num_pos - p->current_pos,
       (effp->in_signal.length == SOX_UNKNOWN_LEN ||
        effp->in_signal.length/effp->in_signal.channels == p->samples_read) ?

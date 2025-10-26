@@ -128,7 +128,7 @@ static int startread(sox_format_t * ft)
                                 ft->signal.channels = 2;
                                 break;
                         default:
-                                lsx_fail_errno(ft,SOX_EFMT,"unsupported number of channels in file");
+                                lsx_fail_errno(ft,SOX_EFMT,"unsupported number of channels");
                                 return (SOX_EOF);
                         }
 
@@ -137,7 +137,7 @@ static int startread(sox_format_t * ft)
 			        return(SOX_EOF);
                         if (chaninf != ft->signal.channels)
                         {
-                                lsx_fail_errno(ft,SOX_EFMT,"unsupported number of channels in file");
+                                lsx_fail_errno(ft,SOX_EFMT,"unsupported number of channels");
                                 return(SOX_EOF);
                         }
 

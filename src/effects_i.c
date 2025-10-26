@@ -26,7 +26,7 @@ int lsx_usage(sox_effect_t * effp)
 {
   if (effp->handler.usage) {
     lsx_fail("usage: %s", effp->handler.usage);
-    lsx_fail("For help, say %s --help-effect %s",
+    lsx_fail("for help, say %s --help-effect %s",
              sox_globals.myname, effp->handler.name);
   } else
     lsx_fail("this effect takes no parameters");

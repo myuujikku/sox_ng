@@ -493,7 +493,7 @@ static int sox_checkformat(sox_format_t * ft)
   ft->sox_errno = SOX_SUCCESS;
 
   if (ft->signal.rate <= 0) {
-    lsx_fail_errno(ft, SOX_EFMT, "sample rate zero or negative");
+    lsx_fail_errno(ft, SOX_EFMT, "sample rate is zero or negative");
     return SOX_EOF;
   }
   if (!ft->signal.precision) {
@@ -634,7 +634,7 @@ static FILE * open_url(char const * identifier)
         }
     }
     if (!command) {
-        lsx_fail("to read URLs Please install one of wget, wget2 and curl");
+        lsx_fail("to read URLs, please install wget, wget2 or curl");
 	return NULL;
     }
 
@@ -1206,7 +1206,7 @@ static sox_format_t * open_write(
   sox_format_handler_t const * handler;
 
   if (!path || !signal) {
-    lsx_fail("must specify file name and signal parameters to write file");
+    lsx_fail("to write files, specify the file name and signal parameters");
     goto error;
   }
 
@@ -1229,7 +1229,7 @@ static sox_format_t * open_write(
       struct stat st;
       if (!lsx_stat(path, &st) && (st.st_mode & S_IFMT) == S_IFREG &&
           (overwrite_permitted && !overwrite_permitted(path))) {
-        lsx_fail("permission to overwrite `%s' denied", path);
+        lsx_fail("cannot overwrite `%s'", path);
         goto error;
       }
       ft->fp =

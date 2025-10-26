@@ -35,7 +35,7 @@ static int startwrite(sox_format_t * ft)
 
   if (bytes_per_sample == 0)
   {
-      lsx_fail("startwrite [ao driver]: Corrupted encoding data (bits per sample should not be zero)");
+      lsx_fail("corrupted encoding data (bits per sample should not be zero)");
       return SOX_EOF;
   }
 
@@ -52,14 +52,14 @@ static int startwrite(sox_format_t * ft)
   if (strcmp(ft->filename,"default") == 0)
   {
       if ((ao->driver_id = ao_default_driver_id()) < 0) {
-          lsx_fail("could not find a default ao driver");
+          lsx_fail("could not find a default driver");
           return SOX_EOF;
       }
   }
   else
   {
       if ((ao->driver_id = ao_driver_id(ft->filename)) < 0) {
-          lsx_fail("could not find a ao driver %s", ft->filename);
+          lsx_fail("could not find a driver %s", ft->filename);
           return SOX_EOF;
       }
   }
@@ -119,7 +119,7 @@ static int stopwrite(sox_format_t * ft)
   free(ao->buf);
 
   if (ao_close(ao->device) == 0) {
-    lsx_fail("error closing libao output");
+    lsx_fail("error closing output");
     return SOX_EOF;
   }
   ao_shutdown();

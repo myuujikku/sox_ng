@@ -84,7 +84,7 @@ do_break:
 
     /* Default channels to 1 if not found or given with -r */
     if (ft->signal.channels == 0) {
-       lsx_warn("Channels not given in `%s', assuming mono", ft->filename);
+       lsx_warn("channels not given in `%s'; assuming mono", ft->filename);
        ft->signal.channels = 1;
     }
 
@@ -173,7 +173,7 @@ static int read_number(sox_format_t * ft, double *dp)
       }
       if (lsx_readb(ft, &sc)) {
         /* End of file should only come after a newline */
-        lsx_warn("Data file `%s' seems truncated", ft->filename);
+        lsx_warn("data file `%s' seems truncated", ft->filename);
         return SOX_EOF;
       }
 do_continue:

@@ -241,7 +241,7 @@ nodevices:  lsx_fail_errno(ft, SOX_EPERM,
 	    char *name;
 
 	    if (!DeviceHasBuffersInScope(devices[i], is_input)) {
-		lsx_warn("Audio device %d has no buffers in scope", i);
+		lsx_warn("audio device %d has no buffers in scope", i);
 		continue;
 	    }
 	    datasize = 0;
@@ -282,7 +282,7 @@ nodevices:  lsx_fail_errno(ft, SOX_EPERM,
 
     if (ac->adid == kAudioDeviceUnknown)
     {
-      lsx_fail_errno(ft, SOX_EPERM, "can not open audio device");
+      lsx_fail_errno(ft, SOX_EPERM, "can't open audio device");
       return SOX_EOF;
     }
 
@@ -293,7 +293,7 @@ nodevices:  lsx_fail_errno(ft, SOX_EPERM,
     if (AudioObjectGetPropertyData(ac->adid, &address, 0, NULL,
                                    &property_size, &stream_desc))
     {
-      lsx_fail_errno(ft, SOX_EPERM, "can not get audio device properties");
+      lsx_fail_errno(ft, SOX_EPERM, "can't get audio device properties");
       return SOX_EOF;
     }
 
@@ -324,7 +324,7 @@ nodevices:  lsx_fail_errno(ft, SOX_EPERM,
                                     kAudioDevicePropertyStreamFormat,
                                     property_size, &stream_desc))
     {
-      lsx_fail_errno(ft, SOX_EPERM, "can not set audio device properties");
+      lsx_fail_errno(ft, SOX_EPERM, "can't set audio device properties");
       return SOX_EOF;
     }
 
@@ -334,21 +334,21 @@ nodevices:  lsx_fail_errno(ft, SOX_EPERM,
                                kAudioDevicePropertyStreamFormat,
                                &property_size, &stream_desc)
     {
-      lsx_fail_errno(ft, SOX_EPERM, "can not get audio device properties");
+      lsx_fail_errno(ft, SOX_EPERM, "can't get audio device properties");
       return SOX_EOF;
     }
   #endif
 
     if (stream_desc.mChannelsPerFrame != ft->signal.channels)
     {
-      lsx_debug("audio device did not accept %d channels. Use %d channels instead.", (int)ft->signal.channels,
+      lsx_debug("audio device did not accept %d channels; use %d channels instead", (int)ft->signal.channels,
                 (int)stream_desc.mChannelsPerFrame);
       ft->signal.channels = stream_desc.mChannelsPerFrame;
     }
 
     if (stream_desc.mSampleRate != ft->signal.rate)
     {
-      lsx_debug("audio device did not accept %d sample rate. Use %d instead.", (int)ft->signal.rate,
+      lsx_debug("audio device did not accept %d sample rate; use %d instead", (int)ft->signal.rate,
                 (int)stream_desc.mSampleRate);
       ft->signal.rate = stream_desc.mSampleRate;
     }
@@ -370,13 +370,13 @@ nodevices:  lsx_fail_errno(ft, SOX_EPERM,
     }
 
     if (pthread_mutex_init(&ac->mutex, NULL)) {
-      lsx_fail_errno(ft, SOX_EPERM, "failed initializing mutex");
+      lsx_fail_errno(ft, SOX_EPERM, "failed to initialize the mutex");
       free(ac->buf);
       return SOX_EOF;
     }
 
     if (pthread_cond_init(&ac->cond, NULL)) {
-      lsx_fail_errno(ft, SOX_EPERM, "failed initializing condition");
+      lsx_fail_errno(ft, SOX_EPERM, "failed to initialize the condition");
       free(ac->buf);
       return SOX_EOF;
     }

@@ -649,7 +649,7 @@ int lsx_dvmsstartwrite(sox_format_t * ft)
         }
 
         if (!ft->seekable)
-               lsx_warn("Length in output .DVMS header will wrong since can't seek to fix it");
+               lsx_warn("length in output .DVMS header will wrong since can't seek to fix it");
 
         return(SOX_SUCCESS);
 }
@@ -664,7 +664,7 @@ int lsx_dvmsstopwrite(sox_format_t * ft)
         lsx_cvsdstopwrite(ft);
         if (!ft->seekable)
         {
-            lsx_warn("File not seekable");
+            lsx_warn("file is not seekable");
             return (SOX_EOF);
         }
         if (lsx_seeki(ft, (off_t)0, 0) != 0)

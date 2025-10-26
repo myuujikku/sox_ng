@@ -128,7 +128,7 @@ static unsigned short  ImaAdpcmReadBlock(sox_format_t * ft)
         samplesThisBlock = lsx_ima_samples_in((size_t)0, (size_t)ft->signal.channels, bytesRead, (size_t) 0);
         if (samplesThisBlock == 0 || samplesThisBlock > wav->samplesPerBlock)
         {
-            lsx_warn("Premature EOF on input file");
+            lsx_warn("premature EOF on input file");
             return 0;
         }
     }
@@ -169,7 +169,7 @@ static unsigned short  AdpcmReadBlock(sox_format_t * ft)
         samplesThisBlock = lsx_ms_adpcm_samples_in((size_t)0, (size_t)ft->signal.channels, bytesRead, (size_t)0);
         if (samplesThisBlock == 0 || samplesThisBlock > wav->samplesPerBlock)
         {
-            lsx_warn("Premature EOF on input file");
+            lsx_warn("premature EOF on input file");
             return 0;
         }
     }
@@ -416,14 +416,14 @@ static int findChunk(sox_format_t * ft, const char *Label, uint64_t *len)
     {
         if (lsx_reads(ft, magic, (size_t)4) == SOX_EOF)
         {
-            lsx_fail_errno(ft, SOX_EHDR, "WAVE file has missing %s chunk",
+            lsx_fail_errno(ft, SOX_EHDR, "file is missing the %s chunk",
                           Label);
             return SOX_EOF;
         }
         lsx_debug("WAV Chunk %s", magic);
         if (lsx_readdw(ft, &len_tmp) == SOX_EOF)
         {
-            lsx_fail_errno(ft, SOX_EHDR, "WAVE file %s chunk is too short",
+            lsx_fail_errno(ft, SOX_EHDR, "%s chunk is too short",
                           magic);
             return SOX_EOF;
         }
@@ -840,14 +840,14 @@ static int startread(sox_format_t * ft)
     }
 
     if (lsx_readdw(ft, &dwRiffLength_tmp)) {
-        lsx_fail_errno(ft,SOX_EHDR,"WAVE header not found");
+        lsx_fail_errno(ft,SOX_EHDR,"header not found");
         return SOX_EOF;
     }
     qwRiffLength = dwRiffLength_tmp;
 
     if (lsx_reads(ft, magic, (size_t)4) == SOX_EOF || strncmp("WAVE", magic, (size_t)4))
     {
-        lsx_fail_errno(ft,SOX_EHDR,"WAVE header not found");
+        lsx_fail_errno(ft,SOX_EHDR,"header not found");
         return SOX_EOF;
     }
 
@@ -941,49 +941,49 @@ static int startread(sox_format_t * ft)
         /* Default (-1) depends on sample size.  Set that later on. */
         if (ft->encoding.encoding != SOX_ENCODING_UNKNOWN && ft->encoding.encoding != SOX_ENCODING_UNSIGNED &&
             ft->encoding.encoding != SOX_ENCODING_SIGN2)
-            lsx_report("User options overriding encoding read in .wav header");
+            lsx_report("user options are overriding the encoding in the file header");
         break;
 
     case WAVE_FORMAT_ADPCM:
         if (ft->encoding.encoding == SOX_ENCODING_UNKNOWN || ft->encoding.encoding == SOX_ENCODING_MS_ADPCM)
             ft->encoding.encoding = SOX_ENCODING_MS_ADPCM;
         else
-            lsx_report("User options overriding encoding read in .wav header");
+            lsx_report("user options are overriding the encoding in the file header");
         break;
 
     case WAVE_FORMAT_IEEE_FLOAT:
         if (ft->encoding.encoding == SOX_ENCODING_UNKNOWN || ft->encoding.encoding == SOX_ENCODING_FLOAT)
             ft->encoding.encoding = SOX_ENCODING_FLOAT;
         else
-            lsx_report("User options overriding encoding read in .wav header");
+            lsx_report("user options are overriding the encoding in the file header");
         break;
 
     case WAVE_FORMAT_ALAW:
         if (ft->encoding.encoding == SOX_ENCODING_UNKNOWN || ft->encoding.encoding == SOX_ENCODING_ALAW)
             ft->encoding.encoding = SOX_ENCODING_ALAW;
         else
-            lsx_report("User options overriding encoding read in .wav header");
+            lsx_report("user options are overriding the encoding in the file header");
         break;
 
     case WAVE_FORMAT_MULAW:
         if (ft->encoding.encoding == SOX_ENCODING_UNKNOWN || ft->encoding.encoding == SOX_ENCODING_ULAW)
             ft->encoding.encoding = SOX_ENCODING_ULAW;
         else
-            lsx_report("User options overriding encoding read in .wav header");
+            lsx_report("user options are overriding the encoding in the file header");
         break;
 
     case WAVE_FORMAT_IMA_ADPCM:
         if (ft->encoding.encoding == SOX_ENCODING_UNKNOWN || ft->encoding.encoding == SOX_ENCODING_IMA_ADPCM)
             ft->encoding.encoding = SOX_ENCODING_IMA_ADPCM;
         else
-            lsx_report("User options overriding encoding read in .wav header");
+            lsx_report("user options are overriding the encoding in the file header");
         break;
 
     case WAVE_FORMAT_GSM610:
         if (ft->encoding.encoding == SOX_ENCODING_UNKNOWN || ft->encoding.encoding == SOX_ENCODING_GSM )
             ft->encoding.encoding = SOX_ENCODING_GSM;
         else
-            lsx_report("User options overriding encoding read in .wav header");
+            lsx_report("user options are overriding the encoding in the file header");
         break;
 
     default:
@@ -994,7 +994,7 @@ static int startread(sox_format_t * ft)
     if (ft->signal.channels == 0 || ft->signal.channels == wChannels)
         ft->signal.channels = wChannels;
     else
-        lsx_report("User options overriding channels read in .wav header");
+        lsx_report("user options are overriding the number of channels in the file header");
 
     if (ft->signal.channels == 0) {
         lsx_fail_errno(ft, SOX_EHDR, "channel count is zero");
@@ -1004,7 +1004,7 @@ static int startread(sox_format_t * ft)
     if (ft->signal.rate == 0 || ft->signal.rate == dwSamplesPerSecond)
         ft->signal.rate = dwSamplesPerSecond;
     else
-        lsx_report("User options overriding rate read in .wav header");
+        lsx_report("user options are overriding the rate in the file header");
 
 
     wav->lsx_ms_adpcm_i_coefs = NULL;
@@ -1162,7 +1162,7 @@ static int startread(sox_format_t * ft)
     if (!ft->encoding.bits_per_sample || ft->encoding.bits_per_sample == wBitsPerSample)
       ft->encoding.bits_per_sample = wBitsPerSample;
     else
-      lsx_warn("User options overriding size in header");
+      lsx_warn("user options overriding size in header");
 
     /* Now we have enough information to set default encodings. */
     switch (bytespersample)
@@ -1206,7 +1206,7 @@ static int startread(sox_format_t * ft)
     /* XXX - does MS_UNSPEC apply to RF64 files? */
     if (qwDataLength == MS_UNSPEC) {
       wav->ignoreSize = 1;
-      lsx_debug("WAV Chunk data's length is value often used in pipes or 4G files.  Ignoring length.");
+      lsx_debug("data length is unspecified; ignoring length");
     }
 
 
@@ -1337,7 +1337,7 @@ static int startread(sox_format_t * ft)
                         lsx_debug("Chunk ICRD");
                         if (len > 254)
                         {
-                            lsx_warn("Possible buffer overflow hack attack (ICRD)!");
+                            lsx_warn("possible buffer overflow hack attack (ICRD)!");
                             break;
                         }
                         if (lsx_reads(ft,text, (size_t)len))
@@ -1358,7 +1358,7 @@ static int startread(sox_format_t * ft)
                         lsx_debug("Chunk ISFT");
                         if (len > 254)
                         {
-                            lsx_warn("Possible buffer overflow hack attack (ISFT)!");
+                            lsx_warn("possible buffer overflow hack attack (ISFT)!");
                             break;
                         }
                         if (lsx_reads(ft,text, (size_t)len))
@@ -1484,7 +1484,7 @@ static size_t read_samples(sox_format_t * ft, sox_sample_t *buf, size_t len)
 
             done = wavgsmread(ft, buf, len);
             if (done == 0 && wav->numSamples != 0 && !wav->ignoreSize)
-                lsx_warn("Premature EOF on input file");
+                lsx_warn("premature EOF on input file");
         break;
 
         default: /* assume PCM or float encoding */
@@ -1495,7 +1495,7 @@ static size_t read_samples(sox_format_t * ft, sox_sample_t *buf, size_t len)
             /* If software thinks there are more samples but I/O */
             /* says otherwise, let the user know about this.     */
             if (done == 0 && wav->numSamples != 0 && !wav->ignoreSize)
-                lsx_warn("Premature EOF on input file");
+                lsx_warn("premature EOF on input file");
         }
 
         /* Only return buffers that contain a totally playable
@@ -1559,7 +1559,7 @@ static int startwrite(sox_format_t * ft)
     wav->numSamples = 0;
     wav->dataLength = 0;
     if (!ft->signal.length && !ft->seekable)
-        lsx_warn("Length in output header will be wrong since can't seek to fix it");
+        lsx_warn("length in output header will be wrong since can't seek to fix it");
 
     rc = wavwritehdr(ft, 0);  /* also calculates various wav->* info */
     if (rc != 0)
@@ -1748,7 +1748,7 @@ static int wavwritehdr(sox_format_t * ft, int second_header)
         case SOX_ENCODING_GSM:
             if (wChannels!=1)
             {
-                lsx_report("Overriding GSM audio from %d channel to 1",wChannels);
+                lsx_report("overriding GSM audio from %d channel to 1",wChannels);
                 if (!second_header)
                   ft->signal.length /= max(1, ft->signal.channels);
                 wChannels = ft->signal.channels = 1;
@@ -1812,7 +1812,7 @@ static int wavwritehdr(sox_format_t * ft, int second_header)
     if (ft->encoding.reverse_bytes == MACHINE_IS_LITTLEENDIAN)
     {
         if (!second_header)
-            lsx_report("Requested to swap bytes so writing RIFX header");
+            lsx_report("requested to swap bytes so writing RIFX header");
         if (lsx_writes(ft, "RIFX"))
 	    write_error();
     }

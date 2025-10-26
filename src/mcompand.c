@@ -117,7 +117,7 @@ static int sox_mcompand_getopts_1(comp_band_t * l, size_t n, char **argv)
     return (SOX_SUCCESS);
 }
 
-static int parse_subarg(char *s, char **subargv, size_t *subargc) {
+static int parse_subarg(sox_effect_t * effp, char *s, char **subargv, size_t *subargc) {
   char **ap;
   char *s_p;
 
@@ -137,10 +137,8 @@ static int parse_subarg(char *s, char **subargv, size_t *subargc) {
 
   if (*subargc < 2 || *subargc > 5)
     {
-      lsx_fail("wrong number of parameters for the compander effect within mcompand; usage:\n"
-  "\tattack1,decay1{,attack2,decay2} [soft-knee-dB:]in-dB1[,out-dB1]{,in-dB2,out-dB2} [gain [initial-volume-dB [delay]]]\n"
-  "\tdB values are floating point or -inf'; times are in seconds.");
-      return (SOX_EOF);
+      lsx_fail("wrong number of parameters in `%s'", s);
+      return lsx_usage(effp);
     } else
       return SOX_SUCCESS;
 }
@@ -158,7 +156,7 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
 
   /* how many bands? */
   if (! (argc&1)) {
-    lsx_fail("mcompand accepts only an odd number of arguments");
+    lsx_fail("needs an odd number of arguments");
     return SOX_EOF;
   }
   c->nBands = (argc+1)>>1;
@@ -167,7 +165,7 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
 
   for (i=0;i<c->nBands;++i) {
     c->arg = lsx_strdup(argv[i<<1]);
-    if (parse_subarg(c->arg,subargv,&subargc) != SOX_SUCCESS)
+    if (parse_subarg(effp,c->arg,subargv,&subargc) != SOX_SUCCESS)
       return SOX_EOF;
     if (sox_mcompand_getopts_1(&c->bands[i], subargc, &subargv[0]) != SOX_SUCCESS)
       return SOX_EOF;

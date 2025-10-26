@@ -167,7 +167,7 @@ static int parse(sox_effect_t * effp, char * * argv, sox_rate_t rate)
 
     if (!argv) {
       if (i > 0 && p->splices[i].start <= p->splices[i-1].start) {
-        lsx_fail("splice starts must be in increasing order");
+        lsx_fail("starts must be in increasing order");
         return SOX_EOF;
       }
       if (p->splices[i].start < p->splices[i].overlap) {
@@ -290,7 +290,7 @@ static int stop(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *)effp->priv;
   if (p->splices_pos != p->nsplices)
-    lsx_warn("Input audio too short; splices not made: %u", p->nsplices - p->splices_pos);
+    lsx_warn("input audio is too short; splices not made: %u", p->nsplices - p->splices_pos);
   free(p->buffer);
   return SOX_SUCCESS;
 }

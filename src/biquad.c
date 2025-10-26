@@ -200,7 +200,7 @@ static int create(sox_effect_t * effp, int argc, char * * argv)
 
   for (; argc ; --argc, ++argv, ++d) {
     if (sscanf(*argv, "%lf%c", d, &c) != 1) {
-      lsx_fail("invalid biquad coefficient `%s'", *argv);
+      lsx_fail("invalid coefficient `%s'", *argv);
       return SOX_EOF;
     }
   }

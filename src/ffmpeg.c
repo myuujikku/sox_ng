@@ -100,13 +100,13 @@ static int startread(sox_format_t * ft)
       /* Make ffmpeg's stdin read the pipe; ft->fp will read from ffmpeg */
       close(pipefd[1]);
       if (dup2(pipefd[0], 0) != 0) {
-	  lsx_fail_errno(ft, errno, "cannot redirect stdin into pipe\n");
+	  lsx_fail_errno(ft, errno, "cannot redirect stdin into a pipe\n");
 	  return SOX_EOF;
       }
       close(pipefd[0]);
     }
 #else
-    lsx_warn("When stdin is a pipe, bypass filetype autodetection using -t ffmpeg -");
+    lsx_warn("when stdin is a pipe, bypass filetype autodetection using -t ffmpeg -");
 #endif
   }
 

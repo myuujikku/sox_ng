@@ -311,13 +311,13 @@ static int startwrite(sox_format_t * ft)
   rate = ft->signal.rate;
   if (rate)
     lsx_fail_errno(ft, SOX_EHDR,
-      "Error setting-up Ogg Vorbis encoder; check sample-rate & # of channels");
+      "error setting up the encoder; check sample rate and number of channels");
 
   /* Use encoding to average bit rate of VBR as specified by the -C option */
   if (ft->encoding.compression != HUGE_VAL) {
     if (ft->encoding.compression < -1 || ft->encoding.compression > 10) {
       lsx_fail_errno(ft, SOX_EINVAL,
-                     "Vorbis compression quality nust be between -1 and 10");
+                     "compression quality nust be between -1 and 10");
       return SOX_EOF;
     }
     quality = ft->encoding.compression;
@@ -326,7 +326,7 @@ static int startwrite(sox_format_t * ft)
   if (vorbis_encode_init_vbr(&ve->vi, (long)(ft->signal.channels), (long)(ft->signal.rate + .5), (float)(quality / 10)))
 #include "ignore-warning.h"
   {
-    lsx_fail_errno(ft, SOX_EFMT, "libVorbis cannot encode this sample-rate or # of channels");
+    lsx_fail_errno(ft, SOX_EFMT, "cannot encode this sample-rate or number of channels");
     return SOX_EOF;
   }
 
@@ -336,8 +336,7 @@ static int startwrite(sox_format_t * ft)
   ogg_stream_init(&ve->os, INT_MAX & (int)RANQD1);  /* Random serial number */
 
   if (write_vorbis_header(ft, ve) == HEADER_ERROR) {
-    lsx_fail_errno(ft, SOX_EHDR,
-                   "Error writing header for Ogg Vorbis audio stream");
+    lsx_fail_errno(ft, SOX_EHDR, "error writing header");
     return (SOX_EOF);
   }
 

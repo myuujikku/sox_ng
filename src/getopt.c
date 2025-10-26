@@ -221,7 +221,7 @@ lsx_getopt(
                     { /* No match */
                         if (oerr)
                         {
-                            lsx_fail("option `%s' not recognized", current);
+                            lsx_fail("invalid option `%s'", current);
 			    exit(1);
                         }
                         state->ind++;
@@ -254,7 +254,7 @@ lsx_getopt(
         { /* ':' is never a valid short option character */
             if (oerr)
             {
-                lsx_fail("option `%c' not recognized", state->opt);
+                lsx_fail("invalid option `-%c'", state->opt);
 		exit(1);
             }
             state->curpos++;
@@ -270,7 +270,7 @@ lsx_getopt(
             { /* unrecognized option */
                 if (oerr)
                 {
-                    lsx_fail("option `%c' not recognized", state->opt);
+                    lsx_fail("invalid option `-%c'", state->opt);
 		    exit(1);
                 }
                 CheckCurPosEnd(state);

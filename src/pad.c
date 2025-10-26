@@ -196,7 +196,7 @@ static int stop(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *)effp->priv;
   if (p->pads_pos != p->npads)
-    lsx_warn("Input audio too short; pads not applied: %u", p->npads-p->pads_pos);
+    lsx_warn("input audio is too short; pads not applied: %u", p->npads-p->pads_pos);
   return SOX_SUCCESS;
 }
 

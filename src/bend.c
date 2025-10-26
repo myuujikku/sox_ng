@@ -307,7 +307,7 @@ static int stop(sox_effect_t * effp)
   priv_t *p = (priv_t *) effp->priv;
 
   if (p->bends_pos != p->nbends)
-    lsx_warn("Input audio too short; bends not applied: %u",
+    lsx_warn("input audio too short; bends not applied: %u",
         p->nbends - p->bends_pos);
   return SOX_SUCCESS;
 }

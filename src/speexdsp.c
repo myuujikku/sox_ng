@@ -132,7 +132,7 @@ static int getopts(sox_effect_t* effp, int argc, char** argv)
 
     if (!p->agc && !p->denoise && !p->dereverb)
     {
-        lsx_report("No features specified. Enabling default settings \"-agc %zu -denoise %zu\".", agcDefault, denoiseDefault);
+        lsx_report("no features specified. Enabling default settings \"-agc %zu -denoise %zu\".", agcDefault, denoiseDefault);
         p->agc = agcDefault;
         p->denoise = denoiseDefault;
     }

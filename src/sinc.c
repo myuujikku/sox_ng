@@ -102,7 +102,7 @@ endwhile: /* Alas, poor "break" */
     p->num_taps[1] = taps;
 
     if (p->att && p->beta >= 0) {
-      lsx_fail("You can only give one of -a and -b");
+      lsx_fail("you can only give one of -a and -b");
       return SOX_EOF;
     }
     if (p->tbw1 && p->num_taps[1]) {

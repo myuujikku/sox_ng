@@ -133,7 +133,7 @@ static int startread(sox_format_t * ft)
   priv_t * lpc = (priv_t *)ft->priv;
 
   if ((lpc->decst = create_lpc10_decoder_state()) == NULL) {
-    lsx_fail("lpc10 could not allocate decoder state");
+    lsx_fail("could not allocate decoder state");
     return SOX_EOF;
   }
   lpc->samples = LPC10_SAMPLES_PER_FRAME;
@@ -145,7 +145,7 @@ static int startwrite(sox_format_t * ft)
   priv_t * lpc = (priv_t *)ft->priv;
 
   if ((lpc->encst = create_lpc10_encoder_state()) == NULL) {
-    lsx_fail("lpc10 could not allocate encoder state");
+    lsx_fail("could not allocate encoder state");
     return SOX_EOF;
   }
   lpc->samples = 0;

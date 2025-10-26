@@ -129,20 +129,20 @@ static int startread(sox_format_t * ft)
 	  return SOX_EOF;
         if (compresstype > 1)
         {
-                lsx_fail_errno(ft,SOX_EHDR,"bad compression type in HCOM header");
+                lsx_fail_errno(ft,SOX_EHDR,"bad compression type");
                 return (SOX_EOF);
         }
         if (lsx_readdw(ft, &divisor))
 	  return SOX_EOF;
         if (divisor == 0 || divisor > 4)
         {
-                lsx_fail_errno(ft,SOX_EHDR,"bad sampling rate divisor in HCOM header");
+                lsx_fail_errno(ft,SOX_EHDR,"bad sampling rate divisor");
                 return (SOX_EOF);
         }
         if (lsx_readw(ft, &dictsize) ||
             dictsize == 0 || dictsize > 511)
         {
-                lsx_fail_errno(ft, SOX_EHDR, "implausible dictionary size in HCOM header");
+                lsx_fail_errno(ft, SOX_EHDR, "implausible dictionary size");
                 return SOX_EOF;
         }
 
@@ -455,7 +455,7 @@ static int stopwrite(sox_format_t * ft)
 
   if (p->pos > INT32_MAX) {
     free(p->data);
-    lsx_fail_errno(ft, ERANGE, "file too large for HCOM header");
+    lsx_fail_errno(ft, ERANGE, "file too large");
     return SOX_EOF;
   }
   compressed_len = p->pos;
@@ -475,7 +475,7 @@ static int stopwrite(sox_format_t * ft)
   lsx_writedw(ft, 0); /* rsrc size */
   lsx_padbytes(ft, (size_t) 128 - 91);
   if (lsx_error(ft)) {
-    lsx_fail_errno(ft, errno, "write error in HCOM header");
+    lsx_fail_errno(ft, errno, "write error");
     rc = SOX_EOF;
   } else if (lsx_writebuf(ft, compressed_data, compressed_len) != (size_t)compressed_len) {
     /* Write the compressed_data fork */

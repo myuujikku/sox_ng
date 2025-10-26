@@ -180,7 +180,7 @@ static int sox_chorus_getopts (sox_effect_t *effp,
 
         if (argc > 0) {
             if (chorus->stage_count == MAX_STAGE_COUNT)
-                lsx_fail("there is a maximum of %d chorus stages", MAX_STAGE_COUNT);
+                lsx_fail("there is a maximum of %d stages", MAX_STAGE_COUNT);
             else
                 lsx_fail("invalid argument `%s'", *argv);
             return SOX_EOF;
@@ -247,7 +247,7 @@ static int sox_chorus_start (sox_effect_t *effp)
 		    lsx_fail("delay + depth can't be more than %.0f ms at sample rate %.0fHz",
 			     SOX_UINT_MAX(32) / effp->in_signal.rate * 1000,
 			     effp->in_signal.rate);
-		    lsx_fail("Lower sr to increase the maximum depth of the delay");
+		    lsx_fail("lower sr to increase the maximum depth of the delay");
 		    return SOX_EOF;
 		}
                 stage->delay_line_length = dll;
