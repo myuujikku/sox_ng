@@ -247,7 +247,7 @@ AC_CHECK_INCLUDES_DEFAULT
 AC_PROG_EGREP
 
 dnl Checks for header files.
-AC_CHECK_HEADERS(fcntl.h unistd.h byteswap.h sys/ioctl.h sys/select.h sys/stat.h sys/time.h sys/timeb.h sys/types.h sys/utsname.h sys/wait.h termios.h glob.h fenv.h stropts.h)
+AC_CHECK_HEADERS(fcntl.h unistd.h byteswap.h sys/ioctl.h sys/queue.h sys/select.h sys/stat.h sys/time.h sys/timeb.h sys/types.h sys/utsname.h sys/wait.h termios.h glob.h fenv.h stropts.h)
 
 dnl Checks for library functions.
 AC_CHECK_FUNCS(strcasecmp strdup popen vsnprintf gettimeofday mkstemp fmemopen)
@@ -581,11 +581,11 @@ fi
 AC_ARG_WITH(dolbyb,
     AS_HELP_STRING([--without-dolbyb],
         [Don't try to use libdolbyb]))
-if test "$with_dolbyb" != "no"
+if test "x$with_dolbyb" != xno
 then
     AC_CHECK_HEADERS(dolbyb.h,
         [AC_CHECK_LIB(dolbyb, dolbyb_init, found_libdolbyb=yes; DOLBYB_LIBS="$DOLBYB_LIBS -ldolbyb", found_libdolbyb=no)])
-    if test "$found_libdolbyb" = yes; then
+    if test "x$found_libdolbyb" = xyes; then
 	AC_DEFINE(EXTERNAL_DOLBYB, 1, [Define if you are using an external dolbyb library])
     else
 	LIBDOLBYB_LIBADD=../libdolbyb/libdolbyb.la
@@ -601,6 +601,30 @@ else
     using_dolbyb=no
 fi
 
+
+
+# Check for libebur128
+AC_ARG_WITH(ebur128,
+    AS_HELP_STRING([--without-ebur128], [Don't try to use libebur128]))
+if test "x$with_ebur128" != xno
+then
+    AC_CHECK_HEADERS(ebur128.h,
+        [AC_CHECK_LIB(ebur128, ebur128_init, found_elibbur128=yes; EBUR128_LIBS="$EBUR128_LIBS -lebur128", found_elibbur128=no)])
+    if test "x$found_elibbur128" = xyes; then
+        AC_DEFINE(EXTERNAL_EBUR128, 1, [Define if you are using an external ebur128 library])
+    else
+      LIBEBUR128_LIBADD=../libebur128/libebur128.la
+      AC_DEFINE(HAVE_EBUR128_H, 1, [Define if including ebur128 support])
+    fi
+    AM_CONDITIONAL(EXTERNAL_EBUR128, test "x$found_libebur128" = xyes)
+    AC_SUBST(LIBEBUR128_LIBADD)
+    AC_SUBST(EBUR128_LIBS)
+    using_ebur128=yes
+else
+    # Don't compile libebur128 but do distribute its sources
+    AM_CONDITIONAL(EXTERNAL_EBUR128, true)
+    using_ebur128=no
+fi
 
 
 # Check for libgsm
@@ -856,7 +880,7 @@ AC_SUBST(REPLACE)
 AM_CONDITIONAL(STATIC_LIBSOX_ONLY, test "$enable_shared" = "no" -a "$enable_static" = "yes")
 
 dnl Generate output files.
-AC_CONFIG_FILES(Makefile src/Makefile libdolbyb/Makefile libgsm/Makefile lpc10/Makefile test/Makefile sox_ng.pc)
+AC_CONFIG_FILES(Makefile src/Makefile libdolbyb/Makefile libebur128/Makefile libgsm/Makefile lpc10/Makefile test/Makefile sox_ng.pc)
 AC_OUTPUT
 
 if test "$using_dolbyb" != "no"; then
@@ -864,6 +888,14 @@ if test "$using_dolbyb" != "no"; then
     dolbyb_option="(external)"
   else
     dolbyb_option="(in-tree)"
+  fi
+fi
+
+if test "$using_ebur128" != "no"; then
+  if test "$found_libebur128" = "yes"; then
+    ebur128_option="(external)"
+  else
+    ebur128_option="(in-tree)"
   fi
 fi
 
@@ -951,6 +983,7 @@ echo
 echo "OTHER OPTIONS"
 echo "prefer curl to wget........$using_curl"
 echo "dolbyb support.............$using_dolbyb $dolbyb_option"
+echo "ebur128 support............$using_ebur128 $ebur128_option"
 echo "ffmpeg support.............$using_ffmpeg"
 echo "ladspa effects.............$using_ladspa"
 echo "magic support..............$using_magic"

@@ -14,6 +14,13 @@
 
 #include "sox_i.h"
 
+#if HAVE_EBUR128_H
+# if EXTERNAL_EBUR128
+#  include <ebur128.h>
+# else
+#  include "../libebur128/ebur128.h"
+# endif
+#endif
 
 /* Private data for stat effect */
 typedef struct {
@@ -34,6 +41,10 @@ typedef struct {
   unsigned long fft_size;
   unsigned long fft_offset;
   sox_bool fft_average;
+#if HAVE_EBUR128_H
+  ebur128_state *ebur128_state;
+  sox_bool ebur128_histogram;
+#endif
 } priv_t;
 
 
@@ -71,6 +82,10 @@ static int sox_stat_getopts(sox_effect_t * effp, int argc, char **argv)
       stat->volume = 2;
     else if (!(strcmp(*argv, "-a")))
       stat->fft_average = sox_true;
+#if HAVE_EBUR128_H
+    else if (!(strcmp(*argv, "-h")))
+      stat->ebur128_histogram = sox_true;
+#endif
     else {
       lsx_fail("invalid option `%s'", *argv);
       return lsx_usage(effp);
@@ -110,6 +125,42 @@ static int sox_stat_start(sox_effect_t * effp)
     lsx_valloc(stat->re_in, stat->fft_size);
     lsx_valloc(stat->re_out, stat->fft_size / 2 + 1);
   }
+
+#if HAVE_EBUR128_H
+  stat->ebur128_state = ebur128_init((unsigned int)effp->in_signal.channels,
+                                     (unsigned long)(effp->in_signal.rate + .5),
+                                     EBUR128_MODE_M | EBUR128_MODE_S |
+                                     EBUR128_MODE_I | EBUR128_MODE_TRUE_PEAK |
+                                     (stat->ebur128_histogram ? EBUR128_MODE_HISTOGRAM : 0));
+  if (stat->ebur128_state == NULL) {
+    lsx_fail("initialization of libebur128 failed");
+    return SOX_EOF;
+  }
+#if 0
+  switch (effp->in_signal.channels) {
+  case 5: ebur128_set_channel(stat->ebur128_state, 4, EBUR128_RIGHT_SURROUND);
+          ebur128_set_channel(stat->ebur128_state, 3, EBUR128_LEFT_SURROUND);
+          goto case3;
+
+  case 4: ebur128_set_channel(stat->ebur128_state, 3, EBUR128_RIGHT_SURROUND);
+          ebur128_set_channel(stat->ebur128_state, 2, EBUR128_LEFT_SURROUND);
+          goto case2;
+
+  case 3:
+case3:    ebur128_set_channel(stat->ebur128_state, 2, EBUR128_CENTER);
+          goto case2;
+  case 2:
+case2:    ebur128_set_channel(stat->ebur128_state, 1, EBUR128_RIGHT);
+          goto case1;
+  case 1:
+case1:    ebur128_set_channel(stat->ebur128_state, 0, EBUR128_LEFT);
+          break;
+  default:
+          /* Use the ebur128 defaults */
+          break;
+  }
+#endif
+#endif
 
   return SOX_SUCCESS;
 }
@@ -175,6 +226,10 @@ static int sox_stat_flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_samp
       }
     }
 
+#if HAVE_EBUR128_H
+    ebur128_add_frames_int(stat->ebur128_state, (int const *)ibuf,
+                           len / effp->in_signal.channels);
+#endif
     for (done = 0; done < len; done++) {
       long lsamp = *ibuf++;
       double delta, samp = (double)lsamp / stat->scale;
@@ -255,6 +310,10 @@ static int sox_stat_stop(sox_effect_t * effp)
   priv_t * stat = (priv_t *) effp->priv;
   double amp, scale, rms = 0, freq;
   double x, ct;
+#if HAVE_EBUR128_H
+  double loudness, true_peak;
+  unsigned int channel;
+#endif
 
   ct = stat->read;
 
@@ -305,6 +364,26 @@ static int sox_stat_stop(sox_effect_t * effp)
   fprintf(stderr, "Minimum delta:     %12.6f\n", stat->dmin);
   fprintf(stderr, "Mean    delta:     %12.6f\n", stat->dsum1/(ct-1));
   fprintf(stderr, "RMS     delta:     %12.6f\n", sqrt(stat->dsum2/(ct-1)));
+#if HAVE_EBUR128_H
+  true_peak = -INFINITY;
+  for (channel = 0; channel < effp->in_signal.channels; channel++)
+    if (ebur128_true_peak(stat->ebur128_state, channel, &loudness)
+        == EBUR128_SUCCESS && loudness > true_peak)
+      true_peak = loudness;
+  fprintf(stderr, "EBUR128 True Peak: %12.6f\n", true_peak);
+
+  if (ebur128_loudness_momentary(stat->ebur128_state, &loudness)
+      == EBUR128_SUCCESS)
+  fprintf(stderr, "EBUR128 Momentary: %12.6f\n", loudness);
+
+  if (ebur128_loudness_shortterm(stat->ebur128_state, &loudness)
+      == EBUR128_SUCCESS)
+  fprintf(stderr, "EBUR128 Short term:%12.6f\n", loudness);
+
+  if (ebur128_loudness_global(stat->ebur128_state, &loudness)
+      == EBUR128_SUCCESS)
+  fprintf(stderr, "EBUR128 Integrated:%12.6f\n", loudness);
+#endif
   freq = sqrt(stat->dsum2/stat->sum2)*effp->in_signal.rate/(M_PI*2);
   fprintf(stderr, "Rough   frequency: %12d\n", (int)freq);
 
@@ -336,6 +415,10 @@ static int sox_stat_stop(sox_effect_t * effp)
   /* Release FFT memory */
   free(stat->re_in);
   free(stat->re_out);
+
+#if HAVE_EBUR128_H
+  ebur128_destroy(&stat->ebur128_state);
+#endif
 
   return SOX_SUCCESS;
 

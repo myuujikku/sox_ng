@@ -149,6 +149,7 @@ libsox_ng_la_SOURCES += raw-fmt.c \
   voc.c vox-fmt.c wav.c wav-formats.h wve.c xa.c
 
 libsox_ng_la_LIBADD += @DOLBYB_LIBS@ @LIBDOLBYB_LIBADD@
+libsox_ng_la_LIBADD += @EBUR128_LIBS@ @LIBEBUR128_LIBADD@
 libsox_ng_la_LIBADD += @GSM_LIBS@ @LIBGSM_LIBADD@
 libsox_ng_la_LIBADD += @LPC10_LIBS@ @LIBLPC10_LIBADD@
 

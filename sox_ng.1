@@ -3855,6 +3855,10 @@ Maximum delta	max(\^\(br\^\fIx\s-2\dk\u\s0\fR\^\-\^\fIx\s-2\dk\-1\u\s0\fR\^\(br\
 Minimum delta	min(\^\(br\^\fIx\s-2\dk\u\s0\fR\^\-\^\fIx\s-2\dk\-1\u\s0\fR\^\(br\^)
 Mean delta	\(S1/\s-2n\-1\s+2\^\(*S\^\^\(br\^\fIx\s-2\dk\u\s0\fR\^\-\^\fIx\s-2\dk\-1\u\s0\fR\^\(br\^
 RMS delta	\(sr(\(S1/\s-2n\-1\s+2\^\(*S\^(\fIx\s-2\dk\u\s0\fR\^\-\^\fIx\s-2\dk\-1\u\s0\fR)\(S2)
+EBUR128 True Peak	The maximum of the True Peak for each channel
+EBUR128 Momentary	The maximum momentary loudness (over 400ms)
+EBUR128 Short Term	The maximum short term loudness (over 3 seconds)
+EBUR128 Integrated	The integrated loudness (over the whole file)
 Rough frequency	In Hz.
 Volume Adjustment	T{
 The parameter to the \fBvol\fR
@@ -3865,7 +3869,9 @@ T}
 .TE
 .DT
 .SP
-Note that the delta measurements are not applicable to multichannel audio.
+Note that the delta measurements are not applicable to multichannel audio
+and EBU\ R\ 128 (=ITU-R\ BS.1770) measurements are in
+Loudness Units referenced to Full Scale (LUFS),
 .SP
 The
 .B \-s
@@ -3905,6 +3911,12 @@ The
 option
 outputs the average power spectrum instead of
 the power spectrum for each 4096-point DFT.
+.SP
+The
+.B \-h
+option
+uses the "histogram algorithm" to calculate integrated EBU R-128 loudness,
+which requires less memory but is less accurate.
 .SP
 See the
 .B stats
