@@ -117,7 +117,7 @@ static int start(sox_effect_t * effp)
     break;
   case INTERP_LINEAR:
   case INTERP_QUADRATIC:
-    lsx_valloc(p->mod_buf_i, p->mod_buf_len);
+    lsx_valloc(p->mod_buf_f, p->mod_buf_len);
     lsx_generate_wave_table(p->mod_type, SOX_FLOAT, p->mod_buf_f, p->mod_buf_len,
                             1., (double)p->delay_buf_len, M_PI_2);
     break;
