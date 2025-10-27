@@ -128,6 +128,9 @@ static int start(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *) effp->priv;
 
+  /* Initialise to 0 and use saturation function to calculate the right value */
+  p->offset_out = 0;
+
   switch (p->sat_type) {
     case SAT_TANH:
       p->offset_out = sat_tanh(p, 0);
