@@ -5,8 +5,8 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
-sox_ng-14.6.1+git20251024   2025-10-24
--------------
+sox_ng-14.6.1+git20251029   2025-10-29
+-------------------------
 
 New features:
 
@@ -23,25 +23,28 @@ New features:
   o twolame: Enable VBR encoding with -C -10-10
 
 Bug fixes:
+
   o Make chorus fetch "delayed" samples from the past, not the future
   o Fix several more inaccuracies in chorus
   o Remove unmaintained msvc files
   o Make CMake work again; still missing optional formats
   o Re-enable the comments test
   o flanger: Fix range of width from -100-100 to 0-inf
-  o phaser: Fix range of regen to -1-2
+  o phaser: Fix range of regen to -1 to +1
   o stretch: Fix infinite loop by imposing minimum window size of 1ms
   o Reject trailing garbage on numeric arguments
   o Make --help-format mp3 report write encodings
   o audioio (Sun audio): Fix compilation and segfault on NetBSD
 
 Documentation:
+
   o Make messages for syntax errors more helpful
   o rate: Document undocumented options
   o Redraw flanger's flow diagram to be more similar to chorus/phaser
   o Make --version include -rc1 or other extensions
 
 Internal:
+
   o Allow ./configure --without-dolbyb
 
 sox_ng-14.6.1   2025-10-13
