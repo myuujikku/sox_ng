@@ -1974,6 +1974,7 @@ static void display_supported_effects(void)
     if (e && e->name && !(e->flags & SOX_EFF_INTERNAL))
       printf(" %s", e->name);
   }
+  putchar('\n');
 }
 
 static void usage(void)
