@@ -1969,7 +1969,7 @@ static void display_supported_effects(void)
     if (e && e->name)
       printf(" %s%s", e->name, (e->flags & SOX_EFF_INTERNAL)? "#" : "");
   }
-  puts("\n  # LibSoX-only effect");
+  putchar('\n');
 }
 
 static void usage(void)
