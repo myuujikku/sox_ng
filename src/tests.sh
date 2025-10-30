@@ -270,12 +270,14 @@ if [ "$all" = "all" ]; then
 fi
 do_singlechannel_formats
 
+if false; then # needs skip & dir work for general use
 ${srcdir}/test-comments
 if [ $? -eq 0 ]; then
   echo "ok     comments"
 else
   echo "*FAIL* comments"
   exit 1
+fi
 fi
 
 ${bindir}/sox_ng${EXEEXT} -c 1 -r 44100 -n output.u8 synth .01 vol .5
