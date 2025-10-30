@@ -469,31 +469,29 @@ fi
 
 
 
-dnl Check for MP3-reading libraries
-
-AC_ARG_WITH(mad,
-    AS_HELP_STRING([--without-mad],
-        [Don't try to use MAD (MP3 Audio Decoder)]))
-
-dnl Check for MAD libraries
-using_mad=no
-if test "$with_mad" != "no"; then
-    using_mad=yes
-    AC_CHECK_HEADERS(mad.h,, using_mad=no)
-    AC_MSG_CHECKING([whether to dlopen mad])
-    AC_ARG_ENABLE(dl_mad,
+dnl Check for MAD library
+using_mad=$opt_default
+AC_CHECK_HEADERS(mad.h,, using_mad=no)
+AC_ARG_ENABLE(dl_mad,
       AS_HELP_STRING([--enable-dl-mad], [Dlopen mad instead of linking in.]),
       enable_dl_mad=$enableval, enable_dl_mad=no)
-    AC_MSG_RESULT($enable_dl_mad)
-    if test "x$using_libltdl" = "xyes" -a "x$enable_dl_mad" = "xyes"; then
-      AC_DEFINE(DL_MAD, 1, [Define to dlopen() mad.])
-    else
-      enable_dl_mad="no"
-      AC_CHECK_LIB(mad, mad_stream_buffer, MP3_LIBS="$MP3_LIBS -lmad",using_mad=no)
-      if test "$with_mad" = "yes" -a "$using_mad" = "no"; then
-        AC_MSG_FAILURE([cannot find libmad])
-      fi
-    fi
+AC_OPTIONAL_FORMAT(mad, MAD, [test "x$using_mad" != "xno"])
+if test "x$using_mad" = "xdyn"; then
+  enable_dl_mad=yes
+fi
+if test "x$using_mad" = "xyes" && test "x$enable_dl_mad" = "xyes"; then
+  using_mad=dyn
+fi
+if test "x$with_mad" != "xno" && \
+   test "x$using_libltdl" = "xyes" && \
+   test "x$enable_dl_mad" = "xyes"; then
+  AC_DEFINE(DL_MAD, 1, [Define to dlopen() mad.])
+else
+  enable_dl_mad=no
+  AC_CHECK_LIB(mad, mad_stream_buffer, MP3_LIBS="$MP3_LIBS -lmad",using_mad=no)
+  if test "$with_mad" = "yes" && test "$using_mad" = "no"; then
+    AC_MSG_FAILURE([cannot find libmad])
+  fi
 fi
 
 
@@ -521,58 +519,60 @@ AC_SUBST(ID3_LIBS)
 
 
 dnl Check for LAME library.
-AC_ARG_WITH(lame,
-    AS_HELP_STRING([--without-lame],
-        [Don't try to use LAME (LAME Ain't an MP3 Encoder)]))
-using_lame=no
-if test "$with_lame" != "no"; then
-    using_lame=yes
-    AC_MSG_CHECKING([whether to dlopen lame])
-    AC_ARG_ENABLE(dl_lame,
-      AS_HELP_STRING([--enable-dl-lame], [Dlopen lame instead of linking in.]),
-      enable_dl_lame=$enableval, enable_dl_lame=no)
-    AC_MSG_RESULT($enable_dl_lame)
-    if test "x$using_libltdl" = "xyes" -a "x$enable_dl_lame" = "xyes"; then
-      AC_DEFINE(DL_LAME, 1, [Define to dlopen() lame.])
-    else
-      enable_dl_lame="no"
-      AC_CHECK_HEADERS(lame/lame.h,,
-        [AC_CHECK_HEADERS(lame.h, [], using_lame=no)])
-      AC_CHECK_LIB(mp3lame, lame_get_lametag_frame, MP3_LIBS="$MP3_LIBS -lmp3lame", using_lame=no)
-      AC_CHECK_LIB(mp3lame, id3tag_set_fieldvalue, using_lame=$using_lame)
-      if test x"$ac_cv_lib_mp3lame_id3tag_set_fieldvalue" = "xyes"; then
-        AC_DEFINE(HAVE_LAME_ID3TAG, 1, [Define to 1 if lame supports optional ID3 tags.])
-      fi
-      if test x"$with_lame" = "xyes" -a x"$using_lame" = "xno"; then
-        AC_MSG_FAILURE([cannot find LAME])
-      fi
-    fi
+using_lame=$opt_default
+AC_CHECK_HEADERS(lame/lame.h,,
+  [AC_CHECK_HEADERS(lame.h, , using_lame=no)])
+AC_ARG_ENABLE(dl_lame,
+  AS_HELP_STRING([--enable-dl-lame], [Dlopen lame instead of linking in.]),
+  enable_dl_lame=$enableval, enable_dl_lame=no)
+AC_OPTIONAL_FORMAT(lame, LAME, [test "x£using_lame" != "xno"])
+if test "x$using_lame" = "xdyn"; then
+  enable_dl_lame=yes
+fi
+if test "x$using_lame" = "xyes" && test "x$enable_dl_lame" = "xyes"; then
+  using_lame=dyn
+fi
+if test "x$with_lame" != "xno" && \
+   test "x$using_libltdl" = "xyes" && \
+   test "x$enable_dl_lame" = "xyes"; then
+  AC_DEFINE(DL_LAME, 1, [Define to dlopen() lame.])
+else
+  enable_dl_lame=no
+  AC_CHECK_LIB(mp3lame, lame_get_lametag_frame, MP3_LIBS="$MP3_LIBS -lmp3lame", using_lame=no)
+  AC_CHECK_LIB(mp3lame, id3tag_set_fieldvalue, )
+  if test x"$ac_cv_lib_mp3lame_id3tag_set_fieldvalue" = "xyes"; then
+    AC_DEFINE(HAVE_LAME_ID3TAG, 1, [Define to 1 if lame supports optional ID3 tags.])
+  fi
+  if test x"$with_lame" = "xyes" -a x"$using_lame" = "xno"; then
+    AC_MSG_FAILURE([cannot find LAME])
+  fi
 fi
 
 
 
 dnl Check for Twolame library
-AC_ARG_WITH(twolame,
-    AS_HELP_STRING([--without-twolame],
-        [Don't try to use Twolame (MP2 Audio Encoder)]))
-using_twolame=no
-if test "$with_twolame" != "no"; then
-    using_twolame=yes
-    AC_CHECK_HEADERS(twolame.h,, using_twolame=no)
-    AC_MSG_CHECKING([whether to dlopen twolame])
-    AC_ARG_ENABLE(dl_twolame,
-      AS_HELP_STRING([--enable-dl-twolame], [Dlopen twolame instead of linking in.]),
-      enable_dl_twolame=$enableval, enable_dl_twolame=no)
-    AC_MSG_RESULT($enable_dl_twolame)
-    if test "x$using_libltdl" = "xyes" -a "x$enable_dl_twolame" = "xyes"; then
-      AC_DEFINE(DL_TWOLAME, 1, [Define to dlopen() libtwolame.])
-    else
-      enable_dl_twolame="no"
-      AC_CHECK_LIB(twolame, twolame_init, MP3_LIBS="$MP3_LIBS -ltwolame",using_twolame=no)
-      if test "$with_twolame" = "yes" -a "$using_twolame" = "no"; then
-        AC_MSG_FAILURE([cannot find libtwolame])
-      fi
-    fi
+using_twolame=$opt_default
+AC_CHECK_HEADERS(twolame.h,, using_twolame=no)
+AC_ARG_ENABLE(dl_twolame,
+  AS_HELP_STRING([--enable-dl-twolame], [Dlopen twolame instead of linking in.]),
+  enable_dl_twolame=$enableval, enable_dl_twolame=no)
+AC_OPTIONAL_FORMAT(twolame, TWOLAME, [test "x$using_twolame" != "xno"])
+if test "x$using_twolame" = "xdyn"; then
+  enable_dl_twolame=yes
+fi
+if test "x$using_twolame" = "xyes" && test "x$enable_dl_twolame" = "xyes"; then
+  using_twolame=dyn
+fi
+if test "$with_twolame" != "no" && \
+   test "x$using_libltdl" = "xyes" && \
+   test "x$enable_dl_twolame" = "xyes"; then
+  AC_DEFINE(DL_TWOLAME, 1, [Define to dlopen() libtwolame.])
+else
+  enable_dl_twolame=no
+  AC_CHECK_LIB(twolame, twolame_init, MP3_LIBS="$MP3_LIBS -ltwolame",using_twolame=no)
+  if test "$with_twolame" = "yes" -a "$using_twolame" = "no"; then
+    AC_MSG_FAILURE([cannot find libtwolame])
+  fi
 fi
 
 
@@ -702,59 +702,79 @@ esac
 AC_OPTIONAL_FORMAT(flac, FLAC, [AC_CHECK_HEADER(FLAC/all.h, [AC_CHECK_DECL(FLAC_API_VERSION_CURRENT, [AC_CHECK_LIB(FLAC, FLAC__stream_encoder_new, FLAC_LIBS="-lFLAC $FLAC_LIBS $OGG_VORBIS_LIBS",using_flac=no, $FLAC_LIBS $OGG_VORBIS_LIBS)], using_flac=no, [#include <FLAC/all.h>])], using_flac=no)], using_flac=no)
 
 
-dnl When enable_dl_amrbw, do not let add libraries to be linked in
-dnl since they will be dlopen()'ed instead.
+
+# Check for AMRWB
 ac_sox_save_AMRWB_LIBS="$AMRWB_LIBS"
-tmp_using_amrwb=$opt_default
+using_amrwb=$opt_default
 AC_CHECK_HEADERS(opencore-amrwb/dec_if.h,
 		 [AC_CHECK_LIB(opencore-amrwb, D_IF_init, 
-		  AMRWB_LIBS="$AMRWB_LIBS -lopencore-amrwb", tmp_using_amrwb=no)],
-		  [AC_CHECK_HEADERS(amrwb/dec.h, 
-		   [AC_CHECK_LIB(amrwb, D_IF_init, 
-		    AMRWB_LIBS="$AMRWB_LIBS -lamrwb",tmp_using_amrwb=no)], 
-		    tmp_using_amrwb=no)])
+		  AMRWB_LIBS="$AMRWB_LIBS -lopencore-amrwb", using_amrwb=no)],
+		 [AC_CHECK_HEADERS(amrwb/dec.h,
+		  [AC_CHECK_LIB(amrwb, D_IF_init,
+		   AMRWB_LIBS="$AMRWB_LIBS -lamrwb",using_amrwb=no)],
+		  using_amrwb=no)])
 AC_ARG_ENABLE(dl_amrwb,
 	      AS_HELP_STRING([--enable-dl-amrwb], 
-			     [Dlopen amrbw instead of linking in.]),
+			     [Dlopen amrwb instead of linking in.]),
 			     enable_dl_amrwb=$enableval, enable_dl_amrwb=no)
-if test "x$using_libltdl" = "xyes" -a "x$enable_dl_amrwb" = "xyes"; then
+AC_OPTIONAL_FORMAT(amrwb, AMRWB, [test "x$using_amrwb" != "xno"])
+dnl If it got dyn from --with-dyn-default, set enable_dl_amrwb accordingly
+if test "x$using_amrwb" = "xdyn"; then
+  enable_dl_amrwb=yes
+fi
+dnl If AM_OPTIONAL_FORMAT said yes but --enable-dl-amrwb, adjust using_amrwb
+if test "x$using_amrwb" = "xyes" && test "x$enable_dl_amrwb" = "xyes"; then
+  using_amrwb=dyn
+fi
+if test "x$with_amrwb" != "xno" && \
+   test "x$using_libltdl" = "xyes" && \
+   test "x$enable_dl_amrwb" = "xyes"; then
   AC_DEFINE(DL_AMRWB, 1, [Define to dlopen() amrwb.]) 
   dnl When enable_dl_amrwb, do not let SOX_PATH_AMRWB add libraries
   dnl to be linked in (since they will be dlopen()'ed instead).
   AMRWB_LIBS="$ac_sox_save_AMRWB_LIBS"
   dnl Force to using regardless if headers or libraries were found.
-  tmp_using_amrwb=yes
+  using_amrwb=dyn
 else
-  enable_dl_amrwb="no"
+  enable_dl_amrwb=no
 fi
-AC_OPTIONAL_FORMAT(amrwb, AMRWB, [if test "x$tmp_using_amrwb" = "xno"; then using_amrwb=no; fi])
 
-dnl When enable_dl_amrnb, do not let add libraries to be linked in
-dnl since they will be dlopen()'ed instead.
+# Check for AMRNB
 ac_sox_save_AMRNB_LIBS="$AMRNB_LIBS"
-tmp_using_amrnb=$opt_default
+using_amrnb=$opt_default
 AC_CHECK_HEADERS(opencore-amrnb/interf_dec.h, 
 		 [AC_CHECK_LIB(opencore-amrnb, Decoder_Interface_init, 
-		  AMRNB_LIBS="$AMRNB_LIBS -lopencore-amrnb", tmp_using_amrnb=no)],
-		  [AC_CHECK_HEADER(amrnb/sp_dec.h, 
-		   [AC_CHECK_LIB(amrnb, Decoder_Interface_init, 
-		    AMRNB_LIBS="$AMRNB_LIBS -lamrnb", tmp_using_amrnb=no)], 
-		    tmp_using_amrnb=no)])
+		  AMRNB_LIBS="$AMRNB_LIBS -lopencore-amrnb", using_amrnb=no)],
+		 [AC_CHECK_HEADER(amrnb/sp_dec.h,
+		  [AC_CHECK_LIB(amrnb, Decoder_Interface_init,
+		   AMRNB_LIBS="$AMRNB_LIBS -lamrnb",using_amrnb=no)],
+		  using_amrnb=no)])
 AC_ARG_ENABLE(dl_amrnb,
 	      AS_HELP_STRING([--enable-dl-amrnb], 
 			     [Dlopen amrnb instead of linking in.]),
 			     enable_dl_amrnb=$enableval, enable_dl_amrnb=no)
-if test "x$using_libltdl" = "xyes" -a "x$enable_dl_amrnb" = "xyes"; then
+AC_OPTIONAL_FORMAT(amrnb, AMRNB, [test "x$using_amrnb" != "xno"])
+dnl If it got dyn from --with-dyn-default, set enable_dl_amrnb accordingly
+if test "x$using_amrnb" = "xdyn"; then
+  enable_dl_amrnb=yes
+fi
+dnl If AM_OPTIONAL_FORMAT said yes but --enable-dl-amrnb, adjust using_amrnb
+if test "x$using_amrnb" = "xyes" && test "x$enable_dl_amrnb" = "xyes"; then
+  using_amrnb=dyn
+fi
+if test "x$with_amrnb" != "xno" && \
+   test "x$using_libltdl" = "xyes" && \
+   test "x$enable_dl_amrnb" = "xyes"; then
   AC_DEFINE(DL_AMRNB, 1, [Define to dlopen() amrnb.]) 
   dnl When enable_dl_amrnb, do not let SOX_PATH_AMRNB add libraries
   dnl to be linked in (since they will be dlopen()'ed instead).
   AMRNB_LIBS="$ac_sox_save_AMRNB_LIBS"
   dnl Force to using regardless if headers or libraries were found.
-  tmp_using_amrnb=yes
+  using_amrnb=dyn
 else
-  enable_dl_amrnb="no"
+  enable_dl_amrnb=no
 fi
-AC_OPTIONAL_FORMAT(amrnb, AMRNB, [if test "x$tmp_using_amrnb" = "xno"; then using_amrnb=no; fi])
+
 
 
 AC_OPTIONAL_FORMAT(wavpack, WAVPACK, [AC_CHECK_HEADER(wavpack/wavpack.h, [AC_CHECK_LIB(wavpack, WavpackGetSampleRate, WAVPACK_LIBS="$WAVPACK_LIBS -lwavpack",using_wavpack=no)], using_wavpack=no)])
@@ -780,27 +800,37 @@ AC_OPTIONAL_FORMAT(ao, AO, [AC_CHECK_HEADER(ao/ao.h, [AC_CHECK_LIB(ao, ao_play, 
 AC_OPTIONAL_FORMAT(pulseaudio, PULSEAUDIO, [AC_CHECK_HEADER(pulse/simple.h, [AC_CHECK_LIB(pulse, pa_simple_new, PULSEAUDIO_LIBS="$PULSEAUDIO_LIBS -lpulse -lpulse-simple",using_pulseaudio=no,"-lpulse-simple")], using_pulseaudio=no)])
 
 
+
 AC_OPTIONAL_FORMAT(waveaudio, WAVEAUDIO, [AC_CHECK_HEADER(mmsystem.h, [WAVEAUDIO_LIBS="$WAVEAUDIO_LIBS -lwinmm"], using_waveaudio=no, [[#include <windows.h>]])])
 
-dnl When enable_dl_sndfile, do not let SOX_PATH_SNDFILE add libraries
-dnl to be linked in (since they will be dlopen()'ed instead).
+
+
+# Check for libsndfile
 ac_sox_save_SNDFILE_LIBS="$SNDFILE_LIBS"
-SOX_PATH_SNDFILE(tmp_using_sndfile=$opt_default, tmp_using_sndfile=no)
+SOX_PATH_SNDFILE(using_sndfile=$opt_default, using_sndfile=no)
 AC_ARG_ENABLE(dl_sndfile,
 	      AS_HELP_STRING([--enable-dl-sndfile], 
 			     [Dlopen sndfile instead of linking in.]),
 			     enable_dl_sndfile=$enableval, enable_dl_sndfile=no)
-if test "x$using_sndfile" = "xyes"; then
-  if test "x$using_libltdl" = "xyes" -a "x$enable_dl_sndfile" = "xyes"; then
-    AC_DEFINE(DL_SNDFILE, 1, [Define to dlopen() sndfile.]) 
-    dnl When enable_dl_sndfile, do not let SOX_PATH_SNDFILE add libraries
-    dnl to be linked in (since they will be dlopen()'ed instead).
-    SNDFILE_LIBS="$ac_sox_save_SNDFILE_LIBS"
-  else
-    enable_dl_sndfile="no"
-  fi
-fi
 AC_OPTIONAL_FORMAT(sndfile, SNDFILE, [if test "x$tmp_using_sndfile" = "xno"; then using_sndfile=no; fi])
+dnl If it got dyn from --with-dyn-default, set enable_dl_amrnb accordingly
+if test "x$using_sndfile" = "xdyn"; then
+  enable_dl_sndfile=yes
+fi
+dnl If AM_OPTIONAL_FORMAT said yes but --enable-dl-sndfile, adjust using_sndfile
+if test "x$using_sndfile" = "xyes" && test "x$enable_dl_sndfile" = "xyes"; then
+  using_sndfile=dyn
+fi
+if test "x$with_sndfile" != "xno" && \
+   test "x$using_libltdl" = "xyes" && \
+   test "x$enable_dl_sndfile" = "xyes"; then
+  AC_DEFINE(DL_SNDFILE, 1, [Define to dlopen() sndfile.])
+  dnl When enable_dl_sndfile, do not let SOX_PATH_SNDFILE add libraries
+  dnl to be linked in (since they will be dlopen()'ed instead).
+  SNDFILE_LIBS="$ac_sox_save_SNDFILE_LIBS"
+else
+  enable_dl_sndfile=no
+fi
 
 
 
@@ -820,7 +850,9 @@ AC_OPTIONAL_FORMAT(sunaudio, SUN_AUDIO, [AC_CHECK_HEADERS(sys/audioio.h,,
 
 # MP2/MP3 format depends on libmad || LAME || twolame
 AC_OPTIONAL_FORMAT(mp3, MP3, [
-  if test "$using_mad" != yes -a "$using_lame" != yes -a "$using_twolame" != yes; then
+  if test "$using_mad" = no && \
+     test "$using_lame" = no && \
+     test "$using_twolame" = no; then
     using_mp3=no
   fi])
 
@@ -945,11 +977,11 @@ echo "waveaudio (MS-Windows).....$using_waveaudio"
 echo
 echo "OPTIONAL FILE FORMATS"
 echo "amrnb......................$using_amrnb"
-if test "x$using_amrnb" = "xyes"; then
+if test "x$using_amrnb" != "xno"; then
 echo " dlopen amrnb..............$enable_dl_amrnb"
 fi
 echo "amrwb......................$using_amrwb"
-if test "x$using_amrwb" = "xyes"; then
+if test "x$using_amrwb" != "xno"; then
 echo " dlopen amrwb..............$enable_dl_amrwb"
 fi
 echo "flac.......................$using_flac"
@@ -958,24 +990,24 @@ echo "lpc10......................$using_lpc10 $lpc10_option"
 echo "mp2/mp3....................$using_mp3"
 echo " id3tag....................$using_id3tag"
 echo " lame......................$using_lame"
-if test "x$using_lame" = "xyes"; then
+if test "x$using_lame" != "xno"; then
 if test "x$enable_dl_lame" != "xyes"; then
 echo " lame id3tag...............$ac_cv_lib_mp3lame_id3tag_set_fieldvalue"
 fi
 echo " dlopen lame...............$enable_dl_lame"
 fi
 echo " mad.......................$using_mad"
-if test "x$using_mad" = "xyes"; then
+if test "x$using_mad" != "xno"; then
 echo " dlopen mad................$enable_dl_mad"
 fi
 echo " twolame...................$using_twolame"
-if test "x$using_twolame" = "xyes"; then
+if test "x$using_twolame" != "xno"; then
 echo " dlopen twolame............$enable_dl_twolame"
 fi
 echo "oggvorbis..................$using_oggvorbis"
 echo "opus.......................$using_opus"
 echo "sndfile....................$using_sndfile"
-if test "x$using_sndfile" = "xyes"; then
+if test "x$using_sndfile" != "xno"; then
 echo " dlopen sndfile............$enable_dl_sndfile"
 fi
 echo "wavpack....................$using_wavpack"
