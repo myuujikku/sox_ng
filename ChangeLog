@@ -5,8 +5,8 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
-sox_ng-14.6.1+git20251029   2025-10-29
--------------------------
+sox_ng-14.6.i+git   2025-10-30
+-----------------
 
 New features:
 
@@ -21,6 +21,8 @@ New features:
   o stretch: Add sqrt, quarter-cos and half-cos fading types
   o wav: Decode names of all unsupported formats
   o twolame: Enable VBR encoding with -C -10-10
+  o Let mp2 encoding know the smaller range of sample rates it handles
+  o Let mp2 and mp2 encoding know that they only do mono and stereo
 
 Bug fixes:
 
@@ -46,6 +48,7 @@ Documentation:
 Internal:
 
   o Allow ./configure --without-dolbyb
+  o ./configure --with-dyn-default works for amr, lame, mad, twolame, sndfile
 
 sox_ng-14.6.1   2025-10-13
 -------------
