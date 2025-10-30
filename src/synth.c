@@ -350,7 +350,7 @@ case3:  if (!isfinite(chan->vdelay_mix)) goto vwhat;
       chan->freq2 = chan->freq = lsx_parse_frequency_k(argv[argn], &end_ptr, key);
       if (chan->freq < (chan->type == synth_pluck? 27.5 : 0) ||
           (chan->type == synth_pluck && chan->freq > 4220)) {
-        lsx_fail("invalid freq");
+        lsx_fail("invalid freq `%s'", argv[argn]);
         return SOX_EOF;
       }
       if (*end_ptr && strchr(sweeps, *end_ptr)) {         /* freq2 given? */
@@ -361,7 +361,7 @@ case3:  if (!isfinite(chan->vdelay_mix)) goto vwhat;
         chan->sweep = strchr(sweeps, *end_ptr) - sweeps;
         chan->freq2 = lsx_parse_frequency_k(end_ptr + 1, &end_ptr, key);
         if (chan->freq2 < 0) {
-          lsx_fail("invalid freq2");
+          lsx_fail("invalid freq2 `%s'", argv[argn]);
           return SOX_EOF;
         }
         if (p->length_str == NULL) {
