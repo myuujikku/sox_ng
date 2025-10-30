@@ -977,39 +977,21 @@ echo "waveaudio (MS-Windows).....$using_waveaudio"
 echo
 echo "OPTIONAL FILE FORMATS"
 echo "amrnb......................$using_amrnb"
-if test "x$using_amrnb" != "xno"; then
-echo " dlopen amrnb..............$enable_dl_amrnb"
-fi
 echo "amrwb......................$using_amrwb"
-if test "x$using_amrwb" != "xno"; then
-echo " dlopen amrwb..............$enable_dl_amrwb"
-fi
 echo "flac.......................$using_flac"
 echo "gsm........................$using_gsm $gsm_option"
 echo "lpc10......................$using_lpc10 $lpc10_option"
 echo "mp2/mp3....................$using_mp3"
 echo " id3tag....................$using_id3tag"
 echo " lame......................$using_lame"
-if test "x$using_lame" != "xno"; then
-if test "x$enable_dl_lame" != "xyes"; then
+if test "x$using_lame" = "xyes"; then   # Unknown when using_lame=dyn
 echo " lame id3tag...............$ac_cv_lib_mp3lame_id3tag_set_fieldvalue"
 fi
-echo " dlopen lame...............$enable_dl_lame"
-fi
 echo " mad.......................$using_mad"
-if test "x$using_mad" != "xno"; then
-echo " dlopen mad................$enable_dl_mad"
-fi
 echo " twolame...................$using_twolame"
-if test "x$using_twolame" != "xno"; then
-echo " dlopen twolame............$enable_dl_twolame"
-fi
 echo "oggvorbis..................$using_oggvorbis"
 echo "opus.......................$using_opus"
 echo "sndfile....................$using_sndfile"
-if test "x$using_sndfile" != "xno"; then
-echo " dlopen sndfile............$enable_dl_sndfile"
-fi
 echo "wavpack....................$using_wavpack"
 echo
 echo "OTHER OPTIONS"
