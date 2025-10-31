@@ -71,20 +71,20 @@ SoX is a command-line audio processing tool particularly suited to making
 quick, simple edits and to batch processing.
 If you need an interactive, graphical audio editor, use
 .BR audacity (1).
+.SP
 .TS
 center;
 c8 c8 c.
 *	*	*
 .TE
-.DT
 .SP
 The overall SoX processing chain can be summarized as follows:
+.SP
 .TS
 center;
 l.
 Input(s) \*(RA Combiner \*(RA Effects \*(RA Output(s)
 .TE
-.DT
 .SP
 On the SoX command line, the positions of the
 Output(s) and the Effects are swapped w.r.t. the logical flow just
@@ -221,7 +221,6 @@ with
 soxi_ng -a in.au | grep -v REPLAYGAIN > comments
 sox_ng --replay-gain=track in.au --comment-file comments out.au
 .XX
-.SP
 .SS Determining and setting the File Format
 SoX uses several mechanisms to determine or set the
 format of an audio file.  Depending on the circumstances,
@@ -270,12 +269,12 @@ and
 .XX
 Further options and effects (as described below) can be
 added to the commands in either form.
+.SP
 .TS
 center;
 c8 c8 c.
 *	*	*
 .TE
-.DT
 .SP
 When playing a file with a sample rate that is not supported by the
 audio output device, SoX automatically invokes the \fBrate\fR effect
@@ -289,12 +288,12 @@ effect with a different quality level, e.g.
 .XX
 or by using the \fB\-\-play\-rate\-arg\fR
 option (see below).
+.SP
 .TS
 center;
 c8 c8 c.
 *	*	*
 .TE
-.DT
 .SP
 On some systems, SoX allows the audio playback volume to be adjusted while
 using
@@ -921,6 +920,7 @@ a percentage of the input file(s), elapsed time, remaining time
 output file.  Also shown is a peak level meter, and an indication of
 whether clipping has occurred.  The peak level meter shows up to two channels
 and is calibrated for digital audio as follows:
+.SP
 .ne 8
 .TS
 center;
@@ -937,7 +937,6 @@ T}	\ 	\-9	====\-
 \-15	===	\ 	\-1	=====!
 \-13	===\-
 .TE
-.DT
 .SP
 A three-second peak-held value of the headroom in dBs is shown to the right
 of the meter if the headroom is less than 6dB.
@@ -1414,6 +1413,7 @@ Used to specify the bandwidth of a filter.  A number of different
 methods to specify the width are available (though not all for every effect).
 One of the characters shown may be appended to select the desired method
 as follows:
+.SP
 .ne 5
 .TS
 center;
@@ -1427,7 +1427,6 @@ o	octaves	\
 q	Q-factor	See [2]
 s	slope	\ 
 .TE
-.DT
 .SP
 For each effect that uses this parameter, the default method (if no
 character is appended) is the one that is listed first in the first line of
@@ -1664,6 +1663,7 @@ about 40% slower but makes it even less noisy.
 for all of them.
 .SP
 All parameters are all optional and, if missing, assume the following values:
+.SP
 .TS
 lb lb lb lb
 l c c le.
@@ -1680,6 +1680,7 @@ speed	0-192k	0.25	Modulation frequency
 depth	0-1000	2	Extra delay in milliseconds
 wave	-s|-t	-s	Sinusoidal/triangular modulation
 .TE
+.SP
 Each delay ranges from the fixed \fIdelay\fR to \fIdelay\fR\ \(pl\ \fIdepth\fR.
 .SP
 \fIGain-out\fR is then applied to the sum of the input scaled by \fIgain-in\fP
@@ -1710,12 +1711,12 @@ A fuller-sounding chorus (with three additional delays):
 but works in floating point internally instead of integers so is slower
 without a floating point processor:
 .XE
-    chorus -l gain-in gain-out delay decay speed depth -wave
+   chorus -l gain-in gain-out delay decay speed depth -wave
 .XX
 is equivalent to
 .XE
-    flanger delay depth 0 100\(mudecay\(digain-in speed wave 0 \e
-        vol gain-out\(di(gain-in\(pldecay)
+   flanger delay depth 0 100\(mudecay\(digain-in speed wave 0 \e
+      vol gain-out\(di(gain-in\(pldecay)
 .XX
 For a flow diagram of how \fBchorus\fR works,
 say \fBsox_ng \-\-help\-effect chorus\fR.
@@ -1782,12 +1783,12 @@ before being fed to the volume adjuster.  Specifying a delay
 approximately equal to the attack/decay times allows the compander to
 operate in a predictive rather than a reactive mode.
 A typical value is 0\*d2 seconds.
+.SP
 .TS
 center;
 c8 c8 c.
 *	*	*
 .TE
-.DT
 .SP
 The following example might be used to make a piece of music with both
 quiet and loud passages suitable for listening to in a noisy environment
@@ -1954,6 +1955,7 @@ The filter types are distinguished by the following properties:
 audibility of noise, level of (inaudible, but in some circumstances
 problematic) shaped high frequency noise and processing speed
 and they are available for the following sample rates:
+.SP
 .ne 8
 .TS
 center;
@@ -1968,7 +1970,6 @@ shibata	8000,11025,16000,22050,32000,37800,44100,48000
 low-shibata	44100,48000
 high-shibata	44100
 .TE
-.DT
 .SP
 The
 .B \-S
@@ -2581,20 +2582,20 @@ The following examples approximate Dolby A compression and decompression,
 as used for tape noise reduction in professional recording studios:
 .XE
 .ne 6
-# Dolby A compressor
-sox_ng in.au dolbyA.au mcompand \\
-    ".1,.1 4:-56,-46,-36,-26,-26,-20,-17,-15,-9,-9" 80 \\
-    ".1,.1 4:-56,-46,-36,-26,-26,-20,-17,-15,-9,-9" 3k \\
-    ".1,.1 4:-56,-46,-36,-26,-26,-20,-17,-15,-9,-9" 9k \\
-    ".1,.1 4:-56,-42,-36,-23,-26,-18,-17,-14,-9,-9"
+   # Dolby A compressor
+   sox_ng in.au dolbyA.au mcompand \\
+      ".1,.1 4:-56,-46,-36,-26,-26,-20,-17,-15,-9,-9" 80 \\
+      ".1,.1 4:-56,-46,-36,-26,-26,-20,-17,-15,-9,-9" 3k \\
+      ".1,.1 4:-56,-46,-36,-26,-26,-20,-17,-15,-9,-9" 9k \\
+      ".1,.1 4:-56,-42,-36,-23,-26,-18,-17,-14,-9,-9"
 
 .ne 6
-# Dolby A decompressor
-sox_ng dolbyA.au out.au mcompand \\
-    ".1,.1 4:-46,-56,-26,-36,-20,-26,-15,-17,-9,-9" 80 \\
-    ".1,.1 4:-46,-56,-26,-36,-20,-26,-15,-17,-9,-9" 3k \\
-    ".1,.1 4:-46,-56,-26,-36,-20,-26,-15,-17,-9,-9" 9k \\
-    ".1,.1 4:-42,-56,-23,-36,-18,-26,-14,-17,-9,-9"
+   # Dolby A decompressor
+   sox_ng dolbyA.au out.au mcompand \\
+      ".1,.1 4:-46,-56,-26,-36,-20,-26,-15,-17,-9,-9" 80 \\
+      ".1,.1 4:-46,-56,-26,-36,-20,-26,-15,-17,-9,-9" 3k \\
+      ".1,.1 4:-46,-56,-26,-36,-20,-26,-15,-17,-9,-9" 9k \\
+      ".1,.1 4:-42,-56,-23,-36,-18,-26,-14,-17,-9,-9"
 .XX
 Real Dolby A probably compands each channel separately
 but that is left as an exercise to interested readers.
@@ -2646,7 +2647,7 @@ On most systems, the two stages\*mprofiling and reduction\*mcan be combined
 using a pipe, e.g.
 .XE
    sox_ng noisy.wav \-n trim 0 1 noiseprof | \e
-       play_ng noisy.wav noisered
+      play_ng noisy.wav noisered
 .XX
 .TP
 \fBnorm\fR [\fIdB-level(0)\fR]
@@ -2772,8 +2773,8 @@ Change the audio sampling rate (i.e. resample the audio) to any given
 .I frequency
 (even non-integer if this is supported by the output file format)
 using a quality level defined as follows:
+.SP
 .ne 10
-.\" cI cI9 cI2w6 cIw6 lIw17
 .TS
 center;
 cI cI cI cI lxI
@@ -2824,7 +2825,6 @@ T}	95%	175	28-bit for 24-bit mastering
 ultra
 T}	95%	200	32-bit
 .TE
-.DT
 .SP
 These can also be selected with \fB\-Q\ \fIn\fR with \fIn\fR from 0 to 7.
 .SP
@@ -2871,6 +2871,7 @@ Occasionally, however, it may be desirable to fine-tune the resampler's
 filter response; for qualities `medium' and above,
 this can be achieved using the override options
 in the following table:
+.SP
 .ne 6
 .TS
 center;
@@ -2884,7 +2885,6 @@ lB lx.
 Any phase response (0=minimum, 25=intermediate, 50=linear, 100=maximum)
 T}
 .TE
-.DT
 .SP
 All resamplers use filters that can sometimes create `echo' (a.k.a.
 `ringing') artefacts with transient signals such as those that occur
@@ -3040,6 +3040,7 @@ of input channels with a \fIvol-spec\fR (volume specification)
 which is one of the letters \fBp\fR, \fBi\fR, or \fBv\fR,
 followed by a volume number, the meaning of which depends on the given
 letter:
+.SP
 .ne 7
 .TS
 center;
@@ -3059,7 +3060,6 @@ v	voltage multiplier	T{
 \-1\ =\ invert
 T}
 .TE
-.DT
 .SP
 If an \fIout-spec\fR includes at least one \fIvol-spec\fR then, by default,
 \(S1/\s-2n\s+2 scaling is not applied to any other channels in the
@@ -3099,7 +3099,6 @@ effect.
 If the \fB\-p\fR option is given, any automatic \(S1/\s-2n\s+2 scaling
 is replaced by \(S1/\s-2\(srn\s+2 (`power') scaling; this gives a louder mix
 but one that may occasionally clip.
-.DT
 .SP
 One use of the
 .B remix
@@ -3177,6 +3176,8 @@ should be previously upsampled, e.g. with the \fBrate\fR effect, to a
 high rate, 2\*d8224MHz for DSD64.  The \fB\-f\fR option selects the
 noise-shaping filter from the following list where the number indicates
 the order of the filter:
+.SP
+.ne 5
 .TS
 center;
 l l.
@@ -3186,7 +3187,6 @@ clans-6	sdm-6
 clans-7	sdm-7
 clans-8	sdm-8
 .TE
-.DT
 .TP
 \ 
 The noise filter may be combined with a partial trellis/viterbi search
@@ -3686,6 +3686,7 @@ or
 may be given to select the fade envelope as half cosine wave (the default),
 triangular (a.k.a. linear), or quarter cosine wave (e.g. for a cross-fade of
 correlated audio).
+.SP
 .ne 4
 .TS
 center;
@@ -3696,7 +3697,6 @@ cB l l l.
 \-t	correlated	constant gain	abrupt
 \-q	uncorrelated	constant power	smooth
 .TE
-.DT
 .SP
 To perform a splice, first use the
 .B trim
@@ -3721,19 +3721,19 @@ The following diagram uses the tape analogy to illustrate the splice
 operation.  The effect simulates the diagonal cuts and joins the two pieces:
 .ne 14
 .XE
-      length1   excess
-    -----------><--->
-    _________   :   :  _________________
-             \\  :   : :\\     `
-              \\ :   : : \\     `
-               \\:   : :  \\     `
-                *   : :   * - - *
-                 \\  : :   :\\     `
-                  \\ : :   : \\     `
-    _______________\\: :   :  \\_____`____
-                      :   :   :     :
-                      <--->   <----->
-                      excess  leeway
+     length1   excess
+   -----------><--->
+   _________   :   :  _________________
+            \\  :   : :\\     `
+             \\ :   : : \\     `
+              \\:   : :  \\     `
+               *   : :   * - - *
+                \\  : :   :\\     `
+                 \\ : :   : \\     `
+   _______________\\: :   :  \\_____`____
+                     :   :   :     :
+                     <--->   <----->
+                     excess  leeway
 .XX
 where * indicates the joining points.
 .SP
@@ -3770,18 +3770,18 @@ performed with a single
 .B splice
 invocation.  For example, with a Bourne shell script `acpo':
 .XE
-#! /bin/sh
-# Audio Copy and Paste Over
-# acpo infile copy-start copy-stop paste-over-start outfile
-# No chained time specifications allowed for the parameters
-# (i.e. such that contain +/\-).
-e=0.005                      # Using default excess
-l=$e                         # and leeway.
-sox_ng "$1" piece.wav trim $2\-$e\-$l =$3+$e
-sox_ng "$1" part1.wav trim 0 $4+$e
-sox_ng "$1" part2.wav trim $4+$3\-$2\-$e\-$l
-sox_ng part1.wav piece.wav part2.wav "$5" \\
-   splice $4+$e +$3\-$2+$e+$l+$e
+   #! /bin/sh
+   # Audio Copy and Paste Over
+   # acpo infile copy-start copy-stop paste-over-start outfile
+   # No chained time specifications allowed for the parameters
+   # (i.e. such that contain +/\-).
+   e=0.005                      # Using default excess
+   l=$e                         # and leeway.
+   sox_ng "$1" piece.wav trim $2\-$e\-$l =$3+$e
+   sox_ng "$1" part1.wav trim 0 $4+$e
+   sox_ng "$1" part2.wav trim $4+$3\-$2\-$e\-$l
+   sox_ng part1.wav piece.wav part2.wav "$5" \\
+      splice $4+$e +$3\-$2+$e+$l+$e
 .XX
 two splices are used to `copy and paste' audio.
 .SP
@@ -3820,6 +3820,7 @@ is the audio sample rate and
 represents the value (in the range \-1 to +1) of each successive
 sample in the audio),
 as follows:
+.SP
 .TS
 center;
 lI lx.
@@ -3843,31 +3844,38 @@ Mean amplitude	T{
 \(S1/\s-2n\s+2\^\(*S\^\fIx\s-2\dk\u\s0\fR
 The average of each sample in the audio.
 If this figure is non-zero, then it indicates the
-presence of a D.C. offset which could be removed using the
+presence of a DC offset which could be removed using the
 \fBdcshift\fR effect.
 T}
 RMS amplitude	T{
 \(sr(\(S1/\s-2n\s+2\^\(*S\^\fIx\s-2\dk\u\s0\fR\(S2)
-The level of a D.C. signal that would have the same power
+The level of a DC signal that would have the same power
 as the audio's average power.
 T}
 Maximum delta	max(\^\(br\^\fIx\s-2\dk\u\s0\fR\^\-\^\fIx\s-2\dk\-1\u\s0\fR\^\(br\^)
 Minimum delta	min(\^\(br\^\fIx\s-2\dk\u\s0\fR\^\-\^\fIx\s-2\dk\-1\u\s0\fR\^\(br\^)
-Mean delta	\(S1/\s-2n\-1\s+2\^\(*S\^\^\(br\^\fIx\s-2\dk\u\s0\fR\^\-\^\fIx\s-2\dk\-1\u\s0\fR\^\(br\^
+Mean delta	\(S1/\s-2n\-1\s+2\^\(*S\^\^\(br\^\fIx\s-2\dk\u\s0\fR\^\-\^\fIx\s-2\dk\-1\u\s0\fR\^\(br
 RMS delta	\(sr(\(S1/\s-2n\-1\s+2\^\(*S\^(\fIx\s-2\dk\u\s0\fR\^\-\^\fIx\s-2\dk\-1\u\s0\fR)\(S2)
-EBUR128 True Peak	The maximum of the True Peak for each channel
-EBUR128 Momentary	The maximum momentary loudness (over 400ms)
-EBUR128 Short Term	The maximum short term loudness (over 3 seconds)
-EBUR128 Integrated	The integrated loudness (over the whole file)
+EBUR128 True Peak	T{
+The maximum of the True Peak of each channel
+T}
+EBUR128 Momentary	T{
+The maximum momentary loudness over 400ms
+T}
+EBUR128 Short Term	T{
+The maximum short term loudness over 3 seconds
+T}
+EBUR128 Integrated	T{
+The integrated loudness over the whole file
+T}
 Rough frequency	In Hz.
 Volume Adjustment	T{
 The parameter to the \fBvol\fR
 effect which would make the audio as loud as possible without clipping.
-Note: See the discussion on \fBClipping\fR
+See the discussion on \fBClipping\fR
 above for reasons why it is rarely a good idea actually to do this.
 T}
 .TE
-.DT
 .SP
 Note that the delta measurements are not applicable to multichannel audio
 and EBU\ R\ 128 (=ITU-R\ BS.1770) measurements are in
@@ -3921,7 +3929,7 @@ which requires less memory but is less accurate.
 The most common use of \fBstat\fR is to measure the characteristics
 of a single audio file, for which the syntax is:
 .XE
-    sox_ng file.wav -n stat
+   sox_ng file.wav -n stat
 .XX
 where \fB\-n\fR means "No audio output is required."
 .TP
@@ -3933,22 +3941,22 @@ where applicable, an overall figure is also given.
 .SP
 For example, for a typical well-mastered stereo music file:
 .XE
-                     Overall     Left      Right
-        DC offset   0.000803 \-0.000391  0.000803
-        Min level  \-0.750977 \-0.750977 \-0.653412
-        Max level   0.708801  0.708801  0.653534
-        Pk lev dB      \-2.49     \-2.49     \-3.69
-        RMS lev dB    \-19.41    \-19.13    \-19.71
-        RMS Pk dB     \-13.82    \-13.82    \-14.38
-        RMS Tr dB     \-85.25    \-85.25    \-82.66
-        Crest factor       \-      6.79      6.32
-        Flat factor     0.00      0.00      0.00
-        Pk count           2         2         2
-        Bit-depth      16/16     16/16     16/16
-        Num samples    7.72M
-        Length s     174.973
-        Scale max   1.000000
-        Window s       0.050
+                Overall     Left      Right
+   DC offset   0.000803 \-0.000391  0.000803
+   Min level  \-0.750977 \-0.750977 \-0.653412
+   Max level   0.708801  0.708801  0.653534
+   Pk lev dB      \-2.49     \-2.49     \-3.69
+   RMS lev dB    \-19.41    \-19.13    \-19.71
+   RMS Pk dB     \-13.82    \-13.82    \-14.38
+   RMS Tr dB     \-85.25    \-85.25    \-82.66
+   Crest factor       \-      6.79      6.32
+   Flat factor     0.00      0.00      0.00
+   Pk count           2         2         2
+   Bit-depth      16/16     16/16     16/16
+   Num samples    7.72M
+   Length s     174.973
+   Scale max   1.000000
+   Window s       0.050
 .XX
 .IR DC\ offset ,
 .IR Min\ level ,
@@ -4060,7 +4068,7 @@ is the length of the window used for the peak and trough RMS measurements.
 Like \fBstat\fR, the usual way to measure the characteristics
 of a single audio file is:
 .XE
-    sox_ng file.wav -n stats
+   sox_ng file.wav -n stats
 .XX
 .TP
 \fBstretch [\fIfactor\fR [\fIwindow \fR[\fIfade \fR[\fIshift \fR[\fIfading\fR]]]]]
