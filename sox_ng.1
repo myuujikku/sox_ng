@@ -3918,9 +3918,12 @@ option
 uses the "histogram algorithm" to calculate integrated EBU R-128 loudness,
 which requires less memory but is less accurate.
 .SP
-See the
-.B stats
-effect.
+The most common use of \fBstat\fR is to measure the characteristics
+of a single audio file, for which the syntax is:
+.XE
+    sox_ng file.wav -n stat
+.XX
+where \fB\-n\fR means "No audio output is required."
 .TP
 \fBstats\fR [\fB\-b \fIbits\fR\^|\^\fB\-x \fIbits\fR\^|\^\fB\-s \fIscale\fR] [\fB\-w \fIwindow-time\fR]
 Display time domain statistical information about the audio channels;
@@ -4054,9 +4057,11 @@ specifically, it is the maximum value that could apply to
 .I Window\ s
 is the length of the window used for the peak and trough RMS measurements.
 .SP
-See the
-.B stat
-effect.
+Like \fBstat\fR, the usual way to measure the characteristics
+of a single audio file is:
+.XE
+    sox_ng file.wav -n stats
+.XX
 .TP
 \fBstretch [\fIfactor\fR [\fIwindow \fR[\fIfade \fR[\fIshift \fR[\fIfading\fR]]]]]
 Change the audio duration but not its pitch by cross-fading between
