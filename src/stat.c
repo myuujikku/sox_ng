@@ -35,7 +35,6 @@ typedef struct {
   int volume;
   int srms;
   int fft;
-  unsigned long bin[4];
   float *re_in;
   float *re_out;
   unsigned long fft_size;
@@ -101,7 +100,6 @@ static int sox_stat_getopts(sox_effect_t * effp, int argc, char **argv)
 static int sox_stat_start(sox_effect_t * effp)
 {
   priv_t * stat = (priv_t *) effp->priv;
-  int i;
 
   stat->min = stat->max = stat->mid = 0;
   stat->asum = 0;
@@ -112,9 +110,6 @@ static int sox_stat_start(sox_effect_t * effp)
 
   stat->last = 0;
   stat->read = 0;
-
-  for (i = 0; i < 4; i++)
-    stat->bin[i] = 0;
 
   stat->fft_size = 4096;
   stat->fft_average = sox_false;
@@ -233,8 +228,6 @@ static int sox_stat_flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_samp
     for (done = 0; done < len; done++) {
       long lsamp = *ibuf++;
       double delta, samp = (double)lsamp / stat->scale;
-      /* work in scaled levels for both sample and delta */
-      stat->bin[(lsamp >> 30) + 2]++;
       *obuf++ = lsamp;
 
       if (stat->volume == 2) {
@@ -309,7 +302,7 @@ static int sox_stat_stop(sox_effect_t * effp)
 {
   priv_t * stat = (priv_t *) effp->priv;
   double amp, scale, rms = 0, freq;
-  double x, ct;
+  double ct;
 #if HAVE_EBUR128_H
   double loudness, true_peak;
   unsigned int channel;
@@ -389,28 +382,6 @@ static int sox_stat_stop(sox_effect_t * effp)
 
   if (amp>0)
     fprintf(stderr, "Volume adjustment: %12.3f\n", SOX_SAMPLE_MAX/(amp*scale));
-
-  if (stat->bin[2] == 0 && stat->bin[3] == 0)
-    fprintf(stderr, "\nProbably text, not sound\n");
-  else {
-
-    x = (float)(stat->bin[0] + stat->bin[3]) / (float)(stat->bin[1] + stat->bin[2]);
-
-    if (x >= 3.0) {             /* use opposite encoding */
-      if (effp->in_encoding->encoding == SOX_ENCODING_UNSIGNED)
-        fprintf(stderr,"\nTry: -t raw -e signed-integer -b 8 \n");
-      else
-        fprintf(stderr,"\nTry: -t raw -e unsigned-integer -b 8 \n");
-    } else if (x <= 1.0 / 3.0)
-      ;                         /* correctly decoded */
-    else if (x >= 0.5 && x <= 2.0) { /* use ULAW */
-      if (effp->in_encoding->encoding == SOX_ENCODING_ULAW)
-        fprintf(stderr,"\nTry: -t raw -e unsigned-integer -b 8 \n");
-      else
-        fprintf(stderr,"\nTry: -t raw -e mu-law -b 8 \n");
-    } else
-      fprintf(stderr, "\nCan't guess the type\n");
-  }
 
   /* Release FFT memory */
   free(stat->re_in);
