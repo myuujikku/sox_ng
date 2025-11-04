@@ -525,7 +525,7 @@ AC_CHECK_HEADERS(lame/lame.h,,
 AC_ARG_ENABLE(dl_lame,
   AS_HELP_STRING([--enable-dl-lame], [Dlopen lame instead of linking in.]),
   enable_dl_lame=$enableval, enable_dl_lame=no)
-AC_OPTIONAL_FORMAT(lame, LAME, [test "x£using_lame" != "xno"])
+AC_OPTIONAL_FORMAT(lame, LAME, [test "x$using_lame" != "xno"])
 if test "x$using_lame" = "xdyn"; then
   enable_dl_lame=yes
 fi
