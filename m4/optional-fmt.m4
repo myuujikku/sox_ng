@@ -14,9 +14,9 @@ dnl You should have received a copy of the GNU General Public License along
 dnl with this program; if not, write to the Free Software Foundation, Inc.,
 dnl 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-dnl $1 package name                  e.g. flac 
-dnl $2 package name in conditionals  e.g. FLAC 
-dnl $3 using check
+dnl $[1] package name                  e.g. flac
+dnl $[2] package name in conditionals  e.g. FLAC
+dnl $[3] using check
 
 AC_DEFUN([AC_OPTIONAL_FORMAT],
   [AC_ARG_WITH($1, AS_HELP_STRING([--with-$1=dyn], [load $1 dynamically]))
