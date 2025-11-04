@@ -1531,11 +1531,12 @@ static char *fndup_with_count(const char *filename, size_t count)
             found_marker = sox_true;
 
             if (width)
-                sprintf(format, "%%0%cd", width);
+                sprintf(format, "%%0%cd", width), width -= '0';
             else
-                strcpy(format, "%02d");
+                strcpy(format, "%02d"), width = 2;
 
-            efn += sprintf(efn, format, count);
+            sprintf(efn, format, count);
+            efn += width;
             fn++;
         }
         else
