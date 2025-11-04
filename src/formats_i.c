@@ -240,19 +240,18 @@ int lsx_padbytes(sox_format_t * ft, size_t n)
   return (SOX_SUCCESS);
 }
 
-/* See if a data buffer contains all zero bytes.
- * There must be a faster way to do this,
- * like memcmp against a constant zeroed buffer.
- */
+/* See if a data buffer contains all zero bytes. */
 static sox_bool is_zero(void const *buf, size_t len)
 {
-  char const *bufp = (char *)buf;
+  static char *zerobuf = NULL;
+  static size_t zerobuflen = 0;
 
-  while (len > 0) {
-    if (*bufp++) return 0;
-    len--;
+  if (len > zerobuflen) {
+    free(zerobuf);
+    zerobuf = lsx_calloc(len, 1);
+    zerobuflen = len;
   }
-  return 1;
+  return !memcmp(buf, zerobuf, len);
 }
 
 /* Write a buffer of data of length bytes.
