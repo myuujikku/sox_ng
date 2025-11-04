@@ -46,11 +46,7 @@ static const char* const sndfile_library_names[] =
   #define SNDFILE_FUNC_STOP LSX_DLENTRY_STUB
 #else
   #define SNDFILE_FUNC      LSX_DLENTRY_STATIC
-#ifdef HACKED_LSF
-  #define SNDFILE_FUNC_STOP LSX_DLENTRY_STATIC
-#else
   #define SNDFILE_FUNC_STOP LSX_DLENTRY_STUB
-#endif
 #endif /* DL_SNDFILE */
 
 #define SNDFILE_FUNC_ENTRIES(f,x) \
