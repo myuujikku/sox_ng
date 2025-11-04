@@ -10,6 +10,7 @@ sox_ng-14.4.5.1+git
 
 Bug fixes:
   o Make configure --enable-dl-amrnb work
+  o Make configure --enable-dl-sndfile work
 
 
 sox_ng-14.4.5.1	2025-10-02
