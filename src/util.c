@@ -64,7 +64,12 @@ int lsx_sscanf(const char *str, const char *format, ...)
 #else
  /* "Some systems that do not supply va_copy() have __va_copy instead,
   * since that was the name used in the draft proposal. */
+# ifdef __va_copy
   __va_copy(va2, va);
+# else
+  /* Generic fallback */
+  memcpy(&va2, &va, sizeof(va_list));
+# endif
 #endif
   retval = vsscanf(str, format, va);
 
