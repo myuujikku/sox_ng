@@ -2465,7 +2465,6 @@ lsx_strcasecmp(
     LSX_PARAM_IN_Z char const * s2  /**< Second string. */
     );
 
-
 /**
 Plugins API:
 Like strncmp, except that the characters are compared without regard to case.
@@ -2478,6 +2477,19 @@ lsx_strncasecmp(
     LSX_PARAM_IN_Z char const * s1, /**< First string. */
     LSX_PARAM_IN_Z char const * s2, /**< Second string. */
     size_t n /**< Maximum number of characters to examine. */
+    );
+
+/**
+Plugins API:
+Like strtod, but checking for broken strtod() at runtime and
+disallowing NaN.
+Note: *not* LSX_RETURN_PURE
+*/
+double
+LSX_API
+lsx_strtod(
+    LSX_PARAM_IN_Z char const * nptr, /**< String to convert */
+    LSX_PARAM_OUT_OPT char ** endptr  /**< If not NULL, set to the address of the first char not used in conversion */
     );
 
 /**
