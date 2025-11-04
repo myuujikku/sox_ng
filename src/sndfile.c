@@ -581,4 +581,162 @@ LSX_FORMAT_HANDLER(sndfile)
   return &format;
 }
 
+LSX_FORMAT_HANDLER(caf)
+{
+  static char const * const names[] = {"caf", NULL};
+  static unsigned const write_encodings[] = {
+    SOX_ENCODING_SIGN2, 16, 24, 32, 8, 0,
+    SOX_ENCODING_FLOAT, 32, 64, 0,
+    SOX_ENCODING_ALAW, 8, 0,
+    SOX_ENCODING_ULAW, 8, 0,
+    0};
+  static sox_format_handler_t handler;
+  handler = *lsx_sndfile_format_fn();
+  handler.description = "Apples's Core Audio Format";
+  handler.names = names;
+  handler.write_formats = write_encodings;
+  return &handler;
+}
+
+LSX_FORMAT_HANDLER(fap)
+{
+  static char const * const names[] = {"fap", NULL};
+  static unsigned const write_encodings[] = {SOX_ENCODING_SIGN2, 24, 16, 8,0,0};
+  static sox_format_handler_t handler;
+  handler = *lsx_sndfile_format_fn();
+  handler.description =
+    "Ensoniq PARIS digital audio editing system (little endian)";
+  handler.names = names;
+  handler.write_formats = write_encodings;
+  return &handler;
+}
+
+LSX_FORMAT_HANDLER(mat4)
+{
+  static char const * const names[] = {"mat4", "mat", NULL};
+  static unsigned const write_encodings[] = {
+    SOX_ENCODING_SIGN2, 16, 32, 0,
+    SOX_ENCODING_FLOAT, 32, 64, 0,
+    0};
+  static sox_format_handler_t handler;
+  handler = *lsx_sndfile_format_fn();
+  handler.description = "Gnu Octave 2.0 format";
+  handler.names = names;
+  handler.write_formats = write_encodings;
+  return &handler;
+}
+
+LSX_FORMAT_HANDLER(mat5)
+{
+  static char const * const names[] = {"mat5", NULL};
+  static unsigned const write_encodings[] = {
+    SOX_ENCODING_SIGN2, 16, 32, 0,
+    SOX_ENCODING_FLOAT, 32, 64, 0,
+    0};
+  static sox_format_handler_t handler;
+  handler = *lsx_sndfile_format_fn();
+  handler.description = "Gnu Octave 2.1 format";
+  handler.names = names;
+  handler.write_formats = write_encodings;
+  return &handler;
+}
+
+#if HAVE_SF_FORMAT_MPC2K
+LSX_FORMAT_HANDLER(mpc2k)
+{
+  static char const * const names[] = { "mpc2k", NULL };
+  static unsigned const write_encodings[] = {SOX_ENCODING_SIGN2, 16, 0, 0};
+  static sox_format_handler_t handler;
+
+  handler = *lsx_sndfile_format_fn();
+  handler.description = "Akai MPC-2000 format";
+  handler.names = names;
+  handler.write_formats = write_encodings;
+  return &handler;
+}
+#endif
+
+LSX_FORMAT_HANDLER(paf)
+{
+  static char const * const names[] = {"paf", NULL};
+  static unsigned const write_encodings[] = {SOX_ENCODING_SIGN2, 24, 16, 8,0,0};
+  static sox_format_handler_t handler;
+  handler = *lsx_sndfile_format_fn();
+  handler.description =
+    "Ensoniq PARIS digital audio editing system (big endian)";
+  handler.names = names;
+  handler.write_formats = write_encodings;
+  return &handler;
+}
+
+LSX_FORMAT_HANDLER(pvf)
+{
+  static char const * const names[] = {"pvf", NULL};
+  static unsigned const write_encodings[] = {SOX_ENCODING_SIGN2, 32, 16, 8,0,0};
+  static sox_format_handler_t handler;
+  handler = *lsx_sndfile_format_fn();
+  handler.description = "Portable Voice Format";
+  handler.names = names;
+  handler.write_formats = write_encodings;
+  return &handler;
+}
+
+LSX_FORMAT_HANDLER(sd2)
+{
+  static char const * const names[] = {"sd2", NULL};
+  static unsigned const write_encodings[] = {SOX_ENCODING_SIGN2, 24, 16, 8,0,0};
+  static sox_format_handler_t handler;
+  handler = *lsx_sndfile_format_fn();
+  handler.description = "Sound Designer II";
+  handler.names = names;
+  handler.write_formats = write_encodings;
+  return &handler;
+}
+
+LSX_FORMAT_HANDLER(sds)
+{
+  static char const * const names[] = {"sds", NULL};
+  /* SDS can encode from 8 to 28 bits */
+  static unsigned const write_encodings[] = {SOX_ENCODING_SIGN2, 24, 16, 8,0,0};
+  static sox_format_handler_t handler;
+  handler = *lsx_sndfile_format_fn();
+  handler.description = "MIDI Sample Dump Standard";
+  handler.names = names;
+  handler.write_formats = write_encodings;
+  return &handler;
+}
+
+LSX_FORMAT_HANDLER(w64)
+{
+  static char const * const names[] = {"w64", NULL};
+  static unsigned const write_encodings[] = {
+    SOX_ENCODING_SIGN2, 16, 24, 32, 0,
+    SOX_ENCODING_UNSIGNED, 8, 0,
+    SOX_ENCODING_FLOAT, 32, 64, 0,
+    SOX_ENCODING_ALAW, 8, 0,
+    SOX_ENCODING_ULAW, 8, 0,
+    SOX_ENCODING_IMA_ADPCM, 4, 0,
+    SOX_ENCODING_MS_ADPCM, 4, 0,
+    SOX_ENCODING_GSM, 0,
+    0};
+  static sox_format_handler_t handler;
+  handler = *lsx_sndfile_format_fn();
+  handler.description = "Sound Forge Audio Format";
+  handler.names = names;
+  handler.write_formats = write_encodings;
+  return &handler;
+}
+
+LSX_FORMAT_HANDLER(xi)
+{
+  static char const * const names[] = {"xi", NULL};
+  static unsigned const write_encodings[] = {SOX_ENCODING_DPCM, 16, 8, 0, 0};
+  static sox_format_handler_t handler;
+  handler = *lsx_sndfile_format_fn();
+  handler.description = "Fasttracker 2";
+  handler.names = names;
+  handler.write_formats = write_encodings;
+  return &handler;
+}
+
 #endif
