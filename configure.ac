@@ -306,7 +306,7 @@ fi
 if test "$using_libltdl" = yes; then
   AC_DEFINE([HAVE_LIBLTDL], 1, [Define to 1 if you have libltdl])
 fi
-AM_CONDITIONAL(HAVE_LIBLTDL, test x$using_libltdl = xyes -a x$using_win32_ltdl = xno)
+AM_CONDITIONAL(HAVE_LIBLTDL, test x$using_libltdl = xyes && test x$using_win32_ltdl = xno)
 AM_CONDITIONAL(HAVE_WIN32_LTDL, test x$using_win32_ltdl = xyes)
 AC_SUBST(LIBLTDL)
 
@@ -342,7 +342,7 @@ if test "$with_magic" != "no"; then
     AC_CHECK_HEADER(magic.h,
         [AC_CHECK_LIB(magic, magic_open, MAGIC_LIBS="-lmagic",using_magic=no)],
         using_magic=no)
-    if test "$with_magic" = "yes" -a "$using_magic" = "no"; then
+    if test "$with_magic" = "yes" && test "$using_magic" = "no"; then
         AC_MSG_FAILURE([cannot find magic])
     fi
 fi
@@ -367,7 +367,7 @@ if test "$with_png" != "no"; then
 		      PNG_LIBS="$PNG_LIBS -lpng12 -lz", 
 		      using_png=no, -lz)], -lz)
     fi
-    if test "$with_png" = "yes" -a "$using_png" = "no"; then
+    if test "$with_png" = "yes" && test "$using_png" = "no"; then
         AC_MSG_FAILURE([cannot find png])
     fi
 fi
@@ -426,7 +426,7 @@ dnl Test for LADSPA
 AC_ARG_WITH(ladspa,
     AS_HELP_STRING([--without-ladspa], [Don't try to use LADSPA]))
 using_ladspa=no
-if test "$with_ladspa" != "no" -a "$using_libltdl" = "yes"; then
+if test "$with_ladspa" != "no" && test "$using_libltdl" = "yes"; then
     using_ladspa=yes
     AC_DEFINE(HAVE_LADSPA_H, 1, [1 if should enable LADSPA])
 fi
@@ -485,12 +485,12 @@ if test "$with_mad" != "no"; then
       AS_HELP_STRING([--enable-dl-mad], [Dlopen mad instead of linking in.]),
       enable_dl_mad=$enableval, enable_dl_mad=no)
     AC_MSG_RESULT($enable_dl_mad)
-    if test "x$using_libltdl" = "xyes" -a "x$enable_dl_mad" = "xyes"; then
+    if test "x$using_libltdl" = "xyes" && test "x$enable_dl_mad" = "xyes"; then
       AC_DEFINE(DL_MAD, 1, [Define to dlopen() mad.])
     else
       enable_dl_mad="no"
       AC_CHECK_LIB(mad, mad_stream_buffer, MP3_LIBS="$MP3_LIBS -lmad",using_mad=no)
-      if test "$with_mad" = "yes" -a "$using_mad" = "no"; then
+      if test "$with_mad" = "yes" && test "$using_mad" = "no"; then
         AC_MSG_FAILURE([cannot find libmad])
       fi
     fi
@@ -508,7 +508,7 @@ if test "$with_id3tag" != "no"; then
     AC_CHECK_HEADER(id3tag.h,
         [AC_CHECK_LIB(id3tag, id3_file_open, ID3_LIBS="-lid3tag -lz", using_id3tag=no, -lz)],
         using_id3tag=no)
-    if test "$with_id3tag" = "yes" -a "$using_id3tag" = "no"; then
+    if test "$with_id3tag" = "yes" && test "$using_id3tag" = "no"; then
         AC_MSG_FAILURE([cannot find id3tag])
     fi
 fi
@@ -532,7 +532,7 @@ if test "$with_lame" != "no"; then
       AS_HELP_STRING([--enable-dl-lame], [Dlopen lame instead of linking in.]),
       enable_dl_lame=$enableval, enable_dl_lame=no)
     AC_MSG_RESULT($enable_dl_lame)
-    if test "x$using_libltdl" = "xyes" -a "x$enable_dl_lame" = "xyes"; then
+    if test "x$using_libltdl" = "xyes" && test "x$enable_dl_lame" = "xyes"; then
       AC_DEFINE(DL_LAME, 1, [Define to dlopen() lame.])
     else
       enable_dl_lame="no"
@@ -543,7 +543,7 @@ if test "$with_lame" != "no"; then
       if test x"$ac_cv_lib_mp3lame_id3tag_set_fieldvalue" = "xyes"; then
         AC_DEFINE(HAVE_LAME_ID3TAG, 1, [Define to 1 if lame supports optional ID3 tags.])
       fi
-      if test x"$with_lame" = "xyes" -a x"$using_lame" = "xno"; then
+      if test x"$with_lame" = "xyes" && test x"$using_lame" = "xno"; then
         AC_MSG_FAILURE([cannot find LAME])
       fi
     fi
@@ -564,12 +564,12 @@ if test "$with_twolame" != "no"; then
       AS_HELP_STRING([--enable-dl-twolame], [Dlopen twolame instead of linking in.]),
       enable_dl_twolame=$enableval, enable_dl_twolame=no)
     AC_MSG_RESULT($enable_dl_twolame)
-    if test "x$using_libltdl" = "xyes" -a "x$enable_dl_twolame" = "xyes"; then
+    if test "x$using_libltdl" = "xyes" && test "x$enable_dl_twolame" = "xyes"; then
       AC_DEFINE(DL_TWOLAME, 1, [Define to dlopen() libtwolame.])
     else
       enable_dl_twolame="no"
       AC_CHECK_LIB(twolame, twolame_init, MP3_LIBS="$MP3_LIBS -ltwolame",using_twolame=no)
-      if test "$with_twolame" = "yes" -a "$using_twolame" = "no"; then
+      if test "$with_twolame" = "yes" && test "$using_twolame" = "no"; then
         AC_MSG_FAILURE([cannot find libtwolame])
       fi
     fi
@@ -717,7 +717,7 @@ AC_ARG_ENABLE(dl_amrwb,
 	      AS_HELP_STRING([--enable-dl-amrwb], 
 			     [Dlopen amrbw instead of linking in.]),
 			     enable_dl_amrwb=$enableval, enable_dl_amrwb=no)
-if test "x$using_libltdl" = "xyes" -a "x$enable_dl_amrwb" = "xyes"; then
+if test "x$using_libltdl" = "xyes" && test "x$enable_dl_amrwb" = "xyes"; then
   AC_DEFINE(DL_AMRWB, 1, [Define to dlopen() amrwb.]) 
   dnl When enable_dl_amrwb, do not let SOX_PATH_AMRWB add libraries
   dnl to be linked in (since they will be dlopen()'ed instead).
@@ -744,7 +744,7 @@ AC_ARG_ENABLE(dl_amrnb,
 	      AS_HELP_STRING([--enable-dl-amrnb], 
 			     [Dlopen amrnb instead of linking in.]),
 			     enable_dl_amrnb=$enableval, enable_dl_amrnb=no)
-if test "x$using_libltdl" = "xyes" -a "x$enable_dl_amrnb" = "xyes"; then
+if test "x$using_libltdl" = "xyes" && test "x$enable_dl_amrnb" = "xyes"; then
   AC_DEFINE(DL_AMRNB, 1, [Define to dlopen() amrnb.]) 
   dnl When enable_dl_amrnb, do not let SOX_PATH_AMRNB add libraries
   dnl to be linked in (since they will be dlopen()'ed instead).
@@ -791,7 +791,7 @@ AC_ARG_ENABLE(dl_sndfile,
 			     [Dlopen sndfile instead of linking in.]),
 			     enable_dl_sndfile=$enableval, enable_dl_sndfile=no)
 if test "x$tmp_using_sndfile" = "xyes"; then
-  if test "x$using_libltdl" = "xyes" -a "x$enable_dl_sndfile" = "xyes"; then
+  if test "x$using_libltdl" = "xyes" && test "x$enable_dl_sndfile" = "xyes"; then
     AC_DEFINE(DL_SNDFILE, 1, [Define to dlopen() sndfile.]) 
     dnl When enable_dl_sndfile, do not let SOX_PATH_SNDFILE add libraries
     dnl to be linked in (since they will be dlopen()'ed instead).
@@ -820,7 +820,7 @@ AC_OPTIONAL_FORMAT(sunaudio, SUN_AUDIO, [AC_CHECK_HEADERS(sys/audioio.h,,
 
 # MP2/MP3 format depends on libmad || LAME || twolame
 AC_OPTIONAL_FORMAT(mp3, MP3, [
-  if test "$using_mad" != yes -a "$using_lame" != yes -a "$using_twolame" != yes; then
+  if test "$using_mad" != yes && test "$using_lame" != yes -a "$using_twolame" != yes; then
     using_mp3=no
   fi])
 
@@ -877,7 +877,7 @@ if test "$enable_replace" = "yes"; then
 fi
 AC_SUBST(REPLACE)
 
-AM_CONDITIONAL(STATIC_LIBSOX_ONLY, test "$enable_shared" = "no" -a "$enable_static" = "yes")
+AM_CONDITIONAL(STATIC_LIBSOX_ONLY, test "$enable_shared" = "no" && test "$enable_static" = "yes")
 
 dnl Generate output files.
 AC_CONFIG_FILES(Makefile src/Makefile libdolbyb/Makefile libebur128/Makefile libgsm/Makefile lpc10/Makefile test/Makefile sox_ng.pc)
