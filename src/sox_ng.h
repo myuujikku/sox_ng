@@ -1608,7 +1608,7 @@ Client API:
 Returns information about this build of libsox.
 @returns Pointer to a version information structure.
 */
-LSX_RETURN_VALID LSX_RETURN_PURE
+LSX_RETURN_VALID
 sox_version_info_t const *
 LSX_API
 sox_version_info(void);
