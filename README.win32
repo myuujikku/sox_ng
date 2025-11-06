@@ -69,21 +69,17 @@ sudo apt-get install \
     python3-setuptools python-is-python3 ruby sed sqlite3 unzip wget xz-utils
 # For other Unix distros, see https://mxe.cc#Requirements
 
-# Get a copy of MXE
+# Get a copy of MXE into the sox_ng directory
 git clone https://github.com/mxe/mxe.git
-cd mxe
 
-# Fetch the configuration file for sox_ng
-wget -P src https://codeberg.org/sox_ng/sox_ng/releases/download/sox_ng-14.6.0.1/sox_ng.mk
-
-# Build it
-make sox_ng
+# Make the Windows executables
+make win32.exe
+make win64.exe
 
 # Build the additional packages it can use
+cd mxe
 make wget ffmpeg
-
-# Make the distribution zip file
-zip -j sox_ng-win32.zip usr/i686-w64-mingw32.static/bin/{sox_ng,wget,ffmpeg}.exe
+# You'll find them in usr/*/bin
 
 Acknowledgements
 ----------------
