@@ -164,13 +164,13 @@ case "$1" in
 	esac
 
 	case "$remote" in
-	https://*)
+	http://*|https://*)
 	    site="$(echo "$remote" | \
-		    sed -n 's|https://\([^/]*\)/.*|\1|p')"
+		    sed -n 's|https*://\([^/]*\)/.*|\1|p')"
 	    owner="$(echo "$remote" | \
-		    sed -n 's|https://[^/]*/\([^/]*\)/.*|\1|p')"
+		    sed -n 's|https*://[^/]*/\([^/]*\)/.*|\1|p')"
 	    repo="$(echo "$remote" | \
-		    sed -n 's|https://[^/]*/[^/]*/\(.*\)$|\1|p')"
+		    sed -n 's|https*://[^/]*/[^/]*/\(.*\)$|\1|p')"
 	    if [ -z "$site" ] || [ -z "$owner" ] || [ -z "$repo" ]
 	    then
 		echo "I can't decode the git origin '$remote'" 1>&2
@@ -179,7 +179,7 @@ case "$1" in
 	    fi
 	    ;;
 	*)
-	    echo "$0: I only understand https:// git origins" 1>&2
+	    echo "$0: I only understand http:// and https:// git origins" 1>&2
 	    exit 1 ;;
 	esac
     fi ;;
@@ -647,18 +647,17 @@ filename_quote() {
 ecma_quote() {
     local minus_n
     # We should quote newline too but that's hard with sed.
-    # Sed has hijacked \b as a word-edge pattern matcher
-    # and FreeBSD's sed doesn't recognise \f
+    # Sed has hijacked \b as a word-edge pattern matcher.
     minus_n=
     case "$1" in
     -n) minus_n=-n; shift ;;
     esac
 
-    echo "\"$(echo $minus_n "$1" | sed 's/["\/]/\\&/g' | \
-		     sed 's/\x08/\\b/g' | \
-		     sed 's/\r/\\r/g' | \
-		     sed 's/\x0C/\\f/g' | \
-		     sed 's/\t/\\t/g' | tr '\n' '\r' | sed 's/\r/\\n/g')\""
+    echo "\"$(echo $minus_n "$1" | sed 's/["\\/]/\\&/g
+		     s/\x08/\\b/g
+		     s/\f/\\f/g
+		     s/\r/\\r/g
+		     s/\t/\\t/g' | tr '\n' '\r' | sed 's/\r/\\n/g')\""
 }
 
 # url_quote: Encode special characters in URLs
@@ -833,19 +832,21 @@ getissues() {
 
 	    assets="$(echo "$issue" | $jq '.assets')"  # json
 	    nassets="$(echo "$assets" | $jq -r length)"
-	    test "$nassets" -gt 0 && mkdir assets
-	    for i in $(seq 0 $((nassets - 1))); do
-		name="$(echo "$assets" | $jq -r ".[$i].name")"
-		url="$(echo "$assets" | $jq -r ".[$i].browser_download_url")"
-		case "$name" in
-		*.patch|*.diff)
-		    geturl GET "$url" \
-			   "Failed to fetch patch '$name' of '$title'" ;;
-		*)
-		    geturl GET -r "$url" \
-			   "Failed to fetch attachment '$name' of '$title'" ;;
-		esac > assets/"$name"
-	    done
+	    test "$nassets" -gt 0 && {
+		mkdir assets
+		for i in $(seq 0 $(($nassets - 1)) ); do
+		    name="$(echo "$assets" | $jq -r ".[$i].name")"
+		    url="$(echo "$assets" | $jq -r ".[$i].browser_download_url")"
+		    case "$name" in
+		    *.patch|*.diff)
+			geturl GET "$url" \
+			       "Failed to fetch patch '$name' of '$title'" ;;
+		    *)
+			geturl GET -r "$url" \
+			       "Failed to fetch attachment '$name' of '$title'" ;;
+		    esac > assets/"$name"
+		done
+	    }
 	    cd ..
 	else
 	    echo "Can't cd to \"$ftitle\""
