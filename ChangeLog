@@ -5,6 +5,14 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
+sox_ng-14.6.1.2	2025-11-06
+---------------
+
+Bug fixes:
+  o Fix --version only saying "SoX_ng v" on MacOS
+  o Fix issues/issues.sh for http:// remotes, FreeBSD and bogus error messages
+
+
 sox_ng-14.6.1.1	2025-11-06
 ---------------
 
@@ -16,7 +24,6 @@ Bug fixes:
   o Make --enable-dl-amrnb and -sndfile work, broken since 2009
   o Fix segfault on a mis-spelled effect name after :
   o Fix play -t ao work, broken in 14.6.1
-  o Fix --version only saying "SoX_ng v" on MacOS
 
 
 sox_ng-14.6.1	2025-10-13
