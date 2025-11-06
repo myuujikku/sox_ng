@@ -1599,7 +1599,7 @@ Client API:
 Returns version number string of libSoX, for example, "14.4.0".
 @returns The version number string of libSoX, for example, "14.4.0".
 */
-LSX_RETURN_VALID_Z LSX_RETURN_PURE
+LSX_RETURN_VALID_Z
 char const *
 LSX_API
 sox_version(void);
@@ -1609,7 +1609,7 @@ Client API:
 Returns information about this build of libsox.
 @returns Pointer to a version information structure.
 */
-LSX_RETURN_VALID
+LSX_RETURN_VALID LSX_RETURN_PURE
 sox_version_info_t const *
 LSX_API
 sox_version_info(void);
