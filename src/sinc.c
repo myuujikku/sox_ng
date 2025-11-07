@@ -33,7 +33,8 @@ static int create(sox_effect_t * effp, int argc, char * * argv)
   priv_t * p = (priv_t *)effp->priv;
   dft_filter_priv_t * b = &p->base;
   char * parse_ptr = argv[0];
-  int i = 0;
+  char * frequency_range_argument; /* For error reporting */
+  int i = 0; /* How many of the two frequency range specifiers have we seen? */
 
   lsx_getopt_t optstate;
   lsx_getopt_init(argc, argv, "+ra:b:p:MILt:n:d", NULL, lsx_getopt_flag_none, 1, &optstate);
@@ -62,7 +63,7 @@ static int create(sox_effect_t * effp, int argc, char * * argv)
           return SOX_EOF;
         }
         if (*parse_ptr2) {
-          lsx_fail("don't understand `%s' after -t", parse_ptr2);
+          lsx_fail("invalid transition bandwidth `%s'", parse_ptr2);
           return SOX_EOF;
         }
         break;
@@ -80,16 +81,16 @@ static int create(sox_effect_t * effp, int argc, char * * argv)
               goto endwhile;
 	  }
 	}
-        if (optstate.ind > argc) {
-          /* Missing obligatory parameter */
-          lsx_fail("%s requires an argument", argv[optstate.ind - 2]);
-          return SOX_EOF;
-        }
         if (isdigit(argv[optstate.ind - 1][1])) {
           /* -1 to -9: optstate.ind advances for an unknown single-char flag */
 	  /* Not sure what -0 is supposed to mean - it gives silence */
           optstate.ind--;
           goto endwhile;
+        }
+        if (optstate.ind >= argc) {
+          /* Missing obligatory parameter */
+          lsx_fail("%s requires an argument", argv[optstate.ind - 1]);
+          return SOX_EOF;
         }
         /* Invalid option flag */
         lsx_fail("invalid option `-%c'", optstate.opt);
@@ -112,6 +113,7 @@ endwhile: /* Alas, poor "break" */
     if (!i || !p->Fc1)
       p->tbw0 = p->tbw1, p->num_taps[0] = p->num_taps[1];
     if (!i++ && optstate.ind < argc) {
+      frequency_range_argument = argv[optstate.ind];
       if (*(parse_ptr = argv[optstate.ind++]) != '-')
         p->Fc0 = lsx_parse_frequency(parse_ptr, &parse_ptr);
       if (*parse_ptr == '-')
@@ -127,15 +129,15 @@ endwhile: /* Alas, poor "break" */
     return SOX_EOF;
   }
   if (p->Fc0 < 0 || p->Fc1 < 0) {
-    lsx_fail("invalid frequency range");
+    lsx_fail("invalid frequency range `%s'", frequency_range_argument);
     return SOX_EOF;
   }
   if (*parse_ptr) {
-    /* If nothing has been parsed with it, it's still pointing at "sinc" */
+    /* If no frequencies have been parsed, it's still pointing at "sinc" */
     if (parse_ptr == argv[0])
-      lsx_fail("no frequency range was given");
-    /* Otherwise the parsing of a low or high frequency failed */
-    else lsx_fail("invalid frequency scalar `%s'", parse_ptr);
+      lsx_fail("a frequency range is required");
+    else /* Otherwise the parsing of a low or high frequency failed */
+      lsx_fail("invalid frequency range `%s'", frequency_range_argument);
     return SOX_EOF;
   }
 
