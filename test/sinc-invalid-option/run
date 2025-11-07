@@ -5,7 +5,7 @@
 # This is separate from the sinc-usage tests as classic SoX passes those
 # but fails this.
 
-rm -f core
+rm -f core core.*
 
 status=0
 
@@ -13,6 +13,6 @@ status=0
 ${sox:-sox} -n -n synth 1 sinc -j 3k-4k
 s=$?; case $s in 0) status=2;; 1) ;; *) status=$s;; esac
 
-rm -f core
+rm -f core core.*
 
 exit $status

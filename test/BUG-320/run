@@ -10,13 +10,13 @@
 
 # 42b355
 
-rm -f core
+rm -f core core.*
 
 ${sox:-sox} xmalloc_31_integer_overflow.mp3 -t aiff /dev/null channels 1 rate 16k fade 3 norm
 
 status=$?
 
-rm -f core
+rm -f core core.*
 
 case $status in
 0) status=255;;

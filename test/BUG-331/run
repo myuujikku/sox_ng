@@ -10,7 +10,7 @@
 
 # 42b355
 
-rm -f core
+rm -f core core.*
 
 ${sox:-sox} FPE-wav-950 /tmp/sox.flac remix - norm -3 highpass 22 gain -3 rate 48k norm -3 dither
 status=$?
@@ -20,6 +20,6 @@ case $status in
 2) status=0;;
 esac
 
-rm -f core
+rm -f core core.*
 
 exit $status

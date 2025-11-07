@@ -10,7 +10,7 @@
 #
 # See https://sourceforge.net/p/sox/mailman/message/33196362
 
-rm -f core sweep.wav spectrogram.png
+rm -f core core.* sweep.wav spectrogram.png
 
 # Check whether sox was compiled with the spectrogram effect
 ${sox:-sox} 2>&1 | grep -q '^EFFECTS:.*spectrogram' || exit 254
@@ -27,6 +27,6 @@ case $status in
     ;;
 esac
 
-rm -f core sweep.wav spectrogram.png
+rm -f core core.* sweep.wav spectrogram.png
 
 exit $status

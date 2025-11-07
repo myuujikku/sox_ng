@@ -6,7 +6,7 @@
 # Check SoX was compiled with amr support
 ${sox:-sox} | grep "AUDIO FILE FORMATS" | grep -q ' amr' || exit 254
 
-rm -f core a.amr a.wav
+rm -f core core.* a.amr a.wav
 
 printf '#!AMR\n\x60' > a.amr
 ulimit -t 5
@@ -14,6 +14,6 @@ ${sox:-sox} a.amr a.wav
 
 status=$?
 
-rm -f core a.amr a.wav
+rm -f core core.* a.amr a.wav
 
 exit $status

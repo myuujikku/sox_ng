@@ -12,11 +12,11 @@
 ${sox:-sox} | grep "AUDIO FILE FORMATS" | grep -q ' mp3' || exit 254
 # Doesn't work if it was compiled with lame but not libmad, but that's rare.
 
-rm -f core
+rm -f core core.*
 
 ${sox:-sox} sox_memcpy_param_overlap_large.mp3 -t aiff /dev/null channels 1 rate 16k fade 3 norm
 status=$?
 
-rm -f core
+rm -f core core.*
 
 exit $status
