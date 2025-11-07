@@ -1617,6 +1617,7 @@ int sox_format_init(void) /* Find & load format handlers.  */
 #ifdef HAVE_LIBLTDL
   {
     char *pkglibdir = PKGLIBDIR;
+    char *copy = NULL;
     int error = lt_dlinit();
     if (error) {
       lsx_fail("lt_dlinit failed with %d error(s): %s", error, lt_dlerror());
@@ -1632,7 +1633,7 @@ int sox_format_init(void) /* Find & load format handlers.  */
       char *ld_library_path = getenv("LD_LIBRARY_PATH");
       if (ld_library_path) {
         /* We mustn't modify the process environment */
-        char *copy = strdup(ld_library_path);
+        copy = strdup(ld_library_path);
         char *colonp = strchr(copy, ':');
         if (colonp && colonp - copy >= 6 &&
             !(*colonp = '\0', strcmp(colonp-6, "/.libs")))
@@ -1643,6 +1644,7 @@ int sox_format_init(void) /* Find & load format handlers.  */
     }
 
     lt_dlforeachfile(pkglibdir, init_format, NULL);
+    free(copy);
   }
 #endif
   return SOX_SUCCESS;
