@@ -1835,8 +1835,8 @@ static int wavwritehdr(sox_format_t * ft, int second_header)
     if (isExtensible) {
       uint32_t dwChannelMask=0;  /* unassigned speaker mapping by default */
       static unsigned char const guids[][14] = {
-        "\x00\x00\x00\x00\x10\x00\x80\x00\x00\xAA\x00\x38\x9B\x71",  /* wav */
-        "\x00\x00\x21\x07\xd3\x11\x86\x44\xc8\xc1\xca\x00\x00\x00"}; /* amb */
+        {'\x00','\x00','\x00','\x00','\x10','\x00','\x80','\x00','\x00','\xAA','\x00','\x38','\x9B','\x71'},  /* wav */
+        {'\x00','\x00','\x21','\x07','\xd3','\x11','\x86','\x44','\xc8','\xc1','\xca','\x00','\x00','\x00'}}; /* amb */
 
       /* if not amb, assume most likely channel masks from number of channels; not
        * ideal solution, but will make files playable in many/most situations
