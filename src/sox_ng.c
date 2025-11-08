@@ -2172,8 +2172,7 @@ static void usage_format1(sox_format_handler_t const * f)
         do {
 	  unsigned prec;
           s = enc_arg(unsigned);
-	  if (e == SOX_ENCODING_MP3) prec = 24;
-	  else prec = sox_precision(e, s);
+	  prec = sox_precision(e, s);
           if (prec) {
             printf("  ");
             if (s)
