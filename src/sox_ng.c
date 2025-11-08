@@ -1953,7 +1953,8 @@ static void display_supported_formats(void)
   }
   qsort((void*)format_list, formats, sizeof(*format_list), strcmp_p);
   for (i = 0; i < formats; i++)
-    printf(" %s", format_list[i]);
+    if (i > 0 && strcmp(format_list[i], format_list[i - 1]))
+      printf(" %s", format_list[i]);
   putchar('\n');
 
   printf("PLAYLIST FORMATS: m3u pls\nAUDIO DEVICE DRIVERS:");
