@@ -395,7 +395,7 @@ static int sox_stat_stop(sox_effect_t * effp)
 
 }
 
-static char const usage[] = "[-s scale] [-rms] [-freq] [-v] [-d] [-a]";
+static char const usage[] = "[-s scale] [-rms] [-freq] [-v] [-d] [-a] [-h]";
 static char const * const extra_usage[] = {
   "-s     Scale the input data by a factor",
   "-rms   Convert all average values to root mean square",
@@ -403,7 +403,7 @@ static char const * const extra_usage[] = {
   "-v     Output only the `Volume Adjustment' value",
   "-d     Output a hex dump of the 32-bit signed PCM audio data",
   "-a     Output the average power spectrum",
-  "-h     Use the histogram alrogithm for integrated EBU R 128 loudness",
+  "-h     Use the histogram algorithm for integrated EBU R 128 loudness",
   NULL
 };
 

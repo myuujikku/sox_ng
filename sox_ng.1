@@ -3804,7 +3804,7 @@ before the end of f1.wav, i.e. the total length of the cross-fade is
 2 \(mu 3 = 6 seconds (\f(CW$(...)\fR is POSIX shell notation that is replaced
 by the output of the enclosed command).
 .TP
-\fBstat\fR [\fB\-s \fIscale\fR] [\fB\-rms\fR] [\fB\-freq\fR] [\fB\-v\fR] [\fB\-d\fR] [\fB\-a\fR]
+\fBstat\fR [\fB\-s \fIscale\fR] [\fB\-rms\fR] [\fB\-freq\fR] [\fB\-v\fR] [\fB\-d\fR] [\fB\-a\fR] [\fB\-h\fR]
 Display time and frequency domain statistical information about the audio.
 Audio is passed unmodified through the SoX processing chain.
 .SP
@@ -3923,7 +3923,7 @@ the power spectrum for each 4096-point DFT.
 The
 .B \-h
 option
-uses the "histogram algorithm" to calculate integrated EBU R-128 loudness,
+uses the "histogram algorithm" to calculate the integrated EBU R-128 loudness,
 which requires less memory but is less accurate.
 .SP
 The most common use of \fBstat\fR is to measure the characteristics
