@@ -2161,8 +2161,8 @@ static void usage_format1(sox_format_handler_t const * f)
       printf(" %g", *p++);
     putchar('\n');
   }
-  printf("Reads: %s\n", f->startread || f->read? "yes" : "no");
-  if (f->startwrite || f->write) {
+  printf("Reads: %s\n", f->read? "yes" : "no");
+  if (f->write) {
     if (f->write_formats) {
       sox_encoding_t e;
       unsigned i, s;
