@@ -40,6 +40,7 @@ typedef struct {
   unsigned long fft_size;
   unsigned long fft_offset;
   sox_bool fft_average;
+  sox_bool json;
 #if HAVE_EBUR128_H
   ebur128_state *ebur128_state;
   sox_bool ebur128_histogram;
@@ -58,6 +59,7 @@ static int sox_stat_getopts(sox_effect_t * effp, int argc, char **argv)
   stat->volume = 0;
   stat->srms = 0;
   stat->fft = 0;
+  stat->json = sox_false;
 
   --argc, ++argv;
   for (; argc > 0; argc--, argv++) {
@@ -81,6 +83,8 @@ static int sox_stat_getopts(sox_effect_t * effp, int argc, char **argv)
       stat->volume = 2;
     else if (!(strcmp(*argv, "-a")))
       stat->fft_average = sox_true;
+    else if (!(strcmp(*argv, "-j")))
+      stat->json = sox_true;
 #if HAVE_EBUR128_H
     else if (!(strcmp(*argv, "-h")))
       stat->ebur128_histogram = sox_true;
@@ -351,6 +355,44 @@ static int sox_stat_stop(sox_effect_t * effp)
   }
 #endif
 
+  if (stat->json) {
+    fprintf(stderr, "{\n");
+    fprintf(stderr, "  \"samples_read\": %" PRIu64 ",\n", stat->read);
+    fprintf(stderr, "  \"length\": %g,\n", (double)stat->read/effp->in_signal.rate/effp->in_signal.channels);
+    if (stat->srms)
+      fprintf(stderr, "  \"scaled_by_rms\": %g,\n", rms);
+    else
+      fprintf(stderr, "  \"scaled_by\": %g,\n", scale);
+    fprintf(stderr, "  \"maximum_amplitude\": %g,\n", stat->max);
+    fprintf(stderr, "  \"minimum_amplitude\": %g,\n", stat->min);
+    fprintf(stderr, "  \"midline_amplitude\": %g,\n", stat->mid);
+    if (ct > 0) {
+      fprintf(stderr, "  \"mean_norm\": %g,\n", stat->asum/ct);
+      fprintf(stderr, "  \"mean_amplitude\": %g,\n", stat->sum1/ct);
+      fprintf(stderr, "  \"rms_amplitude\": %g,\n", sqrt(stat->sum2/ct));
+    }
+    if (ct > 1) {
+      fprintf(stderr, "  \"maximum_delta\": %g,\n", stat->dmax);
+      fprintf(stderr, "  \"minimum_delta\": %g,\n", stat->dmin);
+      fprintf(stderr, "  \"mean_delta\": %g,\n", stat->dsum1/(ct-1));
+      fprintf(stderr, "  \"rms_delta\": %g,\n", sqrt(stat->dsum2/(ct-1)));
+    }
+#if HAVE_EBUR128_H
+    if (isfinite(momentary))
+      fprintf(stderr, "  \"ebur128_momentary\": %g,\n", momentary);
+    if (isfinite(short_term))
+      fprintf(stderr, "  \"ebur128_short_term\": %g,\n", short_term);
+    if (isfinite(integrated))
+      fprintf(stderr, "  \"ebur128_integrated\": %g,\n", integrated);
+#endif
+    freq = sqrt(stat->dsum2/stat->sum2)*effp->in_signal.rate/(M_PI*2);
+    fprintf(stderr, "  \"rough_frequency\": %d,\n", (int)freq);
+    if (amp>0)
+      fprintf(stderr, "  \"volume_adjustment\": %g\n", SOX_SAMPLE_MAX/(amp*scale));
+    fprintf(stderr, "}\n");
+    goto out;
+  }
+
   /* Just print the volume adjustment */
   if (stat->volume == 1 && amp > 0) {
     fprintf(stderr, "%.3f\n", SOX_SAMPLE_MAX/(amp*scale));
@@ -391,6 +433,7 @@ static int sox_stat_stop(sox_effect_t * effp)
   if (amp>0)
     fprintf(stderr, "Volume adjustment: %12.3f\n", SOX_SAMPLE_MAX/(amp*scale));
 
+out:
   /* Release FFT memory */
   free(stat->re_in);
   free(stat->re_out);
@@ -403,7 +446,7 @@ static int sox_stat_stop(sox_effect_t * effp)
 
 }
 
-static char const usage[] = "[-s scale] [-rms] [-freq] [-v] [-d] [-a] [-h]";
+static char const usage[] = "[-s scale] [-rms] [-freq] [-v] [-d] [-a] [-h] [-j]";
 static char const * const extra_usage[] = {
   "-s     Scale the input data by a factor",
   "-rms   Convert all average values to root mean square",
@@ -412,6 +455,7 @@ static char const * const extra_usage[] = {
   "-d     Output a hex dump of the 32-bit signed PCM audio data",
   "-a     Output the average power spectrum",
   "-h     Use the histogram algorithm for integrated EBU R 128 loudness",
+  "-j     Output the statistics in JSON format instead of plain text",
   NULL
 };
 

@@ -3886,8 +3886,8 @@ The
 option can be used to scale the input data by a given factor.
 The default value of
 .I scale
-is 2147483647 (i.e. the maximum value of a 32-bit signed integer).
-as internal effects always work with signed long PCM data.
+is 2147483647 (the maximum value of a 32-bit signed integer)
+as internal effects always work with those.
 A lower value means that a different sample value should be
 considered as the full-scale amplitude.
 .SP
@@ -3926,6 +3926,42 @@ option
 uses the "histogram algorithm" to calculate the integrated EBU R-128 loudness,
 which requires less memory but is less accurate.
 .SP
+The
+.B \-j
+option
+outputs the statistics in JSON format, e.g.:
+.XE
+{
+  "samples_read": 22699008,
+  "length": 236.448,
+  "scaled_by": 2.14748e+09,
+  "maximum_amplitude": 0.818604,
+  "minimum_amplitude": -0.532471,
+  "midline_amplitude": 0.143066,
+  "mean_norm": 0.0352694,
+  "mean_amplitude": 0.00180676,
+  "rms_amplitude": 0.056726,
+  "maximum_delta": 0.367126,
+  "minimum_delta": 0,
+  "mean_delta": 0.0177341,
+  "rms_delta": 0.0268538,
+  "rough_frequency": 3616,
+  "volume_adjustment": 1.22159
+}
+.XX
+If \fB\-rms\fR was given, \f(CW"scaled_by"\fR will be \f(CW"scaled_by_rms"\fR
+and if \fB\-e\fR was given, you also get
+.XE
+  "ebur128_momentary": -30.3408,
+  "ebur128_short_term": -35.4501,
+  "ebur128_integrated": -21.3583,
+.XX
+Some fields may be absent if their values are incalculable (EBUR128 figures)
+or would be infinite (like the RMS of silence).
+.SP
+As JSON uses scientific notation, it can shows the values
+of very small numbers that the usual output shows as zero.
+.SP
 The most common use of \fBstat\fR is to measure the characteristics
 of a single audio file, for which the syntax is:
 .XE
@@ -3933,7 +3969,7 @@ of a single audio file, for which the syntax is:
 .XX
 where \fB\-n\fR means "No audio output is required."
 .TP
-\fBstats\fR [\fB\-b \fIbits\fR\^|\^\fB\-x \fIbits\fR\^|\^\fB\-s \fIscale\fR] [\fB\-w \fIwindow-time\fR]
+\fBstats\fR [\fB\-b \fIbits\fR\^|\^\fB\-x \fIbits\fR\^|\^\fB\-s \fIscale\fR] [\fB\-w \fItime\fR] [\fB\-j\fR]
 Display time domain statistical information about the audio channels;
 audio is passed unmodified through the SoX processing chain.
 Statistics are calculated and displayed for each audio channel and,
@@ -4064,6 +4100,22 @@ specifically, it is the maximum value that could apply to
 .IR Max\ level .
 .I Window\ s
 is the length of the window used for the peak and trough RMS measurements.
+.SP
+The \fB\-j\fR option outputs JSON with three fields:
+.RS
+.TP
+\f(CW"channel_count"\fR
+An integer.
+.TP
+\f(CW"overall"\fR
+An object with a member for each row of the first column of the usual output,
+which are all numbers except for \f(CW"bit_depth"\fR, which is an array of two numbers.
+.TP
+\f(CW"channels"\fR
+An array of objects with the per-channel values.
+.RE
+To know the overall and the channels' member names,
+have a look at the output.
 .SP
 Like \fBstat\fR, the usual way to measure the characteristics
 of a single audio file is:

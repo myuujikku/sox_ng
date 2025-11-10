@@ -21,6 +21,7 @@
 typedef struct {
   int       scale_bits, hex_bits;
   double    time_constant, scale;
+  sox_bool  json;
 
   double    last, sigma_x, sigma_x2, avg_sigma_x2, min_sigma_x2, max_sigma_x2;
   double    min, max, mult, min_run, min_runs, max_run, max_runs;
@@ -33,7 +34,7 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
   priv_t * p = (priv_t *)effp->priv;
   int c;
   lsx_getopt_t optstate;
-  lsx_getopt_init(argc, argv, "+x:b:w:s:", NULL, lsx_getopt_flag_none, 1, &optstate);
+  lsx_getopt_init(argc, argv, "+x:b:w:s:j", NULL, lsx_getopt_flag_none, 1, &optstate);
 
   p->time_constant = .05;
   p->scale = 1;
@@ -42,6 +43,7 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
     GETOPT_NUMERIC(optstate, 'b', scale_bits    ,  2 , 32)
     GETOPT_NUMERIC(optstate, 'w', time_constant ,  .01 , 10)
     GETOPT_NUMERIC(optstate, 's', scale         ,  -99, 99)
+    case 'j': p->json = sox_true; break;
     default: lsx_fail("invalid option `-%c'", optstate.opt); return lsx_usage(effp);
   }
   if (p->hex_bits)
@@ -189,6 +191,66 @@ static int stop(sox_effect_t * effp)
       return SOX_SUCCESS;
     }
 
+    if (p->json) {
+      if (n == 0) n = 1;
+
+      fprintf(stderr, "{\n");
+      fprintf(stderr, "  \"channel_count\": %d,\n", n);
+      fprintf(stderr, "  \"overall\": {\n");
+      fprintf(stderr, "    \"dc_offset\": %g,\n", max_sigma_x / p->num_samples);
+      fprintf(stderr, "    \"min_level\": %g,\n", min);
+      fprintf(stderr, "    \"max_level\": %g,\n", max);
+      /* Avoid -inf on silent audio */
+      if (max(-min, max) != 0)
+        fprintf(stderr, "    \"peak_level_db\": %g,\n", linear_to_dB(max(-min, max)));
+      /* Avoid -inf on silent audio and nan on no audio */
+      if (sigma_x2 != 0 && num_samples > 0)
+        fprintf(stderr, "    \"rms_level_db\": %g,\n", linear_to_dB(sqrt(sigma_x2 / num_samples)));
+      if (max_sigma_x2 != 0)
+        fprintf(stderr, "    \"rms_peak_db\": %g,\n", linear_to_dB(sqrt(max_sigma_x2)));
+      if (min_sigma_x2 != 0)
+        fprintf(stderr, "    \"rms_trough_db\": %g,\n", linear_to_dB(sqrt(min_sigma_x2)));
+      fprintf(stderr, "    \"crest_factor\": %g,\n", sigma_x2 ? avg_peak / sqrt(sigma_x2 / num_samples) : 1);
+      fprintf(stderr, "    \"flat_factor\": %g,\n", linear_to_dB((min_runs + max_runs) / (min_count + max_count)));
+      b1 = bit_depth(maskLo, maskHi, &b2);
+      fprintf(stderr, "    \"bit_depth\": [%u, %u],\n", b1, b2);
+      fprintf(stderr, "    \"num_samples\": %jd,\n", (intmax_t)p->num_samples);
+      fprintf(stderr, "    \"length\": %g,\n", p->num_samples / effp->in_signal.rate);
+      fprintf(stderr, "    \"scale_max\": 1.0,\n");
+      fprintf(stderr, "    \"window\": %g\n", p->time_constant);
+      fprintf(stderr, "  },\n");
+
+      fprintf(stderr, "  \"channels\": [\n");
+      for (i = 0; i < n; i++) {
+        priv_t * q = (priv_t *)(effp - effp->flow + i)->priv;
+
+        fprintf(stderr, "    {\n");
+        fprintf(stderr, "      \"dc_offset\": %g,\n", q->sigma_x / q->num_samples);
+        fprintf(stderr, "      \"min_level\": %g,\n", q->min);
+        fprintf(stderr, "      \"max_level\": %g,\n", q->max);
+        /* Avoid -inf on silent audio */
+        if (max(-min, max) != 0)
+          fprintf(stderr, "      \"peak_level_db\": %g,\n", linear_to_dB(max(-q->min, q->max)));
+        /* Avoid -inf on silent audio and nan on no audio */
+        if (sigma_x2 != 0 && num_samples > 0)
+          fprintf(stderr, "      \"rms_level_db\": %g,\n", linear_to_dB(sqrt(q->sigma_x2 / q->num_samples)));
+        if (max_sigma_x2 != 0)
+          fprintf(stderr, "      \"rms_peak_db\": %g,\n", linear_to_dB(sqrt(q->max_sigma_x2)));
+        if (q->min_sigma_x2 != 0)
+          fprintf(stderr, "      \"rms_trough_db\": %g,\n", linear_to_dB(sqrt(q->min_sigma_x2)));
+        fprintf(stderr, "      \"crest_factor\": %g,\n", q->sigma_x2? max(-q->min, q->max) / sqrt(q->sigma_x2 / q->num_samples) : 1);
+        fprintf(stderr, "      \"flat_factor\": %g,\n", linear_to_dB((q->min_runs + q->max_runs) / (q->min_count + q->max_count)));
+        fprintf(stderr, "      \"peak_count\": %ju,\n", (intmax_t)(q->min_count + q->max_count));
+        b1 = bit_depth(q->maskLo, q->maskHi, &b2);
+        fprintf(stderr, "      \"bit_depth\": [%u, %u]\n", b1, b2);
+        fprintf(stderr, "    }");
+        if (i != (n - 1)) fprintf(stderr, ",");
+        fprintf(stderr, "\n");
+      }
+      fprintf(stderr, "  ]\n}\n");
+      return SOX_SUCCESS;
+    }
+
     if (n == 2)
       fprintf(stderr, "             Overall     Left      Right\n");
     else if (n) {
@@ -288,12 +350,13 @@ static int stop(sox_effect_t * effp)
 
 sox_effect_handler_t const * lsx_stats_effect_fn(void)
 {
-  static char const usage[] = "[-b bits|-x bits|-s scale] [-w window-time]";
+  static char const usage[] = "[-b bits|-x bits|-s scale] [-w time] [-j]";
   static char const * const extra_usage[] = {
     "-b N     Scale DC offset and Min/Max levels to signed value of N bits",
     "-x N     The same, but display them as signed hexadecimal",
     "-s N     The same, but scale them by a floating-point value",
     "-w time  Show Pk/RMS levels for a window of N seconds (default: 0.05)",
+    "-j       Output the statistics in JSON format instead of plain text",
     NULL
   };
   static sox_effect_handler_t handler = {
