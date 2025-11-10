@@ -30,7 +30,7 @@ extern sox_format_handler_t const * lsx_au_format_fn(void);
 /*
  * Open file with ffmpeg
  */
-static int startread(sox_format_t * ft)
+static int startread_ffmpeg(sox_format_t * ft)
 {
   char *quoted_filename;
   char *p, *q;
@@ -135,7 +135,7 @@ LSX_FORMAT_HANDLER(ffmpeg)
   handler = *lsx_au_format_fn();
   handler.description = "Pseudo format to use ffmpeg";
   handler.names = names;
-  handler.startread = startread;
+  handler.startread = startread_ffmpeg;
   handler.write_formats = NULL;
   handler.startwrite = NULL;
   handler.write = NULL;

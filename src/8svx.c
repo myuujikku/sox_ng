@@ -36,7 +36,7 @@ static int svxwriteheader(sox_format_t *, size_t);
 /*                         8SVXSTARTREAD                                */
 /*======================================================================*/
 
-static int startread(sox_format_t * ft)
+static int startread_8svx(sox_format_t * ft)
 {
         priv_t * p = (priv_t * ) ft->priv;
 
@@ -192,7 +192,7 @@ static int startread(sox_format_t * ft)
 /*======================================================================*/
 /*                         8SVXREAD                                     */
 /*======================================================================*/
-static size_t read_samples(sox_format_t * ft, sox_sample_t *buf, size_t nsamp)
+static size_t read_samples_8svx(sox_format_t * ft, sox_sample_t *buf, size_t nsamp)
 {
     size_t done = 0;
 
@@ -234,7 +234,7 @@ static size_t read_samples(sox_format_t * ft, sox_sample_t *buf, size_t nsamp)
 /*======================================================================*/
 /*                         8SVXSTARTWRITE                               */
 /*======================================================================*/
-static int startwrite(sox_format_t * ft)
+static int startwrite_8svx(sox_format_t * ft)
 {
         priv_t * p = (priv_t * ) ft->priv;
         size_t i;
@@ -256,7 +256,7 @@ static int startwrite(sox_format_t * ft)
 /*                         8SVXWRITE                                    */
 /*======================================================================*/
 
-static size_t write_samples(sox_format_t * ft, const sox_sample_t *buf, size_t len)
+static size_t write_samples_8svx(sox_format_t * ft, const sox_sample_t *buf, size_t len)
 {
         priv_t * p = (priv_t * ) ft->priv;
         SOX_SAMPLE_LOCALS;
@@ -280,7 +280,7 @@ static size_t write_samples(sox_format_t * ft, const sox_sample_t *buf, size_t l
 /*                         8SVXSTOPWRITE                                */
 /*======================================================================*/
 
-static int stopwrite(sox_format_t * ft)
+static int stopwrite_8svx(sox_format_t * ft)
 {
         priv_t * p = (priv_t * ) ft->priv;
 
@@ -364,8 +364,8 @@ LSX_FORMAT_HANDLER(svx)
   static sox_format_handler_t const handler = {SOX_LIB_VERSION_CODE,
     "Amiga audio format (a subformat of the Interchange File Format)",
     names, SOX_FILE_BIG_END|SOX_FILE_MONO|SOX_FILE_STEREO|SOX_FILE_QUAD,
-    startread, read_samples, NULL,
-    startwrite, write_samples, stopwrite,
+    startread_8svx, read_samples_8svx, NULL,
+    startwrite_8svx, write_samples_8svx, stopwrite_8svx,
     NULL, write_encodings, NULL, sizeof(priv_t)
   };
   return &handler;

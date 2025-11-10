@@ -394,12 +394,12 @@ nodevices:  lsx_fail_errno(ft, SOX_EPERM,
     return SOX_SUCCESS;
 }
 
-static int startread(sox_format_t *ft)
+static int startread_coreaudio(sox_format_t *ft)
 {
     return setup(ft, 1);
 }
 
-static size_t read_samples(sox_format_t *ft, sox_sample_t *buf, size_t nsamp)
+static size_t read_samples_coreaudio(sox_format_t *ft, sox_sample_t *buf, size_t nsamp)
 {
     priv_t *ac = (priv_t *)ft->priv;
     size_t len;
@@ -434,7 +434,7 @@ static size_t read_samples(sox_format_t *ft, sox_sample_t *buf, size_t nsamp)
     return len;
 }
 
-static int stopread(sox_format_t * ft)
+static int stopread_coreaudio(sox_format_t * ft)
 {
   priv_t *ac = (priv_t *)ft->priv;
 
@@ -449,12 +449,12 @@ static int stopread(sox_format_t * ft)
   return SOX_SUCCESS;
 }
 
-static int startwrite(sox_format_t * ft)
+static int startwrite_coreaudio(sox_format_t * ft)
 {
     return setup(ft, 0);
 }
 
-static size_t write_samples(sox_format_t *ft, const sox_sample_t *buf, size_t nsamp)
+static size_t write_samples_coreaudio(sox_format_t *ft, const sox_sample_t *buf, size_t nsamp)
 {
     priv_t *ac = (priv_t *)ft->priv;
     size_t i;
@@ -495,7 +495,7 @@ static size_t write_samples(sox_format_t *ft, const sox_sample_t *buf, size_t ns
 }
 
 
-static int stopwrite(sox_format_t * ft)
+static int stopwrite_coreaudio(sox_format_t * ft)
 {
     priv_t *ac = (priv_t *)ft->priv;
 
@@ -528,8 +528,8 @@ LSX_FORMAT_HANDLER(coreaudio)
   static sox_format_handler_t const handler = {SOX_LIB_VERSION_CODE,
     "Mac AudioCore device driver",
     names, SOX_FILE_DEVICE | SOX_FILE_NOSTDIO,
-    startread, read_samples, stopread,
-    startwrite, write_samples, stopwrite,
+    startread_coreaudio, read_samples_coreaudio, stopread_coreaudio,
+    startwrite_coreaudio, write_samples_coreaudio, stopwrite_coreaudio,
     NULL, write_encodings, NULL, sizeof(priv_t)
   };
   return &handler;

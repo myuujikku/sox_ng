@@ -58,7 +58,7 @@ typedef struct {
  */
 
 
-static int startread(sox_format_t * ft)
+static int startread_avr(sox_format_t * ft)
 {
   priv_t * avr = (priv_t *)ft->priv;
   int rc;
@@ -144,7 +144,7 @@ static const char write_error_msg[] = "write error";
     return(SOX_EOF); \
 }
 
-static int startwrite(sox_format_t * ft)
+static int startwrite_avr(sox_format_t * ft)
 {
   priv_t * avr = (priv_t *)ft->priv;
   int rc;
@@ -261,7 +261,7 @@ static int startwrite(sox_format_t * ft)
   return(SOX_SUCCESS);
 }
 
-static size_t write_samples(sox_format_t * ft, const sox_sample_t *buf, size_t nsamp)
+static size_t write_samples_avr(sox_format_t * ft, const sox_sample_t *buf, size_t nsamp)
 {
   priv_t * avr = (priv_t *)ft->priv;
 
@@ -270,7 +270,7 @@ static size_t write_samples(sox_format_t * ft, const sox_sample_t *buf, size_t n
   return (lsx_rawwrite (ft, buf, nsamp));
 }
 
-static int stopwrite(sox_format_t * ft)
+static int stopwrite_avr(sox_format_t * ft)
 {
   priv_t * avr = (priv_t *)ft->priv;
 
@@ -297,8 +297,8 @@ LSX_FORMAT_HANDLER(avr)
   static sox_format_handler_t handler = {SOX_LIB_VERSION_CODE,
     "Audio Visual Research format; used on the Mac",
     names, SOX_FILE_BIG_END | SOX_FILE_MONO | SOX_FILE_STEREO,
-    startread, lsx_rawread, NULL,
-    startwrite, write_samples, stopwrite,
+    startread_avr, lsx_rawread, NULL,
+    startwrite_avr, write_samples_avr, stopwrite_avr,
     NULL, write_encodings, NULL, sizeof(priv_t)
   };
   return &handler;

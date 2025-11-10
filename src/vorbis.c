@@ -102,7 +102,7 @@ static long callback_tell(void* ft_data)
  *      size and encoding of samples,
  *      mono/stereo/quad.
  */
-static int startread(sox_format_t * ft)
+static int startread_vorbis(sox_format_t * ft)
 {
   priv_t * vb = (priv_t *) ft->priv;
   vorbis_info *vi;
@@ -192,7 +192,7 @@ static int refill_buffer(priv_t * vb)
  * Return number of samples read.
  */
 
-static size_t read_samples(sox_format_t * ft, sox_sample_t * buf, size_t len)
+static size_t read_samples_vorbis(sox_format_t * ft, sox_sample_t * buf, size_t len)
 {
   priv_t * vb = (priv_t *) ft->priv;
   size_t i;
@@ -224,7 +224,7 @@ static size_t read_samples(sox_format_t * ft, sox_sample_t * buf, size_t len)
  * Do anything required when you stop reading samples.
  * Don't close input file!
  */
-static int stopread(sox_format_t * ft)
+static int stopread_vorbis(sox_format_t * ft)
 {
   priv_t * vb = (priv_t *) ft->priv;
 
@@ -293,7 +293,7 @@ cleanup:
   return ret;
 }
 
-static int startwrite(sox_format_t * ft)
+static int startwrite_vorbis(sox_format_t * ft)
 {
   priv_t * vb = (priv_t *) ft->priv;
   vorbis_enc_t *ve;
@@ -343,8 +343,8 @@ static int startwrite(sox_format_t * ft)
   return (SOX_SUCCESS);
 }
 
-static size_t write_samples(sox_format_t * ft, const sox_sample_t * buf,
-                        size_t len)
+static size_t write_samples_vorbis(sox_format_t * ft, const sox_sample_t * buf,
+                                   size_t len)
 {
   priv_t * vb = (priv_t *) ft->priv;
   vorbis_enc_t *ve = vb->vorbis_enc_data;
@@ -394,13 +394,13 @@ static size_t write_samples(sox_format_t * ft, const sox_sample_t * buf,
   return (len);
 }
 
-static int stopwrite(sox_format_t * ft)
+static int stopwrite_vorbis(sox_format_t * ft)
 {
   priv_t * vb = (priv_t *) ft->priv;
   vorbis_enc_t *ve = vb->vorbis_enc_data;
 
   /* Close out the remaining data */
-  write_samples(ft, NULL, (size_t) 0);
+  write_samples_vorbis(ft, NULL, (size_t) 0);
 
   ogg_stream_clear(&ve->os);
   vorbis_block_clear(&ve->vb);
@@ -411,7 +411,7 @@ static int stopwrite(sox_format_t * ft)
   return (SOX_SUCCESS);
 }
 
-static int seek(sox_format_t * ft, sox_uint64_t offset)
+static int seek_vorbis(sox_format_t * ft, sox_uint64_t offset)
 {
   priv_t * vb = (priv_t *) ft->priv;
 
@@ -424,9 +424,9 @@ LSX_FORMAT_HANDLER(vorbis)
   static const unsigned encodings[] = {SOX_ENCODING_VORBIS, 0, 0};
   static sox_format_handler_t handler = {SOX_LIB_VERSION_CODE,
     "Xiph.org's ogg-vorbis lossy compression", names, 0,
-    startread, read_samples, stopread,
-    startwrite, write_samples, stopwrite,
-    seek, encodings, NULL, sizeof(priv_t)
+    startread_vorbis, read_samples_vorbis, stopread_vorbis,
+    startwrite_vorbis, write_samples_vorbis, stopwrite_vorbis,
+    seek_vorbis, encodings, NULL, sizeof(priv_t)
   };
   return &handler;
 }

@@ -28,7 +28,7 @@ typedef struct {
   size_t buf_size;
 } priv_t;
 
-static int startwrite(sox_format_t * ft)
+static int startwrite_ao(sox_format_t * ft)
 {
   priv_t * ao = (priv_t *)ft->priv;
 
@@ -83,7 +83,7 @@ static void sox_sw_write_buf(char *buf1, sox_sample_t const * buf2, size_t len, 
     }
 }
 
-static size_t write_samples(sox_format_t *ft, const sox_sample_t *buf, size_t len)
+static size_t write_samples_ao(sox_format_t *ft, const sox_sample_t *buf, size_t len)
 {
   priv_t * ao = (priv_t *)ft->priv;
   uint_32 aobuf_size;
@@ -101,7 +101,7 @@ static size_t write_samples(sox_format_t *ft, const sox_sample_t *buf, size_t le
   return len;
 }
 
-static int stopwrite(sox_format_t * ft)
+static int stopwrite_ao(sox_format_t * ft)
 {
   priv_t * ao = (priv_t *)ft->priv;
 
@@ -123,7 +123,7 @@ LSX_FORMAT_HANDLER(ao)
   static sox_format_handler_t const handler = {SOX_LIB_VERSION_CODE,
     "Xiph's libao device driver", names, SOX_FILE_DEVICE | SOX_FILE_NOSTDIO,
     NULL, NULL, NULL,
-    startwrite, write_samples, stopwrite,
+    startwrite_ao, write_samples_ao, stopwrite_ao,
     NULL, encodings, NULL, sizeof(priv_t)
   };
   return &handler;

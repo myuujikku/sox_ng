@@ -74,7 +74,7 @@ static const char read_error_msg[] = "file is truncated";
  *      size and encoding of samples,
  *      mono/stereo/quad.
  */
-static int startread(sox_format_t * ft)
+static int startread_tx16w(sox_format_t * ft)
 {
     int c;
     char filetype[7];
@@ -186,7 +186,7 @@ static int startread(sox_format_t * ft)
  * Return number of samples read.
  */
 
-static size_t read_samples(sox_format_t * ft, sox_sample_t *buf, size_t len)
+static size_t read_samples_tx16w(sox_format_t * ft, sox_sample_t *buf, size_t len)
 {
     priv_t * sk = (priv_t *) ft->priv;
     size_t done = 0;
@@ -243,7 +243,7 @@ static const char write_error_msg[] = "write error";
     return(SOX_EOF); \
 }
 
-static int startwrite(sox_format_t * ft)
+static int startwrite_tx16w(sox_format_t * ft)
 {
     priv_t * sk = (priv_t *) ft->priv;
     struct WaveHeader_ WH;
@@ -268,7 +268,7 @@ static int startwrite(sox_format_t * ft)
     return(SOX_SUCCESS);
 }
 
-static size_t write_samples(sox_format_t * ft, const sox_sample_t *buf, size_t len0)
+static size_t write_samples_tx16w(sox_format_t * ft, const sox_sample_t *buf, size_t len0)
 {
   priv_t * sk = (priv_t *) ft->priv;
   size_t last_i, i = 0, len = min(len0, TXMAXLEN - sk->samples_out);
@@ -301,7 +301,7 @@ static size_t write_samples(sox_format_t * ft, const sox_sample_t *buf, size_t l
   return i;
 }
 
-static int stopwrite(sox_format_t * ft)
+static int stopwrite_tx16w(sox_format_t * ft)
 {
   priv_t * sk = (priv_t *) ft->priv;
     struct WaveHeader_ WH;
@@ -309,7 +309,7 @@ static int stopwrite(sox_format_t * ft)
 
     if (sk->odd_flag) {
       sox_sample_t pad = 0;
-      if (write_samples(ft, &pad, (size_t) 1) != 1)
+      if (write_samples_tx16w(ft, &pad, (size_t) 1) != 1)
         write_error();
     }
 
@@ -395,8 +395,8 @@ LSX_FORMAT_HANDLER(txw)
   static unsigned const write_encodings[] = {SOX_ENCODING_SIGN2, 12, 0, 0};
   static sox_format_handler_t const handler = {SOX_LIB_VERSION_CODE,
     "Yamaha TX-16W sampler", names, SOX_FILE_MONO,
-    startread, read_samples, NULL,
-    startwrite, write_samples, stopwrite,
+    startread_tx16w, read_samples_tx16w, NULL,
+    startwrite_tx16w, write_samples_tx16w, stopwrite_tx16w,
     NULL, write_encodings, write_rates, sizeof(priv_t)
   };
   return &handler;

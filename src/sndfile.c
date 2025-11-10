@@ -296,7 +296,7 @@ static int name_to_format(const char *name)
   return 0;
 }
 
-static int start(sox_format_t * ft)
+static int start_sndfile(sox_format_t * ft)
 {
   priv_t * sf = (priv_t *)ft->priv;
   int subtype = ft_enc(ft->encoding.bits_per_sample? ft->encoding.bits_per_sample : ft->signal.precision, ft->encoding.encoding);
@@ -346,7 +346,7 @@ static int start(sox_format_t * ft)
 /*
  * Close file for libsndfile (this doesn't close the file handle)
  */
-static int stop(sox_format_t * ft)
+static int stop_sndfile(sox_format_t * ft)
 {
   priv_t * sf = (priv_t *)ft->priv;
   sf->sf_stop(sf->sf_file);
@@ -388,7 +388,7 @@ static int check_read_params(sox_format_t * ft, unsigned channels,
 /*
  * Open file in sndfile.
  */
-static int startread(sox_format_t * ft)
+static int startread_sndfile(sox_format_t * ft)
 {
   priv_t * sf = (priv_t *)ft->priv;
   unsigned bits_per_sample;
@@ -396,7 +396,7 @@ static int startread(sox_format_t * ft)
   sox_rate_t rate;
   const char *extension = lsx_find_file_extension(ft->filename);
 
-  if (start(ft) == SOX_EOF)
+  if (start_sndfile(ft) == SOX_EOF)
       return SOX_EOF;
 
   /*
@@ -448,18 +448,18 @@ static int startread(sox_format_t * ft)
  * Read up to len samples of type sox_sample_t from file into buf[].
  * Return number of samples read.
  */
-static size_t read_samples(sox_format_t * ft, sox_sample_t *buf, size_t len)
+static size_t read_samples_sndfile(sox_format_t * ft, sox_sample_t *buf, size_t len)
 {
   priv_t * sf = (priv_t *)ft->priv;
   /* FIXME: We assume int == sox_sample_t here */
   return (size_t)sf->sf_read_int(sf->sf_file, (int *)buf, (sf_count_t)len);
 }
 
-static int startwrite(sox_format_t * ft)
+static int startwrite_sndfile(sox_format_t * ft)
 {
   priv_t * sf = (priv_t *)ft->priv;
 
-  if (start(ft) == SOX_EOF)
+  if (start_sndfile(ft) == SOX_EOF)
       return SOX_EOF;
 
   /* If output format is invalid, try to find a sensible default */
@@ -521,14 +521,14 @@ static int startwrite(sox_format_t * ft)
  * Write len samples of type sox_sample_t from buf[] to file.
  * Return number of samples written.
  */
-static size_t write_samples(sox_format_t * ft, const sox_sample_t *buf, size_t len)
+static size_t write_samples_sndfile(sox_format_t * ft, const sox_sample_t *buf, size_t len)
 {
   priv_t * sf = (priv_t *)ft->priv;
   /* FIXME: We assume int == sox_sample_t here */
   return (size_t)sf->sf_write_int(sf->sf_file, (int *)buf, (sf_count_t)len);
 }
 
-static int seek(sox_format_t * ft, sox_uint64_t offset)
+static int seek_sndfile(sox_format_t * ft, sox_uint64_t offset)
 {
   priv_t * sf = (priv_t *)ft->priv;
   sf->sf_seek(sf->sf_file, (sf_count_t)(offset / ft->signal.channels), SEEK_CUR);
@@ -573,9 +573,9 @@ LSX_FORMAT_HANDLER(sndfile)
 
   static sox_format_handler_t const format = {SOX_LIB_VERSION_CODE,
     "Pseudo format to use libsndfile", names, 0,
-    startread, read_samples, stop,
-    startwrite, write_samples, stop,
-    seek, write_encodings, NULL, sizeof(priv_t)
+    startread_sndfile, read_samples_sndfile, stop_sndfile,
+    startwrite_sndfile, write_samples_sndfile, stop_sndfile,
+    seek_sndfile, write_encodings, NULL, sizeof(priv_t)
   };
 
   return &format;

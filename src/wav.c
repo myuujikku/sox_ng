@@ -787,7 +787,7 @@ static const char read_error_msg[] = "file is truncated";
  *      size and encoding of samples,
  *      mono/stereo/quad.
  */
-static int startread(sox_format_t * ft)
+static int startread_wav(sox_format_t * ft)
 {
     priv_t *       wav = (priv_t *) ft->priv;
     char        magic[5];
@@ -1417,7 +1417,7 @@ static int startread(sox_format_t * ft)
  * Return number of samples read.
  */
 
-static size_t read_samples(sox_format_t * ft, sox_sample_t *buf, size_t len)
+static size_t read_samples_wav(sox_format_t * ft, sox_sample_t *buf, size_t len)
 {
         priv_t *   wav = (priv_t *) ft->priv;
         size_t done;
@@ -1513,7 +1513,7 @@ static size_t read_samples(sox_format_t * ft, sox_sample_t *buf, size_t len)
  * Do anything required when you stop reading samples.
  * Don't close input file!
  */
-static int stopread(sox_format_t * ft)
+static int stopread_wav(sox_format_t * ft)
 {
     priv_t *       wav = (priv_t *) ft->priv;
 
@@ -1540,7 +1540,7 @@ static int stopread(sox_format_t * ft)
     return SOX_SUCCESS;
 }
 
-static int startwrite(sox_format_t * ft)
+static int startwrite_wav(sox_format_t * ft)
 {
     priv_t * wav = (priv_t *) ft->priv;
     int rc;
@@ -1935,7 +1935,7 @@ static int wavwritehdr(sox_format_t * ft, int second_header)
     return SOX_SUCCESS;
 }
 
-static size_t write_samples(sox_format_t * ft, const sox_sample_t *buf, size_t len)
+static size_t write_samples_wav(sox_format_t * ft, const sox_sample_t *buf, size_t len)
 {
         priv_t *   wav = (priv_t *) ft->priv;
         ptrdiff_t total_len = len;
@@ -1976,7 +1976,7 @@ static size_t write_samples(sox_format_t * ft, const sox_sample_t *buf, size_t l
         }
 }
 
-static int stopwrite(sox_format_t * ft)
+static int stopwrite_wav(sox_format_t * ft)
 {
         priv_t *   wav = (priv_t *) ft->priv;
 
@@ -2076,7 +2076,7 @@ static char *wav_format_str(unsigned wFormatTag)
         }
 }
 
-static int seek(sox_format_t * ft, sox_uint64_t offset)
+static int seek_wav(sox_format_t * ft, sox_uint64_t offset)
 {
   priv_t *   wav = (priv_t *) ft->priv;
 
@@ -2128,9 +2128,9 @@ LSX_FORMAT_HANDLER(wav)
     0};
   static sox_format_handler_t const handler = {SOX_LIB_VERSION_CODE,
     "Microsoft audio format", names, SOX_FILE_LIT_END,
-    startread, read_samples, stopread,
-    startwrite, write_samples, stopwrite,
-    seek, write_encodings, NULL, sizeof(priv_t)
+    startread_wav, read_samples_wav, stopread_wav,
+    startwrite_wav, write_samples_wav, stopwrite_wav,
+    seek_wav, write_encodings, NULL, sizeof(priv_t)
   };
   return &handler;
 }

@@ -34,7 +34,7 @@ static int maudwriteheader(sox_format_t *);
  *      size and encoding of samples,
  *      mono/stereo/quad.
  */
-static int startread(sox_format_t * ft)
+static int startread_maud(sox_format_t * ft)
 {
         priv_t * p = (priv_t *) ft->priv;
 
@@ -213,7 +213,7 @@ static int startread(sox_format_t * ft)
         return(SOX_SUCCESS);
 }
 
-static size_t read_samples(sox_format_t * ft, sox_sample_t * buf, size_t nsamp)
+static size_t read_samples_maud(sox_format_t * ft, sox_sample_t * buf, size_t nsamp)
 {
     priv_t * p = (priv_t *) ft->priv;
     uint32_t n_to_read;
@@ -229,7 +229,7 @@ static size_t read_samples(sox_format_t * ft, sox_sample_t * buf, size_t nsamp)
     return nread;
 }
 
-static int startwrite(sox_format_t * ft)
+static int startwrite_maud(sox_format_t * ft)
 {
         priv_t * p = (priv_t *) ft->priv;
         int rc;
@@ -252,7 +252,7 @@ static int startwrite(sox_format_t * ft)
         return (status);
 }
 
-static size_t write_samples(sox_format_t * ft, const sox_sample_t *buf, size_t len)
+static size_t write_samples_maud(sox_format_t * ft, const sox_sample_t *buf, size_t len)
 {
         priv_t * p = (priv_t *) ft->priv;
 
@@ -261,7 +261,7 @@ static size_t write_samples(sox_format_t * ft, const sox_sample_t *buf, size_t l
         return lsx_rawwrite(ft, buf, len);
 }
 
-static int stopwrite(sox_format_t * ft)
+static int stopwrite_maud(sox_format_t * ft)
 {
         /* All samples are already written out. */
 
@@ -393,8 +393,8 @@ LSX_FORMAT_HANDLER(maud)
   static sox_format_handler_t const handler = {SOX_LIB_VERSION_CODE,
     "Used with the ‘Toccata’ sound-card on the Amiga",
     names, SOX_FILE_BIG_END | SOX_FILE_MONO | SOX_FILE_STEREO,
-    startread, read_samples, lsx_rawstopread,
-    startwrite, write_samples, stopwrite,
+    startread_maud, read_samples_maud, lsx_rawstopread,
+    startwrite_maud, write_samples_maud, stopwrite_maud,
     NULL, write_encodings, NULL, sizeof(priv_t)
   };
   return &handler;

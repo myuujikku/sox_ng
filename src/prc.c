@@ -121,7 +121,7 @@ static const char read_error_msg[] = "file is truncated";
   return SOX_EOF; \
 }
 
-static int startread(sox_format_t * ft)
+static int startread_prc(sox_format_t * ft)
 {
   priv_t * p = (priv_t *)ft->priv;
   char head[sizeof(prc_header)];
@@ -248,7 +248,7 @@ static unsigned read_cardinal(sox_format_t * ft)
   return a;
 }
 
-static size_t read_samples(sox_format_t * ft, sox_sample_t *buf, size_t samp)
+static size_t read_samples_prc(sox_format_t * ft, sox_sample_t *buf, size_t samp)
 {
   priv_t * p = (priv_t *)ft->priv;
 
@@ -289,7 +289,7 @@ static size_t read_samples(sox_format_t * ft, sox_sample_t *buf, size_t samp)
   }
 }
 
-static int stopread(sox_format_t * ft)
+static int stopread_prc(sox_format_t * ft)
 {
   priv_t * p = (priv_t *)ft->priv;
 
@@ -314,7 +314,7 @@ static const char write_error_msg[] = "write error";
   return SOX_EOF; \
 }
 
-static int startwrite(sox_format_t * ft)
+static int startwrite_prc(sox_format_t * ft)
 {
   priv_t * p = (priv_t *)ft->priv;
 
@@ -377,7 +377,7 @@ static int write_cardinal(sox_format_t * ft, unsigned a)
   return SOX_SUCCESS;
 }
 
-static size_t write_samples(sox_format_t * ft, const sox_sample_t *buf, size_t nsamp)
+static size_t write_samples_prc(sox_format_t * ft, const sox_sample_t *buf, size_t nsamp)
 {
   priv_t * p = (priv_t *)ft->priv;
   /* Psion Record seems not to be able to handle frames > 800 samples */
@@ -415,7 +415,7 @@ static size_t write_samples(sox_format_t * ft, const sox_sample_t *buf, size_t n
   return written;
 }
 
-static int stopwrite(sox_format_t * ft)
+static int stopwrite_prc(sox_format_t * ft)
 {
   priv_t * p = (priv_t *)ft->priv;
 
@@ -478,8 +478,8 @@ LSX_FORMAT_HANDLER(prc)
     SOX_LIB_VERSION_CODE,
     "Psion Record; used in EPOC devices (Series 5, Revo and similar)",
     names, SOX_FILE_LIT_END | SOX_FILE_MONO,
-    startread, read_samples, stopread,
-    startwrite, write_samples, stopwrite,
+    startread_prc, read_samples_prc, stopread_prc,
+    startwrite_prc, write_samples_prc, stopwrite_prc,
     seek, write_encodings, write_rates, sizeof(priv_t)
   };
   return &handler;

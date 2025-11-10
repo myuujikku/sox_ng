@@ -124,12 +124,12 @@ static int setup(sox_format_t *ft, int is_input)
   return SOX_SUCCESS;
 }
 
-static int startread(sox_format_t *ft)
+static int startread_pulse(sox_format_t *ft)
 {
     return setup(ft, 1);
 }
 
-static int stopread(sox_format_t * ft)
+static int stopread_pulse(sox_format_t * ft)
 {
   priv_t *pa = (priv_t *)ft->priv;
 
@@ -138,7 +138,7 @@ static int stopread(sox_format_t * ft)
   return SOX_SUCCESS;
 }
 
-static size_t read_samples(sox_format_t *ft, sox_sample_t *buf, size_t nsamp)
+static size_t read_samples_pulse(sox_format_t *ft, sox_sample_t *buf, size_t nsamp)
 {
   priv_t *pa = (priv_t *)ft->priv;
   size_t len;
@@ -159,12 +159,12 @@ static size_t read_samples(sox_format_t *ft, sox_sample_t *buf, size_t nsamp)
     return nsamp;
 }
 
-static int startwrite(sox_format_t * ft)
+static int startwrite_pulse(sox_format_t * ft)
 {
     return setup(ft, 0);
 }
 
-static size_t write_samples(sox_format_t *ft, const sox_sample_t *buf, size_t nsamp)
+static size_t write_samples_pulse(sox_format_t *ft, const sox_sample_t *buf, size_t nsamp)
 {
   priv_t *pa = (priv_t *)ft->priv;
   size_t len;
@@ -185,7 +185,7 @@ static size_t write_samples(sox_format_t *ft, const sox_sample_t *buf, size_t ns
   return nsamp;
 }
 
-static int stopwrite(sox_format_t * ft)
+static int stopwrite_pulse(sox_format_t * ft)
 {
   priv_t *pa = (priv_t *)ft->priv;
   int error;
@@ -205,8 +205,8 @@ LSX_FORMAT_HANDLER(pulseaudio)
   static sox_format_handler_t const handler = {SOX_LIB_VERSION_CODE,
     "Pulse Audio client",
     names, SOX_FILE_DEVICE | SOX_FILE_NOSTDIO,
-    startread, read_samples, stopread,
-    startwrite, write_samples, stopwrite,
+    startread_pulse, read_samples_pulse, stopread_pulse,
+    startwrite_pulse, write_samples_pulse, stopwrite_pulse,
     NULL, write_encodings, NULL, sizeof(priv_t)
   };
   return &handler;
