@@ -304,8 +304,7 @@ static int sox_stat_stop(sox_effect_t * effp)
   double amp, scale, rms = 0, freq;
   double ct;
 #if HAVE_EBUR128_H
-  double loudness, true_peak;
-  unsigned int channel;
+  double momentary, short_term, integrated, true_peak;
 #endif
 
   ct = stat->read;
@@ -333,6 +332,25 @@ static int sox_stat_stop(sox_effect_t * effp)
   if (amp < stat->max)
     amp = stat->max;
 
+#if HAVE_EBUR128_H
+  if (ebur128_loudness_momentary(stat->ebur128_state, &momentary)
+      != EBUR128_SUCCESS) momentary = -INFINITY;
+  if (ebur128_loudness_shortterm(stat->ebur128_state, &short_term)
+      != EBUR128_SUCCESS) short_term = -INFINITY;
+  if (ebur128_loudness_global(stat->ebur128_state, &integrated)
+      != EBUR128_SUCCESS) integrated = -INFINITY;
+  {
+    unsigned int channel;
+    double loudness;
+
+    true_peak = -INFINITY;
+    for (channel = 0; channel < effp->in_signal.channels; channel++)
+      if (ebur128_true_peak(stat->ebur128_state, channel, &loudness)
+          == EBUR128_SUCCESS && loudness > true_peak)
+        true_peak = loudness;
+  }
+#endif
+
   /* Just print the volume adjustment */
   if (stat->volume == 1 && amp > 0) {
     fprintf(stderr, "%.3f\n", SOX_SAMPLE_MAX/(amp*scale));
@@ -358,24 +376,14 @@ static int sox_stat_stop(sox_effect_t * effp)
   fprintf(stderr, "Mean    delta:     %12.6f\n", stat->dsum1/(ct-1));
   fprintf(stderr, "RMS     delta:     %12.6f\n", sqrt(stat->dsum2/(ct-1)));
 #if HAVE_EBUR128_H
-  if (ebur128_loudness_momentary(stat->ebur128_state, &loudness)
-      == EBUR128_SUCCESS)
-  fprintf(stderr, "EBUR128 Momentary: %12.6f\n", loudness);
-
-  if (ebur128_loudness_shortterm(stat->ebur128_state, &loudness)
-      == EBUR128_SUCCESS)
-  fprintf(stderr, "EBUR128 Short term:%12.6f\n", loudness);
-
-  if (ebur128_loudness_global(stat->ebur128_state, &loudness)
-      == EBUR128_SUCCESS)
-  fprintf(stderr, "EBUR128 Integrated:%12.6f\n", loudness);
-
-  true_peak = -INFINITY;
-  for (channel = 0; channel < effp->in_signal.channels; channel++)
-    if (ebur128_true_peak(stat->ebur128_state, channel, &loudness)
-        == EBUR128_SUCCESS && loudness > true_peak)
-      true_peak = loudness;
-  fprintf(stderr, "EBUR128 True Peak: %12.6f\n", true_peak);
+  if (isfinite(momentary))
+    fprintf(stderr, "EBUR128 Momentary: %12.6f\n", momentary);
+  if (isfinite(short_term))
+    fprintf(stderr, "EBUR128 Short term:%12.6f\n", short_term);
+  if (isfinite(integrated))
+    fprintf(stderr, "EBUR128 Integrated:%12.6f\n", integrated);
+  if (isfinite(true_peak))
+    fprintf(stderr, "EBUR128 True Peak: %12.6f\n", true_peak);
 #endif
   freq = sqrt(stat->dsum2/stat->sum2)*effp->in_signal.rate/(M_PI*2);
   fprintf(stderr, "Rough   frequency: %12d\n", (int)freq);
