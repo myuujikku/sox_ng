@@ -57,7 +57,7 @@ typedef struct {
 /*
  * Process options
  */
-static int getopts(sox_effect_t * effp, int argc, char **argv)
+static int getopts_stretch(sox_effect_t * effp, int argc, char **argv)
 {
   priv_t * p = (priv_t *) effp->priv;
   char dummy;
@@ -141,7 +141,7 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
 /*
  * Start processing
  */
-static int start(sox_effect_t * effp)
+static int start_stretch(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *)effp->priv;
   size_t i;
@@ -239,8 +239,8 @@ static void combine(priv_t * p)
 /*
  * Processes flow.
  */
-static int flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sample_t *obuf,
-                    size_t *isamp, size_t *osamp)
+static int flow_stretch(sox_effect_t * effp, const sox_sample_t *ibuf,
+                        sox_sample_t *obuf, size_t *isamp, size_t *osamp)
 {
   priv_t * p = (priv_t *) effp->priv;
   size_t iindex = 0, oindex = 0;
@@ -306,7 +306,7 @@ static int flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sample_t *obu
  * Drain buffer at the end
  * maybe not correct ? end might be artificially faded?
  */
-static int drain(sox_effect_t * effp, sox_sample_t *obuf, size_t *osamp)
+static int drain_stretch(sox_effect_t * effp, sox_sample_t *obuf, size_t *osamp)
 {
   priv_t * p = (priv_t *) effp->priv;
   size_t i;
@@ -336,7 +336,7 @@ static int drain(sox_effect_t * effp, sox_sample_t *obuf, size_t *osamp)
 }
 
 
-static int stop(sox_effect_t * effp)
+static int stop_stretch(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *) effp->priv;
 
@@ -365,7 +365,8 @@ const sox_effect_handler_t *lsx_stretch_effect_fn(void)
   static const sox_effect_handler_t handler = {
     "stretch", usage, extra_usage,
     SOX_EFF_LENGTH,
-    getopts, start, flow, drain, stop, NULL, sizeof(priv_t)
+    getopts_stretch, start_stretch, flow_stretch, drain_stretch,
+    stop_stretch, NULL, sizeof(priv_t)
   };
   return &handler;
 }

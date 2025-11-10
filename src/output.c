@@ -19,7 +19,7 @@
 
 typedef struct {sox_format_t * file;} priv_t;
 
-static int getopts(sox_effect_t * effp, int argc, char * * argv)
+static int getopts_output(sox_effect_t * effp, int argc, char * * argv)
 {
   priv_t * p = (priv_t *)effp->priv;
   if (argc != 2 || !(p->file = (sox_format_t *)argv[1]) || p->file->mode != 'w')
@@ -27,7 +27,7 @@ static int getopts(sox_effect_t * effp, int argc, char * * argv)
   return SOX_SUCCESS;
 }
 
-static int flow(sox_effect_t *effp, sox_sample_t const * ibuf,
+static int flow_output(sox_effect_t *effp, sox_sample_t const * ibuf,
     sox_sample_t * obuf, size_t * isamp, size_t * osamp)
 {
   size_t len;
@@ -59,7 +59,7 @@ sox_effect_handler_t const * lsx_output_effect_fn(void)
 {
   static sox_effect_handler_t handler = {
     "output", NULL, NULL, SOX_EFF_MCHAN | SOX_EFF_INTERNAL,
-    getopts, NULL, flow, NULL, NULL, NULL, sizeof(priv_t)
+    getopts_output, NULL, flow_output, NULL, NULL, NULL, sizeof(priv_t)
   };
   return &handler;
 }

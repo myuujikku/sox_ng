@@ -103,7 +103,7 @@ static int parse(sox_effect_t * effp, char * * argv, sox_rate_t rate)
   return SOX_SUCCESS;
 }
 
-static int create(sox_effect_t * effp, int argc, char * * argv)
+static int create_pad(sox_effect_t * effp, int argc, char * * argv)
 {
   priv_t * p = (priv_t *)effp->priv;
   --argc, ++argv;
@@ -113,7 +113,7 @@ static int create(sox_effect_t * effp, int argc, char * * argv)
   return parse(effp, argv, 1e5); /* No rate yet; parse with dummy */
 }
 
-static int start(sox_effect_t * effp)
+static int start_pad(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *)effp->priv;
   unsigned i;
@@ -148,7 +148,7 @@ static int start(sox_effect_t * effp)
   return SOX_EFF_NULL;
 }
 
-static int flow(sox_effect_t * effp, const sox_sample_t * ibuf,
+static int flow_pad(sox_effect_t * effp, const sox_sample_t * ibuf,
     sox_sample_t * obuf, size_t * isamp, size_t * osamp)
 {
   priv_t * p = (priv_t *)effp->priv;
@@ -179,7 +179,7 @@ static int flow(sox_effect_t * effp, const sox_sample_t * ibuf,
   return SOX_SUCCESS;
 }
 
-static int drain(sox_effect_t * effp, sox_sample_t * obuf, size_t * osamp)
+static int drain_pad(sox_effect_t * effp, sox_sample_t * obuf, size_t * osamp)
 {
   priv_t * p = (priv_t *)effp->priv;
   static size_t isamp = 0;
@@ -189,10 +189,10 @@ static int drain(sox_effect_t * effp, sox_sample_t * obuf, size_t * osamp)
         pad_align(p->pads[p->pads_pos].align, p->pads[p->pads_pos].align);
     p->in_pos = UINT64_MAX;  /* Invoke the final pad (with no given start) */
   }
-  return flow(effp, 0, obuf, &isamp, osamp);
+  return flow_pad(effp, 0, obuf, &isamp, osamp);
 }
 
-static int stop(sox_effect_t * effp)
+static int stop_pad(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *)effp->priv;
   if (p->pads_pos != p->npads)
@@ -200,7 +200,7 @@ static int stop(sox_effect_t * effp)
   return SOX_SUCCESS;
 }
 
-static int lsx_kill(sox_effect_t * effp)
+static int kill_pad(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *)effp->priv;
   unsigned i;
@@ -215,7 +215,8 @@ sox_effect_handler_t const * lsx_pad_effect_fn(void)
   static const char usage[] = "{[%]length[@position]}";
   static sox_effect_handler_t handler = {
     "pad", usage, NULL, SOX_EFF_MCHAN|SOX_EFF_LENGTH|SOX_EFF_MODIFY,
-    create, start, flow, drain, stop, lsx_kill, sizeof(priv_t)
+    create_pad, start_pad, flow_pad, drain_pad, stop_pad, kill_pad,
+    sizeof(priv_t)
   };
   return &handler;
 }

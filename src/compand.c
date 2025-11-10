@@ -39,7 +39,7 @@ typedef struct {
   char *arg2;
 } priv_t;
 
-static int getopts(sox_effect_t * effp, int argc, char * * argv)
+static int getopts_compand(sox_effect_t * effp, int argc, char * * argv)
 {
   priv_t * l = (priv_t *) effp->priv;
   char * s;
@@ -115,7 +115,7 @@ static int getopts(sox_effect_t * effp, int argc, char * * argv)
   return SOX_SUCCESS;
 }
 
-static int start(sox_effect_t * effp)
+static int start_compand(sox_effect_t * effp)
 {
   priv_t * l = (priv_t *) effp->priv;
   unsigned i, j;
@@ -163,8 +163,8 @@ static void doVolume(double *v, double samp, priv_t * l, int chan)
     *v += delta * l->channels[chan].attack_times[1];
 }
 
-static int flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sample_t *obuf,
-                    size_t *isamp, size_t *osamp)
+static int flow_compand(sox_effect_t * effp, const sox_sample_t *ibuf,
+                        sox_sample_t *obuf, size_t *isamp, size_t *osamp)
 {
   priv_t * l = (priv_t *) effp->priv;
   int len =  (*isamp > *osamp) ? *osamp : *isamp;
@@ -224,7 +224,7 @@ static int flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sample_t *obu
   return (SOX_SUCCESS);
 }
 
-static int drain(sox_effect_t * effp, sox_sample_t *obuf, size_t *osamp)
+static int drain_compand(sox_effect_t * effp, sox_sample_t *obuf, size_t *osamp)
 {
   priv_t * l = (priv_t *) effp->priv;
   size_t chan, done = 0;
@@ -246,7 +246,7 @@ static int drain(sox_effect_t * effp, sox_sample_t *obuf, size_t *osamp)
   return l->delay_buf_cnt > 0 ? SOX_SUCCESS : SOX_EOF;
 }
 
-static int stop(sox_effect_t * effp)
+static int stop_compand(sox_effect_t * effp)
 {
   priv_t * l = (priv_t *) effp->priv;
 
@@ -254,7 +254,7 @@ static int stop(sox_effect_t * effp)
   return SOX_SUCCESS;
 }
 
-static int lsx_kill(sox_effect_t * effp)
+static int kill_compand(sox_effect_t * effp)
 {
   priv_t * l = (priv_t *) effp->priv;
 
@@ -290,7 +290,8 @@ sox_effect_handler_t const * lsx_compand_effect_fn(void)
 
   static sox_effect_handler_t handler = {
     "compand", usage, extra_usage, SOX_EFF_MCHAN | SOX_EFF_GAIN,
-    getopts, start, flow, drain, stop, lsx_kill, sizeof(priv_t)
+    getopts_compand, start_compand, flow_compand, drain_compand,
+    stop_compand, kill_compand, sizeof(priv_t)
   };
 
   return &handler;

@@ -47,7 +47,7 @@ typedef struct {                /* Configuration parameters: */
       } \
       break;
 
-static int create(sox_effect_t * effp, int argc, char * * argv)
+static int create_vad(sox_effect_t * effp, int argc, char * * argv)
 {
   priv_t * p = (priv_t *)effp->priv;
   #define opt_str "+b:N:n:r:f:m:M:h:l:H:L:T:t:s:g:p:"
@@ -98,7 +98,7 @@ static int create(sox_effect_t * effp, int argc, char * * argv)
   return optstate.ind !=argc? lsx_usage(effp) : SOX_SUCCESS;
 }
 
-static int start(sox_effect_t * effp)
+static int start_vad(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *)effp->priv;
   unsigned i, fixedPreTriggerLen_ns, searchPreTriggerLen_ns;
@@ -218,7 +218,7 @@ static double measure(
   return max(0, 21 + result);
 }
 
-static int flowTrigger(sox_effect_t * effp, sox_sample_t const * ibuf,
+static int flow_vad(sox_effect_t * effp, sox_sample_t const * ibuf,
     sox_sample_t * obuf, size_t * ilen, size_t * olen)
 {
   priv_t * p = (priv_t *)effp->priv;
@@ -275,13 +275,13 @@ static int flowTrigger(sox_effect_t * effp, sox_sample_t const * ibuf,
   return SOX_SUCCESS;
 }
 
-static int drain(sox_effect_t * effp, sox_sample_t * obuf, size_t * olen)
+static int drain_vad(sox_effect_t * effp, sox_sample_t * obuf, size_t * olen)
 {
   size_t ilen = 0;
   return effp->handler.flow(effp, NULL, obuf, &ilen, olen);
 }
 
-static int stop(sox_effect_t * effp)
+static int stop_vad(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *)effp->priv;
   unsigned i;
@@ -328,7 +328,7 @@ sox_effect_handler_t const * lsx_vad_effect_fn(void)
 
   static sox_effect_handler_t handler = {
     "vad", usage, extra_usage, SOX_EFF_MCHAN | SOX_EFF_LENGTH | SOX_EFF_MODIFY,
-    create, start, flowTrigger, drain, stop, NULL, sizeof(priv_t)
+    create_vad, start_vad, flow_vad, drain_vad, stop_vad, NULL, sizeof(priv_t)
   };
 
   return &handler;

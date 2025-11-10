@@ -218,7 +218,7 @@ static int parse_range (const char *s, int *a, int *b) {
   }
 }
 
-static int getopts(sox_effect_t * effp, int argc, char **argv)
+static int getopts_spectrogram(sox_effect_t * effp, int argc, char **argv)
 {
   priv_t * p = (priv_t *)effp->priv;
   uint64_t dummy;
@@ -392,7 +392,7 @@ static void rdft_p(double const * q, double const * in, double * out, int n)
 
 #endif /* HAVE_FFTW */
 
-static int start(sox_effect_t * effp)
+static int start_spectrogram(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *)effp->priv;
   double actual, duration = 0.0, start_time = 0.0,
@@ -529,7 +529,7 @@ static int do_column(sox_effect_t * effp)
   return SOX_SUCCESS;
 }
 
-static int flow(sox_effect_t * effp,
+static int flow_spectrogram(sox_effect_t * effp,
     const sox_sample_t * ibuf, sox_sample_t * obuf,
     size_t * isamp, size_t * osamp)
 {
@@ -592,7 +592,7 @@ static int flow(sox_effect_t * effp,
   return SOX_SUCCESS;
 }
 
-static int drain(sox_effect_t * effp, sox_sample_t * obuf_, size_t * osamp)
+static int drain_spectrogram(sox_effect_t * effp, sox_sample_t * obuf_, size_t * osamp)
 {
   priv_t * p = (priv_t *)effp->priv;
 
@@ -608,7 +608,7 @@ static int drain(sox_effect_t * effp, sox_sample_t * obuf_, size_t * osamp)
       isamp += p->step_size - left_over;
     lsx_debug("cols=%i left=%i end=%i", p->cols, p->read, p->end);
     p->end = 0, p->end_min = -p->dft_size;
-    if (flow(effp, ibuf, obuf, &isamp, &isamp) == SOX_SUCCESS && p->block_num) {
+    if (flow_spectrogram(effp, ibuf, obuf, &isamp, &isamp) == SOX_SUCCESS && p->block_num) {
       p->block_norm *= (double)p->block_steps / p->block_num;
       do_column(effp);
     }
@@ -762,7 +762,7 @@ static int axis(double to, int max_steps, double * limit, char * * prefix)
 #define spectrum_width 14
 #define right 35
 
-static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
+static int stop_spectrogram(sox_effect_t * effp) /* only called, by end(), on flow 0 */
 {
   priv_t *    p        = (priv_t *) effp->priv;
   uLong       font_len = 96 * font_y;
@@ -1081,11 +1081,11 @@ error:
   return SOX_SUCCESS;
 }
 
-static int end(sox_effect_t * effp)
+static int kill_spectrogram(sox_effect_t * effp)
 {
   priv_t *p = (priv_t *)effp->priv;
   if (effp->flow == 0)
-    return stop(effp);
+    return stop_spectrogram(effp);
   free_tiles(p);
 #if HAVE_FFTW
   if (p->fftw_plan) fftw_destroy_plan(p->fftw_plan);
@@ -1126,7 +1126,9 @@ sox_effect_handler_t const * lsx_spectrogram_effect_fn(void)
   };
   static sox_effect_handler_t handler = {
     "spectrogram", usage, extra_usage, SOX_EFF_MODIFY,
-    getopts, start, flow, drain, end, 0, sizeof(priv_t)};
+    getopts_spectrogram, start_spectrogram, flow_spectrogram,
+    drain_spectrogram, kill_spectrogram, NULL,
+    sizeof(priv_t)};
 
   return &handler;
 }

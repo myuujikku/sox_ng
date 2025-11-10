@@ -1081,7 +1081,7 @@ typedef struct sdm_effect {
   uint32_t      trellis_lat;
 } sdm_effect_t;
 
-static int getopts(sox_effect_t *effp, int argc, char **argv)
+static int getopts_sdm(sox_effect_t *effp, int argc, char **argv)
 {
   sdm_effect_t *p = effp->priv;
   lsx_getopt_t optstate;
@@ -1101,7 +1101,7 @@ static int getopts(sox_effect_t *effp, int argc, char **argv)
   return argc != optstate.ind ? lsx_usage(effp) : SOX_SUCCESS;
 }
 
-static int start(sox_effect_t *effp)
+static int start_sdm(sox_effect_t *effp)
 {
   sdm_effect_t *p = effp->priv;
 
@@ -1119,20 +1119,20 @@ static int start(sox_effect_t *effp)
   return SOX_SUCCESS;
 }
 
-static int flow(sox_effect_t *effp, const sox_sample_t *ibuf,
+static int flow_sdm(sox_effect_t *effp, const sox_sample_t *ibuf,
                 sox_sample_t *obuf, size_t *isamp, size_t *osamp)
 {
   sdm_effect_t *p = effp->priv;
   return sdm_process(p->sdm, ibuf, obuf, isamp, osamp);
 }
 
-static int drain(sox_effect_t *effp, sox_sample_t *obuf, size_t *osamp)
+static int drain_sdm(sox_effect_t *effp, sox_sample_t *obuf, size_t *osamp)
 {
   sdm_effect_t *p = effp->priv;
   return sdm_drain(p->sdm, obuf, osamp);
 }
 
-static int stop(sox_effect_t *effp)
+static int stop_sdm(sox_effect_t *effp)
 {
   sdm_effect_t *p = effp->priv;
   sdm_close(p->sdm);
@@ -1141,6 +1141,7 @@ static int stop(sox_effect_t *effp)
 
 const sox_effect_handler_t *lsx_sdm_effect_fn(void)
 {
+  static char const usage[] = "[-f filter] [-t order] [-n num] [-l latency]";
   static char const * const extra_usage[] = {
     "OPTION      RANGE    DESCRIPTION",
     "-f filter            Noise-shaping filter: {clans|sdm}-[45678]",
@@ -1150,8 +1151,9 @@ const sox_effect_handler_t *lsx_sdm_effect_fn(void)
     NULL
   };
   static sox_effect_handler_t handler = {
-    "sdm", "[-f filter] [-t order] [-n num] [-l latency]", extra_usage,
-    SOX_EFF_PREC, getopts, start, flow, drain, stop, 0, sizeof(sdm_effect_t),
+    "sdm", usage, extra_usage, SOX_EFF_PREC,
+    getopts_sdm, start_sdm, flow_sdm, drain_sdm, stop_sdm, NULL,
+    sizeof(sdm_effect_t),
   };
   return &handler;
 }

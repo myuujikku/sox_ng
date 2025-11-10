@@ -66,7 +66,7 @@ static int get_param(
  * initialization now: effp->in_signal & effp->out_signal are not
  * yet filled in.
  */
-static int getopts(sox_effect_t* effp, int argc, char** argv)
+static int getopts_speexdsp(sox_effect_t* effp, int argc, char** argv)
 {
     priv_t* p = (priv_t*)effp->priv;
     const size_t agcDefault = 100;
@@ -143,7 +143,7 @@ static int getopts(sox_effect_t* effp, int argc, char** argv)
 /*
  * Do anything required when you stop reading samples.
  */
-static int stop(sox_effect_t* effp)
+static int stop_speexdsp(sox_effect_t* effp)
 {
     priv_t* p = (priv_t*)effp->priv;
 
@@ -166,7 +166,7 @@ static int stop(sox_effect_t* effp)
  * Prepare processing.
  * Do all initializations.
  */
-static int start(sox_effect_t* effp)
+static int start_speexdsp(sox_effect_t* effp)
 {
     priv_t* p = (priv_t*)effp->priv;
     int result = SOX_SUCCESS;
@@ -221,7 +221,7 @@ static int start(sox_effect_t* effp)
 
 Done:
     if (result != SOX_SUCCESS)
-        stop(effp);
+        stop_speexdsp(effp);
 
     return result;
 }
@@ -231,7 +231,7 @@ Done:
  * in obuf.  Write back the actual numbers of samples to *isamp and *osamp.
  * Return SOX_SUCCESS or, if error occurs, SOX_EOF.
  */
-static int flow(
+static int flow_speexdsp(
     sox_effect_t* effp,
     const sox_sample_t* ibuf,
     sox_sample_t* obuf,
@@ -275,7 +275,7 @@ static int flow(
 /*
  * Drain out remaining samples if the effect generates any.
  */
-static int drain(sox_effect_t* effp, sox_sample_t* obuf, size_t* osamp)
+static int drain_speexdsp(sox_effect_t* effp, sox_sample_t* obuf, size_t* osamp)
 {
     priv_t* p = (priv_t*)effp->priv;
     size_t obuf_pos = 0;
@@ -336,7 +336,9 @@ const sox_effect_handler_t* lsx_speexdsp_effect_fn(void)
 
   static sox_effect_handler_t descriptor = {
     "speexdsp", usage, extra_usage, SOX_EFF_PREC | SOX_EFF_GAIN,
-    getopts, start, flow, drain, stop, NULL, sizeof(priv_t)
+    getopts_speexdsp, start_speexdsp, flow_speexdsp,
+    drain_speexdsp, stop_speexdsp, NULL,
+    sizeof(priv_t)
   };
 
   return &descriptor;

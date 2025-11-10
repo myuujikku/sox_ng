@@ -59,7 +59,7 @@ static lsx_enum_item const interp_enum[] = {
 
 
 
-static int getopts(sox_effect_t * effp, int argc, char *argv[])
+static int getopts_flanger(sox_effect_t * effp, int argc, char *argv[])
 {
   priv_t * p = (priv_t *) effp->priv;
   --argc, ++argv;
@@ -129,7 +129,7 @@ static int getopts(sox_effect_t * effp, int argc, char *argv[])
 
 
 
-static int start(sox_effect_t * effp)
+static int start_flanger(sox_effect_t * effp)
 {
   priv_t * f = (priv_t *) effp->priv;
   int c, channels = effp->in_signal.channels;
@@ -184,7 +184,7 @@ static int start(sox_effect_t * effp)
 
 
 
-static int flow(sox_effect_t * effp, sox_sample_t const * ibuf,
+static int flow_flanger(sox_effect_t * effp, sox_sample_t const * ibuf,
     sox_sample_t * obuf, size_t * isamp, size_t * osamp)
 {
   priv_t * f = (priv_t *) effp->priv;
@@ -296,7 +296,7 @@ static int flow(sox_effect_t * effp, sox_sample_t const * ibuf,
 
 
 
-static int stop(sox_effect_t * effp)
+static int stop_flanger(sox_effect_t * effp)
 {
   priv_t * f = (priv_t *) effp->priv;
   int c, channels = effp->in_signal.channels;
@@ -345,7 +345,8 @@ sox_effect_handler_t const * lsx_flanger_effect_fn(void)
 
   static sox_effect_handler_t handler = {
     "flanger", usage, extra_usage, SOX_EFF_MCHAN,
-    getopts, start, flow, NULL, stop, NULL, sizeof(priv_t)};
+    getopts_flanger, start_flanger, flow_flanger, NULL, stop_flanger, NULL,
+    sizeof(priv_t)};
 
   return &handler;
 }

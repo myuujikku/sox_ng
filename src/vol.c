@@ -29,7 +29,7 @@ static lsx_enum_item const vol_types[] = {
 /*
  * Process options: gain (float) type (amplitude, power, dB)
  */
-static int getopts(sox_effect_t * effp, int argc, char **argv)
+static int getopts_vol(sox_effect_t * effp, int argc, char **argv)
 {
   priv_t *     vol = (priv_t *) effp->priv;
   char      type_string[11];
@@ -91,7 +91,7 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
 /*
  * Start processing
  */
-static int start(sox_effect_t * effp)
+static int start_vol(sox_effect_t * effp)
 {
     priv_t * vol = (priv_t *) effp->priv;
 
@@ -107,7 +107,7 @@ static int start(sox_effect_t * effp)
 /*
  * Process data.
  */
-static int flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sample_t *obuf,
+static int flow_vol(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sample_t *obuf,
                 size_t *isamp, size_t *osamp)
 {
     priv_t * vol = (priv_t *) effp->priv;
@@ -165,7 +165,7 @@ static int flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sample_t *obu
     return SOX_SUCCESS;
 }
 
-static int stop(sox_effect_t * effp)
+static int stop_vol(sox_effect_t * effp)
 {
   priv_t * vol = (priv_t *) effp->priv;
   if (vol->limited) {
@@ -191,7 +191,8 @@ sox_effect_handler_t const * lsx_vol_effect_fn(void)
 
   static sox_effect_handler_t handler = {
     "vol", usage, extra_usage, SOX_EFF_MCHAN | SOX_EFF_GAIN,
-    getopts, start, flow, 0, stop, 0, sizeof(priv_t)
+    getopts_vol, start_vol, flow_vol, NULL, stop_vol, NULL,
+    sizeof(priv_t)
   };
   return &handler;
 }

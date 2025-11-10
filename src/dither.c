@@ -338,7 +338,7 @@ static int flow_no_shape(sox_effect_t * effp, const sox_sample_t * ibuf,
   return SOX_SUCCESS;
 }
 
-static int getopts(sox_effect_t * effp, int argc, char * * argv)
+static int getopts_dither(sox_effect_t * effp, int argc, char * * argv)
 {
   priv_t * p = (priv_t *)effp->priv;
   int c;
@@ -372,7 +372,7 @@ static int getopts(sox_effect_t * effp, int argc, char * * argv)
   return SOX_SUCCESS;
 }
 
-static int start(sox_effect_t * effp)
+static int start_dither(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *)effp->priv;
   double mult = 1; /* Amount the noise shaping multiplies up the TPDF (+/-1) */
@@ -430,14 +430,14 @@ static int start(sox_effect_t * effp)
   return SOX_SUCCESS;
 }
 
-static int flow(sox_effect_t * effp, const sox_sample_t * ibuf,
+static int flow_dither(sox_effect_t * effp, const sox_sample_t * ibuf,
     sox_sample_t * obuf, size_t * isamp, size_t * osamp)
 {
   priv_t * p = (priv_t *)effp->priv;
   return p->flow(effp, ibuf, obuf, isamp, osamp);
 }
 
-static int drain(sox_effect_t * effp, sox_sample_t * obuf, size_t * osamp)
+static int drain_dither(sox_effect_t * effp, sox_sample_t * obuf, size_t * osamp)
 {
   priv_t * p = (priv_t *)effp->priv;
   if (p->sdm)
@@ -446,7 +446,7 @@ static int drain(sox_effect_t * effp, sox_sample_t * obuf, size_t * osamp)
   return SOX_SUCCESS;
 }
 
-static int stop(sox_effect_t * effp)
+static int stop_dither(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *)effp->priv;
   if (p->sdm)
@@ -470,7 +470,8 @@ sox_effect_handler_t const * lsx_dither_effect_fn(void)
   };
   static sox_effect_handler_t handler = {
     "dither", usage, extra_usage, SOX_EFF_PREC,
-    getopts, start, flow, drain, stop, 0, sizeof(priv_t)
+    getopts_dither, start_dither, flow_dither, drain_dither, stop_dither, 0,
+    sizeof(priv_t)
   };
   return &handler;
 }

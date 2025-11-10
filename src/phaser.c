@@ -30,7 +30,7 @@ typedef struct {
   int        delay_pos;
 } priv_t;
 
-static int getopts(sox_effect_t * effp, int argc, char * * argv)
+static int getopts_phaser(sox_effect_t * effp, int argc, char * * argv)
 {
   priv_t * p = (priv_t *) effp->priv;
 
@@ -83,7 +83,7 @@ static int getopts(sox_effect_t * effp, int argc, char * * argv)
   return argc? lsx_usage(effp) : SOX_SUCCESS;
 }
 
-static int start(sox_effect_t * effp)
+static int start_phaser(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *) effp->priv;
 
@@ -129,7 +129,7 @@ static int start(sox_effect_t * effp)
   return SOX_SUCCESS;
 }
 
-static int flow(sox_effect_t * effp, const sox_sample_t *ibuf,
+static int flow_phaser(sox_effect_t * effp, const sox_sample_t *ibuf,
     sox_sample_t *obuf, size_t *isamp, size_t *osamp)
 {
   priv_t * p = (priv_t *) effp->priv;
@@ -198,7 +198,7 @@ static int flow(sox_effect_t * effp, const sox_sample_t *ibuf,
   return SOX_SUCCESS;
 }
 
-static int stop(sox_effect_t * effp)
+static int stop_phaser(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *) effp->priv;
 
@@ -241,7 +241,8 @@ sox_effect_handler_t const * lsx_phaser_effect_fn(void)
 
   static sox_effect_handler_t handler = {
     "phaser", usage, extra_usage, SOX_EFF_GAIN,
-    getopts, start, flow, NULL, stop, NULL, sizeof(priv_t)
+    getopts_phaser, start_phaser, flow_phaser, NULL, stop_phaser, NULL,
+    sizeof(priv_t)
   };
 
   return &handler;

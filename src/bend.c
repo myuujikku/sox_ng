@@ -118,7 +118,7 @@ static int parse(sox_effect_t * effp, char **argv, sox_rate_t rate)
   return SOX_SUCCESS;
 }
 
-static int create(sox_effect_t * effp, int argc, char **argv)
+static int create_bend(sox_effect_t * effp, int argc, char **argv)
 {
   priv_t *p = (priv_t *) effp->priv;
   char const * opts = "f:o:";
@@ -141,7 +141,7 @@ static int create(sox_effect_t * effp, int argc, char **argv)
   return parse(effp, argv, 0.);     /* No rate yet; parse with dummy */
 }
 
-static int start(sox_effect_t * effp)
+static int start_bend(sox_effect_t * effp)
 {
   priv_t *p = (priv_t *) effp->priv;
   unsigned i;
@@ -161,8 +161,8 @@ static int start(sox_effect_t * effp)
   return SOX_EFF_NULL;
 }
 
-static int flow(sox_effect_t * effp, const sox_sample_t * ibuf,
-                sox_sample_t * obuf, size_t * isamp, size_t * osamp)
+static int flow_bend(sox_effect_t * effp, const sox_sample_t * ibuf,
+                     sox_sample_t * obuf, size_t * isamp, size_t * osamp)
 {
   priv_t *p = (priv_t *) effp->priv;
   size_t i, len = *isamp = *osamp = min(*isamp, *osamp);
@@ -302,7 +302,7 @@ static int flow(sox_effect_t * effp, const sox_sample_t * ibuf,
   return SOX_SUCCESS;
 }
 
-static int stop(sox_effect_t * effp)
+static int stop_bend(sox_effect_t * effp)
 {
   priv_t *p = (priv_t *) effp->priv;
 
@@ -312,7 +312,7 @@ static int stop(sox_effect_t * effp)
   return SOX_SUCCESS;
 }
 
-static int lsx_kill(sox_effect_t * effp)
+static int kill_bend(sox_effect_t * effp)
 {
   priv_t *p = (priv_t *) effp->priv;
   unsigned i;
@@ -336,7 +336,8 @@ sox_effect_handler_t const *lsx_bend_effect_fn(void)
 {
   static sox_effect_handler_t handler = {
     "bend", usage, extra_usage, 0,
-    create, start, flow, NULL, stop, lsx_kill, sizeof(priv_t)
+    create_bend, start_bend, flow_bend, NULL, stop_bend, kill_bend,
+    sizeof(priv_t)
   };
   return &handler;
 }

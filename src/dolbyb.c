@@ -39,7 +39,7 @@ typedef struct {
  * initialization now: effp->in_signal & effp->out_signal are not
  * yet filled in.
  */
-static int init(sox_effect_t * effp, int argc, char **argv)
+static int getopts_dolbyb(sox_effect_t * effp, int argc, char **argv)
 {
   priv_t *p = (priv_t *)effp->priv;
   dolbyb_t *dolbyb = &(p->dolbyb);
@@ -89,7 +89,7 @@ static int init(sox_effect_t * effp, int argc, char **argv)
  * Prepare processing.
  * Called once for each channel
  */
-static int start(sox_effect_t * effp)
+static int start_dolbyb(sox_effect_t * effp)
 {
   dolbyb_t *dolbyb = &(((priv_t *)effp->priv)->dolbyb);
 
@@ -113,8 +113,8 @@ static int start(sox_effect_t * effp)
  * in obuf.  Write back the actual numbers of samples to *isamp and *osamp.
  * Return SOX_SUCCESS or, if error occurs, SOX_EOF.
  */
-static int flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sample_t *obuf,
-                           size_t *isamp, size_t *osamp)
+static int flow_dolbyb(sox_effect_t * effp, const sox_sample_t *ibuf,
+                       sox_sample_t *obuf, size_t *isamp, size_t *osamp)
 {
   priv_t *p = (priv_t *)effp->priv;
   dolbyb_t *dolbyb = &(p->dolbyb);
@@ -154,24 +154,10 @@ static int flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sample_t *obu
   return SOX_SUCCESS;
 }
 
-static int drain(sox_effect_t UNUSED * effp, sox_sample_t UNUSED *obuf, size_t UNUSED *osamp)
-{
-  *osamp = 0;
-  return SOX_SUCCESS;
-}
-
-/*
- * Called once per channel
- */
-static int stop(sox_effect_t UNUSED * effp)
-{
-  return SOX_SUCCESS;
-}
-
 /*
  * Called once per effect
  */
-static int lsx_kill(sox_effect_t UNUSED * effp)
+static int kill_dolbyb(sox_effect_t UNUSED * effp)
 {
   dolbyb_t *dolbyb = &(((priv_t *)effp->priv)->dolbyb);
 
@@ -201,7 +187,8 @@ const sox_effect_handler_t *lsx_dolbyb_effect_fn(void)
   };
   static sox_effect_handler_t sox_dolbyb_effect = {
     "dolbyb", usage, extra_usage, SOX_EFF_MCHAN,
-    init, start, flow, drain, stop, lsx_kill, sizeof(priv_t)
+    getopts_dolbyb, start_dolbyb, flow_dolbyb, NULL, NULL, kill_dolbyb,
+    sizeof(priv_t)
   };
   return &sox_dolbyb_effect;
 }

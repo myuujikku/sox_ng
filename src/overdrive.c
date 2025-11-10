@@ -21,7 +21,7 @@ typedef struct {
   double gain, color, last_in, last_out, b0, b1, a1;
 } priv_t;
 
-static int create(sox_effect_t * effp, int argc, char * * argv)
+static int create_overdrive(sox_effect_t * effp, int argc, char * * argv)
 {
   priv_t * p = (priv_t *)effp->priv;
   --argc, ++argv;
@@ -35,7 +35,7 @@ static int create(sox_effect_t * effp, int argc, char * * argv)
   return argc? lsx_usage(effp) : SOX_SUCCESS;
 }
 
-static int start(sox_effect_t * effp)
+static int start_overdrive(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *)effp->priv;
 
@@ -45,7 +45,7 @@ static int start(sox_effect_t * effp)
   return SOX_SUCCESS;
 }
 
-static int flow(sox_effect_t * effp, const sox_sample_t * ibuf,
+static int flow_overdrive(sox_effect_t * effp, const sox_sample_t * ibuf,
     sox_sample_t * obuf, size_t * isamp, size_t * osamp)
 {
   priv_t * p = (priv_t *)effp->priv;
@@ -69,7 +69,8 @@ static int flow(sox_effect_t * effp, const sox_sample_t * ibuf,
 sox_effect_handler_t const * lsx_overdrive_effect_fn(void)
 {
   static sox_effect_handler_t handler = {
-    "overdrive", "[gain(20) [color(20)]]", NULL,
-    SOX_EFF_GAIN, create, start, flow, NULL, NULL, NULL, sizeof(priv_t)};
+    "overdrive", "[gain(20) [color(20)]]", NULL, SOX_EFF_GAIN,
+    create_overdrive, start_overdrive, flow_overdrive, NULL, NULL, NULL,
+    sizeof(priv_t)};
   return &handler;
 }

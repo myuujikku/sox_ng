@@ -182,7 +182,7 @@ static int parse(sox_effect_t * effp, char * * argv, sox_rate_t rate)
   return SOX_SUCCESS;
 }
 
-static int create(sox_effect_t * effp, int argc, char * * argv)
+static int create_splice(sox_effect_t * effp, int argc, char * * argv)
 {
   priv_t * p = (priv_t *)effp->priv;
   --argc, ++argv;
@@ -196,7 +196,7 @@ static int create(sox_effect_t * effp, int argc, char * * argv)
   return parse(effp, argv, 1e5); /* No rate yet; parse with dummy */
 }
 
-static int start(sox_effect_t * effp)
+static int start_splice(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *)effp->priv;
   unsigned i;
@@ -217,7 +217,7 @@ static int start(sox_effect_t * effp)
   return SOX_EFF_NULL;
 }
 
-static int flow(sox_effect_t * effp, const sox_sample_t * ibuf,
+static int flow_splice(sox_effect_t * effp, const sox_sample_t * ibuf,
     sox_sample_t * obuf, size_t * isamp, size_t * osamp)
 {
   priv_t * p = (priv_t *)effp->priv;
@@ -280,13 +280,13 @@ flushing:
   return SOX_SUCCESS;
 }
 
-static int drain(sox_effect_t * effp, sox_sample_t * obuf, size_t * osamp)
+static int drain_splice(sox_effect_t * effp, sox_sample_t * obuf, size_t * osamp)
 {
   size_t isamp = 0;
-  return flow(effp, 0, obuf, &isamp, osamp);
+  return flow_splice(effp, 0, obuf, &isamp, osamp);
 }
 
-static int stop(sox_effect_t * effp)
+static int stop_splice(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *)effp->priv;
   if (p->splices_pos != p->nsplices)
@@ -295,7 +295,7 @@ static int stop(sox_effect_t * effp)
   return SOX_SUCCESS;
 }
 
-static int lsx_kill(sox_effect_t * effp)
+static int kill_splice(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *)effp->priv;
   unsigned i;
@@ -323,7 +323,8 @@ sox_effect_handler_t const * lsx_splice_effect_fn(void)
   static sox_effect_handler_t handler = {
     "splice", usage, extra_usage,
     SOX_EFF_MCHAN | SOX_EFF_LENGTH,
-    create, start, flow, drain, stop, lsx_kill, sizeof(priv_t)
+    create_splice, start_splice, flow_splice, drain_splice,
+    stop_splice, kill_splice, sizeof(priv_t)
   };
   return &handler;
 }

@@ -215,7 +215,7 @@ static void set_default_parameters(channel_t *  chan)
 
 
 
-static int getopts(sox_effect_t * effp, int argc, char **argv)
+static int getopts_synth(sox_effect_t * effp, int argc, char **argv)
 {
   priv_t * p = (priv_t *) effp->priv;
   channel_t master, * chan = &master;
@@ -407,7 +407,7 @@ case3:  if (!isfinite(chan->vdelay_mix)) goto vwhat;
 
 
 
-static int start(sox_effect_t * effp)
+static int start_synth(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *)effp->priv;
   sox_rate_t sr = effp->in_signal.rate;
@@ -546,8 +546,8 @@ static int start(sox_effect_t * effp)
 
 #define elapsed_time_s p->samples_done / effp->in_signal.rate
 
-static int flow(sox_effect_t * effp, const sox_sample_t * ibuf, sox_sample_t * obuf,
-    size_t * isamp, size_t * osamp)
+static int flow_synth(sox_effect_t * effp, const sox_sample_t * ibuf,
+                      sox_sample_t * obuf, size_t * isamp, size_t * osamp)
 {
   priv_t * p = (priv_t *) effp->priv;
   unsigned len = min(*isamp, *osamp) / effp->in_signal.channels;
@@ -785,7 +785,7 @@ static int flow(sox_effect_t * effp, const sox_sample_t * ibuf, sox_sample_t * o
 
 
 
-static int stop(sox_effect_t * effp)
+static int stop_synth(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *) effp->priv;
   size_t i;
@@ -801,7 +801,7 @@ static int stop(sox_effect_t * effp)
 
 
 
-static int lsx_kill(sox_effect_t * effp)
+static int kill_synth(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *) effp->priv;
   free(p->getopts_channels);
@@ -843,7 +843,8 @@ const sox_effect_handler_t *lsx_synth_effect_fn(void)
 
   static sox_effect_handler_t handler = {
     "synth", usage, extra_usage, SOX_EFF_MCHAN | SOX_EFF_LENGTH | SOX_EFF_GAIN,
-    getopts, start, flow, 0, stop, lsx_kill, sizeof(priv_t)
+    getopts_synth, start_synth, flow_synth, NULL, stop_synth, kill_synth,
+    sizeof(priv_t)
   };
   return &handler;
 }

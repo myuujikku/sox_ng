@@ -35,7 +35,7 @@ typedef struct {
   sox_bool copying;
 } priv_t;
 
-static int parse(sox_effect_t *effp, int argc, char **argv)
+static int getopts_trim(sox_effect_t *effp, int argc, char **argv)
 {
   priv_t *p = (priv_t*) effp->priv;
   unsigned int i;
@@ -55,7 +55,7 @@ static int parse(sox_effect_t *effp, int argc, char **argv)
   return SOX_SUCCESS;
 }
 
-static int start(sox_effect_t *effp)
+static int start_trim(sox_effect_t *effp)
 {
   priv_t *p = (priv_t*) effp->priv;
   uint64_t in_length = effp->in_signal.length != SOX_UNKNOWN_LEN ?
@@ -119,7 +119,7 @@ static int start(sox_effect_t *effp)
   return SOX_SUCCESS;
 }
 
-static int flow(sox_effect_t *effp, const sox_sample_t *ibuf,
+static int flow_trim(sox_effect_t *effp, const sox_sample_t *ibuf,
     sox_sample_t *obuf, size_t *isamp, size_t *osamp)
 {
   priv_t *p = (priv_t*) effp->priv;
@@ -153,7 +153,7 @@ static int flow(sox_effect_t *effp, const sox_sample_t *ibuf,
   return SOX_SUCCESS;
 }
 
-static int drain(sox_effect_t *effp, sox_sample_t *obuf UNUSED, size_t *osamp)
+static int drain_trim(sox_effect_t *effp, sox_sample_t *obuf UNUSED, size_t *osamp)
 {
   priv_t *p = (priv_t*) effp->priv;
   *osamp = 0; /* only checking for errors */
@@ -173,7 +173,7 @@ static int drain(sox_effect_t *effp, sox_sample_t *obuf UNUSED, size_t *osamp)
   return SOX_EOF;
 }
 
-static int lsx_kill(sox_effect_t *effp)
+static int kill_trim(sox_effect_t *effp)
 {
   unsigned int i;
   priv_t *p = (priv_t*) effp->priv;
@@ -188,7 +188,7 @@ sox_effect_handler_t const *lsx_trim_effect_fn(void)
   static sox_effect_handler_t handler = {
     "trim", "{position(+)}", NULL,
     SOX_EFF_MCHAN | SOX_EFF_LENGTH | SOX_EFF_MODIFY,
-    parse, start, flow, drain, NULL, lsx_kill,
+    getopts_trim, start_trim, flow_trim, drain_trim, NULL, kill_trim,
     sizeof(priv_t)
   };
   return &handler;

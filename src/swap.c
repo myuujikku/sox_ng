@@ -23,12 +23,12 @@
 
 #include "sox_i.h"
 
-static int start(sox_effect_t *effp)
+static int start_swap(sox_effect_t *effp)
 {
   return effp->in_signal.channels >= 2 ? SOX_SUCCESS : SOX_EFF_NULL;
 }
 
-static int flow(sox_effect_t *effp, const sox_sample_t *ibuf,
+static int flow_swap(sox_effect_t *effp, const sox_sample_t *ibuf,
     sox_sample_t *obuf, size_t *isamp, size_t *osamp)
 {
   size_t len = min(*isamp, *osamp);
@@ -55,7 +55,7 @@ sox_effect_handler_t const *lsx_swap_effect_fn(void)
   static sox_effect_handler_t handler = {
     "swap", NULL, NULL,
     SOX_EFF_MCHAN | SOX_EFF_MODIFY,
-    NULL, start, flow, NULL, NULL, NULL,
+    NULL, start_swap, flow_swap, NULL, NULL, NULL,
     0
   };
   return &handler;

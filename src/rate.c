@@ -546,7 +546,7 @@ typedef struct {
   rate_shared_t   shared, * shared_ptr;
 } priv_t;
 
-static int create(sox_effect_t * effp, int argc, char **argv)
+static int create_rate(sox_effect_t * effp, int argc, char **argv)
 {
   priv_t * p = (priv_t *) effp->priv;
   int c, quality;
@@ -645,7 +645,7 @@ static int create(sox_effect_t * effp, int argc, char **argv)
   return argc? lsx_usage(effp) : SOX_SUCCESS;
 }
 
-static int start(sox_effect_t * effp)
+static int start_rate(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *) effp->priv;
   double out_rate = p->out_rate != 0 ? p->out_rate : effp->out_signal.rate;
@@ -675,7 +675,7 @@ static int start(sox_effect_t * effp)
   return SOX_SUCCESS;
 }
 
-static int flow(sox_effect_t * effp, const sox_sample_t * ibuf,
+static int flow_rate(sox_effect_t * effp, const sox_sample_t * ibuf,
                 sox_sample_t * obuf, size_t * isamp, size_t * osamp)
 {
   priv_t * p = (priv_t *)effp->priv;
@@ -694,15 +694,15 @@ static int flow(sox_effect_t * effp, const sox_sample_t * ibuf,
   return SOX_SUCCESS;
 }
 
-static int drain(sox_effect_t * effp, sox_sample_t * obuf, size_t * osamp)
+static int drain_rate(sox_effect_t * effp, sox_sample_t * obuf, size_t * osamp)
 {
   priv_t * p = (priv_t *)effp->priv;
   static size_t isamp = 0;
   rate_flush(&p->rate);
-  return flow(effp, 0, obuf, &isamp, osamp);
+  return flow_rate(effp, 0, obuf, &isamp, osamp);
 }
 
-static int stop(sox_effect_t * effp)
+static int stop_rate(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *) effp->priv;
   rate_close(&p->rate);
@@ -747,7 +747,8 @@ sox_effect_handler_t const * lsx_rate_effect_fn(void)
 
   static sox_effect_handler_t handler = {
     "rate", usage, extra_usage, SOX_EFF_RATE,
-    create, start, flow, drain, stop, 0, sizeof(priv_t)
+    create_rate, start_rate, flow_rate, drain_rate, stop_rate, NULL,
+    sizeof(priv_t)
   };
 
   return &handler;

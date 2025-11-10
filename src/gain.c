@@ -30,7 +30,7 @@ typedef struct {
   FILE          * tmp_file;
 } priv_t;
 
-static int create(sox_effect_t * effp, int argc, char * * argv)
+static int create_gain(sox_effect_t * effp, int argc, char * * argv)
 {
   priv_t * p = (priv_t *)effp->priv;
   char const * q;
@@ -63,7 +63,7 @@ static int create(sox_effect_t * effp, int argc, char * * argv)
   return argc? lsx_usage(effp) : SOX_SUCCESS;
 }
 
-static int start(sox_effect_t * effp)
+static int start_gain(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *)effp->priv;
 
@@ -96,7 +96,7 @@ static int start(sox_effect_t * effp)
   return SOX_SUCCESS;
 }
 
-static int flow(sox_effect_t * effp, const sox_sample_t * ibuf,
+static int flow_gain(sox_effect_t * effp, const sox_sample_t * ibuf,
     sox_sample_t * obuf, size_t * isamp, size_t * osamp)
 {
   priv_t * p = (priv_t *)effp->priv;
@@ -190,7 +190,7 @@ static void start_drain(sox_effect_t * effp)
   }
 }
 
-static int drain(sox_effect_t * effp, sox_sample_t * obuf, size_t * osamp)
+static int drain_gain(sox_effect_t * effp, sox_sample_t * obuf, size_t * osamp)
 {
   priv_t * p = (priv_t *)effp->priv;
   size_t len;
@@ -218,7 +218,7 @@ static int drain(sox_effect_t * effp, sox_sample_t * obuf, size_t * osamp)
   return result;
 }
 
-static int stop(sox_effect_t * effp)
+static int stop_gain(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *)effp->priv;
   if (p->do_scan)
@@ -246,7 +246,8 @@ sox_effect_handler_t const * lsx_gain_effect_fn(void)
   };
   static sox_effect_handler_t handler = {
     "gain", usage, extra_usage, SOX_EFF_GAIN,
-    create, start, flow, drain, stop, NULL, sizeof(priv_t)};
+    create_gain, start_gain, flow_gain, drain_gain, stop_gain, NULL,
+    sizeof(priv_t)};
 
     return &handler;
 }

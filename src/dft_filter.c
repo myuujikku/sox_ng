@@ -35,7 +35,7 @@ void lsx_set_dft_filter(dft_filter_t *f, double *h, int n, int post_peak)
   free(h);
 }
 
-static int start(sox_effect_t * effp)
+static int start_dft_filter(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *) effp->priv;
 
@@ -74,8 +74,8 @@ static void filter(priv_t * p)
   }
 }
 
-static int flow(sox_effect_t * effp, const sox_sample_t * ibuf,
-                sox_sample_t * obuf, size_t * isamp, size_t * osamp)
+static int flow_dft_filter(sox_effect_t * effp, const sox_sample_t * ibuf,
+                           sox_sample_t * obuf, size_t * isamp, size_t * osamp)
 {
   priv_t * p = (priv_t *)effp->priv;
   size_t odone = min(*osamp, (size_t)fifo_occupancy(&p->output_fifo));
@@ -95,7 +95,7 @@ static int flow(sox_effect_t * effp, const sox_sample_t * ibuf,
   return SOX_SUCCESS;
 }
 
-static int drain(sox_effect_t * effp, sox_sample_t * obuf, size_t * osamp)
+static int drain_dft_filter(sox_effect_t * effp, sox_sample_t * obuf, size_t * osamp)
 {
   priv_t * p = (priv_t *)effp->priv;
   static size_t isamp = 0;
@@ -115,10 +115,10 @@ static int drain(sox_effect_t * effp, sox_sample_t * obuf, size_t * osamp)
     p->samples_in = 0;
   }
   free(buff);
-  return flow(effp, 0, obuf, &isamp, osamp);
+  return flow_dft_filter(effp, 0, obuf, &isamp, osamp);
 }
 
-static int stop(sox_effect_t * effp)
+static int stop_dft_filter(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *) effp->priv;
 
@@ -132,7 +132,9 @@ static int stop(sox_effect_t * effp)
 sox_effect_handler_t const * lsx_dft_filter_effect_fn(void)
 {
   static sox_effect_handler_t handler = {
-    NULL, NULL, NULL, SOX_EFF_GAIN, NULL, start, flow, drain, stop, NULL, 0
+    NULL, NULL, NULL, SOX_EFF_GAIN,
+    NULL, start_dft_filter, flow_dft_filter, drain_dft_filter, stop_dft_filter,
+    NULL, 0
   };
   return &handler;
 }

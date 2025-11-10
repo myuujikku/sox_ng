@@ -143,7 +143,7 @@ static int parse_subarg(sox_effect_t * effp, char *s, char **subargv, size_t *su
       return SOX_SUCCESS;
 }
 
-static int getopts(sox_effect_t * effp, int argc, char **argv)
+static int getopts_mcompand(sox_effect_t * effp, int argc, char **argv)
 {
   char *subargv[6], *cp;
   size_t subargc, i;
@@ -193,7 +193,7 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
  * Prepare processing.
  * Do all initializations.
  */
-static int start(sox_effect_t * effp)
+static int start_mcompand(sox_effect_t * effp)
 {
   priv_t * c = (priv_t *) effp->priv;
   comp_band_t * l;
@@ -337,8 +337,8 @@ static int sox_mcompand_flow_1(sox_effect_t * effp, priv_t * c, comp_band_t * l,
  * Processed signed long samples from ibuf to obuf.
  * Return number of samples processed.
  */
-static int flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sample_t *obuf,
-                     size_t *isamp, size_t *osamp) {
+static int flow_mcompand(sox_effect_t * effp, const sox_sample_t *ibuf,
+                         sox_sample_t *obuf, size_t *isamp, size_t *osamp) {
   priv_t * c = (priv_t *) effp->priv;
   comp_band_t * l;
   size_t len = min(*isamp, *osamp);
@@ -415,7 +415,7 @@ static int sox_mcompand_drain_1(sox_effect_t * effp, priv_t * c, comp_band_t * l
 /*
  * Drain out compander delay lines.
  */
-static int drain(sox_effect_t * effp, sox_sample_t *obuf, size_t *osamp)
+static int drain_mcompand(sox_effect_t * effp, sox_sample_t *obuf, size_t *osamp)
 {
   size_t band, drained, mostdrained = 0;
   priv_t * c = (priv_t *)effp->priv;
@@ -442,7 +442,7 @@ static int drain(sox_effect_t * effp, sox_sample_t *obuf, size_t *osamp)
 /*
  * Clean up compander effect.
  */
-static int stop(sox_effect_t * effp)
+static int stop_mcompand(sox_effect_t * effp)
 {
   priv_t * c = (priv_t *) effp->priv;
   comp_band_t * l;
@@ -465,7 +465,7 @@ static int stop(sox_effect_t * effp)
   return SOX_SUCCESS;
 }
 
-static int lsx_kill(sox_effect_t * effp)
+static int kill_mcompand(sox_effect_t * effp)
 {
   priv_t * c = (priv_t *) effp->priv;
   comp_band_t * l;
@@ -496,7 +496,8 @@ const sox_effect_handler_t *lsx_mcompand_effect_fn(void)
   };
   static sox_effect_handler_t handler = {
     "mcompand", usage, extra_usage, SOX_EFF_MCHAN | SOX_EFF_GAIN,
-    getopts, start, flow, drain, stop, lsx_kill, sizeof(priv_t)
+    getopts_mcompand, start_mcompand, flow_mcompand, drain_mcompand,
+    stop_mcompand, kill_mcompand, sizeof(priv_t)
   };
 
   return &handler;

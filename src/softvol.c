@@ -46,7 +46,7 @@ lsx_adjust_softvol(int delta)
  * initialization now: effp->in_signal & effp->out_signal are not
  * yet filled in.
  */
-static int getopts(sox_effect_t * effp, int argc, char UNUSED **argv)
+static int getopts_softvol(sox_effect_t * effp, int argc, char UNUSED **argv)
 {
   priv_t *p = (priv_t *)effp->priv;
   float headroom = 0.0;
@@ -96,7 +96,7 @@ static int getopts(sox_effect_t * effp, int argc, char UNUSED **argv)
  * Prepare processing.
  * Do all initializations.
  */
-static int start(sox_effect_t * effp)
+static int start_softvol(sox_effect_t * effp)
 {
   priv_t *p = (priv_t *)effp->priv;
 
@@ -112,7 +112,7 @@ static int start(sox_effect_t * effp)
  * in obuf.  Write back the actual numbers of samples to *isamp and *osamp.
  * Return SOX_SUCCESS or, if error occurs, SOX_EOF.
  */
-static int flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sample_t *obuf,
+static int flow_softvol(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sample_t *obuf,
                            size_t *isamp, size_t *osamp)
 {
   priv_t *p = (priv_t *)effp->priv;
@@ -156,7 +156,7 @@ static int flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sample_t *obu
 /*
  * Drain out remaining samples if the effect generates any.
  */
-static int drain(sox_effect_t UNUSED * effp, sox_sample_t UNUSED *obuf, size_t *osamp)
+static int drain_softvol(sox_effect_t UNUSED * effp, sox_sample_t UNUSED *obuf, size_t *osamp)
 {
   *osamp = 0;
   /* Return SOX_EOF when drain
@@ -164,24 +164,6 @@ static int drain(sox_effect_t UNUSED * effp, sox_sample_t UNUSED *obuf, size_t *
    * *osamp == 0 also indicates that.
    */
   return SOX_EOF;
-}
-
-/*
- * Do anything required when you stop reading samples.
- */
-static int stop(sox_effect_t UNUSED * effp)
-{
-  return SOX_SUCCESS;
-}
-
-/*
- * Do anything required when you kill an effect.
- *      (free allocated memory, etc.)
- */
-static int lsx_kill(sox_effect_t UNUSED * effp)
-{
-  softvol_priv = NULL;
-  return SOX_SUCCESS;
 }
 
 /*
@@ -200,7 +182,8 @@ const sox_effect_handler_t *lsx_softvol_effect_fn(void)
   };
   static sox_effect_handler_t handler = {
     "softvol", usage, extra_usage, SOX_EFF_MCHAN | SOX_EFF_GAIN,
-    getopts, start, flow, drain, stop, lsx_kill, sizeof(priv_t)
+    getopts_softvol, start_softvol, flow_softvol, drain_softvol, NULL, NULL,
+    sizeof(priv_t)
   };
   return &handler;
 }

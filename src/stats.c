@@ -29,7 +29,7 @@ typedef struct {
   uint32_t  maskLo, maskHi;
 } priv_t;
 
-static int getopts(sox_effect_t * effp, int argc, char **argv)
+static int getopts_stats(sox_effect_t * effp, int argc, char **argv)
 {
   priv_t * p = (priv_t *)effp->priv;
   int c;
@@ -51,7 +51,7 @@ static int getopts(sox_effect_t * effp, int argc, char **argv)
   return optstate.ind != argc? lsx_usage(effp) : SOX_SUCCESS;
 }
 
-static int start(sox_effect_t * effp)
+static int start_stats(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *)effp->priv;
 
@@ -66,7 +66,7 @@ static int start(sox_effect_t * effp)
   return SOX_SUCCESS;
 }
 
-static int flow(sox_effect_t * effp, const sox_sample_t * ibuf,
+static int flow_stats(sox_effect_t * effp, const sox_sample_t * ibuf,
     sox_sample_t * obuf, size_t * ilen, size_t * olen)
 {
   priv_t * p = (priv_t *)effp->priv;
@@ -111,7 +111,7 @@ static int flow(sox_effect_t * effp, const sox_sample_t * ibuf,
   return SOX_SUCCESS;
 }
 
-static int drain(sox_effect_t * effp, sox_sample_t * obuf, size_t * olen)
+static int drain_stats(sox_effect_t * effp, sox_sample_t * obuf, size_t * olen)
 {
   priv_t * p = (priv_t *)effp->priv;
 
@@ -154,7 +154,7 @@ static void output(priv_t const * p, double x)
   else fprintf(stderr, " %9.*f", fabs(p->scale) < 10 ? 6 : 5, p->scale * x);
 }
 
-static int stop(sox_effect_t * effp)
+static int stop_stats(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *)effp->priv;
 
@@ -363,6 +363,7 @@ sox_effect_handler_t const * lsx_stats_effect_fn(void)
     "stats",
     usage, extra_usage,
     SOX_EFF_MODIFY,
-    getopts, start, flow, drain, stop, NULL, sizeof(priv_t)};
+    getopts_stats, start_stats, flow_stats, drain_stats, stop_stats, NULL,
+    sizeof(priv_t)};
   return &handler;
 }

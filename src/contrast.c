@@ -19,7 +19,7 @@
 
 typedef struct {double amount;} priv_t;
 
-static int create(sox_effect_t * effp, int argc, char * * argv)
+static int create_contrast(sox_effect_t * effp, int argc, char * * argv)
 {
   priv_t * p = (priv_t *)effp->priv;
   p->amount = 75;
@@ -29,7 +29,7 @@ static int create(sox_effect_t * effp, int argc, char * * argv)
   return argc? lsx_usage(effp) : SOX_SUCCESS;
 }
 
-static int flow(sox_effect_t * effp, const sox_sample_t * ibuf,
+static int flow_contrast(sox_effect_t * effp, const sox_sample_t * ibuf,
     sox_sample_t * obuf, size_t * isamp, size_t * osamp)
 {
   priv_t * p = (priv_t *)effp->priv;
@@ -50,6 +50,6 @@ sox_effect_handler_t const * lsx_contrast_effect_fn(void)
   };
   static sox_effect_handler_t handler = {
     "contrast", "[amount]", extra_usage,
-    0, create, NULL, flow, NULL, NULL, NULL, sizeof(priv_t)};
+    0, create_contrast, NULL, flow_contrast, NULL, NULL, NULL, sizeof(priv_t)};
   return &handler;
 }
