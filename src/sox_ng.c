@@ -2169,11 +2169,20 @@ static void usage_format1(sox_format_handler_t const * f)
 #define enc_arg(T) (T)f->write_formats[i++]
       i = 0;
       puts("Writes:");
+      /* This looks odd, but the entries in a format's write_formats are, e.g.
+       * {ENCODING1, precision1a, precision1b, 0, ENCODING2, precision2, 0, 0}
+       * so alternating between sox_encoding_t and unsigned is correct.
+       */
       while ((e = enc_arg(sox_encoding_t))) {
         do {
 	  unsigned prec;
           s = enc_arg(unsigned);
 	  prec = sox_precision(e, s);
+          /* The mp3 format handler sets the precision on startup.
+           * Both LAME and Twolame encoders take floating point input
+           * (24-bit mantissa + 1-bit sign) but set it to 24.
+           */
+          if (prec == 0 && e == SOX_ENCODING_MP3) prec = 24;
           if (prec) {
             printf("  ");
             if (s)

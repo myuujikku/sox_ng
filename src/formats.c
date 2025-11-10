@@ -309,9 +309,9 @@ unsigned sox_precision(sox_encoding_t encoding, unsigned bits_per_sample)
     case SOX_ENCODING_CVSD:       return bits_per_sample == 1? 16: 0;
     case SOX_ENCODING_DPCM:       return bits_per_sample; /* ? */
 
-    case SOX_ENCODING_MP3:        return 24;
-    /* We should accept the precision returned by the format.
-     * but both LAME and Twolame take 24-bit input. */
+    case SOX_ENCODING_MP3:        return 0;
+    /* The precision is set when the format handler starts up,
+     * according to the encoder or decoder in use. */
 
     case SOX_ENCODING_GSM:
     case SOX_ENCODING_VORBIS:
