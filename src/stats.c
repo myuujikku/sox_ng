@@ -19,8 +19,8 @@
 #include <ctype.h>
 
 typedef struct {
-  int       scale_bits, hex_bits;
-  double    time_constant, scale;
+  int       b_bits, x_bits;
+  double    window_time, scale;
   sox_bool  json;
 
   double    last, sigma_x, sigma_x2, avg_sigma_x2, min_sigma_x2, max_sigma_x2;
@@ -36,18 +36,18 @@ static int getopts_stats(sox_effect_t * effp, int argc, char **argv)
   lsx_getopt_t optstate;
   lsx_getopt_init(argc, argv, "+x:b:w:s:j", NULL, lsx_getopt_flag_none, 1, &optstate);
 
-  p->time_constant = .05;
+  p->window_time = .05;
   p->scale = 1;
   while ((c = lsx_getopt(&optstate)) != -1) switch (c) {
-    GETOPT_NUMERIC(optstate, 'x', hex_bits      ,  2 , 32)
-    GETOPT_NUMERIC(optstate, 'b', scale_bits    ,  2 , 32)
-    GETOPT_NUMERIC(optstate, 'w', time_constant ,  .01 , 10)
+    GETOPT_NUMERIC(optstate, 'x', x_bits      ,  2 , 32)
+    GETOPT_NUMERIC(optstate, 'b', b_bits    ,  2 , 32)
+    GETOPT_NUMERIC(optstate, 'w', window_time ,  .01 , 10)
     GETOPT_NUMERIC(optstate, 's', scale         ,  -99, 99)
     case 'j': p->json = sox_true; break;
     default: lsx_fail("invalid option `-%c'", optstate.opt); return lsx_usage(effp);
   }
-  if (p->hex_bits)
-    p->scale_bits = p->hex_bits;
+  if (p->x_bits)
+    p->b_bits = p->x_bits;
   return optstate.ind != argc? lsx_usage(effp) : SOX_SUCCESS;
 }
 
@@ -56,8 +56,8 @@ static int start_stats(sox_effect_t * effp)
   priv_t * p = (priv_t *)effp->priv;
 
   p->last = 0;
-  p->mult = exp((-1 / p->time_constant / effp->in_signal.rate));
-  p->tc_samples = 5 * p->time_constant * effp->in_signal.rate + .5;
+  p->mult = exp((-1 / p->window_time / effp->in_signal.rate));
+  p->tc_samples = 5 * p->window_time * effp->in_signal.rate + .5;
   p->sigma_x = p->sigma_x2 = p->avg_sigma_x2 = p->max_sigma_x2 = 0;
   p->min = p->min_sigma_x2 = 2;
   p->max = -p->min;
@@ -137,12 +137,12 @@ static unsigned bit_depth(uint32_t maskLo, uint32_t maskHi, unsigned * b2_ptr)
 
 static void output(priv_t const * p, double x)
 {
-  if (p->scale_bits) {
-    unsigned mult = 1 << (p->scale_bits - 1);
+  if (p->b_bits) {
+    unsigned mult = 1 << (p->b_bits - 1);
     int i;
     x = floor(x * mult + .5);
     i = min(x, mult - 1.);
-    if (p->hex_bits)
+    if (p->x_bits)
       if (x < 0) {
         char buf[30];
         sprintf(buf, "%x", -i);
@@ -217,7 +217,7 @@ static int stop_stats(sox_effect_t * effp)
       fprintf(stderr, "    \"num_samples\": %jd,\n", (intmax_t)p->num_samples);
       fprintf(stderr, "    \"length\": %g,\n", p->num_samples / effp->in_signal.rate);
       fprintf(stderr, "    \"scale_max\": 1.0,\n");
-      fprintf(stderr, "    \"window\": %g\n", p->time_constant);
+      fprintf(stderr, "    \"window\": %g\n", p->window_time);
       fprintf(stderr, "  },\n");
 
       fprintf(stderr, "  \"channels\": [\n");
@@ -342,7 +342,7 @@ static int stop_stats(sox_effect_t * effp)
     fprintf(stderr, "\nLength s   %9.3f", p->num_samples / effp->in_signal.rate);
     fprintf(stderr, "\nScale max ");
     output(p, 1.);
-    fprintf(stderr, "\nWindow s   %9.3f", p->time_constant);
+    fprintf(stderr, "\nWindow s   %9.3f", p->window_time);
     fprintf(stderr, "\n");
   }
   return SOX_SUCCESS;
@@ -350,7 +350,7 @@ static int stop_stats(sox_effect_t * effp)
 
 sox_effect_handler_t const * lsx_stats_effect_fn(void)
 {
-  static char const usage[] = "[-b bits|-x bits|-s scale] [-w time] [-j]";
+  static char const usage[] = "[-b bits|-x bits|-s scale] [-w window-time] [-j]";
   static char const * const extra_usage[] = {
     "-b N     Scale DC offset and Min/Max levels to signed value of N bits",
     "-x N     The same, but display them as signed hexadecimal",
