@@ -4,6 +4,13 @@ Change History
 This file contains a list of all changes since the release of sox-11gamma.
 
 
+sox_ng-14.5.2+git
+-----------------
+
+Bug fixes:
+ o Make configure --enable-dl-amrnb work
+ o Remove a hidden dependency on autoconf-archive
+
 sox_ng-14.5.2	2025-10-13
 -------------
 
