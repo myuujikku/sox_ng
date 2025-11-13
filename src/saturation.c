@@ -15,8 +15,6 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include <assert.h>
-#include <math.h>
 #include "sox_i.h"
 
 /* Ensure no clipping due to rounding errors in output gain compensation */
@@ -61,7 +59,6 @@ static double sat_tanh(priv_t *p, double d) {
 static double sat_sqrt(priv_t *p, double d) {
   d += p->offset;
   double root_d = sqrt(fabs(d));
-  /* TODO: Can we use copysign (C99) to avoid a branch? */
   double sign_d_root_d = d < 0 ? -root_d : root_d;
   double d_root_d = d * root_d;
   return sign_d_root_d * p->color + d_root_d * (1 - p->color) - p->offset_out;
@@ -116,8 +113,10 @@ static int getopts(sox_effect_t * effp, int argc, char *argv[])
       assert(sox_false);
   }
 
-  if (argc != 0)
+  if (argc != 0) {
+    lsx_fail("invalid option `%s'", *argv);
     return lsx_usage(effp);
+  }
 
   return SOX_SUCCESS;
 }
@@ -147,6 +146,8 @@ static int start(sox_effect_t * effp)
     default:
       assert(sox_false);
   }
+
+  effp->out_signal.length = effp->in_signal.length;
 
   return SOX_SUCCESS;
 }

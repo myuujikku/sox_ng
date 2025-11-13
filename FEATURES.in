@@ -116,6 +116,7 @@ The audio effects/tools included in this release are as follows:
 ** repeat: Loop the audio a number of times
 ** reverb: Add reverberation
 ** reverse: Reverse the audio (to search for Satanic messages ;-)
+** saturation: Soft clipping effects from subtle warmth to crunchy fuzz
 ** tremolo: Sinusoidal volume modulation
 
 * Volume/level effects
