@@ -28,8 +28,8 @@
 typedef enum { /* Collection of various filters from the net */
   Shape_none, Shape_lipshitz, Shape_f_weighted, Shape_modified_e_weighted,
   Shape_improved_e_weighted, Shape_gesemann, Shape_shibata, Shape_low_shibata, Shape_high_shibata,
-  Shape_ssrcA0, Shape_ssrcA1, Shape_ssrcA2, Shape_ssrcA3, Shape_ssrcA4, Shape_ssrcA5, Shape_ssrcA6,
-  Shape_ssrcB0, Shape_ssrcB1, Shape_ssrcB2, Shape_ssrcB3, Shape_ssrcB4, Shape_ssrcB5, Shape_ssrcB6,
+  Shape_shibata_A0, Shape_shibata_A1, Shape_shibata_A2, Shape_shibata_A3, Shape_shibata_A4, Shape_shibata_A5, Shape_shibata_A6,
+  Shape_shibata_B0, Shape_shibata_B1, Shape_shibata_B2, Shape_shibata_B3, Shape_shibata_B4, Shape_shibata_B5, Shape_shibata_B6,
 } filter_name_t;
 static lsx_enum_item const filter_names[] = {
   LSX_ENUM_ITEM(Shape_,none)
@@ -41,20 +41,20 @@ static lsx_enum_item const filter_names[] = {
   LSX_ENUM_ITEM(Shape_,shibata)
   {"low-shibata", Shape_low_shibata},
   {"high-shibata", Shape_high_shibata},
-  LSX_ENUM_ITEM(Shape_,ssrcA0)
-  LSX_ENUM_ITEM(Shape_,ssrcA1)
-  LSX_ENUM_ITEM(Shape_,ssrcA2)
-  LSX_ENUM_ITEM(Shape_,ssrcA3)
-  LSX_ENUM_ITEM(Shape_,ssrcA4)
-  LSX_ENUM_ITEM(Shape_,ssrcA5)
-  LSX_ENUM_ITEM(Shape_,ssrcA6)
-  LSX_ENUM_ITEM(Shape_,ssrcB0)
-  LSX_ENUM_ITEM(Shape_,ssrcB1)
-  LSX_ENUM_ITEM(Shape_,ssrcB2)
-  LSX_ENUM_ITEM(Shape_,ssrcB3)
-  LSX_ENUM_ITEM(Shape_,ssrcB4)
-  LSX_ENUM_ITEM(Shape_,ssrcB5)
-  LSX_ENUM_ITEM(Shape_,ssrcB6)
+  {"shibata-A0", Shape_shibata_A0},
+  {"shibata-A1", Shape_shibata_A1},
+  {"shibata-A2", Shape_shibata_A2},
+  {"shibata-A3", Shape_shibata_A3},
+  {"shibata-A4", Shape_shibata_A4},
+  {"shibata-A5", Shape_shibata_A5},
+  {"shibata-A6", Shape_shibata_A6},
+  {"shibata-B0", Shape_shibata_B0},
+  {"shibata-B1", Shape_shibata_B1},
+  {"shibata-B2", Shape_shibata_B2},
+  {"shibata-B3", Shape_shibata_B3},
+  {"shibata-B4", Shape_shibata_B4},
+  {"shibata-B5", Shape_shibata_B5},
+  {"shibata-B6", Shape_shibata_B6},
   {0, 0}};
 
 typedef struct {
@@ -245,7 +245,7 @@ static double const shh44[] = {
 
 /* SSRC, ATH Curve A, 44100 */
 
-static double const ssrcA0_44[] =
+static double const shibata_A0_44[] =
     {
       0.59543782472610473633,
       -0.0025078731123358011246,
@@ -260,7 +260,7 @@ static double const ssrcA0_44[] =
       3.1580505037709372118e-06,
       0.031739629805088043213,
     };
-static double const ssrcA1_44[] =
+static double const shibata_A1_44[] =
     {
       0.9982020258903503418,
       -0.59951537847518920898,
@@ -275,7 +275,7 @@ static double const ssrcA1_44[] =
       -0.00016936450265347957611,
       -6.8561035959646687843e-07,
     };
-static double const ssrcA2_44[] =
+static double const shibata_A2_44[] =
     {
       1.356863856315612793,
       -1.2252935171127319336,
@@ -302,7 +302,7 @@ static double const ssrcA2_44[] =
       0.00014775841555092483759,
       -4.1060175135498866439e-05,
     };
-static double const ssrcA3_44[] =
+static double const shibata_A3_44[] =
     {
       1.7714835405349731445,
       -2.160381317138671875,
@@ -321,7 +321,7 @@ static double const ssrcA3_44[] =
       0.00039525484316982328892,
       -0.0040870164521038532257,
     };
-static double const ssrcA4_44[] =
+static double const shibata_A4_44[] =
     {
       2.1551730632781982422,
       -3.1482026576995849609,
@@ -344,7 +344,7 @@ static double const ssrcA4_44[] =
       -0.00047321102465502917767,
       0.00093277986161410808563,
     };
-static double const ssrcA5_44[] =
+static double const shibata_A5_44[] =
     {
       2.5096075534820556641,
       -4.2519822120666503906,
@@ -363,7 +363,7 @@ static double const ssrcA5_44[] =
       0.00079903466394171118736,
       7.114160212040587794e-07,
     };
-static double const ssrcA6_44[] =
+static double const shibata_A6_44[] =
     {
       2.8263266086578369141,
       -5.3534359931945800781,
@@ -389,7 +389,7 @@ static double const ssrcA6_44[] =
 
 /* SSRC, ATH Curve B, 44100 */
 
-static double const ssrcB0_44[] =
+static double const shibata_B0_44[] =
     {
       0.56017816066741943359,
       -0.00032013398595154285431,
@@ -404,7 +404,7 @@ static double const ssrcB0_44[] =
       -0.00017294117424171417952,
       0.011740575544536113739,
     };
-static double const ssrcB1_44[] =
+static double const shibata_B1_44[] =
     {
       1.0638480186462402344,
       -0.66863000392913818359,
@@ -419,7 +419,7 @@ static double const ssrcB1_44[] =
       -0.00030115628032945096493,
       0,
     };
-static double const ssrcB2_44[] =
+static double const shibata_B2_44[] =
     {
       1.5528930425643920898,
       -1.4595929384231567383,
@@ -442,7 +442,7 @@ static double const ssrcB2_44[] =
       0.0010217631934210658073,
       0.0014363396912813186646,
     };
-static double const ssrcB3_44[] =
+static double const shibata_B3_44[] =
     {
       2.0674252510070800781,
       -2.6145982742309570312,
@@ -465,7 +465,7 @@ static double const ssrcB3_44[] =
       -0.00068944186205044388771,
       0.00069793453440070152283,
     };
-static double const ssrcB4_44[] =
+static double const shibata_B4_44[] =
     {
       2.5422441959381103516,
       -3.9492623805999755859,
@@ -492,7 +492,7 @@ static double const ssrcB4_44[] =
       0.00028052827110514044762,
       0,
     };
-static double const ssrcB5_44[] =
+static double const shibata_B5_44[] =
     {
       3.0226423740386962891,
       -5.5270595550537109375,
@@ -515,7 +515,7 @@ static double const ssrcB5_44[] =
       -5.058841452409978956e-07,
       -8.1296411735820583999e-06,
     };
-static double const ssrcB6_44[] =
+static double const shibata_B6_44[] =
     {
       3.5288703441619873047,
       -7.3978977203369140625,
@@ -545,7 +545,7 @@ static double const ssrcB6_44[] =
 
 /* SSRC, ATH Curve A, 48000 */
 
-static double const ssrcA0_48[] =
+static double const shibata_A0_48[] =
     {
       0.64815437793731689453,
       -0.00013292329094838351011,
@@ -564,7 +564,7 @@ static double const ssrcA0_48[] =
       0,
       2.4130819564760486173e-09,
     };
-static double const ssrcA1_48[] =
+static double const shibata_A1_48[] =
     {
       1.0375014543533325195,
       -0.55585253238677978516,
@@ -583,7 +583,7 @@ static double const ssrcA1_48[] =
       -6.1770442698616534472e-05,
       -0.0016767864581197500229,
     };
-static double const ssrcA2_48[] =
+static double const shibata_A2_48[] =
     {
       1.4919577836990356445,
       -1.3089178800582885742,
@@ -602,7 +602,7 @@ static double const ssrcA2_48[] =
       -0.0051279761828482151031,
       -0.0025056710001081228256,
     };
-static double const ssrcA3_48[] =
+static double const shibata_A3_48[] =
     {
       1.9601591825485229492,
       -2.4060547351837158203,
@@ -625,7 +625,7 @@ static double const ssrcA3_48[] =
       -8.0333913501817733049e-05,
       0,
     };
-static double const ssrcA4_48[] =
+static double const shibata_A4_48[] =
     {
       2.4219727516174316406,
       -3.6378045082092285156,
@@ -656,7 +656,7 @@ static double const ssrcA4_48[] =
       -0.00021784781711176037788,
       -5.855178824276663363e-05,
     };
-static double const ssrcA5_48[] =
+static double const shibata_A5_48[] =
     {
       2.8460333347320556641,
       -5.0355429649353027344,
@@ -679,7 +679,7 @@ static double const ssrcA5_48[] =
       -0.0008332781144417822361,
       6.3722327467985451221e-05,
     };
-static double const ssrcA6_48[] =
+static double const shibata_A6_48[] =
     {
       3.2601516246795654297,
       -6.5575695037841796875,
@@ -713,7 +713,7 @@ static double const ssrcA6_48[] =
 
 /* -- SSRC, ATH Curve B, 48000 */
 
-static double const ssrcB0_48[] =
+static double const shibata_B0_48[] =
     {
       0.6524372100830078125,
       -6.076441422919742763e-06,
@@ -728,7 +728,7 @@ static double const ssrcB0_48[] =
       8.8266028797079343349e-07,
       0.0051737497560679912567,
     };
-static double const ssrcB1_48[] =
+static double const shibata_B1_48[] =
     {
       1.133047938346862793,
       -0.65767991542816162109,
@@ -743,7 +743,7 @@ static double const ssrcB1_48[] =
       -0.0047881226055324077606,
       0,
     };
-static double const ssrcB2_48[] =
+static double const shibata_B2_48[] =
     {
       1.6628091335296630859,
       -1.4971796274185180664,
@@ -762,7 +762,7 @@ static double const ssrcB2_48[] =
       -9.8600306955631822348e-05,
       -0.00063699163729324936867,
     };
-static double const ssrcB3_48[] =
+static double const shibata_B3_48[] =
     {
       2.2278966903686523438,
       -2.7684540748596191406,
@@ -781,7 +781,7 @@ static double const ssrcB3_48[] =
       -0.0022084014490246772766,
       -0.0037000982556492090225,
     };
-static double const ssrcB4_48[] =
+static double const shibata_B4_48[] =
     {
       2.7479245662689208984,
       -4.2712616920471191406,
@@ -804,7 +804,7 @@ static double const ssrcB4_48[] =
       -0.00075990450568497180939,
       -4.8069246076920535415e-06,
     };
-static double const ssrcB5_48[] =
+static double const shibata_B5_48[] =
     {
       3.3172307014465332031,
       -6.1978197097778320312,
@@ -827,7 +827,7 @@ static double const ssrcB5_48[] =
       0.00054945144802331924438,
       4.1805269574979320168e-05,
     };
-static double const ssrcB6_48[] =
+static double const shibata_B6_48[] =
     {
       3.8836567401885986328,
       -8.4325723648071289062,
@@ -866,37 +866,37 @@ static const filter_t filters[] = {
   {44100, fir, 15, 250, shl44, Shape_low_shibata},
   {44100, fir, 20, 383, shh44, Shape_high_shibata},
 
-  {44100, fir, 12, 240/*TBD*/, ssrcA0_44, Shape_ssrcA0},
-  {44100, fir, 12, 240/*TBD*/, ssrcA1_44, Shape_ssrcA1},
-  {44100, fir, 24, 240/*TBD*/, ssrcA2_44, Shape_ssrcA2},
-  {44100, fir, 16, 240/*TBD*/, ssrcA3_44, Shape_ssrcA3},
-  {44100, fir, 20, 240/*TBD*/, ssrcA4_44, Shape_ssrcA4},
-  {44100, fir, 16, 240/*TBD*/, ssrcA5_44, Shape_ssrcA5},
-  {44100, fir, 20, 240/*TBD*/, ssrcA6_44, Shape_ssrcA6},
+  {44100, fir, 12, 240/*TBD*/, shibata_A0_44, Shape_shibata_A0},
+  {44100, fir, 12, 240/*TBD*/, shibata_A1_44, Shape_shibata_A1},
+  {44100, fir, 24, 240/*TBD*/, shibata_A2_44, Shape_shibata_A2},
+  {44100, fir, 16, 240/*TBD*/, shibata_A3_44, Shape_shibata_A3},
+  {44100, fir, 20, 240/*TBD*/, shibata_A4_44, Shape_shibata_A4},
+  {44100, fir, 16, 240/*TBD*/, shibata_A5_44, Shape_shibata_A5},
+  {44100, fir, 20, 240/*TBD*/, shibata_A6_44, Shape_shibata_A6},
 
-  {44100, fir, 12, 240/*TBD*/, ssrcB0_44, Shape_ssrcB0},
-  {44100, fir, 11, 240/*TBD*/, ssrcB1_44, Shape_ssrcB1},
-  {44100, fir, 20, 240/*TBD*/, ssrcB2_44, Shape_ssrcB2},
-  {44100, fir, 20, 240/*TBD*/, ssrcB3_44, Shape_ssrcB3},
-  {44100, fir, 23, 240/*TBD*/, ssrcB4_44, Shape_ssrcB4},
-  {44100, fir, 20, 240/*TBD*/, ssrcB5_44, Shape_ssrcB5},
-  {44100, fir, 24, 240/*TBD*/, ssrcB6_44, Shape_ssrcB6},
+  {44100, fir, 12, 240/*TBD*/, shibata_B0_44, Shape_shibata_B0},
+  {44100, fir, 11, 240/*TBD*/, shibata_B1_44, Shape_shibata_B1},
+  {44100, fir, 20, 240/*TBD*/, shibata_B2_44, Shape_shibata_B2},
+  {44100, fir, 20, 240/*TBD*/, shibata_B3_44, Shape_shibata_B3},
+  {44100, fir, 23, 240/*TBD*/, shibata_B4_44, Shape_shibata_B4},
+  {44100, fir, 20, 240/*TBD*/, shibata_B5_44, Shape_shibata_B5},
+  {44100, fir, 24, 240/*TBD*/, shibata_B6_44, Shape_shibata_B6},
 
-  {48000, fir, 16, 240/*TBD*/, ssrcA0_48, Shape_ssrcA0},
-  {48000, fir, 16, 240/*TBD*/, ssrcA1_48, Shape_ssrcA1},
-  {48000, fir, 16, 240/*TBD*/, ssrcA2_48, Shape_ssrcA2},
-  {48000, fir, 19, 240/*TBD*/, ssrcA3_48, Shape_ssrcA3},
-  {48000, fir, 28, 240/*TBD*/, ssrcA4_48, Shape_ssrcA4},
-  {48000, fir, 20, 240/*TBD*/, ssrcA5_48, Shape_ssrcA5},
-  {48000, fir, 28, 240/*TBD*/, ssrcA6_48, Shape_ssrcA6},
+  {48000, fir, 16, 240/*TBD*/, shibata_A0_48, Shape_shibata_A0},
+  {48000, fir, 16, 240/*TBD*/, shibata_A1_48, Shape_shibata_A1},
+  {48000, fir, 16, 240/*TBD*/, shibata_A2_48, Shape_shibata_A2},
+  {48000, fir, 19, 240/*TBD*/, shibata_A3_48, Shape_shibata_A3},
+  {48000, fir, 28, 240/*TBD*/, shibata_A4_48, Shape_shibata_A4},
+  {48000, fir, 20, 240/*TBD*/, shibata_A5_48, Shape_shibata_A5},
+  {48000, fir, 28, 240/*TBD*/, shibata_A6_48, Shape_shibata_A6},
 
-  {48000, fir, 12, 240/*TBD*/, ssrcB0_48, Shape_ssrcB0},
-  {48000, fir, 11, 240/*TBD*/, ssrcB1_48, Shape_ssrcB1},
-  {48000, fir, 16, 240/*TBD*/, ssrcB2_48, Shape_ssrcB2},
-  {48000, fir, 16, 240/*TBD*/, ssrcB3_48, Shape_ssrcB3},
-  {48000, fir, 20, 240/*TBD*/, ssrcB4_48, Shape_ssrcB4},
-  {48000, fir, 20, 240/*TBD*/, ssrcB5_48, Shape_ssrcB5},
-  {48000, fir, 16, 240/*TBD*/, ssrcB6_48, Shape_ssrcB6},
+  {48000, fir, 12, 240/*TBD*/, shibata_B0_48, Shape_shibata_B0},
+  {48000, fir, 11, 240/*TBD*/, shibata_B1_48, Shape_shibata_B1},
+  {48000, fir, 16, 240/*TBD*/, shibata_B2_48, Shape_shibata_B2},
+  {48000, fir, 16, 240/*TBD*/, shibata_B3_48, Shape_shibata_B3},
+  {48000, fir, 20, 240/*TBD*/, shibata_B4_48, Shape_shibata_B4},
+  {48000, fir, 20, 240/*TBD*/, shibata_B5_48, Shape_shibata_B5},
+  {48000, fir, 16, 240/*TBD*/, shibata_B6_48, Shape_shibata_B6},
 
   {    0, fir,  0,   0,  NULL, Shape_none},
 };
@@ -1147,7 +1147,7 @@ sox_effect_handler_t const * lsx_dither_effect_fn(void)
     "-s       Shape noise (with a Shibata filter)",
     "-f name  Set shaping filter to one of: lipshitz, f-weighted,",
     "         modified-e-weighted, improved-e-weighted, gesemann,",
-    "         shibata, low-shibata, high-shibata",
+    "         shibata, low-shibata, high-shibata, shibata-A0 to shibata-B6",
     "-a       Automatically turn dithering on & off as needed (use with caution!)",
     "-p bits  Override the target sample precision",
     NULL
