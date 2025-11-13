@@ -1944,7 +1944,15 @@ order to mask audible quantization effects that can occur if the output
 sample size is less than 24 bits.  With no options, this effect
 adds TPDF white noise.
 .SP
-The \fB\-s\fR option enables noise-shaping with the \fBshibata\fP filter
+The
+.B \-S
+option selects a slightly `sloped' TPDF, biased towards higher
+frequencies.  It can be used at any sampling rate but, below \(~~22kHz,
+plain TPDF is probably better and, above \(~~ 37kHz, noise-shaping
+(if available) is probably better.
+.SP
+The \fB\-s\fR option enables noise-shaping with the \fBshibata\fR filter
+(the same as \fB\-f\ shibata\fR)
 and with the
 .B \-f
 option it is possible to select a particular noise-shaping filter from
@@ -1954,7 +1962,7 @@ the following list:
 \fBimproved-e-weighted\fR, \fBgesemann\fR, \fBshibata\fR, \fBlow-shibata\fR,
 \fBhigh-shibata\fR, \fBshibata-\fR(\fBA\fR|\fBB\fR)(\fB0\fR|\fB1\fR|\fB2\fR|\fB3\fR|\fB4\fR|\fB5\fR|\fB6\fR) and \fBshibata-A-saturated\fR.
 .hy
-The latter \fBshibata\-\fR ones use the new shaper coefficients
+The latter \fBshibata-\fR ones use the new shaper coefficients
 from Naoki Shibata's \fBSSRC\fR package, described at https://shibatch.org/ssrc
 .SP
 The filter types are distinguished by the following properties:
@@ -1969,8 +1977,7 @@ lI lI
 l l.
 Filter	Sample rates
 lipshitz	44100
-f-weighted	48000
-e-weighted	48000
+e- and f-weighted	48000
 gesemann	44100, 48000
 shibata	8000, 11025, 16000, 22050
 \ 	32000, 37800, 44100, 48000
@@ -1983,13 +1990,6 @@ shibata-A3 to A6	44100, 48000
 shibata-B0 to B6	44100, 48000
 shibata-A-saturated	8000, 11025, 22050
 .TE
-.SP
-The
-.B \-S
-option selects a slightly `sloped' TPDF, biased towards higher
-frequencies.  It can be used at any sampling rate but, below \(~~22kHz,
-plain TPDF is probably better and, above \(~~ 37kHz, noise-shaping
-(if available) is probably better.
 .SP
 The
 .B \-a
