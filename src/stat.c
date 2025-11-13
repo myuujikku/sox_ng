@@ -349,7 +349,12 @@ static int sox_stat_stop(sox_effect_t * effp)
     fprintf(stderr, "  \"midline_amplitude\": %g,\n", stat->mid);
     if (ct > 0) {
       fprintf(stderr, "  \"mean_norm\": %g,\n", stat->asum/ct);
-      fprintf(stderr, "  \"mean_amplitude\": %g,\n", stat->sum1/ct);
+      /* Mean amplitude for a symmetrical wave (e.g. synth sine) is
+       * too precise and says -1.94025e-14. which is 1/24000th of a
+       * 31-bit sample value (one bit is the sign bit) so round it
+       * to the nearest 31-bit sample value so that 0 is 0. */
+      fprintf(stderr, "  \"mean_amplitude\": %g,\n",
+              round((stat->sum1/ct) * (1<<31)) / (1<<31));
       fprintf(stderr, "  \"rms_amplitude\": %g,\n", sqrt(stat->sum2/ct));
     }
     if (ct > 1) {
