@@ -259,8 +259,11 @@ static void cleanup(void)
         if (!lsx_stat(ofile->ft->filename, &st) && S_ISREG(st.st_mode)) {
           /* Don't assume we can unlink a file before closing it
 	   * 'cos that's not true on Windows. */
+          /* sox_close frees the filename and ft, so take a copy */
+          char *filename = strdup(ofile->ft->filename);
           sox_close(ofile->ft);
-          lsx_unlink(ofile->ft->filename);
+          lsx_unlink(filename);
+          free(filename);
           goto already_closed;
         }
       }
