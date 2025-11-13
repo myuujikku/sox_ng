@@ -309,9 +309,13 @@ unsigned sox_precision(sox_encoding_t encoding, unsigned bits_per_sample)
     case SOX_ENCODING_CVSD:       return bits_per_sample == 1? 16: 0;
     case SOX_ENCODING_DPCM:       return bits_per_sample; /* ? */
 
-    case SOX_ENCODING_MP3:        return 0;
-    /* The precision is set when the format handler starts up,
-     * according to the encoder or decoder in use. */
+    case SOX_ENCODING_MP3:        return 16;
+    /* MAD returns 28 bits and Twolame and LAME take floats (24-bit mantissa
+     * + sign = 25) and sox_ng.c and sndfile.c know about this.
+     * However, this determines the bit width written to WAV files when
+     * decoding MP3 files, which Chris decided should be 16 to match
+     * user expectations.  To keep the extra precision, give -b 24.
+     */
 
     case SOX_ENCODING_GSM:
     case SOX_ENCODING_VORBIS:

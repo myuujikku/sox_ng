@@ -171,8 +171,10 @@ static sox_encoding_t sox_enc(int ft_encoding, unsigned * size)
     case SF_FORMAT_VORBIS   : *size =  0; return SOX_ENCODING_VORBIS;
 #endif
 #if HAVE_SF_FORMAT_MPEG
-    case SF_FORMAT_MPEG_LAYER_II
-                            : *size = 16; return SOX_ENCODING_MP3;
+    /* By default, SoX declares MP3 precision as 16-bit so that
+     * decoding them gives CD quality, which is what people expect. */
+    case SF_FORMAT_MPEG_LAYER_I :
+    case SF_FORMAT_MPEG_LAYER_II :
     case SF_FORMAT_MPEG_LAYER_III
                             : *size = 16; return SOX_ENCODING_MP3;
 #endif

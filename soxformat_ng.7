@@ -530,22 +530,22 @@ VBR at qualities 32 or 48, use something like 32.01 or 48.01.
 At present, \fBtwolame\fR outputs 0.005 seconds of quiet garbage
 at the start and truncates the end by 0.002 seconds.
 .TP
-\fB.mp3\fR (optional, also with \-t sndfile\fR or \fB\-t ffmpeg\fR)
+\fB.mp3\fR (optional, also with \fB\-t sndfile\fR or \fB\-t ffmpeg\fR)
 SoX uses \fBlibmad\fR to decode MP3 files; to decode using
 \fBlibmpg123\fR, which generally gives better quality results and
 is better at decoding damaged or corrupt files, use \fB\-t\ sndfile\fR,
 while \fR-t\ ffmpeg\fR uses yet another MP2/3 decoder, internal to \fBffmpeg\fR.
 .SP
-When reading MP3 files, up to 28 bits of precision is stored although
-only 16 bits are returned. This is to give the default behavior
-of writing 16-bit output files but you can specify a higher precision
-for the output file to prevent loss of this extra information.
+SoX decodes MP2 and MP3 files with a precision of 28 bits but by default
+it declares a precision of 16 bits so that decoding MP3s to WAVs
+gives the CD quality that most people expect. You can specify
+a higher precision for the output file to keep this extra information.
 .SP
 When writing MP3 files, SoX uses \fBliblame\fR and can use up to
-24 bits of precision.
-At present SoX's use of \fBliblame\fR adds 0.01 seconds of quiet garbage
+25 bits of precision.
+At present, SoX's use of \fBliblame\fR adds 0.01 seconds of quiet garbage
 at the start and at the end;
-encoding with \f(CW\-t sndfile\fR gets the length right and no garbage.
+encoding with \fB\-t sndfile\fR gets the length right and no garbage.
 .SP
 MP3 compression parameters can be selected using SoX's \fB\-C\fR option
 as follows:
