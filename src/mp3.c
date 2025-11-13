@@ -57,17 +57,9 @@
 
 #include "sox_i.h"
 
-#if defined(HAVE_LAME_LAME_H) || defined(HAVE_LAME_H) || defined(DL_LAME)
-#define HAVE_LAME 1
-#endif
+#if defined(HAVE_MAD) || defined(HAVE_LAME) || defined(HAVE_TWOLAME)
 
-#if defined(HAVE_TWOLAME_H) || defined(DL_TWOLAME)
-  #define HAVE_TWOLAME 1
-#endif
-
-#if defined(HAVE_MAD_H) || defined(HAVE_LAME) || defined(HAVE_TWOLAME)
-
-#ifdef HAVE_MAD_H
+#ifdef HAVE_MAD
 #include <mad.h>
 #endif
 
@@ -99,7 +91,7 @@ typedef enum {
   #define ID3_TAG_FLAG_FOOTERPRESENT 0x10
 #endif
 
-#ifdef HAVE_TWOLAME_H
+#ifdef HAVE_TWOLAME
   #include <twolame.h>
 #endif
 
@@ -114,7 +106,7 @@ typedef enum {
  * Sidestep the issue by defining our own mad_timer_zero. This is needed because
  * mad_timer_zero is used in some of the mad.h macros.
  */
-#ifdef HAVE_MAD_H
+#ifdef HAVE_MAD
 #define mad_timer_zero mad_timer_zero_stub
 static mad_timer_t const mad_timer_zero_stub = {0, 0};
 #endif
@@ -137,7 +129,7 @@ static mad_timer_t const mad_timer_zero_stub = {0, 0};
    align with most users expectation of output file should be 16 bits. */
 #define MP3_MAD_PRECISION    16
 
-#ifdef HAVE_MAD_H
+#ifdef HAVE_MAD
 static const char* const mad_library_names[] =
 {
 #ifdef DL_MAD
@@ -172,7 +164,7 @@ static const char* const mad_library_names[] =
   MAD_FUNC(f,x, void, mad_header_init, (struct mad_header *)) \
   MAD_FUNC(f,x, signed long, mad_timer_count, (mad_timer_t, enum mad_units)) \
   MAD_FUNC(f,x, void, mad_timer_multiply, (mad_timer_t *, signed long))
-#endif /* HAVE_MAD_H */
+#endif /* HAVE_MAD */
 
 #if HAVE_LAME
 static const char* const lame_library_names[] =
@@ -242,7 +234,7 @@ static const char* const lame_library_names[] =
   LAME_FUNC_ID3(f,x, size_t, lame_get_id3v2_tag, (lame_global_flags *, unsigned char*, size_t)) \
   LAME_FUNC_ID3(f,x, int, id3tag_set_fieldvalue, (lame_global_flags *, const char *))
 
-#ifdef HAVE_TWOLAME_H
+#ifdef HAVE_TWOLAME
 static const char* const twolame_library_names[] =
 {
 #ifdef DL_TWOLAME
@@ -251,7 +243,7 @@ static const char* const twolame_library_names[] =
 #endif
   NULL
 };
-#endif /* HAVE_TWOLAME_H */
+#endif /* HAVE_TWOLAME */
 
 #ifdef DL_TWOLAME
   #define TWOLAME_FUNC LSX_DLENTRY_DYNAMIC
@@ -279,7 +271,7 @@ typedef struct mp3_priv_t {
   unsigned char *mp3_buffer;
   size_t mp3_buffer_size;
 
-#ifdef HAVE_MAD_H
+#ifdef HAVE_MAD
   struct mad_stream       Stream;
   struct mad_frame        Frame;
   struct mad_synth        Synth;
@@ -287,7 +279,7 @@ typedef struct mp3_priv_t {
   ptrdiff_t               cursamp;
   size_t                  FrameCount;
   LSX_DLENTRIES_TO_PTRS(MAD_FUNC_ENTRIES, mad_dl);
-#endif /*HAVE_MAD_H*/
+#endif /* HAVE_MAD */
 
 #if defined(HAVE_LAME) || defined(HAVE_TWOLAME)
   float *pcm_buffer;
@@ -308,7 +300,7 @@ typedef struct mp3_priv_t {
 #endif
 } priv_t;
 
-#if defined(HAVE_MAD_H)
+#ifdef HAVE_MAD 
 
 /* This function merges the functions tagtype() and id3_tag_query()
    from MAD's libid3tag, so we don't have to link to it
@@ -339,11 +331,11 @@ static int tagtype(const unsigned char *data, size_t length)
     return 0;
 }
 
-#endif /* HAVE_MAD_H */
+#endif /* HAVE_MAD */
 
 #include "mp3-util.h"
 
-#ifdef HAVE_MAD_H
+#ifdef HAVE_MAD
 
 /*
  * (Re)fill the stream buffer that is to be decoded.  If any data
@@ -724,11 +716,10 @@ static int sox_mp3seek(sox_format_t * ft, sox_uint64_t offset)
 
   return SOX_EOF;
 }
-#endif /* !HAVE_MAD_H */
+#endif /* HAVE_MAD */
 
 
-
-#ifndef HAVE_MAD_H
+#ifndef HAVE_MAD
 static int startread(sox_format_t * ft)
 {
   lsx_fail_errno(ft,SOX_EOF,"SoX was compiled without MP3 decoding support");
@@ -737,7 +728,7 @@ static int startread(sox_format_t * ft)
 #define sox_mp3read NULL
 #define stopread NULL
 #define sox_mp3seek NULL
-#endif /*HAVE_MAD_H*/
+#endif /* !HAVE_MAD */
 
 #ifdef HAVE_LAME
 
@@ -1351,4 +1342,4 @@ LSX_FORMAT_HANDLER(mp3)
   };
   return &handler;
 }
-#endif /* defined(HAVE_MAD_H) || defined(HAVE_LAME) || defined(HAVE_TWOLAME) */
+#endif /* defined(HAVE_MAD) || defined(HAVE_LAME) || defined(HAVE_TWOLAME) */

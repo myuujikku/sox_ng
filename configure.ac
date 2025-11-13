@@ -472,13 +472,12 @@ fi
 
 dnl Check for MP3-reading libraries
 
+dnl Check for MAD libraries
 AC_ARG_WITH(mad,
     AS_HELP_STRING([--without-mad],
         [Don't try to use MAD (MP3 Audio Decoder)]))
-
-dnl Check for MAD libraries
 using_mad=no
-if test "$with_mad" != "no"; then
+if test "x$with_mad" != "xno"; then
     using_mad=yes
     AC_CHECK_HEADERS(mad.h,, using_mad=no)
     AC_MSG_CHECKING([whether to dlopen mad])
@@ -489,9 +488,12 @@ if test "$with_mad" != "no"; then
     if test "x$using_libltdl" = "xyes" && test "x$enable_dl_mad" = "xyes"; then
       AC_DEFINE(DL_MAD, 1, [Define to dlopen() mad.])
     else
-      enable_dl_mad="no"
-      AC_CHECK_LIB(mad, mad_stream_buffer, MP3_LIBS="$MP3_LIBS -lmad",using_mad=no)
-      if test "$with_mad" = "yes" && test "$using_mad" = "no"; then
+      enable_dl_mad=no
+      AC_CHECK_LIB(mad, mad_stream_buffer, MP3_LIBS="$MP3_LIBS -lmad", using_mad=no)
+      if test "xusing_mad" = "xyes"; then
+        AC_DEFINE(HAVE_MAD, 1, [Define if the MAD library was found.])
+      fi
+      if test "x$with_mad" = "xyes" && test "x$using_mad" = "xno"; then
         AC_MSG_FAILURE([cannot find libmad])
       fi
     fi
@@ -536,15 +538,18 @@ if test "$with_lame" != "no"; then
     if test "x$using_libltdl" = "xyes" && test "x$enable_dl_lame" = "xyes"; then
       AC_DEFINE(DL_LAME, 1, [Define to dlopen() lame.])
     else
-      enable_dl_lame="no"
-      AC_CHECK_HEADERS(lame/lame.h,,
+      enable_dl_lame=no
+      AC_CHECK_HEADERS(lame/lame.h, [],
         [AC_CHECK_HEADERS(lame.h, [], using_lame=no)])
       AC_CHECK_LIB(mp3lame, lame_get_lametag_frame, MP3_LIBS="$MP3_LIBS -lmp3lame", using_lame=no)
-      AC_CHECK_LIB(mp3lame, id3tag_set_fieldvalue, using_lame=$using_lame)
-      if test x"$ac_cv_lib_mp3lame_id3tag_set_fieldvalue" = "xyes"; then
+      if test "x$using_lame" = "xyes"; then
+        AC_DEFINE(HAVE_LAME, 1, [Define to 1 if the lame library was found.])
+      fi
+      AC_CHECK_LIB(mp3lame, id3tag_set_fieldvalue)
+      if test "x$ac_cv_lib_mp3lame_id3tag_set_fieldvalue" = "xyes"; then
         AC_DEFINE(HAVE_LAME_ID3TAG, 1, [Define to 1 if lame supports optional ID3 tags.])
       fi
-      if test x"$with_lame" = "xyes" && test x"$using_lame" = "xno"; then
+      if test "x$with_lame" = "xyes" && test "x$using_lame" = "xno"; then
         AC_MSG_FAILURE([cannot find LAME])
       fi
     fi
@@ -557,7 +562,7 @@ AC_ARG_WITH(twolame,
     AS_HELP_STRING([--without-twolame],
         [Don't try to use Twolame (MP2 Audio Encoder)]))
 using_twolame=no
-if test "$with_twolame" != "no"; then
+if test "x$with_twolame" != "xno"; then
     using_twolame=yes
     AC_CHECK_HEADERS(twolame.h,, using_twolame=no)
     AC_MSG_CHECKING([whether to dlopen twolame])
@@ -568,9 +573,12 @@ if test "$with_twolame" != "no"; then
     if test "x$using_libltdl" = "xyes" && test "x$enable_dl_twolame" = "xyes"; then
       AC_DEFINE(DL_TWOLAME, 1, [Define to dlopen() libtwolame.])
     else
-      enable_dl_twolame="no"
+      enable_dl_twolame=no
       AC_CHECK_LIB(twolame, twolame_init, MP3_LIBS="$MP3_LIBS -ltwolame",using_twolame=no)
-      if test "$with_twolame" = "yes" && test "$using_twolame" = "no"; then
+      if test "x$using_twolame" = "xyes"; then
+        AC_DEFINE(HAVE_TWOLAME, 1, [Define to 1 if the lame library was found.])
+      fi
+      if test "x$with_twolame" = "xyes" && test "x$using_twolame" = "xno"; then
         AC_MSG_FAILURE([cannot find libtwolame])
       fi
     fi
