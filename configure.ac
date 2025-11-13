@@ -490,7 +490,7 @@ if test "x$with_mad" != "xno"; then
     else
       enable_dl_mad=no
       AC_CHECK_LIB(mad, mad_stream_buffer, MP3_LIBS="$MP3_LIBS -lmad", using_mad=no)
-      if test "xusing_mad" = "xyes"; then
+      if test "x$using_mad" = "xyes"; then
         AC_DEFINE(HAVE_MAD, 1, [Define if the MAD library was found.])
       fi
       if test "x$with_mad" = "xyes" && test "x$using_mad" = "xno"; then
