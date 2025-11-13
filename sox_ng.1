@@ -1948,11 +1948,14 @@ The \fB\-s\fR option enables noise-shaping with the \fBshibata\fP filter
 and with the
 .B \-f
 option it is possible to select a particular noise-shaping filter from
-the following list: \fBlipshitz\fR, \fBf-weighted\fR, \fBmodified-e-weighted\fR,
+the following list:
+.nh
+\fBlipshitz\fR, \fBf-weighted\fR, \fBmodified-e-weighted\fR,
 \fBimproved-e-weighted\fR, \fBgesemann\fR, \fBshibata\fR, \fBlow-shibata\fR,
-\fBhigh-shibata\fR and \fBshibata-\fR(\fBA\fR|\fBB\fR)(\fB0\fR|\fB1\fR|\fB2\fR|\fB3\fR|\fB4\fR|\fB5\fR|\fB6\fR).
-The latter use the new shaper coefficients from Naoki Shibata's \fBSSRC\fR
-package described at https://shibatch.org/ssrc
+\fBhigh-shibata\fR, \fBshibata-\fR(\fBA\fR|\fBB\fR)(\fB0\fR|\fB1\fR|\fB2\fR|\fB3\fR|\fB4\fR|\fB5\fR|\fB6\fR) and \fBshibata-A-saturated\fR.
+.hy
+The latter \fBshibata\-\fR ones use the new shaper coefficients
+from Naoki Shibata's \fBSSRC\fR package, described at https://shibatch.org/ssrc
 .SP
 The filter types are distinguished by the following properties:
 audibility of noise, level of (inaudible, but in some circumstances
@@ -1966,13 +1969,19 @@ lI lI
 l l.
 Filter	Sample rates
 lipshitz	44100
-f-weighted	46000
-e-weighted	46000
-gesemann	44100,48000
-shibata	8000,11025,16000,22050,32000,37800,44100,48000
-low-shibata	44100,48000
+f-weighted	48000
+e-weighted	48000
+gesemann	44100, 48000
+shibata	8000, 11025, 16000, 22050
+\ 	32000, 37800, 44100, 48000
+low-shibata	44100, 48000
 high-shibata	44100
-shibata-A0 to -B6	44100 48000
+shibaba-A0 and A1	8000, 11025, 22050, 44100,
+\ 	48000, 88200, 96000, 192000
+shibata-A2	44100, 48000, 88200, 96000, 192000
+shibata-A3 to A6	44100, 48000
+shibata-B0 to B6	44100, 48000
+shibata-A-saturated	8000, 11025, 22050
 .TE
 .SP
 The
@@ -2006,7 +2015,7 @@ If the target precision is 1-bit, the \fBsdm\fR effect is applied
 automatically with default settings. Invoke it manually to control its
 options.
 .SP
-See the section on \fBDithering\fR (above).
+See the above section on \fBDithering\fR.
 .TP
 \fBdolbyb\fR [\fB\-e\fR|\fB\-d\fR] [\fB\-u\ \fIupsamp\fR] [\fB\-h\fR] [\fB\-t\ \fIgain\fR(1.0)] [\fB\-a\ prec\fR(-5.0)] [\fB\-f\ \fR{\fB1\fR|\fB2\fR|\fB3\fR|\fB4\fR}]
 \fBdolbyb\fR is a Dolby B decoder/encoder based on dolbybcsoftwaredecode
