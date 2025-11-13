@@ -412,7 +412,7 @@ AC_ARG_WITH(lame,
     AS_HELP_STRING([--without-lame],
         [Don't try to use LAME (LAME Ain't an MP3 Encoder)]))
 using_lame=no
-if test "$with_lame" != "no"; then
+if test "x$with_lame" != "xno"; then
     using_lame=yes
     AC_MSG_CHECKING([whether to dlopen lame])
     AC_ARG_ENABLE(dl_lame,
@@ -422,15 +422,16 @@ if test "$with_lame" != "no"; then
     if test "x$using_libltdl" = "xyes" -a "x$enable_dl_lame" = "xyes"; then
       AC_DEFINE(DL_LAME, 1, [Define to dlopen() lame.])
     else
-      enable_dl_lame="no"
+      enable_dl_lame=no
       AC_CHECK_HEADERS(lame/lame.h,,
-        [AC_CHECK_HEADERS(lame.h, [], using_lame=no)])
+        [AC_CHECK_HEADERS(lame.h, [], using_lame=no)],
+        using_lame=no)
       AC_CHECK_LIB(mp3lame, lame_get_lametag_frame, MP3_LIBS="$MP3_LIBS -lmp3lame", using_lame=no)
-      AC_CHECK_LIB(mp3lame, id3tag_set_fieldvalue, using_lame=$using_lame)
-      if test "$ac_cv_lib_mp3lame_id3tag_set_fieldvalue" = yes; then
+      AC_CHECK_LIB(mp3lame, id3tag_set_fieldvalue)
+      if test "x$ac_cv_lib_mp3lame_id3tag_set_fieldvalue" = "xyes"; then
         AC_DEFINE(HAVE_LAME_ID3TAG, 1, [Define to 1 if lame supports optional ID3 tags.])
       fi
-      if test "$with_lame" = "yes" -a "$using_lame" = "no"; then
+      if test "x$with_lame" = "xyes" -a "x$using_lame" = "xno"; then
         AC_MSG_FAILURE([cannot find LAME])
       fi
     fi
