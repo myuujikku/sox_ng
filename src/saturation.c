@@ -25,18 +25,18 @@ typedef enum {SAT_TANH, SAT_SQRT, SAT_DIODE} sat_t;
 typedef struct {
   /* Parameters */
   sat_t  sat_type;
-  double blend;
-  double offset;
+  float blend;
+  float offset;
   union {
-    double drive; /* tanh */
-    double color; /* sqrt */
-    double threshold; /* diode */
+    float drive; /* tanh */
+    float color; /* sqrt */
+    float threshold; /* diode */
   };
 
   /* Recenter the output so zero in -> zero out */
-  double offset_out;
+  float offset_out;
   /* Keep the output within range */
-  double gain_out;
+  float gain_out;
 } priv_t;
 
 
@@ -49,24 +49,24 @@ static lsx_enum_item const sat_enum[] = {
 
 
 
-static double sat_tanh(priv_t *p, double d) {
+static float sat_tanh(priv_t *p, float d) {
   d += p->offset;
-  return tanh(p->drive * d) - p->offset_out;
+  return tanhf(p->drive * d) - p->offset_out;
 }
 
 
 
-static double sat_sqrt(priv_t *p, double d) {
+static float sat_sqrt(priv_t *p, float d) {
   d += p->offset;
-  double root_d = sqrt(fabs(d));
-  double sign_d_root_d = d < 0 ? -root_d : root_d;
-  double d_root_d = d * root_d;
+  float root_d = sqrtf(fabsf(d));
+  float sign_d_root_d = d < 0 ? -root_d : root_d;
+  float d_root_d = d * root_d;
   return sign_d_root_d * p->color + d_root_d * (1 - p->color) - p->offset_out;
 }
 
 
 
-static double sat_diode(priv_t *p, double d) {
+static float sat_diode(priv_t *p, float d) {
   d += p->offset;
   d = d > p->threshold ? p->threshold : d;
   return (d < -p->threshold ? -p->threshold : d) - p->offset_out;
@@ -161,35 +161,33 @@ static int flow(sox_effect_t * effp, sox_sample_t const * ibuf,
   priv_t * p = (priv_t *) effp->priv;
   size_t len = *isamp > *osamp ? *osamp : *isamp;
   *isamp = *osamp = len;
-  double in, fx;
+  float in, fx;
 
   switch (p->sat_type) {
     case SAT_TANH:
       while (len--) {
-        in = SOX_SAMPLE_TO_FLOAT_64BIT(*ibuf++, effp->clips);
+        in = SOX_SAMPLE_TO_FLOAT_32BIT(*ibuf++, effp->clips);
         fx = sat_tanh(p, in);
         fx = fx * p->gain_out * p->blend + in * (1 - p->blend);
-        *obuf++ = SOX_FLOAT_64BIT_TO_SAMPLE(fx, effp->clips);
+        *obuf++ = SOX_FLOAT_32BIT_TO_SAMPLE(fx, effp->clips);
       }
       break;
     case SAT_SQRT:
       while (len--) {
-        in = SOX_SAMPLE_TO_FLOAT_64BIT(*ibuf++, effp->clips);
+        in = SOX_SAMPLE_TO_FLOAT_32BIT(*ibuf++, effp->clips);
         fx = sat_sqrt(p, in);
         fx = fx * p->gain_out * p->blend + in * (1 - p->blend);
-        *obuf++ = SOX_FLOAT_64BIT_TO_SAMPLE(fx, effp->clips);
+        *obuf++ = SOX_FLOAT_32BIT_TO_SAMPLE(fx, effp->clips);
       }
       break;
     case SAT_DIODE:
       while (len--) {
-        in = SOX_SAMPLE_TO_FLOAT_64BIT(*ibuf++, effp->clips);
+        in = SOX_SAMPLE_TO_FLOAT_32BIT(*ibuf++, effp->clips);
         fx = sat_diode(p, in);
         fx = fx * p->gain_out * p->blend + in * (1 - p->blend);
-        *obuf++ = SOX_FLOAT_64BIT_TO_SAMPLE(fx, effp->clips);
+        *obuf++ = SOX_FLOAT_32BIT_TO_SAMPLE(fx, effp->clips);
       }
       break;
-    default:
-      assert(sox_false);
   }
 
   return SOX_SUCCESS;
