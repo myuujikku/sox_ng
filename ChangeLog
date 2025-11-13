@@ -10,6 +10,7 @@ sox_ng-14.5.2+git
 Bug fixes:
  o Make configure --enable-dl-amrnb work
  o Make configure --enable-dl-sndfile work
+ o Don't try to compile lame when lame/lame.h is not found
  o Remove a hidden dependency on autoconf-archive
  o Fix a segmentation fault when the effect name after a ":" is misspelt
 
