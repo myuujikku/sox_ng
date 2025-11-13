@@ -5,50 +5,65 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
-sox_ng-14.6.i+git   2025-10-30
+sox_ng-14.6.1+git
 -----------------
 
 New features:
 
-  o EBU R 128 loudness measurements are included in the output of "stat"
-  o Make spectogram -Y give exactly the requested height
-  o Add sinc -d flag to copy through when lowpass freq above Nyquist
+Effects:
   o chorus: Make all parameters optional
+  o chorus: Allow an initial -[s|t] to change the default wave shape
   o chorus, phaser: Add -l/q options for linear/quadratic interpolation
+  o chorus: Get the initial phase of the offset wave right
+  o chorus: Make the frequency of the offset wave more precise
+  o dither: Add the new shibata filters from SSRC
   o flanger: Add -n option for no interpolation
-  o chorus: Allow initial -[s|t] to change default wave shape
-  o flanger: Allow initial -[s|t] to set wave shape
+  o flanger: Allow an initial -[s|t] to set the wave shape
+  o flanger: Allow delay+depth=0
+  o sinc: Add -d flag to copy through when the lowpass frequency is
+    above the Nyquist frequency
+  o spectogram: Make -Y give exactly the requested height
+  o stat: Add -e flag to output EBU R 128 loudness measurements
+  o stat: Add -j flag to output in JSON format
   o stretch: Add sqrt, quarter-cos and half-cos fading types
-  o wav: Decode names of all unsupported formats
-  o twolame: Enable VBR encoding with -C -10-10
-  o Let mp2 encoding know the smaller range of sample rates it handles
-  o Let mp2 and mp2 encoding know that they only do mono and stereo
+
+Formats:
+  o mp2: Enable VBR encoding with -C -10-10
+  o mp2/mp3: Mix 3 or more channels down to stereo instead of failing
+  o wav: Decode the names of unsupported formats instead of spouting hex codes
 
 Bug fixes:
 
-  o Make chorus fetch "delayed" samples from the past, not the future
-  o Fix several more inaccuracies in chorus
-  o Remove unmaintained msvc files
-  o Make CMake work again; still missing optional formats
-  o Re-enable the comments test
+  o chorus: Fetch delayed samples from the past, not the future (!)
+  o chorus: Fix several more inaccuracies
   o flanger: Fix range of width from -100-100 to 0-inf
   o phaser: Fix range of regen to -1 to +1
   o stretch: Fix infinite loop by imposing minimum window size of 1ms
-  o Reject trailing garbage on numeric arguments
-  o Make --help-format mp3 report write encodings
+  o mp3: Make --help-format report write encodings
+  o Make --enable-dl-sndfile and --enable-dl-amrnb work
+  o Fix segfault on a mis-spelled effect name after :
+  o Fix play -t ao, broken in 14.6.1
   o audioio (Sun audio): Fix compilation and segfault on NetBSD
+  o Fix --version only saying "SoX_ng v" on MacOS
 
 Documentation:
 
+  o Reject trailing garbage on numeric arguments
   o Make messages for syntax errors more helpful
   o rate: Document undocumented options
   o Redraw flanger's flow diagram to be more similar to chorus/phaser
   o Make --version include -rc1 or other extensions
+  o Fix build failure if {mad,lame,twolame}.h is found but not the library
 
 Internal:
 
   o Allow ./configure --without-dolbyb
   o ./configure --with-dyn-default works for amr, lame, mad, twolame, sndfile
+  o Fix issues/issues.sh for http:// remotes and on FreeBSD
+  o Add automatic "make win32.exe/win64.exe" rules using MXE
+  o Make test/twx-wav-byte-rate not fail on 64-bit machines
+  o Make CMake work again, though it omits all the optional formats
+  o Remove unmaintained msvc files
 
 sox_ng-14.6.1   2025-10-13
 -------------
