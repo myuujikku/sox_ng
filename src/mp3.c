@@ -120,7 +120,7 @@ static mad_timer_t const mad_timer_zero_stub = {0, 0};
 /* LAME takes float values as input. */
 #define MP3_LAME_PRECISION   24
 
-/* Note: sox_precision() returns 0 for SOX_ENCODING_MP3 as it varies
+/* Note: sox_precision() returns 0 for SOX_ENCODING_MP2 and _MP3, as it varies
  * according to whether you're encoding or decoding but sox_ng.c knows
  * about this and has a special case and reports 24 as the Writes: precision */
 
@@ -450,8 +450,6 @@ static int startread(sox_format_t * ft)
   p->mad_synth_init(&p->Synth);
   mad_timer_reset(&p->Timer);
 
-  ft->encoding.encoding = SOX_ENCODING_MP3;
-
   /* Decode at least one valid frame to find out the input
    * format.  The decoded frame will be saved off so that it
    * can be processed later.
@@ -466,6 +464,7 @@ static int startread(sox_format_t * ft)
    * that we have a valid MP3 and also skips past ID3v2 tags
    * at the beginning of the audio file.
    */
+
   p->Stream.error = 0;
   while (p->mad_frame_decode(&p->Frame,&p->Stream))
   {
@@ -492,6 +491,32 @@ static int startread(sox_format_t * ft)
   if (p->Stream.error)
   {
       lsx_fail_errno(ft,SOX_EOF,"no valid MP3 frame found");
+      return SOX_EOF;
+  }
+
+  lsx_report("MAD says it's MPEG-1 layer %d",
+      p->Frame.header.layer == MAD_LAYER_I ? 1 :
+      p->Frame.header.layer == MAD_LAYER_II ? 2 :
+      p->Frame.header.layer == MAD_LAYER_III ? 3 :
+      p->Frame.header.layer);
+
+  switch (p->Frame.header.layer) {
+  case MAD_LAYER_I:
+      /* MPEG-1 Layer I is a simpler encoding at bitrates from 32 to 448 kbps
+       * and sampling rates of 32, 44.1 and 48 kHz.
+       * It uses a 512-point DFT as opposed to Layer 2's 1024-point DFT
+       * and was used in the Philips Digital Compact Cassette.
+       * MP1 is a subset of MP2 and MP2 decoders can decode MP1 */
+      ft->encoding.encoding = SOX_ENCODING_MP1;
+      break;
+  case MAD_LAYER_II:
+      ft->encoding.encoding = SOX_ENCODING_MP2;
+      break;
+  case MAD_LAYER_III: /* mono or stereo */
+      ft->encoding.encoding = SOX_ENCODING_MP3;
+      break;
+  default:
+      lsx_fail_errno(ft,SOX_EOF,"no valid MPEG layer found");
       return SOX_EOF;
   }
 
@@ -1171,10 +1196,13 @@ static int startwrite(sox_format_t * ft)
 {
   priv_t *p = (priv_t *) ft->priv;
 
-  if (ft->encoding.encoding != SOX_ENCODING_MP3) {
+  p->mp2 = !!strchr(ft->filetype, '2');
+
+  if (ft->encoding.encoding != SOX_ENCODING_MP2 &&
+      ft->encoding.encoding != SOX_ENCODING_MP3) {
     if(ft->encoding.encoding != SOX_ENCODING_UNKNOWN)
-      lsx_report("encoding forced to MP2/MP3");
-    ft->encoding.encoding = SOX_ENCODING_MP3;
+      lsx_report("encoding forced to MP%d", p->mp2 ? 2 : 3);
+    ft->encoding.encoding = p->mp2 ? SOX_ENCODING_MP2 : SOX_ENCODING_MP3;
   }
 
   p->mp3_buffer_size = LAME_BUFFER_SIZE(sox_globals.bufsiz / max(ft->signal.channels, 1));
@@ -1183,7 +1211,6 @@ static int startwrite(sox_format_t * ft)
   p->pcm_buffer_size = sox_globals.bufsiz * sizeof(float);
   p->pcm_buffer = lsx_malloc(p->pcm_buffer_size);
 
-  p->mp2 = !!strchr(ft->filetype, '2');
 
   return p->mp2 ? startwrite_mp2(ft) : startwrite_mp3(ft);
 }
@@ -1327,15 +1354,46 @@ static int startwrite(sox_format_t * ft UNUSED)
 #define stopwrite NULL
 #endif /* HAVE_LAME || HAVE_TWOLAME */
 
+/* MAD can tell the difference between Layer 1 and Layer 2 but decodes them both
+ * with the same decoder (Layer 1 is a subset of Layer 2) but soxi might
+ * tell people if they happen across an MP1 file */
+LSX_FORMAT_HANDLER(mp1)
+{
+  static char const * const names[] = {"mp1", "m1a", NULL};
+  static sox_format_handler_t const handler = {SOX_LIB_VERSION_CODE,
+    "MPEG-1 Layer 1 lossy audio compression", names, 0,
+    startread, sox_mp3read, stopread,
+    NULL, NULL, NULL,
+    sox_mp3seek, NULL, NULL, sizeof(priv_t)
+  };
+  return &handler;
+}
+
+LSX_FORMAT_HANDLER(mp2)
+{
+  static char const * const names[] = {"mp2", NULL};
+  static unsigned const write_encodings[] = {
+    SOX_ENCODING_MP2, 0, 0};
+  static sox_rate_t const write_rates[] = {
+    16000, 22050, 24000, 32000, 44100, 48000, 0};
+  static sox_format_handler_t const handler = {SOX_LIB_VERSION_CODE,
+    "MPEG-1 Layer 2 lossy audio compression", names, 0,
+    startread, sox_mp3read, stopread,
+    startwrite, sox_mp3write, stopwrite,
+    sox_mp3seek, write_encodings, write_rates, sizeof(priv_t)
+  };
+  return &handler;
+}
+
 LSX_FORMAT_HANDLER(mp3)
 {
-  static char const * const names[] = {"mp3", "mp2", "audio/mpeg", NULL};
+  static char const * const names[] = {"mp3", NULL};
   static unsigned const write_encodings[] = {
     SOX_ENCODING_MP3, 0, 0};
   static sox_rate_t const write_rates[] = {
     8000, 11025, 12000, 16000, 22050, 24000, 32000, 44100, 48000, 0};
   static sox_format_handler_t const handler = {SOX_LIB_VERSION_CODE,
-    "MPEG Layer 2/3 lossy audio compression", names, 0,
+    "MPEG-1 Layer 3 lossy audio compression", names, 0,
     startread, sox_mp3read, stopread,
     startwrite, sox_mp3write, stopwrite,
     sox_mp3seek, write_encodings, write_rates, sizeof(priv_t)

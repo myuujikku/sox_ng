@@ -94,6 +94,9 @@
   FORMAT(lpc10)
 #endif
 #if defined HAVE_MP3 && (defined STATIC_MP3 || !defined HAVE_LIBLTDL)
+  /* HAVE_MP3 refers to the dynamic format plugin, not the encoding */
+  FORMAT(mp1)
+  FORMAT(mp2)
   FORMAT(mp3)
 #endif
 #if defined HAVE_OPUS && (defined STATIC_OPUS || !defined HAVE_LIBLTDL)

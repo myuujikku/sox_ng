@@ -128,6 +128,7 @@ static int ft_enc(unsigned size, sox_encoding_t e)
   if (e == SOX_ENCODING_VORBIS)   return SF_FORMAT_VORBIS;
 #endif
 #ifdef HAVE_SF_FORMAT_MPEG
+  if (e == SOX_ENCODING_MP2)      return SF_FORMAT_MPEG_LAYER_II;
   if (e == SOX_ENCODING_MP3)      return SF_FORMAT_MPEG_LAYER_III;
 #endif
   return 0; /* Bad encoding */
@@ -173,8 +174,10 @@ static sox_encoding_t sox_enc(int ft_encoding, unsigned * size)
 #if HAVE_SF_FORMAT_MPEG
     /* By default, SoX declares MP3 precision as 16-bit so that
      * decoding them gives CD quality, which is what people expect. */
-    case SF_FORMAT_MPEG_LAYER_I :
-    case SF_FORMAT_MPEG_LAYER_II :
+    case SF_FORMAT_MPEG_LAYER_I
+                            : *size = 16; return SOX_ENCODING_MP1;
+    case SF_FORMAT_MPEG_LAYER_II
+                            : *size = 16; return SOX_ENCODING_MP2;
     case SF_FORMAT_MPEG_LAYER_III
                             : *size = 16; return SOX_ENCODING_MP3;
 #endif
@@ -202,6 +205,7 @@ static struct {
   { "mpc2k",    SF_FORMAT_MPC2K },  /* From 1.0.25 */
 #endif
 #ifdef HAVE_SF_FORMAT_MPEG
+  { "mp2",      SF_FORMAT_MPEG | SF_FORMAT_MPEG_LAYER_II },  /* From 1.1.0 */
   { "mp3",      SF_FORMAT_MPEG | SF_FORMAT_MPEG_LAYER_III },  /* From 1.1.0 */
 #endif
   { "svx",      SF_FORMAT_SVX },
@@ -329,6 +333,8 @@ static int start_sndfile(sox_format_t * ft)
     switch (sf->sf_info->format) {
     case SF_FORMAT_OGG | SF_FORMAT_VORBIS:
 #if HAVE_SF_FORMAT_MPEG
+    case SF_FORMAT_MPEG | SF_FORMAT_MPEG_LAYER_I:
+    case SF_FORMAT_MPEG | SF_FORMAT_MPEG_LAYER_II:
     case SF_FORMAT_MPEG | SF_FORMAT_MPEG_LAYER_III:
 #endif
       break;
@@ -570,6 +576,7 @@ LSX_FORMAT_HANDLER(sndfile)
     SOX_ENCODING_MS_ADPCM, 4, 0,
     SOX_ENCODING_OKI_ADPCM, 4, 0,
     SOX_ENCODING_GSM, 0,
+    SOX_ENCODING_MP2, 0,
     SOX_ENCODING_MP3, 0,
     0};
 

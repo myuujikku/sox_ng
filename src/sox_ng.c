@@ -2182,7 +2182,10 @@ static void usage_format1(sox_format_handler_t const * f)
            * Both LAME and Twolame encoders take floating point input
            * (24-bit mantissa + 1-bit sign) but set it to 24.
            */
-          if (prec == 0 && e == SOX_ENCODING_MP3) prec = 24;
+          if (prec == 0 && (e == SOX_ENCODING_MP1 ||
+                            e == SOX_ENCODING_MP2 ||
+                            e == SOX_ENCODING_MP3))
+            prec = 24;
           if (prec) {
             printf("  ");
             if (s)

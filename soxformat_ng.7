@@ -506,43 +506,43 @@ Meridian Lossless Packing format.
 \fB.mov\fR (with ffmpeg)
 MPEG-1 Systems / MPEG program stream format.
 .TP
-\fB.mp2\fR (optional, also with \fB-t sndfile\fR or \fB\-t ffmpeg\fR)
-MP2 and MP3 compressed audio (MPEG 1 Layers 2 and 3) are part of the
+\fB.mp1\fR, \fB.m1a\fR, \fB.mp2\fR (optional, also with \fB-t sndfile\fR or \fB\-t ffmpeg\fR)
+MP1, MP2 and MP3 compressed audio (MPEG 1 Layers 1, 2 and 3) are part of the
 MPEG standards for audio and video compression whose patents have expired.
 They are lossy compression formats that achieve good compression rates
 with little quality loss.
 .SP
-\fBlibmad\fR, which SoX uses to decode \fB.mp2\fR files, does not work on files
-with a bit-rate higher than 192K but you can read them with \fB\-t sndfile\fR
+\fBlibmad\fR, which SoX uses to decode MPEG files, does not work on files
+with a bit-rate higher than 192K but you can read those with \fB\-t sndfile\fR
 or \fB\-t ffmpeg\fR.
 .SP
-SoX can only autodetect MP2 files from their filename extension;
-if they are read from `standard input' (stdin) or from a file whose name
-does not end in `.mp2', prefix them with `-t mp2'.
-.SP
-The bit rate is set using the \fB\-C\fR option in kbps:
+SoX uses \fBtwolame\fR to write MP2 files, and the target bit rate is set
+using the \fB\-C\fR option in kbps:
 32, 48, 56, 64, 80, 96, 112, 128, 160 or 192 for a constant bit rate (CBR)
 for mono files and double those for stereo ones.
 Variable bit rate encoding (VBR) is selected by values from \(mi50 to \50
 (of which only \(mi10 to 10 are said to be useful); if you really want
 VBR at qualities 32 or 48, use something like 32.01 or 48.01.
 .SP
-At present, \fBtwolame\fR outputs 0.005 seconds of quiet garbage
+Unfortunately, \fBtwolame\fR outputs 0.005 seconds of quiet garbage
 at the start and truncates the end by 0.002 seconds.
+.SP
+SoX cannot only read MP1 files, not write them.
 .TP
 \fB.mp3\fR (optional, also with \fB\-t sndfile\fR or \fB\-t ffmpeg\fR)
 SoX uses \fBlibmad\fR to decode MP3 files; to decode using
 \fBlibmpg123\fR, which generally gives better quality results and
 is better at decoding damaged or corrupt files, use \fB\-t\ sndfile\fR,
-while \fR-t\ ffmpeg\fR uses yet another MP2/3 decoder, internal to \fBffmpeg\fR.
+while \fR\-t\ ffmpeg\fR uses yet another MPEG decoder, `mpglib'.
 .SP
 SoX decodes MP2 and MP3 files with a precision of 28 bits but by default
 it declares a precision of 16 bits so that decoding MP3s to WAVs
 gives the CD quality that most people expect. You can specify
 a higher precision for the output file to keep this extra information.
 .SP
-When writing MP3 files, SoX uses \fBliblame\fR and can use up to
+SoX uses \fBliblame\fR when writing MP3 files, and can use up to
 25 bits of precision.
+.SP
 At present, SoX's use of \fBliblame\fR adds 0.01 seconds of quiet garbage
 at the start and at the end;
 encoding with \fB\-t sndfile\fR gets the length right and no garbage.

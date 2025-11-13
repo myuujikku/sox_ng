@@ -264,7 +264,9 @@ static sox_encodings_info_t const s_sox_encodings_info[] = {
   {sox_encodings_none  , "DWVW"         , "DWVW"},
   {sox_encodings_none  , "DWVWN"        , "DWVWN"},
   {sox_encodings_lossy2, "GSM"          , "GSM"},
-  {sox_encodings_lossy2, "MPEG audio"   , "MPEG-1 audio (layer II or III)"},
+  {sox_encodings_lossy2, "MP1"          , "MPEG-1 audio layer I"},
+  {sox_encodings_lossy2, "MP2"          , "MPEG-1 audio layer II"},
+  {sox_encodings_lossy2, "MP3"          , "MPEG-1 audio layer III"},
   {sox_encodings_lossy2, "Vorbis"       , "Vorbis"},
   {sox_encodings_lossy2, "AMR-WB"       , "AMR-WB"},
   {sox_encodings_lossy2, "AMR-NB"       , "AMR-NB"},
@@ -309,6 +311,8 @@ unsigned sox_precision(sox_encoding_t encoding, unsigned bits_per_sample)
     case SOX_ENCODING_CVSD:       return bits_per_sample == 1? 16: 0;
     case SOX_ENCODING_DPCM:       return bits_per_sample; /* ? */
 
+    case SOX_ENCODING_MP1:
+    case SOX_ENCODING_MP2:
     case SOX_ENCODING_MP3:        return 16;
     /* MAD returns 28 bits and Twolame and LAME take floats (24-bit mantissa
      * + sign = 25) and sox_ng.c and sndfile.c know about this.
