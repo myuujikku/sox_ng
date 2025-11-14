@@ -828,7 +828,7 @@ const sox_effect_handler_t *lsx_synth_effect_fn(void)
 "  sawtooth   0-100  -                   -                  -",
 "  trapezium  0-100  Start high (10)     End high (50)      Start low (60)",
 "  exp        0-100  Peak position (50)  Range in 2dB (50)  -",
-"  pluck       (*)   sustain (40)        Tone control 1     Tone control 2",
+"  pluck       (*)   sustain (40)        Tone ctrl 1 (20)   Tone ctrl 2 (90)",
 "  white, tpdf, pink and brown noises ignore all parameters",
 "combine:   (*) If non-zero, uses a different kind of random number generator",
 "  create  Add a new channel (the default)",
