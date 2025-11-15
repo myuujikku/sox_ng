@@ -3,6 +3,9 @@
 # Test that the flanger equivalent of chorus
 # give the same results +/- one sample
 
+# Make sure we have bc
+bc < /dev/null 2> /dev/null || exit 254
+
 sox="${sox:-sox} -D"
 
 generated_files="sweep.wav chorus.wav flanger.wav"

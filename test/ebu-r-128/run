@@ -6,6 +6,9 @@
 # Only tests requiring a specific output are included,
 # not those requiring a "Max" value, for which the result is lower than the Max.
 
+# Check that bc is available
+bc < /dev/null || exit 254
+
 # See if SoX was compiled with EBUR128 support
 ${sox:-sox} -n -n trim 0 1 stat -e || exit 254
 
