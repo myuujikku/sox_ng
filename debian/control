@@ -31,12 +31,9 @@ Vcs-Git: git://codeberg.org/sox_ng/sox_ng
 Package: sox-ng
 Architecture: any
 Section: sound
-Depends: libsox-ng-fmt-alsa (= ${binary:Version}) [linux-any] | libsox-ng-fmt-ao (= ${binary:Version}) | libsox-ng-fmt-oss (= ${binary:Version}) | libsox-ng-fmt-pulse (= ${binary:Version}),
-         libsox-ng-fmt-base (= ${binary:Version}),
-         libsox-ng3 (= ${binary:Version}),
+Depends: libsox-ng3 (= ${binary:Version}),
          ${misc:Depends},
          ${shlibs:Depends}
-Suggests: libsox-ng-fmt-all
 Description: Swiss army knife of sound processing
  SoX is a command line utility that can convert various formats of computer
  audio files in to other formats. It can also apply various effects to these
@@ -58,8 +55,7 @@ Multi-Arch: same
 Section: libs
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends}, ${shlibs:Depends}
-Recommends: libsox-ng-fmt-alsa [linux-any] | libsox-ng-fmt-ao | libsox-ng-fmt-oss | libsox-ng-fmt-pulse,
-            libsox-ng-fmt-base
+Recommends: libsox-ng-fmt-base
 Suggests: libsox-ng-fmt-all
 Description: SoX library of audio effects and processing
  SoX is the swiss army knife of sound processing.
@@ -76,18 +72,49 @@ Package: libsox-ng-fmt-base
 Architecture: any
 Multi-Arch: same
 Section: libs
-Depends: ${misc:Depends}, ${shlibs:Depends}
-Replaces: libsox-ng-fmt-flac,
-          libsox-ng-fmt-gsm,
-          libsox-ng-fmt-libsndfile,
-          libsox-ng-fmt-ogg,
-          libsox-ng-fmt-sndfile
+Depends:    libsox-ng-fmt-alsa,
+            ${misc:Depends}, ${shlibs:Depends}
+Recommends: 
+            libsox-ng-fmt-amr-nb,
+            libsox-ng-fmt-amr-wb,
+            libsox-ng-fmt-flac,
+            libsox-ng-fmt-gsm,
+            libsox-ng-fmt-lpc10,
+            libsox-ng-fmt-mp3,
+            libsox-ng-fmt-opus,
+            libsox-ng-fmt-sndfile,
+            libsox-ng-fmt-vorbis,
+            libsox-ng-fmt-wavpack
 Description: Minimal set of SoX format libraries
  SoX is the swiss army knife of sound processing.
  .
  This package contains most audio formats libraries supported by SoX.
  Among them: Ogg Vorbis, WAV, AIFF, VOC, SND, AU, GSM, WavPack, LPC10, FLAC,
  MATLAB/GNU Octave, Portable Voice Format, AMR and Sound Forge Audio Format.
+
+Package: libsox-ng-fmt-amr-nb
+Architecture: any
+Multi-Arch: same
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: SoX AMR-NB format I/O library
+ SoX is the swiss army knife of sound processing.
+ .
+ This package contains the Opencore AMR Narrow Band format I/O library.
+ .
+ libopencore-amr: http://sourceforge.net/projects/opencore-amr
+
+Package: libsox-ng-fmt-amr-wb
+Architecture: any
+Multi-Arch: same
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: SoX AMR-WB format I/O library
+ SoX is the swiss army knife of sound processing.
+ .
+ This package contains the Opencore AMR Wide Band format I/O library.
+ .
+ libopencore-amr: http://sourceforge.net/projects/opencore-amr
 
 Package: libsox-ng-fmt-alsa
 Architecture: linux-any
@@ -97,7 +124,7 @@ Depends: ${misc:Depends}, ${shlibs:Depends}
 Description: SoX alsa format I/O library
  SoX is the swiss army knife of sound processing.
  .
- This package contains the SoX alsa format I/O library.
+ This package contains the SoX alsa audio I/O library.
  .
  alsa: http://www.alsa-project.org
 
@@ -109,24 +136,73 @@ Depends: ${misc:Depends}, ${shlibs:Depends}
 Description: SoX Libao format I/O library
  SoX is the swiss army knife of sound processing.
  .
- This package contains the SoX Libao format I/O library.
+ This package contains the SoX Libao audio I/O library.
  .
  libao: http://xiph.org/ao
+
+Package: libsox-ng-fmt-flac
+Architecture: any
+Multi-Arch: same
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: SoX FLAC format I/O library
+ SoX is the swiss army knife of sound processing.
+ .
+ This package contains the SoX FLAC format I/O library.
+ .
+ FLAC: http://xiph.org/flac
+
+Package: libsox-ng-fmt-gsm
+Architecture: any
+Multi-Arch: same
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: SoX GSM format I/O library
+ SoX is the swiss army knife of sound processing.
+ .
+ This package contains the GSM format I/O library.
+ .
+ libgsm: http://www.quut.com/gsm
+
+Package: libsox-ng-fmt-lpc10
+Architecture: any
+Multi-Arch: same
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: SoX LPC10 format I/O library
+ SoX is the swiss army knife of sound processing.
+ .
+ This package contains the Linear Predictive Codec format I/O library.
+ .
+ libgsm: https://github.com/jafingerhut/lpc10
 
 Package: libsox-ng-fmt-mp3
 Architecture: any
 Multi-Arch: same
 Section: libs
 Depends: ${misc:Depends}, ${shlibs:Depends}
-Description: SoX MP2 and MP3 format library
+Description: SoX MP1, MP2 and MP3 format library
  SoX is the swiss army knife of sound processing.
  .
- This package contains the SoX MP2 and MP3 format library.
+ This package contains the SoX MP1, MP2 and MP3 format library.
  Read support by libmad. MP2 and MP3 write support by libtwolame and
  libmp3lame respectively.
  .
- libmad: http://www.underbit.com/products/mad/
- lame: http://lame.sourceforge.net/
+ mad: http://www.underbit.com/products/mad/
+ lame: http://lame.sourceforge.io/
+ twolame: http://www.twolame.org
+
+Package: libsox-ng-fmt-opus
+Architecture: any
+Multi-Arch: same
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: SoX Opus format I/O library
+ SoX is the swiss army knife of sound processing.
+ .
+ This package contains the Opus format I/O library.
+ .
+ libgsm: https://www.opus-codec.org
 
 Package: libsox-ng-fmt-oss
 Architecture: any
@@ -137,7 +213,7 @@ Description: SoX OSS format I/O library
  SoX is the swiss army knife of sound processing.
  .
  This package contains the SoX Open Sound System (OSS)
- format I/O library.
+ audio I/O library.
  .
  Open Sound System: http://www.opensound.com/oss.html
 
@@ -149,21 +225,65 @@ Depends: ${misc:Depends}, ${shlibs:Depends}
 Description: SoX PulseAudio format I/O library
  SoX is the swiss army knife of sound processing.
  .
- This package contains the SoX PulseAudio format I/O library.
+ This package contains the SoX PulseAudio audio I/O library.
  .
  PulseAudio: http://www.pulseaudio.org/
+
+Package: libsox-ng-fmt-sndfile
+Architecture: any
+Multi-Arch: same
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: SoX libsndfile format I/O library
+ SoX is the swiss army knife of sound processing.
+ .
+ This package contains the SoX Sndfile format I/O library.
+ .
+ PulseAudio: https://libsndfile.github.io/libsndfile
+
+Package: libsox-ng-fmt-vorbis
+Architecture: any
+Multi-Arch: same
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: SoX Ogg Vorbis format I/O library
+ SoX is the swiss army knife of sound processing.
+ .
+ This package contains the SoX Ogg Vorbis format I/O library.
+ .
+ libao: http://xiph.org/flac
+
+Package: libsox-ng-fmt-wavpack
+Architecture: any
+Multi-Arch: same
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: SoX Ogg Wavpack format I/O library
+ SoX is the swiss army knife of sound processing.
+ .
+ This package contains the SoX Wavpack format I/O library.
+ .
+ wavpack: http://www.wavpack.com
 
 Package: libsox-ng-fmt-all
 Architecture: any
 Multi-Arch: same
 Section: libs
-Depends: libsox-ng-fmt-alsa (= ${binary:Version}) [linux-any],
+Depends: libsox-ng-fmt-alsa (= ${binary:Version}),
+         libsox-ng-fmt-amr-nb (= ${binary:Version}),
+         libsox-ng-fmt-amr-wb (= ${binary:Version}),
          libsox-ng-fmt-ao (= ${binary:Version}),
          libsox-ng-fmt-base (= ${binary:Version}),
+         libsox-ng-fmt-flac (= ${binary:Version}),
+         libsox-ng-fmt-gsm (= ${binary:Version}),
+         libsox-ng-fmt-lpc10 (= ${binary:Version}),
          libsox-ng-fmt-mp3 (= ${binary:Version}),
+         libsox-ng-fmt-opus (= ${binary:Version}),
          libsox-ng-fmt-oss (= ${binary:Version}),
          libsox-ng-fmt-pulse (= ${binary:Version}),
-         ${misc-Depends}
+         libsox-ng-fmt-sndfile (= ${binary:Version}),
+         libsox-ng-fmt-vorbis (= ${binary:Version}),
+         libsox-ng-fmt-wavpack (= ${binary:Version})
 Description: All SoX format libraries
  SoX is the swiss army knife of sound processing.
  .
