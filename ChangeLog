@@ -59,7 +59,7 @@ Documentation:
 Internal:
 
   o Allow ./configure --without-dolbyb
-  o ./configure --with-dyn-default works for amr, lame, mad, twolame, sndfile
+  o Fix ./configure --with-dyn-default for amr, lame, mad, twolame and sndfile
   o Fix issues/issues.sh for http:// remotes and on FreeBSD
   o Add automatic "make win32.exe/win64.exe" rules using MXE
   o Make test/twx-wav-byte-rate not fail on 64-bit machines
