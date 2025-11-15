@@ -1,0 +1,5 @@
+sox-ng (14.6.1+git20251115) UNRELEASED; urgency=low
+
+  * First reinclusion of debian/ in sox_ng
+
+ -- Martin Guy <martinwguy@gmail.com>  Sat, 15 Nov 2025 13:40:07 +0100

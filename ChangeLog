@@ -5,8 +5,8 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
-sox_ng-14.6.1+git20251115
--------------------------
+sox_ng-14.6.1+git
+-----------------
 
 New features:
 
@@ -65,6 +65,8 @@ Internal:
   o Make test/twx-wav-byte-rate not fail on 64-bit machines
   o Make CMake work again, though it omits all the optional formats
   o Remove unmaintained msvc files
+  o debian/ is back to build .deb packages on Debian, Ubuntu and Mint
+    with dpkg-buildpackage -rfakeroot -b
 
 sox_ng-14.6.1   2025-10-13
 -------------

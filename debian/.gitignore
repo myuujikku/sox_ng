@@ -1,0 +1,8 @@
+*.debhelper
+*.substvars
+/*.log
+autoreconf.after
+autoreconf.before
+files
+stamp-*
+tmp

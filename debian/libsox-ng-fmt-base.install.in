@@ -1,0 +1,8 @@
+debian/tmp/usr/lib/@DEB_HOST_MULTIARCH@/sox_ng/libsox_ng_fmt_amr_nb.so* usr/lib/@DEB_HOST_MULTIARCH@/sox_ng/
+debian/tmp/usr/lib/@DEB_HOST_MULTIARCH@/sox_ng/libsox_ng_fmt_amr_wb.so* usr/lib/@DEB_HOST_MULTIARCH@/sox_ng/
+debian/tmp/usr/lib/@DEB_HOST_MULTIARCH@/sox_ng/libsox_ng_fmt_flac.so* usr/lib/@DEB_HOST_MULTIARCH@/sox_ng/
+debian/tmp/usr/lib/@DEB_HOST_MULTIARCH@/sox_ng/libsox_ng_fmt_gsm.so* usr/lib/@DEB_HOST_MULTIARCH@/sox_ng/
+debian/tmp/usr/lib/@DEB_HOST_MULTIARCH@/sox_ng/libsox_ng_fmt_lpc10.so* usr/lib/@DEB_HOST_MULTIARCH@/sox_ng/
+debian/tmp/usr/lib/@DEB_HOST_MULTIARCH@/sox_ng/libsox_ng_fmt_sndfile.so* usr/lib/@DEB_HOST_MULTIARCH@/sox_ng/
+debian/tmp/usr/lib/@DEB_HOST_MULTIARCH@/sox_ng/libsox_ng_fmt_vorbis.so* usr/lib/@DEB_HOST_MULTIARCH@/sox_ng/
+debian/tmp/usr/lib/@DEB_HOST_MULTIARCH@/sox_ng/libsox_ng_fmt_wavpack.so* usr/lib/@DEB_HOST_MULTIARCH@/sox_ng/
