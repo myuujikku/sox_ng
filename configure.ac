@@ -406,16 +406,28 @@ AC_ARG_WITH(speexdsp,
     AS_HELP_STRING([--without-speexdsp],
         [Don't try to use libspeexdsp]))
 using_speexdsp=no
-AS_IF([test "x$with_speexdsp" != xno], [
+if test "x$with_speexdsp" != xno; then
+    using_speexdsp=yes
     AC_CHECK_HEADERS(speex/speex_types.h speex/speex_preprocess.h,
 	[using_speexdsp=yes])
-    AS_IF([test "x$using_speexdsp" = xyes],
-        [ AC_CHECK_LIB([speexdsp], [speex_preprocess_run],
-			[SPEEXDSP_LIBS="$SPEEXDSP_LIBS -lspeexdsp"], [using_speexdsp=no]) ])
-
-    AS_IF([test "x$with_speexdsp" = xyes && test "x$using_speexdsp" = xno],
-        [ AC_MSG_FAILURE([cannot find libspeexdsp]) ])
-])
+    AC_MSG_CHECKING([whether to dlopen speexdsp])
+    AC_ARG_ENABLE(dl_speexdsp,
+      AS_HELP_STRING([--enable-dl-speexdsp], [Dlopen speexdsp instead of linking in.]),
+      enable_dl_speexdsp=$enableval, enable_dl_speexdsp=no)
+    AC_MSG_RESULT($enable_dl_speexdsp)
+    if test "x$using_libltdl" = "xyes" && test "x$enable_dl_speexdsp" = "xyes"; then
+      AC_DEFINE(DL_SPEEXDSP, 1, [Define to dlopen() speexdsp.])
+    else
+      enable_dl_speexdsp=no
+      AC_CHECK_LIB(speexdsp, speex_preprocess_run, SPEEXDSP_LIBS="$SPEEXDSP_LIBS -lspeexdsp", using_speexdsp=no)
+      if test "x$using_speexdsp" = "xyes"; then
+        AC_DEFINE(HAVE_SPEEXDSP, 1, [Define if the speexdsp library was found.])
+      fi
+      if test "x$with_speexdsp" = "xyes" && test "x$using_speexdsp" = "xno"; then
+        AC_MSG_FAILURE([cannot find libspeexdsp])
+      fi
+    fi
+fi
 AS_IF([test "x$using_speexdsp" = xyes],
    [ AC_DEFINE(HAVE_SPEEXDSP, 1, [Define to 1 if you have libspeexdsp.]) ])
 AM_CONDITIONAL(HAVE_SPEEXDSP, test x"$using_speexdsp" = xyes)
@@ -792,8 +804,6 @@ AC_OPTIONAL_FORMAT(pulseaudio, PULSEAUDIO, [AC_CHECK_HEADER(pulse/simple.h, [AC_
 
 AC_OPTIONAL_FORMAT(waveaudio, WAVEAUDIO, [AC_CHECK_HEADER(mmsystem.h, [WAVEAUDIO_LIBS="$WAVEAUDIO_LIBS -lwinmm"], using_waveaudio=no, [[#include <windows.h>]])])
 
-dnl When enable_dl_sndfile, do not let SOX_PATH_SNDFILE add libraries
-dnl to be linked in (since they will be dlopen()'ed instead).
 ac_sox_save_SNDFILE_LIBS="$SNDFILE_LIBS"
 SOX_PATH_SNDFILE(tmp_using_sndfile=$opt_default, tmp_using_sndfile=no)
 AC_ARG_ENABLE(dl_sndfile,
@@ -1000,6 +1010,9 @@ echo "magic support..............$using_magic"
 echo "png support................$using_png"
 echo "FFTW support...............$using_fftw"
 echo "speexdsp support...........$using_speexdsp"
+if test "x$using_speexdsp" = "xyes"; then
+echo " dlopen speexdsp...........$enable_dl_speexdsp"
+fi
 if test "x$OPENMP_CFLAGS" = "x"; then
 echo "OpenMP support.............no"
 else

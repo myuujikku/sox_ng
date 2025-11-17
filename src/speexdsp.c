@@ -24,6 +24,38 @@
 #include <speex/speex_types.h>
 #include <speex/speex_preprocess.h>
 
+#if !defined(HAVE_LIBLTDL)
+#undef DL_SPEEXDSP
+#endif
+
+static const char* const speexdsp_library_names[] =
+{
+#ifdef DL_SPEEXDSP
+  "libspeexdsp",
+  "libspeexdsp-1",
+  "cygspeexdsp-1",
+#endif
+  NULL
+};
+
+#ifdef DL_SPEEXDSP
+  #define SPEEXDSP_FUNC      LSX_DLENTRY_DYNAMIC
+  #define SPEEXDSP_FUNC_STOP LSX_DLENTRY_STUB
+#else
+  #define SPEEXDSP_FUNC      LSX_DLENTRY_STATIC
+  #define SPEEXDSP_FUNC_STOP LSX_DLENTRY_STUB
+#endif /* DL_SPEEXDSP/ */
+
+#define SPEEXDSP_FUNC_ENTRIES(f,x) \
+  SPEEXDSP_FUNC(f,x, SpeexPreprocessState*, speex_preprocess_state_init, \
+                (int, int)) \
+  SPEEXDSP_FUNC(f,x, int, speex_preprocess_ctl, \
+                (SpeexPreprocessState*, int, void *)) \
+  SPEEXDSP_FUNC(f,x, int, speex_preprocess_run, \
+                (SpeexPreprocessState*, spx_int16_t *)) \
+  SPEEXDSP_FUNC(f,x, void, speex_preprocess_state_destroy, \
+                (SpeexPreprocessState*))
+
 /* Private data for effect */
 typedef struct speexdsp_priv_t {
     size_t buffer_end;        /* Index of the end of the buffer. */
@@ -36,6 +68,7 @@ typedef struct speexdsp_priv_t {
     size_t dereverb;          /* Param: Dereverb: 0 to disable, 1 to enable. */
     size_t frames_per_second; /* Param: Used to compute buffer size from sample rate. */
     size_t samples_per_frame; /* Param: Used to compute buffer size directly. Default is to use frames_per_second instead. */
+    LSX_DLENTRIES_TO_PTRS(SPEEXDSP_FUNC_ENTRIES, speexdsp_dl);
 } priv_t;
 
 static int get_param(
@@ -149,7 +182,7 @@ static int stop_speexdsp(sox_effect_t* effp)
 
     if (p->sps)
     {
-        speex_preprocess_state_destroy(p->sps);
+        p->speex_preprocess_state_destroy(p->sps);
         p->sps = NULL;
     }
 
@@ -159,6 +192,7 @@ static int stop_speexdsp(sox_effect_t* effp)
         p->buffer = NULL;
     }
 
+    LSX_DLLIBRARY_CLOSE(p, speexdsp_dl);
     return SOX_SUCCESS;
 }
 
@@ -172,6 +206,17 @@ static int start_speexdsp(sox_effect_t* effp)
     int result = SOX_SUCCESS;
     spx_int32_t int_val;
     float float_val;
+    int open_library_result;
+
+    LSX_DLLIBRARY_OPEN(
+        p,
+        speexdsp_dl,
+        SPEEXDSP_FUNC_ENTRIES,
+        "libspeexdsp library",
+        speexdsp_library_names,
+        open_library_result);
+    if (open_library_result)
+      return SOX_EOF;
 
     if (p->samples_per_frame)
     {
@@ -192,7 +237,7 @@ static int start_speexdsp(sox_effect_t* effp)
 
     lsx_valloc(p->buffer, p->buffer_end);
 
-    p->sps = speex_preprocess_state_init((int)p->buffer_end, (int)(effp->in_signal.rate + .5));
+    p->sps = p->speex_preprocess_state_init((int)p->buffer_end, (int)(effp->in_signal.rate + .5));
     if (!p->sps)
     {
         lsx_fail("failed to initialize preprocessor DSP");
@@ -201,23 +246,23 @@ static int start_speexdsp(sox_effect_t* effp)
     }
 
     int_val = p->agc ? 1 : 2;
-    speex_preprocess_ctl(p->sps, SPEEX_PREPROCESS_SET_AGC, &int_val);
+    p->speex_preprocess_ctl(p->sps, SPEEX_PREPROCESS_SET_AGC, &int_val);
     if (p->agc)
     {
         float_val = p->agc * 327.68f;
-        speex_preprocess_ctl(p->sps, SPEEX_PREPROCESS_SET_AGC_LEVEL, &float_val);
+        p->speex_preprocess_ctl(p->sps, SPEEX_PREPROCESS_SET_AGC_LEVEL, &float_val);
     }
 
     int_val = p->denoise ? 1 : 2;
-    speex_preprocess_ctl(p->sps, SPEEX_PREPROCESS_SET_DENOISE, &int_val);
+    p->speex_preprocess_ctl(p->sps, SPEEX_PREPROCESS_SET_DENOISE, &int_val);
     if (p->denoise)
     {
         int_val = -(spx_int32_t)p->denoise;
-        speex_preprocess_ctl(p->sps, SPEEX_PREPROCESS_SET_NOISE_SUPPRESS, &int_val);
+        p->speex_preprocess_ctl(p->sps, SPEEX_PREPROCESS_SET_NOISE_SUPPRESS, &int_val);
     }
 
     int_val = p->dereverb ? 1 : 2;
-    speex_preprocess_ctl(p->sps, SPEEX_PREPROCESS_SET_DEREVERB, &int_val);
+    p->speex_preprocess_ctl(p->sps, SPEEX_PREPROCESS_SET_DEREVERB, &int_val);
 
 Done:
     if (result != SOX_SUCCESS)
@@ -262,7 +307,7 @@ static int flow_speexdsp(
         if (p->buffer_ipos != p->buffer_end)
             break; /* Working buffer is not full and there is no more input data. */
 
-        speex_preprocess_run(p->sps, p->buffer);
+        p->speex_preprocess_run(p->sps, p->buffer);
         p->buffer_ipos = 0;
         p->buffer_opos = 0;
     }
@@ -289,7 +334,7 @@ static int drain_speexdsp(sox_effect_t* effp, sox_sample_t* obuf, size_t* osamp)
         /* DSP only works on full frames, so fill the remaining space with 0s. */
         for (i = p->buffer_ipos; i < p->buffer_end; i++)
             p->buffer[i] = 0;
-        speex_preprocess_run(p->sps, p->buffer);
+        p->speex_preprocess_run(p->sps, p->buffer);
         p->buffer_end = p->buffer_ipos;
         p->buffer_ipos = 0;
         p->buffer_opos = 0;
