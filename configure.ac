@@ -490,12 +490,12 @@ if test "x$with_mad" != "xno"; then
     else
       enable_dl_mad=no
       AC_CHECK_LIB(mad, mad_stream_buffer, MP3_LIBS="$MP3_LIBS -lmad", using_mad=no)
-      if test "x$using_mad" = "xyes"; then
-        AC_DEFINE(HAVE_MAD, 1, [Define if the MAD library was found.])
-      fi
-      if test "x$with_mad" = "xyes" && test "x$using_mad" = "xno"; then
-        AC_MSG_FAILURE([cannot find libmad])
-      fi
+    fi
+    if test "x$using_mad" = "xyes"; then
+      AC_DEFINE(HAVE_MAD, 1, [Define if the MAD library was found.])
+    fi
+    if test "x$with_mad" = "xyes" && test "x$using_mad" = "xno"; then
+      AC_MSG_FAILURE([cannot find libmad])
     fi
 fi
 
@@ -542,16 +542,17 @@ if test "$with_lame" != "no"; then
       AC_CHECK_HEADERS(lame/lame.h, [],
         [AC_CHECK_HEADERS(lame.h, [], using_lame=no)])
       AC_CHECK_LIB(mp3lame, lame_get_lametag_frame, MP3_LIBS="$MP3_LIBS -lmp3lame", using_lame=no)
-      if test "x$using_lame" = "xyes"; then
-        AC_DEFINE(HAVE_LAME, 1, [Define to 1 if the lame library was found.])
-      fi
-      AC_CHECK_LIB(mp3lame, id3tag_set_fieldvalue)
-      if test "x$ac_cv_lib_mp3lame_id3tag_set_fieldvalue" = "xyes"; then
-        AC_DEFINE(HAVE_LAME_ID3TAG, 1, [Define to 1 if lame supports optional ID3 tags.])
-      fi
-      if test "x$with_lame" = "xyes" && test "x$using_lame" = "xno"; then
-        AC_MSG_FAILURE([cannot find LAME])
-      fi
+    fi
+    if test "x$using_lame" = "xyes"; then
+      AC_DEFINE(HAVE_LAME, 1, [Define to 1 if the lame library was found.])
+    fi
+    # See if it includes ID3tag support
+    AC_CHECK_LIB(mp3lame, id3tag_set_fieldvalue)
+    if test "x$ac_cv_lib_mp3lame_id3tag_set_fieldvalue" = "xyes"; then
+      AC_DEFINE(HAVE_LAME_ID3TAG, 1, [Define to 1 if lame supports optional ID3 tags.])
+    fi
+    if test "x$with_lame" = "xyes" && test "x$using_lame" = "xno"; then
+      AC_MSG_FAILURE([cannot find LAME])
     fi
 fi
 
@@ -575,12 +576,12 @@ if test "x$with_twolame" != "xno"; then
     else
       enable_dl_twolame=no
       AC_CHECK_LIB(twolame, twolame_init, MP3_LIBS="$MP3_LIBS -ltwolame",using_twolame=no)
-      if test "x$using_twolame" = "xyes"; then
-        AC_DEFINE(HAVE_TWOLAME, 1, [Define to 1 if the lame library was found.])
-      fi
-      if test "x$with_twolame" = "xyes" && test "x$using_twolame" = "xno"; then
-        AC_MSG_FAILURE([cannot find libtwolame])
-      fi
+    fi
+    if test "x$using_twolame" = "xyes"; then
+      AC_DEFINE(HAVE_TWOLAME, 1, [Define to 1 if the lame library was found.])
+    fi
+    if test "x$with_twolame" = "xyes" && test "x$using_twolame" = "xno"; then
+      AC_MSG_FAILURE([cannot find libtwolame])
     fi
 fi
 
