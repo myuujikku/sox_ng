@@ -59,8 +59,10 @@
 
 #if defined(HAVE_MAD) || defined(HAVE_LAME) || defined(HAVE_TWOLAME)
 
-#ifdef HAVE_MAD
+#ifdef HAVE_MAD_H
 #include <mad.h>
+#elif defined(DL_MAD)
+#include "bit-rot/mad.h"
 #endif
 
 #if defined(HAVE_LAME_LAME_H)
@@ -91,13 +93,16 @@ typedef enum {
   #define ID3_TAG_FLAG_FOOTERPRESENT 0x10
 #endif
 
-#ifdef HAVE_TWOLAME
-  #include <twolame.h>
+#ifdef HAVE_TWOLAME_H
+#include <twolame.h>
+#elif defined(DL_LAME)
+typedef struct twolame_options_struct twolame_options;
 #endif
 
 #ifndef HAVE_LIBLTDL
-  #undef DL_LAME
   #undef DL_MAD
+  #undef DL_LAME
+  #undef DL_TWOLAME
 #endif
 
 /* Under Windows, importing data from DLLs is a dicey proposition. This is true

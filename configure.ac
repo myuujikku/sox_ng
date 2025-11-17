@@ -479,7 +479,6 @@ AC_ARG_WITH(mad,
 using_mad=no
 if test "x$with_mad" != "xno"; then
     using_mad=yes
-    AC_CHECK_HEADERS(mad.h,, using_mad=no)
     AC_MSG_CHECKING([whether to dlopen mad])
     AC_ARG_ENABLE(dl_mad,
       AS_HELP_STRING([--enable-dl-mad], [Dlopen mad instead of linking in.]),
@@ -489,6 +488,7 @@ if test "x$with_mad" != "xno"; then
       AC_DEFINE(DL_MAD, 1, [Define to dlopen() mad.])
     else
       enable_dl_mad=no
+      AC_CHECK_HEADERS(mad.h,, using_mad=no)
       AC_CHECK_LIB(mad, mad_stream_buffer, MP3_LIBS="$MP3_LIBS -lmad", using_mad=no)
     fi
     if test "x$using_mad" = "xyes"; then
@@ -565,7 +565,6 @@ AC_ARG_WITH(twolame,
 using_twolame=no
 if test "x$with_twolame" != "xno"; then
     using_twolame=yes
-    AC_CHECK_HEADERS(twolame.h,, using_twolame=no)
     AC_MSG_CHECKING([whether to dlopen twolame])
     AC_ARG_ENABLE(dl_twolame,
       AS_HELP_STRING([--enable-dl-twolame], [Dlopen twolame instead of linking in.]),
@@ -575,6 +574,7 @@ if test "x$with_twolame" != "xno"; then
       AC_DEFINE(DL_TWOLAME, 1, [Define to dlopen() libtwolame.])
     else
       enable_dl_twolame=no
+      AC_CHECK_HEADERS(twolame.h,, using_twolame=no)
       AC_CHECK_LIB(twolame, twolame_init, MP3_LIBS="$MP3_LIBS -ltwolame",using_twolame=no)
     fi
     if test "x$using_twolame" = "xyes"; then
