@@ -10,7 +10,7 @@
 bc < /dev/null || exit 254
 
 # See if SoX was compiled with EBUR128 support
-${sox:-sox} -n -n trim 0 1 stat -e || exit 254
+${sox:-sox} -n -n trim 0 1 stat -e 2> /dev/null || exit 254
 
 # A bc function to return our exit status:
 # 0 if l is within t+m and t+p or 2 if not.
