@@ -78,12 +78,12 @@ ${sox:-sox} -n 2.wav synth 20 sine 1000 vol -28d
 ${sox:-sox} -n 3.wav synth 20 sine 1000 vol -24d
 ${sox:-sox} -n 4.wav synth 20 sine 1000 vol -30d
 ${sox:-sox} -n 5.wav synth 20 sine 1000 vol -30d
-out=`${sox:-sox} --combine merge {1,2,3,4,5}.wav -n stat -e 2>&1`
+out=`${sox:-sox} --combine merge [12345].wav -n stat -e 2>&1`
 check 6-5channel "$out" I -23 -.1 .1
 
 # 6, 6-channel
 ${sox:-sox} -n 0.wav synth 20 sine 1000 vol 0
-out=`${sox:-sox} --combine merge {1,2,3,0,4,5}.wav -n stat -e 2>&1`
+out=`${sox:-sox} --combine merge [123].wav 0.wav [45].wav -n stat -e 2>&1`
 check 6-6channel "$out" I -23 -.1 .1
 
 # 9
