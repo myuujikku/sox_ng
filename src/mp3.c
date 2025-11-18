@@ -750,14 +750,12 @@ static int sox_mp3seek(sox_format_t * ft, sox_uint64_t offset)
 
 
 #ifndef HAVE_MAD
-static int startread(sox_format_t * ft)
-{
-  lsx_fail_errno(ft,SOX_EOF,"SoX was compiled without MP3 decoding support");
-  return SOX_EOF;
-}
+
+#define startread NULL
 #define sox_mp3read NULL
 #define stopread NULL
 #define sox_mp3seek NULL
+
 #endif /* !HAVE_MAD */
 
 #ifdef HAVE_LAME
@@ -1350,13 +1348,11 @@ static int stopwrite(sox_format_t * ft)
 }
 
 #else /* !(HAVE_LAME || HAVE_TWOLAME) */
-static int startwrite(sox_format_t * ft UNUSED)
-{
-  lsx_fail_errno(ft,SOX_EOF,"SoX was compiled with neither MP2 nor MP3 encoding support");
-  return SOX_EOF;
-}
+
+#define startwrite NULL
 #define sox_mp3write NULL
 #define stopwrite NULL
+
 #endif /* HAVE_LAME || HAVE_TWOLAME */
 
 /* MAD can tell the difference between Layer 1 and Layer 2 but decodes them both
