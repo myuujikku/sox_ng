@@ -287,7 +287,7 @@ static int sox_stat_stop(sox_effect_t * effp)
   double amp, scale, rms = 0, freq;
   double ct;
 #if HAVE_EBUR128_H
-  double momentary, short_term, integrated, true_peak;
+  double momentary, short_term, integrated, true_peak = -INFINITY;
 #endif
 
   ct = stat->read;
@@ -327,7 +327,6 @@ static int sox_stat_stop(sox_effect_t * effp)
       unsigned int channel;
       double loudness;
 
-      true_peak = -INFINITY;
       for (channel = 0; channel < effp->in_signal.channels; channel++)
         if (ebur128_true_peak(stat->ebur128_state, channel, &loudness)
             == EBUR128_SUCCESS && loudness > true_peak)
