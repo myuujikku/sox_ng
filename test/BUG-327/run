@@ -9,8 +9,9 @@
 # OK
 
 # Check SoX was compiled with mp3 support
-${sox:-sox} | grep "AUDIO FILE FORMATS" | grep -q ' mp3' || exit 254
-# Doesn't work if it was compiled with lame but not libmad, but that's rare.
+${sox:-sox} --help-format mp3 || exit 254
+# Check SoX was compiled with mp3 decoding support
+${sox:-sox} --help-format mp3 | grep -q "Reads: yes" || exit 254
 
 rm -f core core.*
 
