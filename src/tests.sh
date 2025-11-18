@@ -16,6 +16,11 @@ fi
 # The timing tests do not succeed/fail and barf if /usr/bin/time isn't.
 timeio=false
 
+# Which tests should we perform?
+mono=false
+stereo=false
+multi=true
+
 # Set options & allow user to override paths.  Useful for testing an
 # installed sox_ng.
 while [ $# -ne 0 ]; do
@@ -30,7 +35,26 @@ while [ $# -ne 0 ]; do
         ;;
 
         -a)      # Perform each test up to 3 times with different #s of
-        all=all  # channels; probably enough coverage without this though.
+        stereo=true
+        multi=true
+        ;;
+
+        -1)      # do only mono tests
+        mono=true
+        stereo=false
+        multi=false
+        ;;
+
+        -2)      # do only stereo tests
+        mono=false
+        stereo=true
+        multi=false
+        ;;
+
+        -3)      # do only nultichannel tests
+        mono=false
+        stereo=false
+        multi=true
         ;;
 
         -t)
@@ -252,23 +276,25 @@ skip_check caf flac mat4 mat5 paf w64 wv
 rate=44100
 samples=23493
 
-channels=3 
-do_multichannel_formats
-
-channels=2 
-if [ "$all" = "all" ]; then
+if $multi; then
+  channels=3 
   do_multichannel_formats
 fi
-do_twochannel_formats
-format1=cdda         # 2-channel only
-convertToAndFrom s16 u24 aiff
 
-channels=1 
-if [ "$all" = "all" ]; then
+if $stereo; then
+  channels=2 
   do_multichannel_formats
   do_twochannel_formats
+  format1=cdda         # 2-channel only
+  convertToAndFrom s16 u24 aiff
 fi
-do_singlechannel_formats
+
+if $mono; then
+  channels=1 
+  do_multichannel_formats
+  do_twochannel_formats
+  do_singlechannel_formats
+fi
 
 if false; then # needs skip & dir work for general use
 ${srcdir}/test-comments
