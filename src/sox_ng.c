@@ -2104,13 +2104,14 @@ static void usage(void)
   printf("EFFECT OPTIONS: effect dependent; see --help-effect\n");
 }
 
-static void usage_effect(char const * name)
+static int usage_effect(char const * name)
 {
   size_t i;
 
   if (strcmp("all", name) && !sox_find_effect(name)) {
     printf("Cannot find an effect called `%s'.\n", name);
     display_supported_effects();
+    return SOX_EOF;
   }
   else {
     sox_bool first = sox_true;
@@ -2135,7 +2136,7 @@ static void usage_effect(char const * name)
       }
     }
   }
-  exit(1);
+  return SOX_SUCCESS;
 }
 
 static void usage_format1(sox_format_handler_t const * f)
@@ -2203,7 +2204,7 @@ static void usage_format1(sox_format_handler_t const * f)
   else puts("Writes: no");
 }
 
-static void usage_format(char const * name)
+static int usage_format(char const * name)
 {
   sox_format_handler_t const * f;
   unsigned i;
@@ -2212,10 +2213,11 @@ static void usage_format(char const * name)
     if (!(f = sox_find_format(name, sox_false))) {
       printf("Cannot find a format called `%s'.\n", name);
       display_supported_formats();
+      return SOX_EOF;
+    } else {
+      usage_format1(f);
     }
-    else usage_format1(f);
-  }
-  else {
+  } else {
     sox_bool first = sox_true;
 
     for (i = 0; sox_format_fns[i].fn; ++i) {
@@ -2227,7 +2229,7 @@ static void usage_format(char const * name)
       }
     }
   }
-  exit(1);
+  return SOX_SUCCESS;
 }
 
 static void read_comment_file(sox_comments_t * comments, char const * const filename)
@@ -2466,8 +2468,8 @@ static char parse_gopts_and_fopts(file_t * f)
         lsx_fail("interactive mode was not enabled at compile time");
         exit(1); break;
 #endif
-      case 8: usage_effect(optstate.arg); break;
-      case 9: usage_format(optstate.arg); break;
+      case 8: exit(usage_effect(optstate.arg) == SOX_SUCCESS ? 0 : 1); break;
+      case 9: exit(usage_format(optstate.arg) == SOX_SUCCESS ? 0 : 1); break;
       case 10: f->no_glob = sox_true; break;
       case 11:
         sox_effects_globals.plot = enum_option(optstate.arg, optstate.lngind, plot_methods);
