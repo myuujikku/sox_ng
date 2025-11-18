@@ -16,7 +16,7 @@ rm -f core core.* sweep.wav spectrogram.png
 ${sox:-sox} 2>&1 | grep -q '^EFFECTS:.*spectrogram' || exit 254
 
 # Make a swept sinusoid
-${sox:-sox} -D -n -b 16 -e signed sweep.wav synth 10 sine 27.5/14080
+${sox:-sox} -D -n -b 16 -e signed sweep.wav synth 1 sine 27.5/14080
 
 ${sox:-sox} sweep.wav -n spectrogram -x 1001   # Should not SEGV
 status=$?
