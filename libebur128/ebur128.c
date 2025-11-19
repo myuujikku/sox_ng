@@ -10,12 +10,13 @@
 
 #include "../src/soxconfig.h"
 
-/* This can be replaced by any BSD-like queue implementation. */
-#if HAVE_SYS_QUEUE_H
-# include <sys/queue.h>
-#else
-# include "queue.h"
-#endif
+/* Most systems have <sys/queue.h> but AIX 7.3 has one that defines the
+ * doubly-linked list macros (TAILQ_*) but not the singly-linked ones used here
+ * (STAILQ_*) and there seems to be no way for configure.ac to check
+ * whether a function macro is defined or not, only constants,
+ * so include the local version unconditionally.
+ */
+#include "queue.h"
 
 #define CHECK_ERROR(condition, errorcode, goto_point)                          \
   if ((condition)) {                                                           \
