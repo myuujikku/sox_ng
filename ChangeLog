@@ -5,8 +5,8 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
-sox_ng-14.6.1+git
------------------
+sox_ng-14.7.0	2025-11-18
+-------------
 
 New features:
 
@@ -29,7 +29,9 @@ Effects:
   o stretch: Add sqrt, quarter-cos and half-cos fading types
 
 Formats:
-  o mp2: Enable VBR encoding with -C -10-10
+  o mp3: Recognize mp1 and mp2 as separate formats
+  o mp2 encoding: Enable VBR encoding with -C -10-10
+  o mp2 encoding: Upsample rates lower than 16k instead of failing
   o mp2/mp3: Mix 3 or more channels down to stereo instead of failing
   o wav: Decode the names of unsupported formats instead of spouting hex codes
 
@@ -60,6 +62,7 @@ Internal:
 
   o Allow ./configure --without-dolbyb
   o Fix ./configure --with-dyn-default for amr, lame, mad, twolame and sndfile
+  o Add ./configure --enable-dl-speexdsp
   o Fix issues/issues.sh for http:// remotes and on FreeBSD
   o Add automatic "make win32.exe/win64.exe" rules using MXE
   o Make test/twx-wav-byte-rate not fail on 64-bit machines
