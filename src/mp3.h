@@ -23,6 +23,8 @@
  * libsox, so here "mp3" refers to the plugin's name, not the file format.
  */
 
+/* Callers should already have included sox_i.h */
+
 #if !HAVE_LIBLTDL
   #undef DL_MAD
   #undef DL_LAME
