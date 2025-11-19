@@ -1559,7 +1559,8 @@ static sox_bool plugins_initted = sox_false;
   #define MAX_DYNAMIC_FORMATS 42
   #define MAX_FORMATS (NSTATIC_FORMATS + MAX_DYNAMIC_FORMATS)
   #define MAX_FORMATS_1 (MAX_FORMATS + 1)
-  #define MAX_NAME_LEN (size_t)1024 /* FIXME: Use vasprintf */
+  #define MAX_NAME_LEN (size_t)32 /* To contain "lsx_%s_format_fn" */
+                                  /* FIXME: Use vasprintf */
 #else
   #define MAX_FORMATS_1
 #endif
@@ -1603,11 +1604,43 @@ sox_get_format_fns(void)
             fnname, (void *)lth, ltptr.ptr);
         if (ltptr.fn && (ltptr.fn()->sox_lib_version_code & ~255) ==
             (SOX_LIB_VERSION_CODE & ~255)) { /* compatible version check */
-          if (nformats == MAX_FORMATS) {
-            lsx_warn("too many plugin formats");
-            return -1;
+          {
+            sox_format_handler_t const * handler = ltptr.fn();
+            char const *const *namep;
+
+            /* For formats like sndfile and ffmpeg that have many
+             * format handlers, register the format-specific ones
+             * before the generic one so that, when sox_find_format() seeks
+             * a handler for a filename extension, it finds the specific
+             * one before the generic one.
+             */
+            for (namep = handler->names + 1; *namep; namep++) {
+              /* Local version so as not to overwrite the one above */
+              union {sox_format_fn_t fn; lt_ptr ptr;} ltptr;
+              char name[MAX_NAME_LEN];
+
+              sprintf(name, "lsx_%s_format_fn", *namep);
+              ltptr.ptr = lt_dlsym(lth, name);
+              if (ltptr.fn) {
+                if (nformats == MAX_FORMATS) {
+                  lsx_warn("too many plugin formats");
+                  return -1;
+                }
+                s_sox_format_fns[nformats].name = *namep;
+                s_sox_format_fns[nformats].fn = ltptr.fn;
+                nformats++;
+              }
+            }
+            /* Register the generic format handler last so that the
+             * format-specific ones take precedence over it */
+            if (nformats == MAX_FORMATS) {
+              lsx_warn("too many plugin formats");
+              return -1;
+            }
+            s_sox_format_fns[nformats].name = handler->names[0];
+            s_sox_format_fns[nformats].fn = ltptr.fn;
+            nformats++;
           }
-          s_sox_format_fns[nformats++].fn = ltptr.fn;
         }
       }
     }

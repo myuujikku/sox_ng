@@ -1388,7 +1388,13 @@ LSX_FORMAT_HANDLER(mp2)
 
 LSX_FORMAT_HANDLER(mp3)
 {
-  static char const * const names[] = {"mp3", NULL};
+  /* "mp3" is both the name of a dynamic format handler plugin and
+   * a filename extension and to load the above two handlers --with-mp3=dyn
+   * they must be listed here because init_format() relies on that to guess
+   * the symbol names of lsx_mp[12]_format_fn() and "mp3", the one that
+   * corresponds to the symbol name of this handler, must come first.
+   */
+  static char const * const names[] = {"mp3", "mp2", "mp1", NULL};
   static unsigned const write_encodings[] = {
     SOX_ENCODING_MP3, 0, 0};
   static sox_rate_t const write_rates[] = {

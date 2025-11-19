@@ -1524,7 +1524,7 @@ function pointer that can be invoked to get additional information about the
 format.
 */
 typedef struct sox_format_tab {
-  char *name;         /**< Name of format handler */
+  char const *name;         /**< Name of format handler */
   sox_format_fn_t fn; /**< Function to call to get format handler's information */
 } sox_format_tab_t;
 

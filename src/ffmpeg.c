@@ -128,6 +128,12 @@ LSX_FORMAT_HANDLER(ffmpeg)
 {
   static char const * const names[] = {
     "ffmpeg", /* Special type to force use of ffmpeg */
+    /* Names of the format-specific handlers below */
+    "3g2", "3gp", "aac", "ac3", "adts", "adx", "ape", "apm", "aptx", "argo_asf",
+    "asf", "ast", "avi", "dfpwm", "dts", "eac3", "f4v", "flv", "gxf", "ism",
+    "kvag", "m4a", "m4v", "mkv", "mlp", "mov", "mp4", "mpeg", "mpegts",
+    "mxf_opatom", "nut", "oga", "ra", "rm", "rso", "sbc", "smjpeg", "spdif",
+    "spx", "tta", "vag", "wma", "wsaud", "wtv",
     NULL
   };
   static sox_format_handler_t handler;
