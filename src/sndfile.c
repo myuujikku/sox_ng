@@ -546,23 +546,25 @@ static int seek_sndfile(sox_format_t * ft, sox_uint64_t offset)
 LSX_FORMAT_HANDLER(sndfile)
 {
   static char const * const names[] = {
-    "sndfile", /* Special type to force use of sndfile for the following: */
-  /* LSF implementation of formats built in to SoX: */
-    /* "aif", */
-    /* "au", */
-    /* "gsm", */
-    /* "mp3", */
-    /* "nist", */
-    /* "raw", */
-    /* "sf", "ircam", */
-    /* "snd", */
-    /* "svx", */
-    /* "voc", */
-    /* "vox", */
-    /* "wav", */
-    /* "wve", */
-  /* LSF wrappers of formats already wrapped in SoX: */
-    /* "flac", */
+    /* Special type to force use of sndfile for
+     * LSF implementation of formats built in to SoX:
+     * aif, au, gsm, mp3, nist, raw, sf/ircam, snd, svx, voc, vox, wav, wve
+     * and LSF wrappers of formats already wrapped in SoX: flac */
+    "sndfile",
+    /* formats that have their own handlers below */
+    "caf",
+    "fap",
+    "mat4",
+    "mat5",
+    "mpc2k",
+    "paf",
+    "pvf",
+    "sd2",
+    "sds",
+    "w64",
+    "xi",
+    /* Other formats that it can code */
+    "mp1", "mp2",
     NULL
   };
 
