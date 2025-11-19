@@ -1,4 +1,4 @@
-sox-ng (14.7.0) UNRELEASED; urgency=low
+sox-ng (14.7.0+git) UNRELEASED; urgency=low
 
   * First reinclusion of debian/ in sox_ng
 
