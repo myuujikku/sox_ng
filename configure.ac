@@ -975,7 +975,7 @@ fi
 echo "flac.......................$using_flac"
 echo "gsm........................$using_gsm $gsm_option"
 echo "lpc10......................$using_lpc10 $lpc10_option"
-echo "mp2/mp3....................$using_mp3"
+echo "mp1/mp2/mp3................$using_mp3"
 echo " id3tag....................$using_id3tag"
 echo " lame......................$using_lame"
 if test "x$using_lame" = "xyes"; then
