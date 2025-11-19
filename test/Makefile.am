@@ -1,13 +1,13 @@
 EXTRA_DIST = samples.c
 
-CLEANFILES = samples$(EXE) samples.o
+CLEANFILES = samples$(EXEEXT) samples.o
 
-samples$(EXE): samples.c
-	$(CC) -o samples$(EXE) samples.c
+samples$(EXEEXT): samples.c
+	$(CC) -o samples$(EXEEXT) samples.c
 
-check-am: samples$(EXE)
+check-am: samples$(EXEEXT)
 	sox=../../src/sox_ng sh $(srcdir)/check.sh -n
 
 dist-hook:
-	rm -f $(distdir)/samples$(EXE) $(distdir)/samples.o
+	rm -f $(distdir)/samples$(EXEEXT) $(distdir)/samples.o
 	rm -rf $(distdir)/.deps
