@@ -134,6 +134,8 @@ LSX_FORMAT_HANDLER(ffmpeg)
     "kvag", "m4a", "m4v", "mkv", "mlp", "mov", "mp4", "mpeg", "mpegts",
     "mxf_opatom", "nut", "oga", "ra", "rm", "rso", "sbc", "smjpeg", "spdif",
     "spx", "tta", "vag", "wma", "wsaud", "wtv",
+    /* Other audio filename extensions that ffmpeg can decode */
+    "aa", "ea", "flv", "w64", "wav",
     NULL
   };
   static sox_format_handler_t handler;
@@ -151,8 +153,11 @@ LSX_FORMAT_HANDLER(ffmpeg)
   return &handler;
 }
 
-/* All the formats ffmpeg handles that sox doesn't otherwise,
- * created with yet more macros because there are too many! */
+/* All the formats that ffmpeg handles that sox doesn't otherwise,
+ * created with yet more macros because there are too many!
+ * This lets us add a description for --help-format and
+ * lets us autodetect them from their header contents in formats.c
+ */
 
 /* For example, the three "3gp" macros expand to: */
 #if 0
@@ -188,6 +193,10 @@ FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(3gp) "3gp", "3gpp"
 FFMPEG_DESCRIPTION "Third Generation Partnership Project"
+FFMPEG_ENDFORMAT
+
+FFMPEG_FORMAT(aa) "aa"
+FFMPEG_DESCRIPTION "Audible Format 2, 3 and 4"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(aac) "aac"

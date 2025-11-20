@@ -131,6 +131,9 @@ static char const * auto_detect_format(sox_format_t * ft, char const * ext)
   CHECK(3gp   , 0, 0, ""     , 4,  8, "ftyp3gp6")
   CHECK(3gp   , 0, 0, ""     , 4,  8, "ftyp3gp4")
   CHECK(3gp   , 0, 0, ""     , 4,  6, "ftyp3g")
+  /* aa: libavformat/aadec.c says #define AA_MAGIC 1469084982 at offset 4;
+   *     we assume here that it's little-endian */
+  CHECK(aa    , 0, 0, ""     , 4,  4, "\x36\x75\x90\x57")
   CHECK(aac   , 0, 0, ""     , 0,  2, "\xFF\xF1")
   CHECK(aac   , 0, 0, ""     , 0,  2, "\xFF\xF9")
   CHECK(ac3   , 0, 0, ""     , 0,  2, "\x0B\x77")
