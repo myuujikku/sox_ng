@@ -15,9 +15,8 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-/* Declarations for callers of mp3-mad.c */
+/* Declarations for callers of mp3-lame.c */
 
-extern int startread_mad(sox_format_t *ft);
-extern size_t read_mad(sox_format_t *ft, sox_sample_t *buf, size_t len);
-extern int seek_mad(sox_format_t * ft, sox_uint64_t offset);
-extern int stopread_mad(sox_format_t *ft);
+extern int startwrite_lame(sox_format_t * ft);
+extern size_t write_lame(sox_format_t *ft, const sox_sample_t *buf, size_t len);
+extern int stopwrite_lame(sox_format_t * ft);
