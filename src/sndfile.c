@@ -202,14 +202,15 @@ static struct {
   { "ogg",      SF_FORMAT_OGG | SF_FORMAT_VORBIS },  /* From 1.0.16 */
 #endif
 #ifdef HAVE_SF_FORMAT_MPC2K
+  { "mpc",      SF_FORMAT_MPC2K },  /* From 1.0.25 */
   { "mpc2k",    SF_FORMAT_MPC2K },  /* From 1.0.25 */
 #endif
 #ifdef HAVE_SF_FORMAT_MPEG
   { "mp2",      SF_FORMAT_MPEG | SF_FORMAT_MPEG_LAYER_II },  /* From 1.1.0 */
   { "mp3",      SF_FORMAT_MPEG | SF_FORMAT_MPEG_LAYER_III },  /* From 1.1.0 */
 #endif
-  { "svx",      SF_FORMAT_SVX },
-  { "8svx",     SF_FORMAT_SVX },
+  { "svx",      SF_FORMAT_SVX | SF_FORMAT_PCM_S8 },
+  { "8svx",     SF_FORMAT_SVX | SF_FORMAT_PCM_S8 },
   { "paf",      SF_ENDIAN_BIG | SF_FORMAT_PAF },
   { "fap",      SF_ENDIAN_LITTLE | SF_FORMAT_PAF },
   { "gsm",      SF_FORMAT_RAW | SF_FORMAT_GSM610 },

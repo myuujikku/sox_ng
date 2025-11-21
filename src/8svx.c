@@ -359,7 +359,7 @@ static int svxwriteheader(sox_format_t * ft, size_t nsamples)
 
 LSX_FORMAT_HANDLER(svx)
 {
-  static char const * const names[] = {"8svx", NULL};
+  static char const * const names[] = {"8svx", "svx", NULL};
   static unsigned const write_encodings[] = {SOX_ENCODING_SIGN2, 8, 0, 0};
   static sox_format_handler_t const handler = {SOX_LIB_VERSION_CODE,
     "Amiga audio format (a subformat of the Interchange File Format)",
