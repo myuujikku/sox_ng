@@ -5,6 +5,14 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
+sox_ng-14.7.0+git
+-----------------
+
+  o Source file mp3.c has split into mad.c, lame.c and twolame.c
+    and nasty mp3-util.h has gone
+  o Add format names mpc and svx for mpc2k and 8svx
+    which is what sndfile-convert calls them
+
 sox_ng-14.7.0	2025-11-18
 -------------
 
