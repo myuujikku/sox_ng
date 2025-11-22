@@ -270,13 +270,23 @@ static int stopwrite_maud(sox_format_t * ft)
         mdat_size = p->nsamples * (ft->encoding.bits_per_sample >> 3);
         lsx_padbytes(ft, (size_t) (mdat_size%2));
 
-        if (lsx_seeki(ft, (off_t)0, 0) != 0)
+        /* memopen()ed files truncate at the seek position when fclose()d
+         * and fseek(SEEK_END) doesn't work on them, so remember the current
+         * size and seek back to it.
+         */
         {
+          off_t o = ftell(ft->fp);
+          int result;
+
+          if (lsx_seeki(ft, (off_t)0, 0) != 0)
+          {
             lsx_fail_errno(ft,errno,"can't rewind output file to rewrite header");
             return(SOX_EOF);
+          }
+          result = maudwriteheader(ft);
+          fseek(ft->fp, o, SEEK_SET);
+          return result;
         }
-
-        return(maudwriteheader(ft));
 }
 
 static const char write_error_msg[] = "write error";

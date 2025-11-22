@@ -381,11 +381,20 @@ static int stopwrite_tx16w(sox_format_t * ft)
     WH.rpt_length[2] = (0x01 & (LoopLength >> 16)) +
         magic2[WH.sample_rate];
 
-    lsx_rewind(ft);
-    if (lsx_writebuf(ft, &WH, (size_t) 32) != 32)
-        write_error();
+    /* If a memopen()ed file is closed with the seek pointer before the end,
+     * the file gets truncated and fseek(SEEK_END) doesn't work, so
+     * remember the length, rewrite the header and seek to the end again.
+     */
+    {
+        off_t o = ftell(ft->fp);
 
-    return(SOX_SUCCESS);
+        lsx_rewind(ft);
+        if (lsx_writebuf(ft, &WH, (size_t) 32) != 32)
+            write_error();
+        fseek(ft->fp, o, SEEK_SET);
+
+        return(SOX_SUCCESS);
+    }
 }
 
 LSX_FORMAT_HANDLER(txw)

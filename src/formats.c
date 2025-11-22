@@ -1257,7 +1257,11 @@ static sox_format_t * open_write(
       lsx_fail("can't set write buffer");
       goto error;
     }
-    ft->seekable = is_seekable(ft);
+    if (buffer || buffer_ptr) {
+      /* Memory buffers are always seekable */
+      ft->seekable = sox_true;
+    } else
+      ft->seekable = is_seekable(ft);
   }
 
   ft->filetype = lsx_strdup(filetype);
@@ -1383,11 +1387,25 @@ int sox_close(sox_format_t * ft)
           putc('\0', (FILE *)ft->fp);
         ft->last_byte_was_zero = sox_false;
       }
+      /* If the handler wrote a header before calling the rawwrite functions,
+       * seek back to 0 and call startwrite() again to update the header.
+       *
+       * For memopen()ed files, we need to preserve the current offset
+       * otherwise it gets truncated to the new length,
+       */
+
       if (ft->olength != ft->signal.length && ft->seekable) {
+        off_t o = ftell(ft->fp);
         result = lsx_seeki(ft, (off_t)0, 0);
-        if (result == SOX_SUCCESS)
-          result = ft->handler.stopwrite? (*ft->handler.stopwrite)(ft)
-             : ft->handler.startwrite?(*ft->handler.startwrite)(ft) : SOX_SUCCESS;
+        if (result == SOX_SUCCESS) {
+          if (ft->handler.stopwrite) {
+            result = (*ft->handler.stopwrite)(ft);
+          } else if (ft->handler.startwrite) {
+            result = (*ft->handler.startwrite)(ft);
+          } else
+            result = SOX_SUCCESS;
+        }
+        fseek(ft->fp, o, SEEK_SET);
       }
     } else {
       result = ft->handler.stopwrite? (*ft->handler.stopwrite)(ft) : SOX_SUCCESS;
