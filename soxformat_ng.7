@@ -848,9 +848,7 @@ Sony PS2 VAG format.
 .B .txw
 TXW is a file format from the Yamaha TX-16W sampling keyboard which wrote
 samples onto IBM/PC-format 3\*d5\(dq floppies at sample rates of 16kHz,
-33kHz and 50kHz, all exact divisors of 100kHz. When decoded to WAV files
-or other formats that only represent integer sample rates, it is declared
-as 16667 and 33333 but in WAV files the byte rate field is wrong at 66667.
+33kHz and 50kHz, all exact divisors of 100kHz.
 .SP
 SoX handles reading of files which do not have the sample rate field set
 to one of the expected rates by looking at some other bytes
