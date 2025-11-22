@@ -167,9 +167,16 @@ static int stop_write(sox_format_t * ft)
   }
   if (ft->seekable && WavpackGetNumSamples(p->codec) != WavpackGetSampleIndex(p->codec) && p->first_block_size >= 4) {
     char * buf = lsx_malloc(p->first_block_size);
+    /* If you fseek() in a mamopened stream then fclose() it, the length
+     * is reported as the seek offset and fseek(SEEK_END) doesn't work so
+     * remember the current offset and seek back to it.
+     */
+    off_t o = ftell(ft->fp);
+
     lsx_rewind(ft);
     if (lsx_readchars(ft, buf, p->first_block_size)) {
       lsx_fail_errno(ft, SOX_EOF, "cannot reread header");
+      free(buf);
       return SOX_EOF;
     }
     if (!memcmp(buf, "wvpk", (size_t)4)) {
@@ -177,9 +184,11 @@ static int stop_write(sox_format_t * ft)
       lsx_rewind(ft);
       if (lsx_writebuf(ft, buf, p->first_block_size) != p->first_block_size) {
         lsx_fail_errno(ft, SOX_EOF, "cannot rewrite header");
+        free(buf);
         return SOX_EOF;
       }
     }
+    fseek(ft->fp, o, SEEK_SET);
     free(buf);
   }
   p->codec = WavpackCloseFile(p->codec);

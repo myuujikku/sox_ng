@@ -692,12 +692,24 @@ int lsx_aiffstopwrite(sox_format_t * ft)
             lsx_fail_errno(ft,SOX_EOF,"non-seekable file");
             return(SOX_EOF);
         }
-        if (lsx_seeki(ft, (off_t)0, SEEK_SET) != 0)
         {
+          /* When using open_memstream(), seeking back and closing truncates
+           * the buffer to the new offset and fseek(SEEK_END) doesn't work so
+           * remember the actual length, rewrite the header and then seek back
+           * to where we were.
+           */
+          off_t o = ftell(ft->fp);
+          int result;
+
+          if (lsx_seeki(ft, (off_t)0, SEEK_SET) != 0)
+          {
                 lsx_fail_errno(ft,errno,"can't rewind output file to rewrite header");
                 return(SOX_EOF);
+          }
+          result = aiffwriteheader(ft, ft->olength / ft->signal.channels);
+          fseek(ft->fp, o, SEEK_SET);
+          return result;
         }
-        return(aiffwriteheader(ft, ft->olength / ft->signal.channels));
 }
 
 static int write_mark_and_inst_chunks(sox_format_t * ft)
@@ -899,12 +911,25 @@ int lsx_aifcstopwrite(sox_format_t * ft)
             lsx_fail_errno(ft,SOX_EOF,"non-seekable file");
             return(SOX_EOF);
         }
-        if (lsx_seeki(ft, (off_t)0, SEEK_SET) != 0)
+
+        /* When using open_memstream(), seeking back and closing truncates
+         * the buffer to the new offset and fseek(SEEK_END) doesn't work either
+         * so remember the actual length, rewrite the header and then seek back
+         * to where we were.
+         */
         {
+          off_t o = ftell(ft->fp);
+          int result;
+
+          if (lsx_seeki(ft, (off_t)0, SEEK_SET) != 0)
+          {
                 lsx_fail_errno(ft,errno,"can't rewind output file to rewrite header");
                 return(SOX_EOF);
+          }
+          result = aifcwriteheader(ft, ft->olength / ft->signal.channels);
+          fseek(ft->fp, o, SEEK_SET);
+          return result;
         }
-        return(aifcwriteheader(ft, ft->olength / ft->signal.channels));
 }
 
 static int aifcwriteheader(sox_format_t * ft, uint64_t nframes)

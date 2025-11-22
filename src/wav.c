@@ -2015,13 +2015,25 @@ static int stopwrite_wav(sox_format_t * ft)
         if (!ft->seekable)
           return SOX_EOF;
 
-        if (lsx_seeki(ft, (off_t)0, SEEK_SET) != 0)
-        {
+        /* When using open_memstream(), seeking back and closing truncates
+         * the buffer to the new offset and fseek(SEEK_END) doesn't work either
+         * so remember the actual length, rewrite the header and then seek back
+         * to where we were.
+         */
+        { off_t o = ftell(ft->fp);
+          int result;
+
+          if (lsx_seeki(ft, (off_t)0, SEEK_SET) != 0)
+          {
                 lsx_fail_errno(ft,SOX_EOF,"can't rewind output file to rewrite header");
                 return SOX_EOF;
-        }
+          }
+          result = wavwritehdr(ft, 1);
 
-        return (wavwritehdr(ft, 1));
+          fseek(ft->fp, o, SEEK_SET);
+
+          return result;
+        }
 }
 
 /*

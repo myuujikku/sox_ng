@@ -426,11 +426,22 @@ static int stopwrite_prc(sox_format_t * ft)
       return SOX_SUCCESS;
   }
 
-  if (lsx_seeki(ft, (off_t)0, 0) != 0) {
+  /* Seeking in a memopened file truncates it at the seek position when it's
+   * closed and fseek(SEEK:END) doesn't work either so remember the length
+   * and seek back to it after rewriting the header.
+   */
+  {
+    off_t o = ftell(ft->fp);
+    int result;
+
+    if (lsx_seeki(ft, (off_t)0, 0) != 0) {
       lsx_fail_errno(ft,errno,"can't rewind output file to rewrite header");
       return(SOX_EOF);
+    }
+    result = prcwriteheader(ft);
+    fseek(ft->fp, o, SEEK_SET);
+    return result;
   }
-  return prcwriteheader(ft);
 }
 
 static int prcwriteheader(sox_format_t * ft)
