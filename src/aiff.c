@@ -563,13 +563,13 @@ static int commentChunk(char **text, char *chunkDescription, sox_format_t * ft)
   uint32_t timeStamp;
   unsigned short markerId;
   unsigned short totalCommentLength = 0;
-  unsigned int totalReadLength = 0;
+  unsigned int totalReadLength = 2; /* chunksize doesn't count */
   unsigned int commentIndex;
 
   if (lsx_readdw(ft, &chunksize) ||
       lsx_readw(ft, &numComments))
     return SOX_EOF;
-  totalReadLength += 2; /* chunksize doesn't count */
+  *text = NULL;
   for(commentIndex = 0; commentIndex < numComments; commentIndex++) {
     unsigned short commentLength;
 
@@ -583,12 +583,7 @@ static int commentChunk(char **text, char *chunkDescription, sox_format_t * ft)
     }
     totalCommentLength += commentLength;
     /* allocate enough memory to hold the text including a terminating \0 */
-    if(commentIndex == 0) {
-      *text = lsx_malloc((size_t) totalCommentLength + 1);
-    }
-    else {
-      *text = lsx_realloc(*text, (size_t) totalCommentLength + 1);
-    }
+    *text = lsx_realloc(*text, (size_t) totalCommentLength + 1);
 
     if (lsx_readbuf(ft, *text + totalCommentLength - commentLength, (size_t) commentLength) != commentLength) {
         lsx_fail_errno(ft,SOX_EOF,"unexpected EOF in %s header", chunkDescription);
