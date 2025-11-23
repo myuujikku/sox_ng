@@ -475,25 +475,31 @@ static void set_endiannesses(sox_format_t * ft)
 static sox_bool is_seekable(sox_format_t const * ft)
 {
   struct stat st;
-  int fd, seekable;
+  int seekable;
+  FILE *fp;
 
   assert(ft);
   if (!ft->fp)
     return sox_false;
-  fd = fileno((FILE*)ft->fp);
-  if (fd < 0)
-     return 0;
-  fstat(fd, &st);
-  seekable = ((st.st_mode & S_IFMT) == S_IFREG);
+  fp = (FILE*)ft->fp;
+  seekable = !fseek(fp, 0, SEEK_CUR);
+
 #if defined HAVE_POSIX_FADVISE && defined POSIX_FADV_SEQUENTIAL
   if (seekable) {
-    /*
-     * POSIX_FADV_NOREUSE can potentially be beneficial, too,
-     * but is a no-op as of Linux 4.2.  Not sure about other kernels.
-     */
-    (void)posix_fadvise(fd, (off_t)0, st.st_size, POSIX_FADV_SEQUENTIAL);
+    int fd = fileno(fp);
+
+    /* open_memstream()ed and fopenmem()ed files are seekable
+     * but don't have a file descriptor */
+    if (fd >= 0 && !fstat(fd, &st)) {
+      /*
+       * POSIX_FADV_NOREUSE can potentially be beneficial, too,
+       * but is a no-op as of Linux 4.2.  Not sure about other kernels.
+       */
+      (void)posix_fadvise(fd, (off_t)0, st.st_size, POSIX_FADV_SEQUENTIAL);
+    }
   }
 #endif
+  errno = 0; /* Clear expected failures */
   return seekable;
 }
 
