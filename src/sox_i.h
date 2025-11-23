@@ -137,7 +137,7 @@ void lsx_load_samples(double * const dest, sox_sample_t const * const src,
 
 
 
-/*------------------------ Implemented in libsoxio.c -------------------------*/
+/*----------------------- Implemented in formats_i.c -----------------------*/
 
 /* Read and write basic data types from "ft" stream. */
 size_t lsx_readbuf(sox_format_t * ft, void *buf, size_t len);
