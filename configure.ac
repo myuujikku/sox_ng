@@ -724,8 +724,6 @@ esac
 AC_OPTIONAL_FORMAT(flac, FLAC, [AC_CHECK_HEADER(FLAC/all.h, [AC_CHECK_DECL(FLAC_API_VERSION_CURRENT, [AC_CHECK_LIB(FLAC, FLAC__stream_encoder_new, FLAC_LIBS="-lFLAC $FLAC_LIBS $OGG_VORBIS_LIBS",using_flac=no, $FLAC_LIBS $OGG_VORBIS_LIBS)], using_flac=no, [#include <FLAC/all.h>])], using_flac=no)], using_flac=no)
 
 
-dnl When enable_dl_amrbw, do not let add libraries to be linked in
-dnl since they will be dlopen()'ed instead.
 ac_sox_save_AMRWB_LIBS="$AMRWB_LIBS"
 tmp_using_amrwb=$opt_default
 AC_CHECK_HEADERS(opencore-amrwb/dec_if.h,
@@ -751,8 +749,6 @@ else
 fi
 AC_OPTIONAL_FORMAT(amrwb, AMRWB, [if test "x$tmp_using_amrwb" = "xno"; then using_amrwb=no; fi])
 
-dnl When enable_dl_amrnb, do not let add libraries to be linked in
-dnl since they will be dlopen()'ed instead.
 ac_sox_save_AMRNB_LIBS="$AMRNB_LIBS"
 tmp_using_amrnb=$opt_default
 AC_CHECK_HEADERS(opencore-amrnb/interf_dec.h, 
