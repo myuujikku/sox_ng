@@ -211,10 +211,10 @@ size_t lsx_readbuf_rewind(sox_format_t * ft, void *buf, size_t len)
     ft->pending_bytes = ft->pending_buffer = lsx_malloc(bytes_read);
     memcpy(ft->pending_bytes, buf, bytes_read);
     ft->pending_count = bytes_read;
-    ft->tell_off = 0;
-  } else
-    lsx_rewind(ft);
+  } else {
+    rewind((FILE *)ft->fp);
   }
+  ft->tell_off = 0;
   return ret;
 }
 
@@ -311,12 +311,7 @@ int lsx_error(sox_format_t * ft)
 
 void lsx_rewind(sox_format_t * ft)
 {
-#ifndef __EMSCRIPTEN__
   rewind((FILE*)ft->fp);
-#else /* emscripten operates in a memory heap */
-    fclose(ft->fp); /* close the memory buffer file */
-    ft->fp = fmemopen(buffer, buffer_size, "rb"); /* open it again */
-#endif
   ft->tell_off = 0;
 }
 
