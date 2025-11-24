@@ -161,6 +161,13 @@ To run `issues/getissues.sh` and the `makehtml.sh` scripts you will need
 pkg install jq multimarkdown
 ```
 
+### MacOS/X
+
+As well as the above, you can also install it with Homebrew:
+```
+brew install sox_ng
+```
+
 ## Accessibility
 
 You can edit and commit to the code and the wiki using Codeberg's web interface
