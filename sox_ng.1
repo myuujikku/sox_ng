@@ -3535,6 +3535,13 @@ Sets the size of the Y axis per channel in pixels; this is the number of
 frequency `bins' used in the Fourier analysis that produces the spectrogram.
 By default the Y axis size is chosen automatically, depending on the
 \fB-Y\fR height and the number of channels, with a minimum of 64.
+.SP
+The DFT size is set to 2\ \(mu\ (\fInum\fR\ \(mi\ 1) and if SoX was compiled
+with FFTW, sizes of
+2^a\ \(mu\ 3^b\ \(mu\ 5^c\ \(mu\ 7^d\ \(mu\ 11^e\ \(mu\ 13^f
+where e\ \(pl\ f\ <\ 2 are said to be fastest. If it wasn't,
+anything other than powers of two is a hundred of times slower
+in which case heights of a power of two plus one will be faster.
 .IP \fB\-Y\ \fInum\fR
 Sets the total height of the spectrogram(s).  The default value
 is 550 pixels and the maximum is a million.

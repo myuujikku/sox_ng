@@ -390,6 +390,101 @@ static void rdft_p(double const * q, double const * in, double * out, int n)
   }
 }
 
+/* What is the nearest power of two to the give size
+ * where "nearest" means of the smallest ratio between them?
+ * Callers should have checked that the given size is
+ * not a power of two.
+ */
+static sox_bool nearest_p2_dft_size(int size)
+{
+  int distance;
+
+  /* Consider the one above as closer as the ratio is smaller.
+   *
+   * higher one if it's geometrically closer to the ideal
+   * not arithmetically
+   */
+  for (distance = 1; ; distance++) {
+    int upper, lower;
+    /*
+     * Consider an upper one before a lower one That way, if they are at the
+     * same logarithmic distance, we to give more resolution instead of less
+     */
+    upper = size + distance;
+    if (is_p2(upper)) return upper;
+    /*
+     * Try a lower one that's the same ratio below size
+     * as size + distance is above it. With the loop this way round,
+     * the ratio between size + distance and size creeps up more slowly than
+     * the ratio between size - distance and size, which is why we loop
+     * linearly on the upper possibility and calculate the lower equivalent.
+     */
+    lower = size / ((float)(size + distance) / (float)size);
+    if (is_p2(lower)) return lower;
+  }
+  /* This can never happen */
+  return size;
+}
+
+#endif /* else part of HAVE_FFTW */
+
+#if HAVE_FFTW
+/*
+ * Helper function: is N a "fast" value for the FFT size?
+ *
+ * We use fftw_plan_r2r_1d() for which the documentation
+ * http://fftw.org/fftw3_doc/Real_002dto_002dReal-Transforms.html says:
+ *
+ * "FFTW is generally best at handling sizes of the form
+ *      2^a 3^b 5^c 7^d 11^e 13^f
+ * where e+f is either 0 or 1, and the other exponents are arbitrary."
+ *
+ * Our FFT size is 2*speclen, but that doesn't affect these calculations
+ * as 2 is an allowed factor and an odd fftsize may or may not work with
+ * the "half complex" format conversion in calc_magnitudes().
+ */
+static sox_bool is_2357(int n);
+
+static sox_bool
+is_good_dft_size(int n)
+{
+    /* It wants n, 11*n, 13*n but not (11*13*n)
+    ** where n only has as factors 2, 3, 5 and 7
+     */
+    if (n % (11 * 13) == 0) return 0; /* No good */
+
+    return is_2357(n) || ((n % 11 == 0) && is_2357(n / 11))
+		      || ((n % 13 == 0) && is_2357(n / 13));
+}
+
+/* Helper function: does N have only 2, 3, 5 and 7 as its factors? */
+static sox_bool
+is_2357(int n)
+{
+    /* Eliminate all factors of 2, 3, 5 and 7 and see if 1 remains */
+    while (n % 2 == 0) n /= 2;
+    while (n % 3 == 0) n /= 3;
+    while (n % 5 == 0) n /= 5;
+    while (n % 7 == 0) n /= 7;
+    return (n == 1);
+}
+
+/* What's the nearest DFT size to this that will be faster with FFTW?
+ * Callers should already know that their current DFT size is not good.
+ */
+static int nearest_good_dft_size(int size)
+{
+  int distance;
+
+  for (distance = 1; ; distance++) {
+    /* We consider the one above to be nearer than one below
+     * because the ratio between them is lower. */
+    if (is_good_dft_size(size + distance)) return size + distance;
+    if (is_good_dft_size(size - distance)) return size - distance;
+  }
+  /* Can't get here as it's got to find one eventually! */
+  return size;
+}
 #endif /* HAVE_FFTW */
 
 static int start_spectrogram(sox_effect_t * effp)
@@ -454,8 +549,18 @@ static int start_spectrogram(sox_effect_t * effp)
   if (p->Y_size) p->y_size = p->Y_size / effp->in_signal.channels;
   p->dft_size = 2 * (p->y_size - 1);
 #if !HAVE_FFTW
-  if (!is_p2(p->dft_size) && !effp->flow)
+  if (!is_p2(p->dft_size) && !effp->flow) {
+    lsx_warn("a DFT size of %d is much slower than 2^n ones", p->dft_size);
+    lsx_warn("The nearest faster -y size to %d is %d", p->y_size,
+             nearest_p2_dft_size(p->dft_size) / 2 + 1);
     p->shared = rdft_init(p->dft_size);
+  }
+#else
+  if (!is_good_dft_size(p->dft_size)) {
+    lsx_warn("a DFT size of %d is slower than ones 2^a*3^b*5^c*7^d*11^e*13^f|e+f<2", p->dft_size);
+    lsx_warn("The nearest faster -y size to %d is %d", p->y_size,
+             nearest_good_dft_size(p->dft_size) / 2 + 1);
+  }
 #endif
 
   /* Now that dft_size is set, allocate variable-sized elements of priv_t */
