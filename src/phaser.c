@@ -59,7 +59,7 @@ static int getopts_phaser(sox_effect_t * effp, int argc, char * * argv)
 
   do { /* break-able block */
     NUMERIC_PARAMETER(gain_in  , -1, 1)
-    NUMERIC_PARAMETER(gain_out , -1, 1)
+    NUMERIC_PARAMETER(gain_out ,  0, 1e9)
     NUMERIC_PARAMETER(delay    ,  0, 1000)
     NUMERIC_PARAMETER(regen    , -1, 1)
     NUMERIC_PARAMETER(speed    ,  0, 192000)
@@ -228,7 +228,7 @@ sox_effect_handler_t const * lsx_phaser_effect_fn(void)
 "OPTION   RANGE  DEFAULT  DESCRIPTION",
 "interp -n|-l|-q   -n     Interpolation type: none, linear or quadratic",
 "gain-in  -1-1     0.4    Proportion of input delivered to output and delay",
-"gain-out -1-1     0.74   Final output volume adjustment",
+"gain-out  0-1e9   0.74   Final output volume adjustment",
 "delay     0-1000   3     Delay in milliseconds",
 "regen    -1-1     0.4    Proportion of delay that is fed back",
 "speed     0-192k  0.5    Modulation speed (no more than the sample rate)",
