@@ -1205,7 +1205,7 @@ sox_effect_handler_t const * lsx_spectrogram_effect_fn(void)
 "-x num  X-axis size in pixels; default: derived from -X and -d, or 800",
 "-X num  X-axis pixels/second; default: derived from -x and -d, or 100",
 "-d time Time to fit to the X-axis (default: all of it unless -X and -x)",
-"-y num  Y-axis size in pixels per channel",
+"-y num  Y-axis size in pixels per channel; default: -Y num / nchannels, ",
 "-Y num  Total height; default 550",
 "-L      Plot the frequency on a logarithmic axis",
 "-R L:H  Specify the frequency range (from L to H)",

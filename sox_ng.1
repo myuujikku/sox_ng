@@ -3545,8 +3545,13 @@ in which case heights of a power of two plus one will be faster.
 .IP \fB\-Y\ \fInum\fR
 Sets the total height of the spectrogram(s).  The default value
 is 550 pixels and the maximum is a million.
-If \fInum\fR is not an exact multiple of the number of channels,
-the actual total height will be a few pixel rows less.
+If \fInum\fR is not an exact multiple of the number of channels with \fB\-r\fR,
+the actual total height of the spectrogram area will be a few pixel rows less.
+For non-raw spectrograms instead, the height of the graph area will be
+slightly less for the same reason, slightly more for the single-pixel row
+between adjacent channel graphs if \fB\-a\fR wasn't given, and the overall
+height of the image will be greater by the time axes (28) and by the
+title (20) if present.
 .IP \fB\-z\ \fInum\fR
 Z axis (color) range in dB, default 120.  This sets the dynamic range
 of the spectrogram to be \-\fInum\fR\ dBFS to 0\ dBFS.
