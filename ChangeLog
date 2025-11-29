@@ -5,6 +5,13 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
+sox_ng-14.7.0.1	2025-11-29
+---------------
+
+  o Make multi-format plugins register the formats they handle
+  o phaser: Put limit on gain-out back up to 1e9
+
+
 sox_ng-14.7.0	2025-11-18
 -------------
 
