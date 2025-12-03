@@ -5,6 +5,13 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
+sox_ng-14.7.0.3	2025-12-03
+---------------
+
+  o Fix rewriting of aif headers in the sox_open_memstream_write() hack
+  o Fix writing of caf format in the multi-format plugins hack
+
+
 sox_ng-14.7.0.2	2025-12-03
 ---------------
 

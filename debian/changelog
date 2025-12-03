@@ -1,3 +1,9 @@
+sox-ng (14.7.0.3) UNRELEASED; urgency=low
+
+  * Update to 14.7.0.3
+
+ -- Martin Guy <martinwguy@gmail.com>  Wed, 03 Dec 2025 17:10:37 +0100
+
 sox-ng (14.7.0+git) UNRELEASED; urgency=low
 
   * First reinclusion of debian/ in sox_ng
