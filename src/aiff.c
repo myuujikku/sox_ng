@@ -707,7 +707,11 @@ int lsx_aiffstopwrite(sox_format_t * ft)
                 return(SOX_EOF);
           }
           result = aiffwriteheader(ft, ft->olength / ft->signal.channels);
-          fseek(ft->fp, o, SEEK_SET);
+          if (lsx_seeki(ft, o, SEEK_SET) != SOX_SUCCESS)
+          {
+                lsx_fail_errno(ft,errno,"can't seek back to proper place after rewriting header");
+                return(SOX_EOF);
+          }
           return result;
         }
 }
@@ -927,7 +931,11 @@ int lsx_aifcstopwrite(sox_format_t * ft)
                 return(SOX_EOF);
           }
           result = aifcwriteheader(ft, ft->olength / ft->signal.channels);
-          fseek(ft->fp, o, SEEK_SET);
+          if (lsx_seeki(ft, o, SEEK_SET) != SOX_SUCCESS)
+          {
+                lsx_fail_errno(ft,errno,"can't seek back to proper place after rewriting header");
+                return(SOX_EOF);
+          }
           return result;
         }
 }
