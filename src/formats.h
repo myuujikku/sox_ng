@@ -123,7 +123,6 @@
   FORMAT(sndio)
 #endif
 #if defined HAVE_SNDFILE && (defined STATIC_SNDFILE || !defined HAVE_LIBLTDL)
-  FORMAT(sndfile)
   FORMAT(caf)
   FORMAT(fap)
   FORMAT(mat4)
@@ -137,6 +136,10 @@
   FORMAT(sds)
   FORMAT(w64)
   FORMAT(xi)
+  /* Format-specific handlers using sndfile should come first so that,
+   * when looking a filename etension up, they get the more specific one.
+   */
+  FORMAT(sndfile)
 #endif
 #if defined HAVE_SUN_AUDIO && (defined STATIC_SUN_AUDIO || !defined HAVE_LIBLTDL)
   FORMAT(sunau)
