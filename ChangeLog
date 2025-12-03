@@ -5,6 +5,16 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
+sox_ng-14.7.0.2	2025-12-03
+---------------
+
+  o Fix "oops" saying "takes no parameters"
+  o sox_open_memstream_write(): Don't truncate files that rewrite the header
+  o sox_open_memstream_read(): Make file format auto-detection work
+  o pulseaudio: Avoid a pulseaudio bug by not doing zero-length writes
+  o Release formats' hold on stdin/stdout so they can be used twice
+
+
 sox_ng-14.7.0.1	2025-11-29
 ---------------
 
