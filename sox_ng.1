@@ -1611,6 +1611,25 @@ See http://en.wikipedia.org/wiki/Digital_biquad_filter (where a0 = 1).
 .SP
 This effect supports the \fB\-\-plot\fR global option.
 .TP
+\fBcentercut \fR[\fB\-a\ \fIgain\fR] [\fB\-b\fR] [\fB\-w \fIsize\fR]
+Remove the center from a stereo file leaving the far left and right parts of
+the stereo file intact and the center in a third channel.
+.SP
+The \fB\-a\fR option is \fIgain-out\fR for all channels, default 1\*d0..
+.SP
+The \fB\-b\fR option moves the bass (below 200Hz) out of the center
+into the sides for those who want karaoke.
+.SP
+The \fB\-w\fR option changes the window size from its default of 8192
+sample frames to a power of two from 4 to 32768.
+.SP
+A stereo equivalent of the \fBoops\fR effect is
+.XE
+    sox_ng in.wav centercut remix 1 2
+.XX
+.SP
+See also \fBoops\fR.
+.TP
 \fBchannels \fIchannels\fR
 Invoke a simple algorithm to change the number of channels in
 the audio signal to the given number:
@@ -2682,6 +2701,8 @@ It is equivalent to \fBremix 1,2i 1,2i\fR.
 Non-linear distortion.
 The \fIcolor\fR parameter controls the amount of even harmonic content
 in the overdriven output. Both parameters range from 0 to 100.
+.SP
+See also \fBcentercut\fR.
 .TP
 \fBpad\fR { \fI[%]length\fR[\fB@\fIposition(=)\fR] }
 Pad the audio with silence at the beginning, at the end or at any

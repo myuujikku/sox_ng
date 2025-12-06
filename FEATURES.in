@@ -155,6 +155,7 @@ The audio effects/tools included in this release are as follows:
 ** rate: Change audio sampling rate
 
 * Specialised filters/mixers
+** centercut: A "vocal cut" filter giving left, right and center separately
 ** deemph: ISO 908 CD de-emphasis (shelving) IIR filter
 ** dop: DSD over PCM, packing 1-bit samples into 24-bit ones
 ** earwax: Process CD audio to best effect for headphone use

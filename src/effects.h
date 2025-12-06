@@ -24,6 +24,7 @@
   EFFECT(bass)
   EFFECT(bend)
   EFFECT(biquad)
+  EFFECT(centercut)
   EFFECT(channels)
   EFFECT(chorus)
   EFFECT(compand)
