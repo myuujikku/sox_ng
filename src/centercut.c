@@ -588,7 +588,6 @@ static int getopts_centercut(sox_effect_t * effp, int argc, char **argv)
     }
     argc--; argv++;
   }
-
   effp->out_signal.channels = 3;
 
   return SOX_SUCCESS;
@@ -613,6 +612,7 @@ static int start_centercut(sox_effect_t * effp)
   CenterCut_Init(effp);
 
   effp->out_signal.length = effp->in_signal.length;
+  effp->out_signal.channels = 3;
 
   return SOX_SUCCESS;
 }
