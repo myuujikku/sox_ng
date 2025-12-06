@@ -210,7 +210,6 @@ static int stop_stats(sox_effect_t * effp)
         fprintf(stderr, "    \"rms_peak_db\": %g,\n", linear_to_dB(sqrt(max_sigma_x2)));
       if (min_sigma_x2 != 0)
         fprintf(stderr, "    \"rms_trough_db\": %g,\n", linear_to_dB(sqrt(min_sigma_x2)));
-      fprintf(stderr, "    \"crest_factor\": %g,\n", sigma_x2 ? avg_peak / sqrt(sigma_x2 / num_samples) : 1);
       fprintf(stderr, "    \"flat_factor\": %g,\n", linear_to_dB((min_runs + max_runs) / (min_count + max_count)));
       b1 = bit_depth(maskLo, maskHi, &b2);
       fprintf(stderr, "    \"bit_depth\": [%u, %u],\n", b1, b2);
