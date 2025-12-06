@@ -8,10 +8,35 @@ sox-11gamma.
 sox_ng-14.7.0+git
 -----------------
 
-  o Source file mp3.c has split into mad.c, lame.c and twolame.c
-    and nasty mp3-util.h has gone
-  o Add format names mpc and svx for mpc2k and 8svx
+New features:
+
+  o Add effect "centrecut", a sophisticated version of "oops"
+  o Add format names mpc and svx, for mpc2k and 8svx,
     which is what sndfile-convert calls them
+  o Add ffmpeg's "aa" format
+  o coreaudio: Allow selection of devices by number as well as by name
+  o sox_open_memstream_write(): Work for formats that rewrite the header
+  o wavpack: Fix the check for successfully rewriting the file header
+
+Bug fixes:
+
+  o Release input and output formats' hold on stdin and stdout so that
+    they can ve used more than once
+  o pulseaudio: Ignore zero-length writes, which it supposedly doesn't like
+  o wav: Disallow zero-sized chunks
+  o Fix some memory leaks
+  o Make file rewinding work when compiled with Emscripten
+
+Documentation:
+
+  o spectrogram: Improve description of -y and -Y
+  o spectrogram: Warn about non-optimal DFT sizes and suggest the nearest one
+
+Internal:
+
+  o Source file mp3.c has split into mp3-mad.c, mp3-lame.c and mp3-twolame.c
+    and mp3-util.h has gone
+
 
 sox_ng-14.7.0	2025-11-18
 -------------
