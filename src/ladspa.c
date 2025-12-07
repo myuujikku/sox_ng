@@ -320,7 +320,9 @@ static int sox_ladspa_start(sox_effect_t * effp)
      * Some LADSPA plugins are stereo (e.g. bs2b-ladspa)
      */
 
-    if (l_st->input_count < effp->in_signal.channels) {
+    if (l_st->input_count == 0) {
+      /* Plugins that take no input, e.g. "noise", need to throw awway all input */
+    } else if (l_st->input_count < effp->in_signal.channels) {
       lsx_fail("fewer plugin input ports than input channels (%u < %u)",
                (unsigned)l_st->input_count, effp->in_signal.channels);
       return SOX_EOF;
@@ -392,12 +394,17 @@ static int sox_ladspa_flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sa
   size_t h;
   const size_t total_input_count = l_st->input_count * l_st->handle_count;
   const size_t total_output_count = l_st->output_count * l_st->handle_count;
-  const size_t channel_len = min(*isamp / total_input_count, *osamp / total_output_count + l_st->in_latency);
+  size_t channel_len;
 
   LADSPA_Data *buf, *outbuf;
   LADSPA_Handle handle;
   unsigned long port, l;
   SOX_SAMPLE_LOCALS;
+
+  if (total_input_count == 0)
+    channel_len = *osamp / total_output_count + l_st->in_latency;
+  else
+    channel_len = min(*isamp / total_input_count, *osamp / total_output_count + l_st->in_latency);
 
   lsx_vcalloc(buf, channel_len * total_input_count);
   lsx_vcalloc(outbuf, channel_len * total_output_count);
