@@ -97,7 +97,7 @@ static int getopts_stretch(sox_effect_t * effp, int argc, char **argv)
       p->fade_type = fade_quarter_cosine;
       break;
     default:
-      lsx_fail("fade type must be linear, sqrt, half or quarter, not `%s'", argv[2]);
+      lsx_fail("fade type must be linear, sqrt, half or quarter (of cosine), not `%s'", argv[2]);
       return SOX_EOF;
     }
   }
@@ -207,7 +207,7 @@ static int start_stretch(sox_effect_t * effp)
     p->fade_coefs[p->overlap - 1] = 0.0;
   }
 
-  lsx_debug("start: (factor=%g segment=%g shift=%g overlap=%g)\nstate=%d\n"
+  lsx_debug("start: (factor=%g window=%g shift=%g fading=%g)\nstate=%d\n"
       "segment=%" PRIuPTR "\nindex=%" PRIuPTR "\n"
       "ishift=%" PRIuPTR "\noindex=%" PRIuPTR "\n"
       "oshift=%" PRIuPTR "\noverlap=%" PRIuPTR,
