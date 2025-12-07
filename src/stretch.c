@@ -97,7 +97,7 @@ static int getopts_stretch(sox_effect_t * effp, int argc, char **argv)
       p->fade_type = fade_quarter_cosine;
       break;
     default:
-      lsx_fail("fade type must be linear, sqrt, half or quarter (of cosine), not `%s'", argv[2]);
+      lsx_fail("fade type must be linear, sqrt, half or quarter, not `%s'", argv[2]);
       return SOX_EOF;
     }
   }
@@ -207,7 +207,7 @@ static int start_stretch(sox_effect_t * effp)
     p->fade_coefs[p->overlap - 1] = 0.0;
   }
 
-  lsx_debug("start: (factor=%g window=%g shift=%g fading=%g)\nstate=%d\n"
+  lsx_debug("start: (factor=%g segment=%g shift=%g overlap=%g)\nstate=%d\n"
       "segment=%" PRIuPTR "\nindex=%" PRIuPTR "\n"
       "ishift=%" PRIuPTR "\noindex=%" PRIuPTR "\n"
       "oshift=%" PRIuPTR "\noverlap=%" PRIuPTR,
@@ -356,9 +356,10 @@ const sox_effect_handler_t *lsx_stretch_effect_fn(void)
 "window  1-     20    Length of the crossfading window in milliseconds",
 "fade  l|s|q|h   l    Crossfading type: linear and half-cosine are equal-gain;",
 "                     sqrt and quarter-cosine are equal-power",
-"shift   0-1     ?    Shift ratio, (1 when speeding up, 0.8 when slowing down)",
-"fading  0-.5    ?    Fading ratio: how much of each window is cross-faded;",
-"                     its default value depends on factor and shift",
+"shift   0-1   1/0.8  Shift ratio, (1 when shortening, 0.8 when lengthening)",
+"fading  0-.5    ?    Fading ratio: how much of each window is cross-faded:",
+"                     The default value is 1 - factor * shift when shortening",
+"                     1 - shift when lengthening, with a maximum of 0.5",
     NULL
   };
 
