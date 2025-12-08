@@ -1,5 +1,11 @@
 sox-ng (14.7.0+git) UNRELEASED; urgency=low
 
+  * Interim release 14.7.0+git20251208
+
+ -- Martin Guy <martinwguy@gmail.com>  Mon, 08 Dec 2025 14:26:49 +0100
+
+sox-ng (14.7.0+git) UNRELEASED; urgency=low
+
   * First reinclusion of debian/ in sox_ng
 
  -- Martin Guy <martinwguy@gmail.com>  Sat, 18 Nov 2025 13:40:07 +0100

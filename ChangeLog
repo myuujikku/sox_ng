@@ -24,6 +24,10 @@ Bug fixes:
     they can ve used more than once
   o pulseaudio: Ignore zero-length writes, which it supposedly doesn't like
   o wav: Disallow zero-sized chunks
+  o ladspa: Allow plugins that take no input
+  o stats: Don't report the crest factor in overall JSON stats
+  o Don't open files in reverse order so the first unopenable file is reported
+    instead of the last one
   o Fix some memory leaks
   o Make file rewinding work when compiled with Emscripten
 
