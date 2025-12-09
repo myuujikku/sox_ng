@@ -2540,6 +2540,7 @@ attenuating the lowest and highest frequencies.  Its bandwidth can be
 controlled by the number of filter taps, which can be specified with
 \fB\-n\fR.  By default, the number of taps is chosen for a cutoff
 frequency of about 75 Hz.
+For a cutoff frequency of about N Hz, use the sample rate divided by N.
 .SP
 This effect supports the \fB\-\-plot\fR global option.
 .TP
@@ -3403,7 +3404,7 @@ given directly with \fB\-b\fR.
 The default transition bandwidth of 5% of the total band can be
 overridden with \fB\-t\fR (and \fItbw\fR in Hertz); alternatively, the
 number of filter taps can be given directly with \fB\-n\fR and is
-limited to the range of 11\-32767.
+limited to the range of 11\-1,073,741,823.
 .SP
 If both \fIfreqHP\fR and \fIfreqLP\fR are given, a \fB\-t\fR or
 \fB\-n\fR option given to the left of the frequencies applies to both

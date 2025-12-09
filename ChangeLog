@@ -11,6 +11,7 @@ sox_ng-14.7.0+git
 New features:
 
   o Add effect "centrecut", a sophisticated version of "oops"
+  o Raise "sinc" and "hilbert" maximum number of taps to 1073741823
   o Add format names mpc and svx, for mpc2k and 8svx,
     which is what sndfile-convert calls them
   o Add ffmpeg's "aa" format

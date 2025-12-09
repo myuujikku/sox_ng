@@ -56,7 +56,7 @@ static int create(sox_effect_t * effp, int argc, char * * argv)
       case 'M': p->phase =  0; break;
       case 'I': p->phase = 25; break;
       case 'L': p->phase = 50; break;
-      GETOPT_LOCAL_NUMERIC(optstate, 'n', taps, 11, 32767)
+      GETOPT_LOCAL_NUMERIC(optstate, 'n', taps, 11, 1073741823)
       case 't': p->tbw1 = lsx_parse_frequency(optstate.arg, &parse_ptr2);
         if (p->tbw1 < 1) {
           lsx_fail("transition bandwidth must be 1 Hz or more");
@@ -163,7 +163,7 @@ static double * lpf(double Fn, double Fc, double tbw, int * num_taps, double att
   lsx_kaiser_params(att, Fc, (tbw? tbw / Fn : .05) * .5, beta, num_taps);
   if (!n) {
     n = *num_taps;
-    *num_taps = range_limit(n, 11, 32767);
+    *num_taps = range_limit(n, 11, 1073741823);
     if (round)
       *num_taps = 1 + 2 * (int)((int)((*num_taps / 2) * Fc + .5) / Fc + .5);
     lsx_report("num taps = %i (from %i)", *num_taps, n);
@@ -228,12 +228,12 @@ static char const usage[] = "[-a att|-b beta] [-p phase|-M|-I|-L] [-t tbw|-n tap
 static char const * const extra_usage[] = {
   "OPTION   RANGE    DEFAULT  DESCRIPTION",
   "-a att   40-180     120    Stop band attentuation in dB",
-  "-b beta   0-256  variable  Kaiser window's `beta' parameter",
+  "-b beta   0-256    varies  Kaiser window's `beta' parameter",
   "-p phase  0-100      50    Phase response: 0=minimum, 25=intermediate",
   "                                          50=linear, 100=maximum",
   "-M/-I/-L                   Phase response: minimum/intermediate/linear",
   "-t tbw    1-      5% band  Transition bandwidth",
-  "-n taps  11-32767  varies  Number of filter taps",
+  "-n taps  11-1e9    varies  Number of filter taps",
   "freq(s): 3k=high-pass; -4k=low-pass; 3k-4k=band-pass; 4k-3k=band-reject",
   "-t or -n before frequency range applies to both; after only affects freqLP",
 
