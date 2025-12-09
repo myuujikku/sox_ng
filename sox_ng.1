@@ -4650,6 +4650,16 @@ and
 both play from 12 minutes 34 seconds into the audio up to 15 minutes in
 (i.e. 2 minutes and 26 seconds long) then resume playing two
 minutes before the end.
+.SP
+SoX has an internal speed hack which, when \fBtrim\fR is the first effect
+and removes audio from the beginning, seeks in the audio file instead of
+decoding it and throwing the data away but this is only used when
+the input is a single file. To achieve fast gapless playing with
+multiple files and trimming the first, you can use something like:
+.XE
+   FMT='-t s32 -r 44100 -c2'
+   (sox file1.mp3 $FMT - trim 30 && sox file2.mp3 $FMT -) | play $FMT -
+.XX
 .TP
 \fBupsample\fR [\fIfactor(2)\fR]
 Upsample the signal by an integer factor: \fIfactor\fR\-1 zero-valued

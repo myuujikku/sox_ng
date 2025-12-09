@@ -1451,7 +1451,7 @@ static void optimize_trim(void)
    * "effect descriptor" and see what the start location is.  This has to be
    * done after its start() is called to have the correct location.  Also, only
    * do this when only working with one input file.  This is because the logic
-   * to do it for multiple files is complex and probably never used.  The same
+   * to do it for multiple files is complex and seldom used.  The same
    * is true for a restarted or additional effects chain (relative positioning
    * within the file and possible samples still buffered in the input effect
    * would have to be taken into account).  This hack is a huge time savings
