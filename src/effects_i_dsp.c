@@ -362,7 +362,7 @@ double * lsx_make_lpf(int num_taps, double Fc, double beta, double rho,
   double * h, sum = 0;
   double mult = scale / lsx_bessel_I_0(beta), mult1 = 1 / (.5 * m + rho);
   assert(Fc >= 0 && Fc <= 1);
-  lsx_debug("make_lpf(n=%i Fc=%.7g β=%g ρ=%g dc-norm=%i scale=%g)", num_taps, Fc, beta, rho, dc_norm, scale);
+  lsx_debug("make_lpf(n=%i Fc=%.7g beta=%g rho=%g dc-norm=%i scale=%g)", num_taps, Fc, beta, rho, dc_norm, scale);
 
   lsx_vcalloc(h, num_taps);
 
