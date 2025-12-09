@@ -46,9 +46,9 @@ static int start_dft_filter(sox_effect_t * effp)
   return SOX_SUCCESS;
 }
 
-static void filter(priv_t * p)
+static void do_dft_filter(priv_t * p)
 {
-  int i, num_in = max(0, fifo_occupancy(&p->input_fifo));
+  size_t i, num_in = max(0, fifo_occupancy(&p->input_fifo));
   filter_t const * f = p->filter_ptr;
   int const overlap = f->num_taps - 1;
   double * output;
@@ -88,7 +88,7 @@ static int flow_dft_filter(sox_effect_t * effp, const sox_sample_t * ibuf,
     double * t = fifo_write(&p->input_fifo, (int)*isamp, NULL);
     p->samples_in += *isamp;
     lsx_load_samples(t, ibuf, *isamp);
-    filter(p);
+    do_dft_filter(p);
   }
   else *isamp = 0;
   *osamp = odone;
@@ -109,7 +109,7 @@ static int drain_dft_filter(sox_effect_t * effp, sox_sample_t * obuf, size_t * o
     while ((size_t)fifo_occupancy(&p->output_fifo) < remaining) {
       fifo_write(&p->input_fifo, 1024, buff);
       p->samples_in += 1024;
-      filter(p);
+      do_dft_filter(p);
     }
     fifo_trim_to(&p->output_fifo, (int)remaining);
     p->samples_in = 0;
