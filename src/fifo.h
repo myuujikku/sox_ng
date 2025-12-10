@@ -58,7 +58,8 @@ UNUSED static void * fifo_reserve(fifo_t * f, fifo_size_t n)
       f->begin = 0;
       continue;
     }
-    f->allocation += n;
+    if (f->allocation == 0) f->allocation = FIFO_MIN;
+    while (f->allocation < f->end + n) f->allocation *= 2;
     f->data = lsx_realloc(f->data, f->allocation);
   }
 }
