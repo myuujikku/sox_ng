@@ -150,15 +150,15 @@ double lsx_bessel_I_0(double x)
 
 size_t lsx_set_dft_length(size_t num_taps) /* Set to 4 x nearest power of 2 */
 {      /* or half of that if danger of causing too many cache misses. */
-  int min = sox_globals.log2_dft_min_size;
+  unsigned min = sox_globals.log2_dft_min_size;
   double d = log((double)num_taps) / log(2.);
-  return (size_t)1 << range_limit((int)(d + 2.77), min, max((int)(d + 1.77), 17));
+  return (size_t)1 << range_limit((unsigned)(d + 2.77), min, max((unsigned)(d + 1.77), 31));
 }
 
 #include "fft4g.h"
-static int * lsx_fft_br;
+static unsigned * lsx_fft_br;
 static double * lsx_fft_sc;
-static int fft_len = -1;
+static size_t fft_len = 0;
 #if defined HAVE_OPENMP
 static ccrw2_t fft_cache_ccrw;
 #endif
@@ -167,32 +167,29 @@ void init_fft_cache(void)
 {
   assert(lsx_fft_br == NULL);
   assert(lsx_fft_sc == NULL);
-  assert(fft_len == -1);
   ccrw2_init(fft_cache_ccrw);
   fft_len = 0;
 }
 
 void clear_fft_cache(void)
 {
-  assert(fft_len >= 0);
   ccrw2_clear(fft_cache_ccrw);
   free(lsx_fft_br);
   free(lsx_fft_sc);
   lsx_fft_sc = NULL;
   lsx_fft_br = NULL;
-  fft_len = -1;
+  fft_len = 0;
 }
 
-static sox_bool update_fft_cache(int len)
+static sox_bool update_fft_cache(size_t len)
 {
   assert(lsx_is_power_of_2(len));
-  assert(fft_len >= 0);
   ccrw2_become_reader(fft_cache_ccrw);
   if (len > fft_len) {
     ccrw2_cease_reading(fft_cache_ccrw);
     ccrw2_become_writer(fft_cache_ccrw);
     if (len > fft_len) {
-      int old_n = fft_len;
+      size_t old_n = fft_len;
       fft_len = len;
       lsx_revalloc(lsx_fft_br, dft_br_len(fft_len));
       lsx_revalloc(lsx_fft_sc, dft_sc_len(fft_len));
@@ -213,23 +210,23 @@ static void done_with_fft_cache(sox_bool is_writer)
   else ccrw2_cease_reading(fft_cache_ccrw);
 }
 
-void lsx_safe_rdft(int len, int type, double * d)
+void lsx_safe_rdft(unsigned len, int type, double * d)
 {
   sox_bool is_writer = update_fft_cache(len);
   lsx_rdft(len, type, d, lsx_fft_br, lsx_fft_sc);
   done_with_fft_cache(is_writer);
 }
 
-void lsx_safe_cdft(int len, int type, double * d)
+void lsx_safe_cdft(unsigned len, int type, double * d)
 {
   sox_bool is_writer = update_fft_cache(len);
   lsx_cdft(len, type, d, lsx_fft_br, lsx_fft_sc);
   done_with_fft_cache(is_writer);
 }
 
-void lsx_power_spectrum(int n, double const * in, double * out)
+void lsx_power_spectrum(unsigned n, double const * in, double * out)
 {
-  int i;
+  unsigned i;
   double * work = lsx_memdup(in, n * sizeof(*work));
   lsx_safe_rdft(n, 1, work);
   out[0] = sqr(work[0]);
@@ -239,9 +236,9 @@ void lsx_power_spectrum(int n, double const * in, double * out)
   free(work);
 }
 
-void lsx_power_spectrum_f(int n, float const * in, float * out)
+void lsx_power_spectrum_f(unsigned n, float const * in, float * out)
 {
-  int i;
+  unsigned i;
   double * work;
 
   lsx_valloc(work, n);

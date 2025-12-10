@@ -99,10 +99,10 @@ size_t lsx_set_dft_length(size_t num_taps);
 void init_fft_cache(void);
 void clear_fft_cache(void);
 #define lsx_is_power_of_2(x) !(x < 2 || (x & (x - 1)))
-void lsx_safe_rdft(int len, int type, double * d);
-void lsx_safe_cdft(int len, int type, double * d);
-void lsx_power_spectrum(int n, double const * in, double * out);
-void lsx_power_spectrum_f(int n, float const * in, float * out);
+void lsx_safe_rdft(unsigned len, int type, double * d);
+void lsx_safe_cdft(unsigned len, int type, double * d);
+void lsx_power_spectrum(unsigned n, double const * in, double * out);
+void lsx_power_spectrum_f(unsigned n, float const * in, float * out);
 void lsx_apply_hann_f(float h[], const int num_points);
 void lsx_apply_hann(double h[], const int num_points);
 void lsx_apply_hamming(double h[], const int num_points);
