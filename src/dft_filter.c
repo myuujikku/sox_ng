@@ -19,12 +19,12 @@
 #include "fft4g.h"
 #include "dft_filter.h"
 
-typedef dft_filter_t filter_t;
 typedef dft_filter_priv_t priv_t;
 
 void lsx_set_dft_filter(dft_filter_t *f, double *h, int n, int post_peak)
 {
-  int i;
+  unsigned i;
+
   f->num_taps = n;
   f->post_peak = post_peak;
   f->dft_length = lsx_set_dft_length(f->num_taps);
@@ -49,8 +49,8 @@ static int start_dft_filter(sox_effect_t * effp)
 static void do_dft_filter(priv_t * p)
 {
   size_t i, num_in = max(0, fifo_occupancy(&p->input_fifo));
-  filter_t const * f = p->filter_ptr;
-  int const overlap = f->num_taps - 1;
+  dft_filter_t const * f = p->filter_ptr;
+  size_t const overlap = f->num_taps - 1;
   double * output;
 
   while (num_in >= f->dft_length) {

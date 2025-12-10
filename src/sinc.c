@@ -179,7 +179,9 @@ static int start(sox_effect_t * effp)
   if (!f->num_taps) {
     double Fn = effp->in_signal.rate * .5;
     double * h[2];
-    int i, n, post_peak, longer;
+    int i, n;
+    size_t post_peak;
+    int longer;
 
     if (p->Fc0 >= Fn || p->Fc1 >= Fn) {
       /* If low-pass filtering at a frequency above the sample rate

@@ -20,7 +20,7 @@
 #include "fifo.h"
 
 typedef struct {
-  int        dft_length, num_taps, post_peak;
+  size_t     dft_length, num_taps, post_peak;
   double     * coefs;
 } dft_filter_t;
 

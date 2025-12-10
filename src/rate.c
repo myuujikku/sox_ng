@@ -142,7 +142,9 @@ static void cubic_stage_fn(stage_t * p, fifo_t * output_fifo)
 static void dft_stage_fn(stage_t * p, fifo_t * output_fifo)
 {
   sample_t * output, tmp;
-  int i, j, num_in = max(0, fifo_occupancy(&p->fifo));
+  size_t i;
+  int j;
+  size_t num_in = max(0, fifo_occupancy(&p->fifo));
   rate_shared_t const * s = p->shared;
   dft_filter_t const * f = &s->dft_filter[p->dft_filter_num];
   int const overlap = f->num_taps - 1;
@@ -155,7 +157,7 @@ static void dft_stage_fn(stage_t * p, fifo_t * output_fifo)
 
     output = fifo_reserve(output_fifo, f->dft_length);
     if (lsx_is_power_of_2(p->L)) { /* F-domain */
-      int portion = f->dft_length / p->L;
+      size_t portion = f->dft_length / p->L;
       memcpy(output, input, (unsigned)portion * sizeof(*output));
       lsx_safe_rdft(portion, 1, output);
       for (i = portion + 2; i < (portion << 1); i += 2)

@@ -148,11 +148,11 @@ double lsx_bessel_I_0(double x)
   return sum;
 }
 
-int lsx_set_dft_length(int num_taps) /* Set to 4 x nearest power of 2 */
+size_t lsx_set_dft_length(size_t num_taps) /* Set to 4 x nearest power of 2 */
 {      /* or half of that if danger of causing too many cache misses. */
   int min = sox_globals.log2_dft_min_size;
   double d = log((double)num_taps) / log(2.);
-  return 1 << range_limit((int)(d + 2.77), min, max((int)(d + 1.77), 17));
+  return (size_t)1 << range_limit((int)(d + 2.77), min, max((int)(d + 1.77), 17));
 }
 
 #include "fft4g.h"
@@ -419,7 +419,7 @@ static double safe_log(double x)
   return -26;
 }
 
-void lsx_fir_to_phase(double * * h, int * len, int * post_len, double phase)
+void lsx_fir_to_phase(double * * h, int * len, size_t * post_len, double phase)
 {
   double * pi_wraps, * work, phase1 = (phase > 50 ? 100 - phase : phase) / 50;
   int i, work_len, begin, end, imp_peak = 0, peak = 0;
@@ -506,7 +506,7 @@ void lsx_fir_to_phase(double * * h, int * len, int * post_len, double phase)
     work[(begin + (phase > 50 ? *len - 1 - i : i) + work_len) & (work_len - 1)];
   *post_len = phase > 50 ? peak - begin : begin + *len - (peak + 1);
 
-  lsx_debug("nPI=%g peak-sum@%i=%g (val@%i=%g); len=%i post=%i (%g%%)",
+  lsx_debug("nPI=%g peak-sum@%i=%g (val@%i=%g); len=%i post=%zu (%g%%)",
       pi_wraps[work_len >> 1] / M_PI, peak, peak_imp_sum, imp_peak,
       work[imp_peak], *len, *post_len, 100 - 100. * *post_len / (*len - 1));
   free(pi_wraps), free(work);
