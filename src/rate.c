@@ -117,14 +117,14 @@ typedef struct stage {
   int        n, phase_bits;
 } stage_t;
 
-#define stage_occupancy(s) max(0, fifo_occupancy(&(s)->fifo) - (s)->pre_post)
-#define stage_read_p(s) ((sample_t *)fifo_read_ptr(&(s)->fifo) + (s)->pre)
+#define stage_occupancy(s) max(0, lsx_fifo_occupancy(&(s)->fifo) - (s)->pre_post)
+#define stage_read_p(s) ((sample_t *)lsx_fifo_read_ptr(&(s)->fifo) + (s)->pre)
 
 static void cubic_stage_fn(stage_t * p, fifo_t * output_fifo)
 {
   int i, num_in = stage_occupancy(p), max_num_out = 1 + num_in*p->out_in_ratio;
   sample_t const * input = stage_read_p(p);
-  sample_t * output = fifo_reserve(output_fifo, max_num_out);
+  sample_t * output = lsx_fifo_reserve(output_fifo, max_num_out);
 
   for (i = 0; p->at.parts.integer < num_in; ++i, p->at.all += p->step.all) {
     sample_t const * s = input + p->at.parts.integer;
@@ -134,8 +134,8 @@ static void cubic_stage_fn(stage_t * p, fifo_t * output_fifo)
     output[i] = ((a*x + b)*x + c)*x + *s;
   }
   assert(max_num_out - i >= 0);
-  fifo_trim_by(output_fifo, max_num_out - i);
-  fifo_read(&p->fifo, p->at.parts.integer, NULL);
+  lsx_fifo_trim_by(output_fifo, max_num_out - i);
+  lsx_fifo_read(&p->fifo, p->at.parts.integer, NULL);
   p->at.parts.integer = 0;
 }
 
@@ -144,18 +144,18 @@ static void dft_stage_fn(stage_t * p, fifo_t * output_fifo)
   sample_t * output, tmp;
   size_t i;
   int j;
-  size_t num_in = max(0, fifo_occupancy(&p->fifo));
+  size_t num_in = max(0, lsx_fifo_occupancy(&p->fifo));
   rate_shared_t const * s = p->shared;
   dft_filter_t const * f = &s->dft_filter[p->dft_filter_num];
   int const overlap = f->num_taps - 1;
 
   while (p->remL + p->L * num_in >= f->dft_length) {
     div_t divd = div(f->dft_length - overlap - p->remL + p->L - 1, p->L);
-    sample_t const * input = fifo_read_ptr(&p->fifo);
-    fifo_read(&p->fifo, divd.quot, NULL);
+    sample_t const * input = lsx_fifo_read_ptr(&p->fifo);
+    lsx_fifo_read(&p->fifo, divd.quot, NULL);
     num_in -= divd.quot;
 
-    output = fifo_reserve(output_fifo, f->dft_length);
+    output = lsx_fifo_reserve(output_fifo, f->dft_length);
     if (lsx_is_power_of_2(p->L)) { /* F-domain */
       size_t portion = f->dft_length / p->L;
       memcpy(output, input, (unsigned)portion * sizeof(*output));
@@ -195,9 +195,9 @@ static void dft_stage_fn(stage_t * p, fifo_t * output_fifo)
             i += p->step.parts.integer)
           output[j] = output[i];
         p->remM = i - (f->dft_length - overlap);
-        fifo_trim_by(output_fifo, f->dft_length - j);
+        lsx_fifo_trim_by(output_fifo, f->dft_length - j);
       }
-      else fifo_trim_by(output_fifo, overlap);
+      else lsx_fifo_trim_by(output_fifo, overlap);
     }
     else { /* F-domain */
       int m = -p->step.parts.integer;
@@ -208,7 +208,7 @@ static void dft_stage_fn(stage_t * p, fifo_t * output_fifo)
       }
       output[1] = f->coefs[i] * output[i] - f->coefs[i+1] * output[i+1];
       lsx_safe_rdft(f->dft_length >> m, -1, output);
-      fifo_trim_by(output_fifo, (((1 << m) - 1) * f->dft_length + overlap) >>m);
+      lsx_fifo_trim_by(output_fifo, (((1 << m) - 1) * f->dft_length + overlap) >>m);
     }
   }
 }
@@ -465,12 +465,12 @@ static int rate_init(
   }
 
   for (i = 0, s = p->stages; i < p->num_stages; ++i, ++s) {
-    fifo_create(&s->fifo, (int)sizeof(sample_t));
-    memset(fifo_reserve(&s->fifo, s->preload), 0, sizeof(sample_t)*s->preload);
+    lsx_fifo_create(&s->fifo, (int)sizeof(sample_t));
+    memset(lsx_fifo_reserve(&s->fifo, s->preload), 0, sizeof(sample_t)*s->preload);
     lsx_debug("%5i|%-5i preload=%i remL=%i",
         s->pre, s->pre_post - s->pre, s->preload, s->remL);
   }
-  fifo_create(&s->fifo, (int)sizeof(sample_t));
+  lsx_fifo_create(&s->fifo, (int)sizeof(sample_t));
 
   return SOX_SUCCESS;
 }
@@ -487,14 +487,14 @@ static void rate_process(rate_t * p)
 static sample_t * rate_input(rate_t * p, sample_t const * samples, size_t n)
 {
   p->samples_in += n;
-  return fifo_write(&p->stages[0].fifo, (int)n, samples);
+  return lsx_fifo_write(&p->stages[0].fifo, (int)n, samples);
 }
 
 static sample_t const * rate_output(rate_t * p, sample_t * samples, size_t * n)
 {
   fifo_t * fifo = &p->stages[p->num_stages].fifo;
-  p->samples_out += *n = min(*n, (size_t)fifo_occupancy(fifo));
-  return fifo_read(fifo, (int)*n, samples);
+  p->samples_out += *n = min(*n, (size_t)lsx_fifo_occupancy(fifo));
+  return lsx_fifo_read(fifo, (int)*n, samples);
 }
 
 static void rate_flush(rate_t * p)
@@ -508,11 +508,11 @@ static void rate_flush(rate_t * p)
   lsx_vcalloc(buff, 1024);
 
   if (remaining > 0) {
-    while ((size_t)fifo_occupancy(fifo) < remaining) {
+    while ((size_t)lsx_fifo_occupancy(fifo) < remaining) {
       rate_input(p, buff, (size_t) 1024);
       rate_process(p);
     }
-    fifo_trim_to(fifo, (int)remaining);
+    lsx_fifo_trim_to(fifo, (int)remaining);
     p->samples_in = 0;
   }
   free(buff);
@@ -529,7 +529,7 @@ static void rate_close(rate_t * p)
   shared = p->stages[0].shared;
 
   for (i = 0; i <= p->num_stages; ++i)
-    fifo_delete(&p->stages[i].fifo);
+    lsx_fifo_delete(&p->stages[i].fifo);
   free(shared->dft_filter[0].coefs);
   free(shared->dft_filter[1].coefs);
   free(shared->poly_fir_coefs);

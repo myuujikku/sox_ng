@@ -139,8 +139,8 @@ static void reverb_create(reverb_t * p, double sample_rate_Hz,
   p->feedback = 1 - exp((reverberance - b) / (a * b));
   p->hf_damping = hf_damping / 100 * .3 + .2;
   p->gain = dB_to_linear(wet_gain_dB) * .015;
-  fifo_create(&p->input_fifo, sizeof(float));
-  memset(fifo_write(&p->input_fifo, delay, 0), 0, delay * sizeof(float));
+  lsx_fifo_create(&p->input_fifo, sizeof(float));
+  memset(lsx_fifo_write(&p->input_fifo, delay, 0), 0, delay * sizeof(float));
   for (i = 0; i <= ceil(depth); ++i) {
     filter_array_create(p->chan + i, sample_rate_Hz, scale, i * depth);
     lsx_vcalloc(p->out[i], buffer_size);
@@ -152,8 +152,8 @@ static void reverb_process(reverb_t * p, size_t length)
 {
   size_t i;
   for (i = 0; i < 2 && p->out[i]; ++i)
-    filter_array_process(p->chan + i, length, (float *) fifo_read_ptr(&p->input_fifo), p->out[i], &p->feedback, &p->hf_damping, &p->gain);
-  fifo_read(&p->input_fifo, length, NULL);
+    filter_array_process(p->chan + i, length, (float *) lsx_fifo_read_ptr(&p->input_fifo), p->out[i], &p->feedback, &p->hf_damping, &p->gain);
+  lsx_fifo_read(&p->input_fifo, length, NULL);
 }
 
 static void reverb_delete(reverb_t * p)
@@ -163,7 +163,7 @@ static void reverb_delete(reverb_t * p)
     free(p->out[i]);
     filter_array_delete(p->chan + i);
   }
-  fifo_delete(&p->input_fifo);
+  lsx_fifo_delete(&p->input_fifo);
 }
 
 /*------------------------------- SoX Wrapper --------------------------------*/
@@ -237,7 +237,7 @@ static int flow_reverb(sox_effect_t * effp, const sox_sample_t * ibuf,
 
   *isamp = len * p->ichannels, *osamp = len * p->ochannels;
   for (c = 0; c < p->ichannels; ++c)
-    p->chan[c].dry = fifo_write(&p->chan[c].reverb.input_fifo, len, 0);
+    p->chan[c].dry = lsx_fifo_write(&p->chan[c].reverb.input_fifo, len, 0);
   for (i = 0; i < len; ++i) for (c = 0; c < p->ichannels; ++c)
     p->chan[c].dry[i] = SOX_SAMPLE_TO_FLOAT_32BIT(*ibuf++, effp->clips);
   for (c = 0; c < p->ichannels; ++c)

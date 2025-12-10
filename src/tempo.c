@@ -99,48 +99,48 @@ static void tempo_overlap(
 
 static void tempo_process(tempo_t * t)
 {
-  while (fifo_occupancy(&t->input_fifo) >= t->process_size) {
+  while (lsx_fifo_occupancy(&t->input_fifo) >= t->process_size) {
     size_t skip, offset;
 
     /* Copy or overlap the first bit to the output */
     if (!t->segments_total) {
       offset = t->search / 2;
-      fifo_write(&t->output_fifo, t->overlap, (float *) fifo_read_ptr(&t->input_fifo) + t->channels * offset);
+      lsx_fifo_write(&t->output_fifo, t->overlap, (float *) lsx_fifo_read_ptr(&t->input_fifo) + t->channels * offset);
     } else {
-      offset = tempo_best_overlap_position(t, fifo_read_ptr(&t->input_fifo));
+      offset = tempo_best_overlap_position(t, lsx_fifo_read_ptr(&t->input_fifo));
       tempo_overlap(t, t->overlap_buf,
-          (float *) fifo_read_ptr(&t->input_fifo) + t->channels * offset,
-          fifo_write(&t->output_fifo, t->overlap, NULL));
+          (float *) lsx_fifo_read_ptr(&t->input_fifo) + t->channels * offset,
+          lsx_fifo_write(&t->output_fifo, t->overlap, NULL));
     }
     /* Copy the middle bit to the output */
-    fifo_write(&t->output_fifo, t->segment - 2 * t->overlap,
-               (float *) fifo_read_ptr(&t->input_fifo) +
+    lsx_fifo_write(&t->output_fifo, t->segment - 2 * t->overlap,
+               (float *) lsx_fifo_read_ptr(&t->input_fifo) +
                t->channels * (offset + t->overlap));
 
     /* Copy the end bit to overlap_buf ready to be mixed with
      * the beginning of the next segment. */
     memcpy(t->overlap_buf,
-           (float *) fifo_read_ptr(&t->input_fifo) +
+           (float *) lsx_fifo_read_ptr(&t->input_fifo) +
            t->channels * (offset + t->segment - t->overlap),
            t->channels * t->overlap * sizeof(*(t->overlap_buf)));
 
     /* Advance through the input stream */
     skip = t->factor * (++t->segments_total * (t->segment - t->overlap)) + 0.5;
     t->skip_total += skip -= t->skip_total;
-    fifo_read(&t->input_fifo, skip, NULL);
+    lsx_fifo_read(&t->input_fifo, skip, NULL);
   }
 }
 
 static float * tempo_input(tempo_t * t, float const * samples, size_t n)
 {
   t->samples_in += n;
-  return fifo_write(&t->input_fifo, n, samples);
+  return lsx_fifo_write(&t->input_fifo, n, samples);
 }
 
 static float const * tempo_output(tempo_t * t, float * samples, size_t * n)
 {
-  t->samples_out += *n = min(*n, fifo_occupancy(&t->output_fifo));
-  return fifo_read(&t->output_fifo, *n, samples);
+  t->samples_out += *n = min(*n, lsx_fifo_occupancy(&t->output_fifo));
+  return lsx_fifo_read(&t->output_fifo, *n, samples);
 }
 
 /* Flush samples remaining in overlap_buf & input_fifo to the output. */
@@ -154,11 +154,11 @@ static void tempo_flush(tempo_t * t)
   lsx_vcalloc(buff, 128 * t->channels);
 
   if (remaining > 0) {
-    while (fifo_occupancy(&t->output_fifo) < remaining) {
+    while (lsx_fifo_occupancy(&t->output_fifo) < remaining) {
       tempo_input(t, buff, (size_t) 128);
       tempo_process(t);
     }
-    fifo_trim_to(&t->output_fifo, remaining);
+    lsx_fifo_trim_to(&t->output_fifo, remaining);
     t->samples_in = 0;
   }
   free(buff);
@@ -180,14 +180,14 @@ static void tempo_setup(tempo_t * t,
   lsx_valloc(t->overlap_buf, t->overlap * t->channels);
   max_skip = ceil(factor * (t->segment - t->overlap));
   t->process_size = max(max_skip + t->overlap, t->segment) + t->search;
-  memset(fifo_reserve(&t->input_fifo, t->search / 2), 0, (t->search / 2) * t->channels * sizeof(float));
+  memset(lsx_fifo_reserve(&t->input_fifo, t->search / 2), 0, (t->search / 2) * t->channels * sizeof(float));
 }
 
 static void tempo_delete(tempo_t * t)
 {
   free(t->overlap_buf);
-  fifo_delete(&t->output_fifo);
-  fifo_delete(&t->input_fifo);
+  lsx_fifo_delete(&t->output_fifo);
+  lsx_fifo_delete(&t->input_fifo);
   free(t);
 }
 
@@ -195,8 +195,8 @@ static tempo_t * tempo_create(size_t channels)
 {
   tempo_t * t = lsx_calloc(1, sizeof(*t));
   t->channels = channels;
-  fifo_create(&t->input_fifo, t->channels * sizeof(float));
-  fifo_create(&t->output_fifo, t->channels * sizeof(float));
+  lsx_fifo_create(&t->input_fifo, t->channels * sizeof(float));
+  lsx_fifo_create(&t->output_fifo, t->channels * sizeof(float));
   return t;
 }
 

@@ -39,27 +39,27 @@ static int start_dft_filter(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *) effp->priv;
 
-  fifo_create(&p->input_fifo, (int)sizeof(double));
-  memset(fifo_reserve(&p->input_fifo,
+  lsx_fifo_create(&p->input_fifo, (int)sizeof(double));
+  memset(lsx_fifo_reserve(&p->input_fifo,
         p->filter_ptr->post_peak), 0, sizeof(double) * p->filter_ptr->post_peak);
-  fifo_create(&p->output_fifo, (int)sizeof(double));
+  lsx_fifo_create(&p->output_fifo, (int)sizeof(double));
   return SOX_SUCCESS;
 }
 
 static void do_dft_filter(priv_t * p)
 {
-  size_t i, num_in = max(0, fifo_occupancy(&p->input_fifo));
+  size_t i, num_in = max(0, lsx_fifo_occupancy(&p->input_fifo));
   dft_filter_t const * f = p->filter_ptr;
   size_t const overlap = f->num_taps - 1;
   double * output;
 
   while (num_in >= f->dft_length) {
-    double const * input = fifo_read_ptr(&p->input_fifo);
-    fifo_read(&p->input_fifo, f->dft_length - overlap, NULL);
+    double const * input = lsx_fifo_read_ptr(&p->input_fifo);
+    lsx_fifo_read(&p->input_fifo, f->dft_length - overlap, NULL);
     num_in -= f->dft_length - overlap;
 
-    output = fifo_reserve(&p->output_fifo, f->dft_length);
-    fifo_trim_by(&p->output_fifo, overlap);
+    output = lsx_fifo_reserve(&p->output_fifo, f->dft_length);
+    lsx_fifo_trim_by(&p->output_fifo, overlap);
     memcpy(output, input, f->dft_length * sizeof(*output));
 
     lsx_safe_rdft(f->dft_length, 1, output);
@@ -78,14 +78,14 @@ static int flow_dft_filter(sox_effect_t * effp, const sox_sample_t * ibuf,
                            sox_sample_t * obuf, size_t * isamp, size_t * osamp)
 {
   priv_t * p = (priv_t *)effp->priv;
-  size_t odone = min(*osamp, (size_t)fifo_occupancy(&p->output_fifo));
+  size_t odone = min(*osamp, (size_t)lsx_fifo_occupancy(&p->output_fifo));
 
-  double const * s = fifo_read(&p->output_fifo, (int)odone, NULL);
+  double const * s = lsx_fifo_read(&p->output_fifo, (int)odone, NULL);
   lsx_save_samples(obuf, s, odone, &effp->clips);
   p->samples_out += odone;
 
   if (*isamp && odone < *osamp) {
-    double * t = fifo_write(&p->input_fifo, (int)*isamp, NULL);
+    double * t = lsx_fifo_write(&p->input_fifo, (int)*isamp, NULL);
     p->samples_in += *isamp;
     lsx_load_samples(t, ibuf, *isamp);
     do_dft_filter(p);
@@ -106,12 +106,12 @@ static int drain_dft_filter(sox_effect_t * effp, sox_sample_t * obuf, size_t * o
   lsx_vcalloc(buff, 1024);
 
   if (remaining > 0) {
-    while ((size_t)fifo_occupancy(&p->output_fifo) < remaining) {
-      fifo_write(&p->input_fifo, 1024, buff);
+    while ((size_t)lsx_fifo_occupancy(&p->output_fifo) < remaining) {
+      lsx_fifo_write(&p->input_fifo, 1024, buff);
       p->samples_in += 1024;
       do_dft_filter(p);
     }
-    fifo_trim_to(&p->output_fifo, (int)remaining);
+    lsx_fifo_trim_to(&p->output_fifo, (int)remaining);
     p->samples_in = 0;
   }
   free(buff);
@@ -122,8 +122,8 @@ static int stop_dft_filter(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *) effp->priv;
 
-  fifo_delete(&p->input_fifo);
-  fifo_delete(&p->output_fifo);
+  lsx_fifo_delete(&p->input_fifo);
+  lsx_fifo_delete(&p->output_fifo);
   free(p->filter_ptr->coefs);
   memset(p->filter_ptr, 0, sizeof(*p->filter_ptr));
   return SOX_SUCCESS;
