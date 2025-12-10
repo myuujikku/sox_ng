@@ -2537,10 +2537,12 @@ generation.  The process is often written as a multiplication by \fIi\fR
 .SP
 An odd-tap Hilbert transform filter has a band-pass characteristic,
 attenuating the lowest and highest frequencies.  Its bandwidth can be
-controlled by the number of filter taps, which can be specified with
-\fB\-n\fR.  By default, the number of taps is chosen for a cutoff
-frequency of about 75 Hz.
-For a cutoff frequency of about N Hz, use the sample rate divided by N.
+controlled by the number of filter taps which, by default, is chosen
+for a cutoff frequency of about 75 Hz. For a cutoff frequency of about N Hz,
+give the \fB\-n\fR option with the sample rate divided by N.
+The number of taps can be from 3 to 1,073,741,823 but the maximum value
+requires 56GB of physical RAM to complete within minutes rather than days
+and 100,000,001 requires 18GB.
 .SP
 This effect supports the \fB\-\-plot\fR global option.
 .TP
@@ -3404,7 +3406,9 @@ given directly with \fB\-b\fR.
 The default transition bandwidth of 5% of the total band can be
 overridden with \fB\-t\fR (and \fItbw\fR in Hertz); alternatively, the
 number of filter taps can be given directly with \fB\-n\fR and is
-limited to the range of 11\-1,073,741,823.
+limited to the range of 11\-1,073,741,823 though the maximum requires
+56GB of physical RAM if it is to complete in minutes rather than days,
+while 100,000,000 requires 8GB.
 .SP
 If both \fIfreqHP\fR and \fIfreqLP\fR are given, a \fB\-t\fR or
 \fB\-n\fR option given to the left of the frequencies applies to both
