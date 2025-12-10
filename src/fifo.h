@@ -18,9 +18,7 @@
 #ifndef fifo_included
 #define fifo_included
 
-#ifndef FIFO_SIZE_T
-#define FIFO_SIZE_T size_t
-#endif
+typedef size_t fifo_size_t;
 
 typedef struct {
   char * data;
@@ -37,7 +35,7 @@ UNUSED static void fifo_clear(fifo_t * f)
   f->end = f->begin = 0;
 }
 
-UNUSED static void * fifo_reserve(fifo_t * f, FIFO_SIZE_T n)
+UNUSED static void * fifo_reserve(fifo_t * f, fifo_size_t n)
 {
   n *= f->item_size;
 
@@ -62,7 +60,7 @@ UNUSED static void * fifo_reserve(fifo_t * f, FIFO_SIZE_T n)
   }
 }
 
-UNUSED static void * fifo_write(fifo_t * f, FIFO_SIZE_T n, void const * data)
+UNUSED static void * fifo_write(fifo_t * f, fifo_size_t n, void const * data)
 {
   void * s = fifo_reserve(f, n);
   if (data)
@@ -70,28 +68,28 @@ UNUSED static void * fifo_write(fifo_t * f, FIFO_SIZE_T n, void const * data)
   return s;
 }
 
-UNUSED static void fifo_trim_to(fifo_t * f, FIFO_SIZE_T n)
+UNUSED static void fifo_trim_to(fifo_t * f, fifo_size_t n)
 {
   n *= f->item_size;
   f->end = f->begin + n;
 }
 
-UNUSED static void fifo_trim_by(fifo_t * f, FIFO_SIZE_T n)
+UNUSED static void fifo_trim_by(fifo_t * f, fifo_size_t n)
 {
   n *= f->item_size;
   f->end -= n;
 }
 
-UNUSED static FIFO_SIZE_T fifo_occupancy(fifo_t * f)
+UNUSED static fifo_size_t fifo_occupancy(fifo_t * f)
 {
   return (f->end - f->begin) / f->item_size;
 }
 
-UNUSED static void * fifo_read(fifo_t * f, FIFO_SIZE_T n, void * data)
+UNUSED static void * fifo_read(fifo_t * f, fifo_size_t n, void * data)
 {
   char * ret = f->data + f->begin;
   n *= f->item_size;
-  if (n > (FIFO_SIZE_T)(f->end - f->begin))
+  if (n > (fifo_size_t)(f->end - f->begin))
     return NULL;
   if (data)
     memcpy(data, ret, (size_t)n);
@@ -99,14 +97,14 @@ UNUSED static void * fifo_read(fifo_t * f, FIFO_SIZE_T n, void * data)
   return ret;
 }
 
-#define fifo_read_ptr(f) fifo_read(f, (FIFO_SIZE_T)0, NULL)
+#define fifo_read_ptr(f) fifo_read(f, (fifo_size_t)0, NULL)
 
 UNUSED static void fifo_delete(fifo_t * f)
 {
   free(f->data);
 }
 
-UNUSED static void fifo_create(fifo_t * f, FIFO_SIZE_T item_size)
+UNUSED static void fifo_create(fifo_t * f, fifo_size_t item_size)
 {
   f->item_size = item_size;
   f->allocation = FIFO_MIN;
