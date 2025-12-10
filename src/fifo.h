@@ -33,6 +33,9 @@ typedef struct {
 UNUSED static void fifo_clear(fifo_t * f)
 {
   f->end = f->begin = 0;
+  free(f->data);
+  f->data = NULL;
+  f->allocation = 0;
 }
 
 UNUSED static void * fifo_reserve(fifo_t * f, fifo_size_t n)
@@ -107,8 +110,6 @@ UNUSED static void fifo_delete(fifo_t * f)
 UNUSED static void fifo_create(fifo_t * f, fifo_size_t item_size)
 {
   f->item_size = item_size;
-  f->allocation = FIFO_MIN;
-  f->data = lsx_malloc(f->allocation);
   fifo_clear(f);
 }
 
