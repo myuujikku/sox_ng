@@ -243,8 +243,7 @@ AC_C_BIGENDIAN
 AC_C_INLINE
 AC_C_CONST
 
-dnl Two lines suggested by autoupdate
-AC_CHECK_INCLUDES_DEFAULT
+dnl Suggested by autoupdate
 AC_PROG_EGREP
 
 dnl Checks for header files.
