@@ -126,7 +126,7 @@ typedef struct {
 static void create_channel(channel_t *  chan)
 {
   memset(chan, 0, sizeof(*chan));
-  chan->freq2 = chan->freq = 440;
+  chan->freq2 = chan->freq = sox_globals.A4;
   chan->p3 = chan->p2 = chan->p1 = -1;
 }
 

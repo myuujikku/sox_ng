@@ -63,7 +63,11 @@ static LADSPA_Data ladspa_default(const LADSPA_PortRangeHint *p)
   else if (LADSPA_IS_HINT_DEFAULT_100(p->HintDescriptor))
     d = 100.0;
   else if (LADSPA_IS_HINT_DEFAULT_440(p->HintDescriptor))
-    d = 440.0;
+    /* ladspa.h says:
+     * This default hint indicates that the Hz frequency of `concert A'
+     * should be used. This will be 440 unless the host uses an unusual
+     * tuning convention, in which case it may be within a few Hz. */
+    d = sox_globals.A4;
   else if (LADSPA_IS_HINT_DEFAULT_MINIMUM(p->HintDescriptor))
     d = p->LowerBound;
   else if (LADSPA_IS_HINT_DEFAULT_MAXIMUM(p->HintDescriptor))

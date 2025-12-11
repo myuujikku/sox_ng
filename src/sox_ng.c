@@ -2266,7 +2266,7 @@ static void read_comment_file(sox_comments_t * comments, char const * const file
 }
 
 static char const * const getoptstr =
-  "+b:c:de:hmnpqr:t:v:xBC:DGLMNRSTV::X";
+  "+b:c:de:hmnpqr:t:v:xA:BC:DGLMNRSTV::X";
 
 static lsx_option_t const long_options[] = {
   /*
@@ -2556,6 +2556,14 @@ static char parse_gopts_and_fopts(file_t * f)
       if (f->volume < 0.0)
         lsx_report("volume adjustment is negative; "
                   "this will result in a phase change");
+      break;
+
+    case 'A':
+      if (sscanf(optstate.arg, "%f %c", &sox_globals.A4, &dummy) != 1 ||
+          !isfinite(sox_globals.A4) || sox_globals.A4 <= 0) {
+        lsx_fail("concert pitch `%s' is not a positive number", optstate.arg);
+        exit(1);
+      }
       break;
 
     case 'c':

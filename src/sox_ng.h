@@ -1282,7 +1282,8 @@ Client API:
 Global parameters (for effects & formats), returned from the sox_get_globals
 function.
 */
-typedef struct sox_globals {
+/* The public fields must correspond to the order in s_sox_globals */
+typedef struct {
 /* public: */
   char *       myname;  /**< argv[0] */
   unsigned     verbosity; /**< messages are only written if globals.verbosity >= message.level */
@@ -1315,6 +1316,10 @@ typedef struct sox_globals {
   Plugins should use similarly-sized DFTs to get best performance.
   */
   size_t       log2_dft_min_size;
+
+  /** The frequency of A above middle C, usually 440 */
+  float        A4;
+
 } sox_globals_t;
 
 /**

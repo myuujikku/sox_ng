@@ -118,6 +118,7 @@ static void output_message(
   }
 }
 
+/* The fields must correspond to their order in sox_globals_t */
 static sox_globals_t s_sox_globals = {
   NULL,            /* char *       progname */
   2,               /* unsigned     verbosity */
@@ -132,7 +133,8 @@ static sox_globals_t s_sox_globals = {
   NULL,            /* char       * tmp_path */
   sox_false,       /* sox_bool     use_magic */
   sox_true,        /* sox_bool     use_threads */
-  10               /* size_t       log2_dft_min_size */
+  10,              /* size_t       log2_dft_min_size */
+  440.0f,          /* float        A4 */
 };
 
 sox_globals_t * sox_get_globals(void)

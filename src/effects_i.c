@@ -389,6 +389,8 @@ char const * lsx_parseposition(sox_rate_t rate, const char *str0, uint64_t *samp
  */
 static double calc_note_freq(double note, int key)
 {
+  double A4 = sox_globals.A4;
+
   if (key != INT_MAX) {                         /* Just intonation. */
     static const int n[] = {16, 9, 6, 5, 4, 7}; /* Numerator. */
     static const int d[] = {15, 8, 5, 4, 3, 5}; /* Denominator. */
@@ -399,9 +401,9 @@ static double calc_note_freq(double note, int key)
       j[i] = i <= 6? log((double)n[i - 1] / d[i - 1]) / log(2.) : 1 - j[12 - i];
     note -= m;
     m -= key = m - ((INT_MAX / 2 - ((INT_MAX / 2) % 12) + m - key) % 12);
-    return 440 * pow(2., key / 12. + j[m] + (j[m + 1] - j[m]) * note);
+    return A4 * pow(2., key / 12. + j[m] + (j[m + 1] - j[m]) * note);
   }
-  return 440 * pow(2., note / 12);
+  return A4 * pow(2., note / 12);
 }
 
 int lsx_parse_note(char const * text, char * * end_ptr)
