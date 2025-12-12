@@ -57,13 +57,16 @@
 #  include <sys/wait.h>	/* for WEXITSTATUS */
 #endif
 
-#define PIPE_AUTO_DETECT_SIZE 256 /* Only as much as we can rewind a pipe */
-#define AUTO_DETECT_SIZE 4096     /* For seekable file, so no restriction */
+#if USING_FFMPEG
+#define AUTO_DETECT_SIZE 257	/* for act */
+#else
+#define AUTO_DETECT_SIZE 132    /* for hcom */
+#endif
 
 static char const * auto_detect_format(sox_format_t * ft, char const * ext)
 {
   char data[AUTO_DETECT_SIZE];
-  size_t len = lsx_readbuf_rewind(ft, data, ft->seekable ? sizeof(data) : PIPE_AUTO_DETECT_SIZE);
+  size_t len = lsx_readbuf_rewind(ft, data, sizeof(data));
 
   #define CHECK(type, p2, l2, d2, p1, l1, d1) if (len >= p1 + l1 && \
       !memcmp(data + p1, d1, (size_t)l1) && !memcmp(data + p2, d2, (size_t)l2)) return #type;
