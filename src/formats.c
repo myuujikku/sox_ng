@@ -120,7 +120,7 @@ static char const * auto_detect_format(sox_format_t * ft, char const * ext)
   CHECK(adx   , 0, 0, ""     , 0,  2, "\x80\x00") /* libavformat/adxdec.c */
 #endif
   CHECK(ape   , 0, 0, ""     , 0,  4, "MAC ")     /* libavformat/ape.c */
-  CHECK(apm   ,20, 4, "vs12" , 0,  2, "\x00\x20") /* libavformat/apm.c */
+  CHECK(apm   , 0, 2, "\x00\x20",20, 4, "vs12" ) /* libavformat/apm.c */
   /* aptx is headerless and can only be autodetected by the filename extension */
   /* libavformat/argo_asf.[ch] */
   CHECK(argo_asf,0,0, ""     , 0,  8, "ASF\x00\x01\x00\x01\x00")
@@ -140,12 +140,12 @@ static char const * auto_detect_format(sox_format_t * ft, char const * ext)
   CHECK(eac3  , 0, 0, ""     , 0,  2, "\x04\x0C")
   CHECK(eac3  , 0, 0, ""     , 0,  2, "\x04\x14")
   CHECK(f4v   , 0, 0, ""     , 4,  8, "ftypf4v ") /* libavformat/movenc.c */
-  CHECK(flv   , 5, 1, "\x00" , 0,  4, "FLV\x00")  /* libavformat/flvdec.c */
-  CHECK(flv   , 5, 1, "\x00" , 0,  4, "FLV\x01")
-  CHECK(flv   , 5, 1, "\x00" , 0,  4, "FLV\x02")
-  CHECK(flv   , 5, 1, "\x00" , 0,  4, "FLV\x03")
-  CHECK(flv   , 5, 1, "\x00" , 0,  4, "FLV\x04")
-  CHECK(gxf   ,10, 6, "\x00\x00\x00\x00\xE1\xE2", 0, 6, "\x00\x00\x00\x00\x01\xBC") /* libavformat/gxf.c */
+  CHECK(flv   , 0, 4, "FLV\x00", 5, 1, "\x00" )  /* libavformat/flvdec.c */
+  CHECK(flv   , 0, 4, "FLV\x01", 5, 1, "\x00" )
+  CHECK(flv   , 0, 4, "FLV\x02", 5, 1, "\x00" )
+  CHECK(flv   , 0, 4, "FLV\x03", 5, 1, "\x00" )
+  CHECK(flv   , 0, 4, "FLV\x04", 5, 1, "\x00" )
+  CHECK(gxf   , 0, 6, "\x00\x00\x00\x00\x01\xBC",10, 6, "\x00\x00\x00\x00\xE1\xE2") /* libavformat/gxf.c */
   CHECK(ism   , 0, 0, ""     , 4,  8, "ftypisml")
   CHECK(kvag  , 0, 0, ""     , 0,  4, "KVAG")	 /* libavformat/kvag.c */
   CHECK(m4a   , 0, 0, ""     , 4,  8, "ftypM4A ") /* iPod format */
@@ -172,11 +172,11 @@ static char const * auto_detect_format(sox_format_t * ft, char const * ext)
   CHECK(rm    , 0, 0, ""     , 0,  4, ".ra\xFD")
   /* rso can't be autodetected by ffmpeg */
   /* sbc can't be autodetected by ffmpeg */
-  CHECK(smjpeg,0, 0, ""     , 0,  8, "\x0\xaSMJPEG") /* libavformat/smjpeg.h */
+  CHECK(smjpeg, 0, 0, ""     , 0,  8, "\x0\xaSMJPEG") /* libavformat/smjpeg.h */
   /* spdif is autodetected by ffmpeg but not by fixed bytes at fixed offsets */
   CHECK(spx   , 0, 4, "OggS" , 28, 5, "Speex")
-  CHECK(tta   , 4, 2, "\1\0" , 0,  4, "TTA1") /* libavformat/tta.c */
-  CHECK(tta   , 4, 2, "\2\0" , 0,  4, "TTA1")
+  CHECK(tta   , 0, 4, "TTA1" , 4,  2, "\1\0" ) /* libavformat/tta.c */
+  CHECK(tta   , 0, 4, "TTA1" , 4,  2, "\2\0" )
   CHECK(vag   , 0, 0, ""     , 0,  7, "VAGp\0\0\0")
   CHECK(wma   , 0, 0, ""     , 0, 16, "\x30\x26\xB2\x75\x8E\x66\xCF\x11\xA6\xD9\x00\xAA\x00\x62\xCE\x6C")
   /* wsaud has no file signature but there are header sanity checks
