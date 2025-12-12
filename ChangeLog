@@ -5,6 +5,13 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
+sox_ng-14.6.1.2+git
+-------------------
+
+  o Fail autodetection of some ffmpeg formats if the file is truncated
+  o Fix a harmless memory leak in alsa
+
+
 sox_ng-14.6.1.2	2025-11-06
 ---------------
 
