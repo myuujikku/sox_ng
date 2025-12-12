@@ -32,6 +32,7 @@ Bug fixes:
     instead of the last one
   o Fix some memory leaks
   o Make file rewinding work when compiled with Emscripten
+  o Fail autodetection of some ffmpeg formats if the file is truncated
 
 Documentation:
 
