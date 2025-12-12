@@ -154,7 +154,6 @@
 /*--------------------- Handlers using an external program -------------------*/
 
 #if USING_FFMPEG
-FORMAT(ffmpeg)
 FORMAT(3g2)
 FORMAT(3gp)
 FORMAT(aac)
@@ -170,6 +169,7 @@ FORMAT(ast)
 FORMAT(avi)
 FORMAT(dfpwm)
 FORMAT(dts)
+FORMAT(ea)
 FORMAT(eac3)
 FORMAT(f4v)
 FORMAT(flv)
@@ -200,16 +200,8 @@ FORMAT(wma)
 FORMAT(wsaud)
 FORMAT(wtv)
 
-/* It handles the following formats if you use -t ffmpeg
-caf
-flac
-ircam
-mp2
-mp3
-ogg
-sox
-voc
-w64
-wv
-*/
+/* The generic handler comes last so that --help-format gives the
+ * description specific to the format instead of the generic one. */
+FORMAT(ffmpeg)
+
 #endif /* USING_FFMPEG */
