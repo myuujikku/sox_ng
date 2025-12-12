@@ -15,7 +15,7 @@ New features:
   o Raise "sinc" and "hilbert" maximum number of taps to 1073741823
   o Add format names mpc and svx, for mpc2k and 8svx,
     which is what sndfile-convert calls them
-  o Add ffmpeg's "aa" format
+  o Add ffmpeg's "aa", "ea" and "act" formats
   o coreaudio: Allow selection of devices by number as well as by name
   o sox_open_memstream_write(): Work for formats that rewrite the header
   o wavpack: Fix the check for successfully rewriting the file header

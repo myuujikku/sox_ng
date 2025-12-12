@@ -119,11 +119,20 @@ Third Generation Partnership Project 2 format.
 \fB.8svx\fR (also with \fB\-t sndfile\fR)
 Amiga 8SVX musical instrument description format.
 .TP
+\fB.aa\fR (with ffmpeg)
+Audible Audiobook format.
+.SP
+SoX can autodetect this format but, if it's coming from a pipe,
+\fBffmpeg\fR fails to decode it.
+.TP
 \fB.aac\fR (with ffmpeg)
 Advanced Audio Coding format.
 .TP
 \fB.ac3\fR (with ffmpeg)
 Audio Codec 3 (Dolby Digital) format.
+.TP
+\fB.act\fR (with ffmpeg)
+G729a compressed speech recorded by some Chinese-made MP3 players.
 .TP
 \fB.adts\fR (with ffmpeg)
 Audio Data Transport Stream format.
@@ -340,7 +349,7 @@ Example containing only 2 stereo samples of silence:
 .XX
 .TP
 \fB.dfpwm\fR (with ffmpeg)
-DFPWM1a format.
+Dynamic Filter Pulse Width Modulation format 1a.
 .SP
 SoX can only autodetect this type of file from its filename extension;
 if it is read from `standard input' (stdin) or from a file whose name
@@ -367,6 +376,9 @@ The Digital Voice Messaging System format is used in Germany
 to compress speech audio for voice mail.
 It is a self-describing variant of
 .BR cvsd .
+.TP
+\fB.ea\fR (with ffmpeg)
+Electronic Arts Multimedia format.
 .TP
 \fB.eac3\fR (with ffmpeg)
 Enhanced AC-3 Audio.
