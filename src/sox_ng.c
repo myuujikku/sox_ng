@@ -1956,7 +1956,8 @@ static void display_supported_formats(void)
   }
   qsort((void*)format_list, formats, sizeof(*format_list), strcmp_p);
   for (i = 0; i < formats; i++)
-    if (i > 0 && strcmp(format_list[i], format_list[i - 1]))
+    /* Only list duplicates once */
+    if (i == 0 || (i > 0 && strcmp(format_list[i], format_list[i - 1])))
       printf(" %s", format_list[i]);
   putchar('\n');
 
