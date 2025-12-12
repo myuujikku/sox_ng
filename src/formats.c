@@ -80,6 +80,9 @@ static char const * auto_detect_format(sox_format_t * ft, char const * ext)
   CHECK(vorbis, 0, 4, "OggS" , 29, 6, "vorbis")
   CHECK(opus  , 0, 4, "OggS" , 28, 8, "OpusHead")
   CHECK(hcom  ,65, 4, "FSSD" , 128,4, "HCOM")
+#if USING_FFMPEG
+  CHECK(act   , 0, 4, "RIFF" , 256,1, "\x84")
+#endif
   CHECK(wav   , 0, 4, "RIFF" , 8,  4, "WAVE")
   CHECK(wav   , 0, 4, "RIFX" , 8,  4, "WAVE")
   CHECK(wav   , 0, 4, "RF64" , 8,  4, "WAVE")
@@ -165,6 +168,18 @@ static char const * auto_detect_format(sox_format_t * ft, char const * ext)
   CHECK(avi   , 0, 4, "RIFF" , 8,  4, "AMV ")
   /* dfpwm is headerless and can only be autodetected by the filename extension */
   /* dts is autodetected by ffmpeg but not by fixed bytes at fixed offsets */
+
+  /* Possible ea magic numbers from libavformat/electronicarts.c */
+  CHECK(ea    , 0, 0, ""     , 0,  4, "ISNh")
+  CHECK(ea    , 0, 0, ""     , 0,  4, "SCHl")
+  CHECK(ea    , 0, 0, ""     , 0,  4, "SEAD")
+  CHECK(ea    , 0, 0, ""     , 0,  4, "SHEN")
+  CHECK(ea    , 0, 0, ""     , 0,  4, "kVGT")
+  CHECK(ea    , 0, 0, ""     , 0,  4, "MADk")
+  CHECK(ea    , 0, 0, ""     , 0,  4, "MPCh")
+  CHECK(ea    , 0, 0, ""     , 0,  4, "MVhd")
+  CHECK(ea    , 0, 0, ""     , 0,  4, "APV6")
+
   CHECK(eac3  , 0, 0, ""     , 0,  2, "\x04\x00") /* libavformat/eacdata.c */
   CHECK(eac3  , 0, 0, ""     , 0,  2, "\x04\x04")
   CHECK(eac3  , 0, 0, ""     , 0,  2, "\x04\x0C")
