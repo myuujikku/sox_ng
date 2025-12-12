@@ -195,8 +195,8 @@ FFMPEG_FORMAT(3g2) "3g2", "3gp2", "3gpp2"
 FFMPEG_DESCRIPTION "Third Generation Partnership Project 2"
 FFMPEG_ENDFORMAT
 
-FFMPEG_FORMAT(aa) "aa"
-FFMPEG_DESCRIPTION "Audible Format 2, 3 and 4"
+FFMPEG_FORMAT(aa) "aa", "aax"
+FFMPEG_DESCRIPTION "Audible Audiobook"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(aac) "aac"
