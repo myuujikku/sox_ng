@@ -464,7 +464,10 @@ static sox_effect_handler_t sox_stat_effect = {
   sox_stat_flow,
   sox_stat_drain,
   sox_stat_stop,
-  NULL, sizeof(priv_t)
+  NULL,
+  sizeof(priv_t),
+  NULL,
+  NULL,
 };
 
 const sox_effect_handler_t *lsx_stat_effect_fn(void)

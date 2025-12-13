@@ -412,7 +412,10 @@ static sox_effect_handler_t sox_fade_effect = {
   sox_fade_flow,
   sox_fade_drain,
   NULL,
-  lsx_kill, sizeof(priv_t)
+  lsx_kill,
+  sizeof(priv_t),
+  NULL,
+  NULL,
 };
 
 const sox_effect_handler_t *lsx_fade_effect_fn(void)

@@ -71,6 +71,7 @@ sox_effect_handler_t const * lsx_overdrive_effect_fn(void)
   static sox_effect_handler_t handler = {
     "overdrive", "[gain(20) [color(20)]]", NULL, SOX_EFF_GAIN,
     create_overdrive, start_overdrive, flow_overdrive, NULL, NULL, NULL,
-    sizeof(priv_t)};
+    sizeof(priv_t), NULL, NULL
+  };
   return &handler;
 }

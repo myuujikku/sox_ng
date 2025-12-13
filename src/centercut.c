@@ -774,7 +774,8 @@ const sox_effect_handler_t *lsx_centercut_effect_fn(void)
     "centercut", usage, extra_usage,
     SOX_EFF_MCHAN | SOX_EFF_CHAN | SOX_EFF_GAIN,
     getopts_centercut, start_centercut, flow_centercut, drain_centercut,
-    stop_centercut, NULL, sizeof(priv_t)
+    stop_centercut, NULL,
+    sizeof(priv_t), NULL, NULL,
   };
   return &sox_centercut_effect;
 }

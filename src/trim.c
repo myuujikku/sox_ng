@@ -189,7 +189,7 @@ sox_effect_handler_t const *lsx_trim_effect_fn(void)
     "trim", "{position(+)}", NULL,
     SOX_EFF_MCHAN | SOX_EFF_LENGTH | SOX_EFF_MODIFY,
     getopts_trim, start_trim, flow_trim, drain_trim, NULL, kill_trim,
-    sizeof(priv_t)
+    sizeof(priv_t), NULL, NULL,
   };
   return &handler;
 }

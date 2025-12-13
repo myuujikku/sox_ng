@@ -216,7 +216,7 @@ sox_effect_handler_t const * lsx_pad_effect_fn(void)
   static sox_effect_handler_t handler = {
     "pad", usage, NULL, SOX_EFF_MCHAN|SOX_EFF_LENGTH|SOX_EFF_MODIFY,
     create_pad, start_pad, flow_pad, drain_pad, stop_pad, kill_pad,
-    sizeof(priv_t)
+    sizeof(priv_t), NULL, NULL,
   };
   return &handler;
 }

@@ -242,7 +242,7 @@ sox_effect_handler_t const * lsx_phaser_effect_fn(void)
   static sox_effect_handler_t handler = {
     "phaser", usage, extra_usage, SOX_EFF_GAIN,
     getopts_phaser, start_phaser, flow_phaser, NULL, stop_phaser, NULL,
-    sizeof(priv_t)
+    sizeof(priv_t), NULL, NULL,
   };
 
   return &handler;

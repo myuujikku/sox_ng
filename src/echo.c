@@ -257,7 +257,10 @@ const sox_effect_handler_t *lsx_echo_effect_fn(void)
     sox_echo_flow,
     sox_echo_drain,
     sox_echo_stop,
-    sox_echo_kill, sizeof(priv_t)
+    sox_echo_kill,
+    sizeof(priv_t),
+    NULL,
+    NULL,
   };
 
   return &handler;

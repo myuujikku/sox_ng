@@ -724,7 +724,10 @@ static sox_effect_handler_t sox_silence_effect = {
   sox_silence_flow,
   sox_silence_drain,
   sox_silence_stop,
-  lsx_kill, sizeof(priv_t)
+  lsx_kill,
+  sizeof(priv_t),
+  NULL,
+  NULL,
 };
 
 const sox_effect_handler_t *lsx_silence_effect_fn(void)

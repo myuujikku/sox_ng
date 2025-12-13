@@ -363,6 +363,7 @@ sox_effect_handler_t const * lsx_stats_effect_fn(void)
     usage, extra_usage,
     SOX_EFF_MODIFY,
     getopts_stats, start_stats, flow_stats, drain_stats, stop_stats, NULL,
-    sizeof(priv_t)};
+    sizeof(priv_t), NULL, NULL,
+  };
   return &handler;
 }

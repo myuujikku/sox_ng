@@ -115,6 +115,7 @@ sox_effect_handler_t const * lsx_repeat_effect_fn(void)
     "repeat", "[count(1)|-]", extra_usage,
     SOX_EFF_MCHAN | SOX_EFF_LENGTH | SOX_EFF_MODIFY,
     create_repeat, start_repeat, flow_repeat, drain_repeat, stop_repeat, NULL,
-    sizeof(priv_t)};
+    sizeof(priv_t), NULL, NULL,
+  };
   return &effect;
 }

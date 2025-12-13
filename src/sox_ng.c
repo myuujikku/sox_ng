@@ -654,7 +654,9 @@ static sox_effect_handler_t const * input_combiner_effect_fn(void)
   static sox_effect_handler_t handler = {
     "input", NULL, NULL, SOX_EFF_MCHAN |
     SOX_EFF_MODIFY, 0, combiner_start, 0, combiner_drain,
-    combiner_stop, 0, sizeof(input_combiner_t)
+    combiner_stop, 0,
+    sizeof(input_combiner_t),
+    NULL, NULL,
   };
   return &handler;
 }
@@ -701,7 +703,9 @@ static sox_effect_handler_t const * output_effect_fn(void)
 {
   static sox_effect_handler_t handler = {"output", NULL, NULL,
     SOX_EFF_MCHAN | SOX_EFF_MODIFY | SOX_EFF_PREC,
-    NULL, ostart, output_flow, NULL, NULL, NULL, 0
+    NULL, ostart, output_flow, NULL, NULL, NULL,
+    0,
+    NULL, NULL,
   };
   return &handler;
 }
@@ -1398,12 +1402,12 @@ static int update_status(sox_bool all_done, void * client_data)
     int ch = getchar();
 #endif
 
+    switch (ch) {
+
 #ifdef MORE_INTERACTIVE
+    case '>':
     if (files[current_input]->ft->handler.seek &&
-        files[current_input]->ft->seekable)
-    {
-      if (ch == '>')
-      {
+        files[current_input]->ft->seekable) {
         uint64_t jump = files[current_input]->ft->signal.rate*30; /* 30 sec. */
         if (input_wide_samples == 0 ||
                   read_wide_samples+jump < input_wide_samples) {
@@ -1413,8 +1417,11 @@ static int update_status(sox_bool all_done, void * client_data)
           /* FIXME: Do something if seek fails. */
         }
       }
-      if (ch == '<')
-      {
+      break;
+
+    case '<':
+    if (files[current_input]->ft->handler.seek &&
+        files[current_input]->ft->seekable) {
         uint64_t jump = files[current_input]->ft->signal.rate*30; /* 30 sec. */
         read_wide_samples = jump < read_wide_samples ?
             read_wide_samples-jump : 0;
@@ -1422,9 +1429,9 @@ static int update_status(sox_bool all_done, void * client_data)
                  SOX_SEEK_SET);
         /* FIXME: Do something if seek fails. */
       }
-    }
-    if (ch == 'R')
-    {
+      break;
+
+    case 'R':
       /* Not very useful, eh!  Sample though of the place you
        * could change the value to effects options
        * like vol or speed or remix.
@@ -1433,11 +1440,11 @@ static int update_status(sox_bool all_done, void * client_data)
        * this function is existed.
        */
       user_restart_eff = sox_true;
-    }
+      break;
 #endif
-    switch (ch) {
-      case 'V': adjust_volume(+7); break;
-      case 'v': adjust_volume(-7); break;
+
+    case 'V': adjust_volume(+7); break;
+    case 'v': adjust_volume(-7); break;
     }
   }
 

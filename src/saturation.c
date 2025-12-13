@@ -213,7 +213,9 @@ sox_effect_handler_t const * lsx_saturation_effect_fn(void)
 
   static sox_effect_handler_t handler = {
     "saturation", usage, extra_usage, SOX_EFF_GAIN,
-    getopts, start, flow, NULL, NULL, NULL, sizeof(priv_t)};
+    getopts, start, flow, NULL, NULL, NULL,
+    sizeof(priv_t), NULL, NULL,
+  };
 
   return &handler;
 }

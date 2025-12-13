@@ -387,7 +387,8 @@ static int start(sox_effect_t * effp)
 sox_effect_handler_t const * lsx_##name##_effect_fn(void) { \
   static sox_effect_handler_t handler = { \
     #name, usage, name##_extra, flags, \
-    group##_getopts, start, lsx_biquad_flow, 0, 0, 0, sizeof(biquad_t)\
+    group##_getopts, start, lsx_biquad_flow, 0, 0, 0, \
+    sizeof(biquad_t), NULL, NULL,\
   }; \
   return &handler; \
 }

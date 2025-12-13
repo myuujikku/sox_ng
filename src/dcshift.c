@@ -192,7 +192,10 @@ static sox_effect_handler_t sox_dcshift_effect = {
    sox_dcshift_flow,
    NULL,
    sox_dcshift_stop,
-  NULL, sizeof(priv_t)
+   NULL,
+   sizeof(priv_t),
+   NULL,
+   NULL,
 };
 
 const sox_effect_handler_t *lsx_dcshift_effect_fn(void)

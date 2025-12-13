@@ -59,7 +59,8 @@ sox_effect_handler_t const * lsx_output_effect_fn(void)
 {
   static sox_effect_handler_t handler = {
     "output", NULL, NULL, SOX_EFF_MCHAN | SOX_EFF_INTERNAL,
-    getopts_output, NULL, flow_output, NULL, NULL, NULL, sizeof(priv_t)
+    getopts_output, NULL, flow_output, NULL, NULL, NULL,
+    sizeof(priv_t), NULL, NULL,
   };
   return &handler;
 }

@@ -291,7 +291,8 @@ sox_effect_handler_t const * lsx_compand_effect_fn(void)
   static sox_effect_handler_t handler = {
     "compand", usage, extra_usage, SOX_EFF_MCHAN | SOX_EFF_GAIN,
     getopts_compand, start_compand, flow_compand, drain_compand,
-    stop_compand, kill_compand, sizeof(priv_t)
+    stop_compand, kill_compand,
+    sizeof(priv_t), NULL, NULL,
   };
 
   return &handler;

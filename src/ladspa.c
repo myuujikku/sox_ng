@@ -560,7 +560,9 @@ static sox_effect_handler_t sox_ladspa_effect = {
   sox_ladspa_drain,
   sox_ladspa_stop,
   sox_ladspa_kill,
-  sizeof(priv_t)
+  sizeof(priv_t),
+  NULL,
+  NULL,
 };
 
 const sox_effect_handler_t *lsx_ladspa_effect_fn(void)

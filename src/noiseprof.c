@@ -214,7 +214,10 @@ static sox_effect_handler_t sox_noiseprof_effect = {
   sox_noiseprof_flow,
   sox_noiseprof_drain,
   sox_noiseprof_stop,
-  NULL, sizeof(priv_t)
+  NULL,
+  sizeof(priv_t),
+  NULL,
+  NULL,
 };
 
 const sox_effect_handler_t *lsx_noiseprof_effect_fn(void)

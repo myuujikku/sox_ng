@@ -81,6 +81,7 @@ sox_effect_handler_t const *lsx_downsample_effect_fn(void)
   static sox_effect_handler_t handler = {
     "downsample", "[factor(2)]", NULL, SOX_EFF_RATE | SOX_EFF_MODIFY,
     create_downsample, start_downsample, flow_downsample, NULL, NULL, NULL,
-    sizeof(priv_t)};
+    sizeof(priv_t), NULL, NULL,
+  };
   return &handler;
 }

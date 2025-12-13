@@ -497,7 +497,8 @@ const sox_effect_handler_t *lsx_mcompand_effect_fn(void)
   static sox_effect_handler_t handler = {
     "mcompand", usage, extra_usage, SOX_EFF_MCHAN | SOX_EFF_GAIN,
     getopts_mcompand, start_mcompand, flow_mcompand, drain_mcompand,
-    stop_mcompand, kill_mcompand, sizeof(priv_t)
+    stop_mcompand, kill_mcompand,
+    sizeof(priv_t), NULL, NULL,
   };
 
   return &handler;

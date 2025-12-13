@@ -56,7 +56,7 @@ sox_effect_handler_t const *lsx_swap_effect_fn(void)
     "swap", NULL, NULL,
     SOX_EFF_MCHAN | SOX_EFF_MODIFY,
     NULL, start_swap, flow_swap, NULL, NULL, NULL,
-    0
+    0, NULL, NULL,
   };
   return &handler;
 }

@@ -383,7 +383,7 @@ const sox_effect_handler_t* lsx_speexdsp_effect_fn(void)
     "speexdsp", usage, extra_usage, SOX_EFF_PREC | SOX_EFF_GAIN,
     getopts_speexdsp, start_speexdsp, flow_speexdsp,
     drain_speexdsp, stop_speexdsp, NULL,
-    sizeof(priv_t)
+    sizeof(priv_t), NULL, NULL,
   };
 
   return &descriptor;

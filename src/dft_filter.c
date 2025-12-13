@@ -134,7 +134,7 @@ sox_effect_handler_t const * lsx_dft_filter_effect_fn(void)
   static sox_effect_handler_t handler = {
     NULL, NULL, NULL, SOX_EFF_GAIN,
     NULL, start_dft_filter, flow_dft_filter, drain_dft_filter, stop_dft_filter,
-    NULL, 0
+    NULL, 0, NULL, NULL,
   };
   return &handler;
 }

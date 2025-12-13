@@ -617,7 +617,9 @@ const sox_effect_handler_t *lsx_chorus_effect_fn(void)
                 sox_chorus_drain,
                 sox_chorus_stop,
                 NULL,
-                sizeof(chorus_priv_t)
+                sizeof(chorus_priv_t),
+                NULL,
+                NULL,
         };
 
         return &sox_chorus_effect;

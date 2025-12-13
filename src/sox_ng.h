@@ -1542,6 +1542,9 @@ typedef struct sox_effects_globals {
   sox_globals_t * global_info; /**< Pointer to associated SoX globals */
 } sox_effects_globals_t;
 
+typedef char *(*sox_effect_handler_get)(sox_effect_t *effp, char *);
+typedef char *(*sox_effect_handler_set)(sox_effect_t *effp, char *, char *);
+
 /**
 Client API:
 Effect handler information.
@@ -1558,6 +1561,14 @@ struct sox_effect_handler {
   sox_effect_handler_stop stop;       /**< Called to shut down effect (called once per flow). */
   sox_effect_handler_kill kill;       /**< Called to shut down effect (called once per effect). */
   size_t       priv_size;             /**< Size of private data SoX should pre-allocate for effect */
+  /* Add new fields here, after priv_size, so that existing effects get NULL
+   * when they say "static sox_effect_handler_t foo = {..., sizeof(priv_t)};"
+   * As the aeons pass, priv_size will slowly migrate upwards through
+   * the layers of pointer functions and end up cocooned in them but hey.
+   * You should have put it first, folks.
+   */
+  sox_effect_handler_get get;
+  sox_effect_handler_set set;
 };
 
 /**

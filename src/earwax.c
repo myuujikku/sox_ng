@@ -118,6 +118,7 @@ sox_effect_handler_t const *lsx_earwax_effect_fn(void)
 {
   static sox_effect_handler_t handler = {
     "earwax", NULL, extra_usage, SOX_EFF_MCHAN,
-    NULL, start_earwav, flow_earwav, NULL, NULL, NULL, sizeof(priv_t)};
+    NULL, start_earwav, flow_earwav, NULL, NULL, NULL,
+    sizeof(priv_t), NULL, NULL };
   return &handler;
 }

@@ -81,7 +81,7 @@ sox_effect_handler_t const * lsx_reverse_effect_fn(void)
   static sox_effect_handler_t handler = {
     "reverse", NULL, NULL, SOX_EFF_MODIFY,
     NULL, start_reverse, flow_reverse, drain_reverse, stop_reverse, NULL,
-    sizeof(priv_t)
+    sizeof(priv_t), NULL, NULL,
   };
   return &handler;
 }
