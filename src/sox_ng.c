@@ -150,6 +150,21 @@ static lsx_enum_item const rg_modes[] = {
 static rg_mode replay_gain_mode = RG_default;
 static sox_option_t show_progress = sox_option_default;
 
+/* --key mappings */
+typedef struct {
+  char  *key;	    /* String name of the bound key, like "D" */
+  char  *effect;    /* effect whose parameter this changes */
+  char  *field;     /* parameter changed in the effect's priv_t */
+  char   operator;  /* '+', '-', '*' or '/' */
+  double step;      /* How much to add or subtract, to multiply or divide by */
+} keymap_t;
+
+static keymap_t *keymaps = NULL;
+static unsigned keymap_count = 0;
+
+static void keymap_add(char *key, char *effect, char *field,
+                       char operator, double step);
+static void keymap_free(void);
 
 /* Input & output files */
 
@@ -1443,65 +1458,87 @@ static int update_status(sox_bool all_done, void * client_data)
     case 'V': adjust_volume(+7); break;
     case 'v': adjust_volume(-7); break;
 
-    /* Effect parameter-changing keys */
-    case 'D': case 'd':
-      /* Find the dolbyb effect in the effects chain */
+    default:
+      /* See if the key is claimed by an effect parameter-changing key */
       {
-        sox_effect_t **e;
-        size_t n;
+        unsigned i;
+        sox_bool found_key = sox_false;
+        sox_bool found_effect = sox_false;
 
-        for (n=0, e=effects_chain->effects;
-             n < effects_chain->length;
-             n++, e++) {
-          sox_effect_t *effp = (*e);
+        for (i=0; i < keymap_count; i++) {
+          /* Just single-letter-named keys for now */
+          if (keymaps[i].key[0] == ch && keymaps[i].key[1] == '\0') {
+            sox_effect_t **e;
+            size_t n;
+            /* This is the Nth occurrence in the chain of
+             * an effect with this name */
+            int occurrence = 0;
 
-          if (!strcmp(effp->handler.name, "dolbyb")) {
-            /* This is a dolbyb effect. Tweak it. */
-            char *gainstr;
-            /* We trust to be able to strtod strings sprintfed by us */
-            double gain;
-            char *result;
+            found_key = sox_true;
 
-            gainstr = effp->handler.get((*e), "gain");
-            if (!gainstr) {
-              lsx_warn("can't get the current threshold gain");
-              goto endofd;  /* break out of the switch */
-            }
+            /* Find the named effect in the effects chain */
+            for (n=0, e=effects_chain->effects;
+                 n < effects_chain->length;
+                 n++, e++) {
+              sox_effect_t *effp = (*e);
+              unsigned namelen = strlen(effp->handler.name);
+              char   digit;  /* '1' to '9' in "synth2" effect name */
+              char  *effect   = keymaps[i].effect;
+              char  *field    = keymaps[i].field;
+              char   operator = keymaps[i].operator;
+              double step     = keymaps[i].step;
 
-            gain = strtod(gainstr, NULL);
+              if (!strncmp(effect, effp->handler.name, namelen)) {
 
-            switch (ch) {
-            case 'd': /* lower it */
-              gain -= 2;
-              break;
-            case 'D': /* raise it */
-              gain += 2;
-              break;
-            }
-            /* The set() function will limit this to the valid range */
+                occurrence++;
+                /* A matching effect name that applies to all invocations? */
+                if (effect[namelen] == '\0' ||
+                    /* A matching effect name to apply to the Nth invocation? */
+                    (isdigit(digit = effect[namelen]) &&
+                     digit - '0' == occurrence)) {
+                  char *valuestr = effp->handler.get(effp, field);
+                  double value;
+                  char *result;
 
-            /* Reuse the string from handler.get() as it's mallocked[32]
-             * and it's ours now. */
-            sprintf(gainstr, "%.14f", gain);
-            result = effp->handler.set(effp, "gain", gainstr);
-            if (!result) {
-              lsx_warn("\afailed to set threshold gain to %s", gainstr);
-            } if (result == gainstr) {
-              /* It was set to the same value as it already had */
-            } else {
-              if (lsx_strtod(gainstr, NULL) == lsx_strtod(result, NULL))
-                lsx_report("changed dolbyb threshold gain to %s", result);
-              else
-                putc('\a', stderr); /* Beep when hitting the endstops */
-              free(result);
+                  found_effect = sox_true;
+                  if (!valuestr) {
+                    lsx_warn("can't get the current value of %s.%s",
+                             effect, field);
+                    goto endofkey;  /* break out of the switch */
+                  }
+                  value = lsx_strtod(valuestr, NULL);
+                  switch (operator) {
+                  case '+': value += step; break;
+                  case '-': value -= step; break;
+                  case '*': value *= step; break;
+                  case '/': value /= step; break;
+                  }
+                  /* Reuse the string from handler.get() as it's mallocked[32]
+                   * and it's ours now. */
+                  sprintf(valuestr, "%.14f", value);
+                  result = effp->handler.set(effp, field, valuestr);
+                  if (!result) {
+                    lsx_warn("\afailed to set %s.%s to %s",
+                             effect, field, valuestr);
+                  } else if (result == valuestr) {
+                    /* No change */
+                  } else {
+                    if (lsx_strtod(valuestr, NULL) == lsx_strtod(result, NULL))
+                      lsx_report("changed %s.%s to %s",
+                                 effect, field, result);
+                    else
+                      putc('\a', stderr); /* Beep when hitting the endstops */
+                    free(result);
+                  }
+                }
+              }
             }
           }
         }
+        if (!found_key) lsx_warn("key `%c' doesn't do anything", ch);
       }
-endofd:
+endofkey:
       break;
-    default:
-      lsx_warn("key `%c' doesn't do anything", ch);
     }
   }
 
@@ -2331,7 +2368,7 @@ static void read_comment_file(sox_comments_t * comments, char const * const file
 }
 
 static char const * const getoptstr =
-  "+b:c:de:hmnpqr:t:v:xA:BC:DGLMNRSTV::X";
+  "+b:c:de:hk:mnpqr:t:v:xA:BC:DGLMNRSTV::X";
 
 static lsx_option_t const long_options[] = {
   /*
@@ -2366,8 +2403,8 @@ static lsx_option_t const long_options[] = {
   {"dft-min"         , lsx_option_arg_required, NULL, 0}, /* 25 */
 
   /*
-   * These instead are index by their letters, which limits the
-   * above section to a maximum of 64 enries.
+   * These instead are indexed by their letters, which limits the
+   * above section to a maximum of 64 entries.
    */
   {"bits"            , lsx_option_arg_required, NULL, 'b'},
   {"channels"        , lsx_option_arg_required, NULL, 'c'},
@@ -2376,6 +2413,7 @@ static lsx_option_t const long_options[] = {
   {"no-dither"       , lsx_option_arg_none    , NULL, 'D'},
   {"encoding"        , lsx_option_arg_required, NULL, 'e'},
   {"help"            , lsx_option_arg_none    , NULL, 'h'},
+  {"key"             , lsx_option_arg_required, NULL, 'k'},
   {"null"            , lsx_option_arg_none    , NULL, 'n'},
   {"no-show-progress", lsx_option_arg_none    , NULL, 'q'},
   {"pipe"            , lsx_option_arg_none    , NULL, 'p'},
@@ -2571,6 +2609,9 @@ static char parse_gopts_and_fopts(file_t * f)
         }
         sox_globals.log2_dft_min_size = i;
         break;
+      default:
+        lsx_fail("internal error processing long option");
+        exit(1);
       }
       break;
 
@@ -2584,7 +2625,6 @@ static char parse_gopts_and_fopts(file_t * f)
       break;
 
     case 'd': case 'n': case 'p':
-      optstate.ind = optstate.ind;
       return c;
 
     case 'h':
@@ -2703,8 +2743,61 @@ static char parse_gopts_and_fopts(file_t * f)
         sox_globals.verbosity = (unsigned)i;
       }
       break;
+    case 'k':
+      /* --key D:dolbyb.gain+2 --key d:dolbyb.gain-2 */
+      {
+        char *key, *effect, *field;
+        char operator;  /* '+', '-', '*' or '/' */
+        double step;
+        char dummy; /* Trailing garbage */
+        int n;
+
+        n = sscanf(optstate.arg, "%8m[a-zA-Z0-9]:%16m[a-z].%16m[a-z]%[+-*/]%lg%c",
+                   &key, &effect, &field, &operator, &step, &dummy);
+        if (n != 5) {
+          lsx_fail("can't parse `%s' as key:effect.field[+-*/]step; n=%d",
+                   optstate.arg, n);
+          exit(1);
+        }
+        key[1] = '\0';
+
+        keymap_add(key, effect, field, operator, step);
+      }
+      break;
     }
   }
+}
+
+/* Routines to rememeber and apply keymaps.
+ * The string values are mallocked memory which we are responsible for freeing.
+ * The effect name may be "synth2" meaning "only tweak the second synth effect
+ * in the effects chain".
+ */
+static void
+keymap_add(char *key, char *effect, char *field, char operator, double step)
+{
+  lsx_revalloc(keymaps, keymap_count + 1);
+  keymaps[keymap_count].key = key;
+  keymaps[keymap_count].effect = effect;
+  keymaps[keymap_count].field = field;
+  keymaps[keymap_count].operator = operator;
+  keymaps[keymap_count].step = step;
+  keymap_count++;
+}
+
+static void
+keymap_free(void)
+{
+  unsigned i;
+
+  for (i=0; i < keymap_count; i++) {
+    free(keymaps[i].key);
+    free(keymaps[i].effect);
+    free(keymaps[i].field);
+  }
+  free(keymaps);
+  keymaps = NULL;
+  keymap_count = 0;
 }
 
 static char const * device_name(char const * const type)

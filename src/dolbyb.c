@@ -293,6 +293,7 @@ const sox_effect_handler_t *lsx_dolbyb_effect_fn(void)
     "-t gain -100-100    0     Adjust the sliding filter's threshold in dB",
     "-a prec -100-0     -5     Adjust the accuracy in dB when decoding",
     "-f n       1-4      4     Filter type: 1=original 2=better 3=worse 4=best",
+    "Keymap: dolbyb.gain",
     NULL
   };
   static sox_effect_handler_t sox_dolbyb_effect = {

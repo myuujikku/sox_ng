@@ -814,14 +814,28 @@ Seek back and forth in the audio file by 30 seconds.
 .TP
 \fBR\fR
 Restart the effects chain (like \fB:\fR)
-.TP
-\fBd\fR and \fBD\fR
-Lower and raise the Threshold Gain of \fBdolbyb\fR bu 2dB.
-Give \fB\-V\fR to see reports of new Threshold Gain values
-that are set.
 .RE
 .SP
 It is enabled by default when playing, disabled otherwise.
+.TP
+\fB\-k\fR \fIkey\fR:\fIeffect\fR.\fIfield\fR[\fB\(pl\fR|\fB\(mi\fR|\fB*\fR|\fB/\fR]\fIstep\fR
+In interactive mode, pressing the specified key will change
+an effect's parameter, adding or subtracting \fIstep\fR (for linear changes)
+or multiplying/dividing by \fIstep\fR for logarithmic control.
+For example:
+.XE
+   play_ng -k D:dolbyb.gain+2 -k d:dolbyb.gain-2 in.wav dolbyb
+.XX
+lets you hear the results of `dolbyb` removal and adjust the Threshold Gain
+of the effect in steps of 2dB to find the best setting.
+.SP
+The manual entries for individual effects say which parameters
+can be adjusted in this way, say \fB\-\-help\-effect dolbyb\fB
+to know which of an effect's parameters may be keymapped or
+.XE
+   sox_ng --help-effect all | grep Keymap
+.XX
+for a complete list.
 .TP
 \fB\-m\fR\^|\^\fB\-M\fR
 Equivalent to \fB\-\-combine mix\fR and \fB\-\-combine merge\fR respectively.
@@ -2115,6 +2129,13 @@ right output sample values. \fB\-a\fR sets how accurate it
 needs to be before it is considered OK. A figure of 0.0\ dB would
 mean an accuracy of about 1 sample value. The default is -5.0\ dB,
 which is accurate to less than one sample value.
+.SP
+The keymap for \fIgain\fR is \fRdolbyb.gain\fB, for example:
+.XE
+   play_ng -k D:dolbyb.gain+2 -k d:dolbyb.gain-2 in.wav
+.XX
+lets you adjust the Threshold Gain in \(pl/\(mi 2dB steps;
+to see what the new value is as you proceed, use `\-V`.
 .SP
 \fB\-f\fR selects one of four types of filter to use.
 The program originally simulated an analog circuit for a Dolby\ B
