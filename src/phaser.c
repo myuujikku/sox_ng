@@ -83,6 +83,63 @@ static int getopts_phaser(sox_effect_t * effp, int argc, char * * argv)
   return argc? lsx_usage(effp) : SOX_SUCCESS;
 }
 
+static char *
+get_phaser(sox_effect_t *effp, char *name)
+{
+  priv_t *p = (priv_t *)effp->priv;
+  char *s = NULL;
+
+  if (!strcmp(name, "gain-in")) {
+    s = lsx_malloc(32);
+    sprintf(s, "%g", p->gain_in);
+  }
+  if (!strcmp(name, "gain-out")) {
+    s = lsx_malloc(32);
+    sprintf(s, "%g", p->gain_out);
+  }
+  if (!strcmp(name, "regen")) {
+    s = lsx_malloc(32);
+    sprintf(s, "%g", p->regen);
+  }
+
+  return s;
+}
+
+static char *
+set_phaser(sox_effect_t *effp, char *name, char *value)
+{
+  priv_t *p = (priv_t *)effp->priv;
+  char *s = NULL;
+  char *endptr = value;
+  double v = lsx_strtod(value, &endptr);
+
+  if (endptr == value || *endptr != '\0') return NULL;
+
+  if (!strcmp(name, "gain-in")) {
+    if (v > 1.0)  v = 1.0;
+    if (v < -1.0) v = -1.0;
+    p->gain_in = v;
+    s = malloc(32);
+    sprintf(s, "%g", v);
+  }
+  if (!strcmp(name, "gain-out")) {
+    if (v > 1.0)  v = 1.0;
+    if (v < -1.0) v = -1.0;
+    p->gain_out = v;
+    s = malloc(32);
+    sprintf(s, "%g", v);
+  }
+  if (!strcmp(name, "regen")) {
+    if (v > 1.0)  v = 1.0;
+    if (v < -1.0) v = -1.0;
+    p->regen = v;
+    s = malloc(32);
+    sprintf(s, "%g", v);
+  }
+
+  return s;
+}
+
 static int start_phaser(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *) effp->priv;
@@ -236,13 +293,14 @@ sox_effect_handler_t const * lsx_phaser_effect_fn(void)
 "",
 "Hint: gain-in  < (1 - regen * regen)",
 "      gain-out < (1 - regen) / gain-in",
+"Keymaps: phaser.gain-in phaser.gain-out phaser.regen",
     NULL
   };
 
   static sox_effect_handler_t handler = {
     "phaser", usage, extra_usage, SOX_EFF_GAIN,
     getopts_phaser, start_phaser, flow_phaser, NULL, stop_phaser, NULL,
-    sizeof(priv_t), NULL, NULL,
+    sizeof(priv_t), get_phaser, set_phaser,
   };
 
   return &handler;

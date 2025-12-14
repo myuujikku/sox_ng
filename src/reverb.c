@@ -120,16 +120,16 @@ typedef struct {
 } reverb_t;
 
 static void reverb_create(reverb_t * p, double sample_rate_Hz,
-    double wet_gain_dB,
+    double wet_gain,       /* dB */
     double room_scale,     /* % */
     double reverberance,   /* % */
     double hf_damping,     /* % */
-    double pre_delay_ms,
+    double pre_delay,      /* ms */
     double stereo_depth,
     size_t buffer_size,
     float * * out)
 {
-  size_t i, delay = pre_delay_ms / 1000 * sample_rate_Hz + .5;
+  size_t i, delay = pre_delay / 1000 * sample_rate_Hz + .5;
   double scale = room_scale / 100 * .9 + .1;
   double depth = stereo_depth / 100;
   double a =  -1 /  log(1 - /**/.3 /**/);           /* Set minimum feedback */
@@ -138,7 +138,7 @@ static void reverb_create(reverb_t * p, double sample_rate_Hz,
   memset(p, 0, sizeof(*p));
   p->feedback = 1 - exp((reverberance - b) / (a * b));
   p->hf_damping = hf_damping / 100 * .3 + .2;
-  p->gain = dB_to_linear(wet_gain_dB) * .015;
+  p->gain = dB_to_linear(wet_gain) * .015;
   lsx_fifo_create(&p->input_fifo, sizeof(float));
   memset(lsx_fifo_write(&p->input_fifo, delay, 0), 0, delay * sizeof(float));
   for (i = 0; i <= ceil(depth); ++i) {
@@ -169,8 +169,8 @@ static void reverb_delete(reverb_t * p)
 /*------------------------------- SoX Wrapper --------------------------------*/
 
 typedef struct {
-  double reverberance, hf_damping, pre_delay_ms;
-  double stereo_depth, wet_gain_dB, room_scale;
+  double reverberance, hf_damping, pre_delay;
+  double stereo_depth, wet_gain, room_scale;
   sox_bool wet_only;
 
   size_t ichannels, ochannels;
@@ -191,11 +191,11 @@ static int getopts_reverb(sox_effect_t * effp, int argc, char **argv)
     && (--argc, ++argv, sox_true);
   do {  /* break-able block */
     NUMERIC_PARAMETER(reverberance, 0, 100)
-    NUMERIC_PARAMETER(hf_damping, 0, 100)
-    NUMERIC_PARAMETER(room_scale, 0, 100)
+    NUMERIC_PARAMETER(hf_damping,   0, 100)
+    NUMERIC_PARAMETER(room_scale,   0, 100)
     NUMERIC_PARAMETER(stereo_depth, 0, 100)
-    NUMERIC_PARAMETER(pre_delay_ms, 0, 500)
-    NUMERIC_PARAMETER(wet_gain_dB, -10, 10)
+    NUMERIC_PARAMETER(pre_delay,    0, 500)
+    NUMERIC_PARAMETER(wet_gain,   -10,  10)
   } while (0);
 
   return argc ? lsx_usage(effp) : SOX_SUCCESS;
@@ -219,12 +219,12 @@ static int start_reverb(sox_effect_t * effp)
     p->ichannels = p->ochannels = 2;
   else effp->flows = effp->in_signal.channels;
   for (i = 0; i < p->ichannels; ++i) reverb_create(
-    &p->chan[i].reverb, effp->in_signal.rate, p->wet_gain_dB, p->room_scale,
-    p->reverberance, p->hf_damping, p->pre_delay_ms, p->stereo_depth,
+    &p->chan[i].reverb, effp->in_signal.rate, p->wet_gain, p->room_scale,
+    p->reverberance, p->hf_damping, p->pre_delay, p->stereo_depth,
     effp->global_info->global_info->bufsiz / p->ochannels, p->chan[i].wet);
 
   if (effp->in_signal.mult)
-    *effp->in_signal.mult /= !p->wet_only + 2 * dB_to_linear(max(0,p->wet_gain_dB));
+    *effp->in_signal.mult /= !p->wet_only + 2 * dB_to_linear(max(0,p->wet_gain));
   return SOX_SUCCESS;
 }
 

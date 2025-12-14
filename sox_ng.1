@@ -2762,6 +2762,8 @@ Non-linear distortion.
 The \fIcolor\fR parameter controls the amount of even harmonic content
 in the overdriven output. Both parameters range from 0 to 100.
 .SP
+There are keymaps on both \fIgain\fR and \fIcolor\fR.
+.SP
 See also \fBcentercut\fR.
 .TP
 \fBpad\fR { \fI[%]length\fR[\fB@\fIposition(=)\fR] }
@@ -2821,6 +2823,8 @@ to be compatible with earlier versions of SoX, supply all the parameters
 with one of these at the end, use \fIgain-in\fR and \fIgain-out\fR from 0 to 1,
 \fIdelay\fR from 0 to 5, \fIspeed\fR from 0\*d1 to 2
 and don't use interpolation.
+.SP
+There are keymaps on \fIgain-in\fR, \fIgain-out\fR and \fIregen\fR.
 .SP
 Technically, the SoX \fBphaser\fP is not a phaser; it is a flanger.
 A flanger does comb filtering with equidistant spacing

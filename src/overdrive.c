@@ -35,12 +35,63 @@ static int create_overdrive(sox_effect_t * effp, int argc, char * * argv)
   return argc? lsx_usage(effp) : SOX_SUCCESS;
 }
 
-static int start_overdrive(sox_effect_t * effp)
+static char *
+get_overdrive(sox_effect_t *effp, char *name)
 {
+  priv_t *p = (priv_t *)effp->priv;
+  char *s = NULL;
+
+  if (!strcmp(name, "gain")) {
+    double v = linear_to_dB(p->gain);
+    s = lsx_malloc(32);
+    sprintf(s, "%g", v);
+  }
+  if (!strcmp(name, "color")) {
+    double v = p->color * 200;
+    s = lsx_malloc(32);
+    sprintf(s, "%g", v);
+  }
+
+  return s;
+}
+
+static char *
+set_overdrive(sox_effect_t *effp, char *name, char *value)
+{
+  priv_t *p = (priv_t *)effp->priv;
+  char *s = NULL;
+  char *endptr = value;
+  double v = lsx_strtod(value, &endptr);
+
+  if (endptr == value || *endptr != '\0') return NULL;
+
+  if (!strcmp(name, "gain")) {
+    if (v < 0)   v = 0;
+    if (v > 100) v = 100;
+    p->gain = dB_to_linear(v);
+    s = malloc(32);
+    sprintf(s, "%g", v);
+  }
+  if (!strcmp(name, "color")) {
+    if (v < 0)   v = 0;
+    if (v > 100) v = 100;
+    p->color = v / 200;
+    s = malloc(32);
+    sprintf(s, "%g", v);
+  }
+
+  return s;
+}
+
+static int start_overdrive(UNUSED sox_effect_t * effp)
+{
+  /* gain is now keymapped so it may change */
+#if 0
   priv_t * p = (priv_t *)effp->priv;
 
   if (p->gain == 1)
     return SOX_EFF_NULL;
+#endif
 
   return SOX_SUCCESS;
 }
@@ -68,10 +119,18 @@ static int flow_overdrive(sox_effect_t * effp, const sox_sample_t * ibuf,
 
 sox_effect_handler_t const * lsx_overdrive_effect_fn(void)
 {
+  static char const usage[] = "[gain(20) [color(20)]]";
+  static char const * const extra_usage[] = {
+    "OPTION  RANGE  DEFAULT  DESCRIPTION",
+    "gain    0-100    20     Decibels of gain to apply",
+    "color   0-100    20     Amount of even harmonic content in the output",
+    "Keymaps: overdrive.gain overdrive.color",
+    NULL
+  };
   static sox_effect_handler_t handler = {
-    "overdrive", "[gain(20) [color(20)]]", NULL, SOX_EFF_GAIN,
+    "overdrive", usage, extra_usage, SOX_EFF_GAIN,
     create_overdrive, start_overdrive, flow_overdrive, NULL, NULL, NULL,
-    sizeof(priv_t), NULL, NULL
+    sizeof(priv_t), get_overdrive, set_overdrive,
   };
   return &handler;
 }
