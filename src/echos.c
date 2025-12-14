@@ -39,6 +39,7 @@ typedef struct {
 static int sox_echos_getopts(sox_effect_t * effp, int argc, char **argv)
 {
         priv_t * echos = (priv_t *) effp->priv;
+        char *endptr;
         int i;
 
         echos->num_delays = 0;
@@ -55,22 +56,39 @@ static int sox_echos_getopts(sox_effect_t * effp, int argc, char **argv)
 	}
 
         i = 0;
-        sscanf(argv[i++], "%f", &echos->gain_in);
-        sscanf(argv[i++], "%f", &echos->gain_out);
+        echos->gain_in = lsx_strtod(endptr = argv[i], &endptr);
+        if (endptr == argv[i] || *endptr) {
+          lsx_fail("gain-in `%s' is not a number", argv[i]);
+          return SOX_EOF;
+        }
+        i++;
+        echos->gain_out = lsx_strtod(endptr = argv[i], &endptr);
+        if (endptr == argv[i] || *endptr) {
+          lsx_fail("gain-out `%s' is not a number", argv[i]);
+          return SOX_EOF;
+        }
+        i++;
         while (i < argc) {
 		float delay, decay;
 
-                if (sscanf(argv[i], "%f", &delay) != 1) {
+                delay = lsx_strtod(endptr = argv[i], &endptr);
+                if (endptr == argv[i] || *endptr) {
                         lsx_fail("delay `%s' is not a number", argv[i]);
                         return (SOX_EOF);
                 }
-                if (delay < 0 || !isfinite(delay)) {
-                        lsx_fail("delays must be positive");
+                if (delay < 0) {
+                        lsx_fail("delays can't be negative");
                         return (SOX_EOF);
                 }
 		i++;
-                if (sscanf(argv[i], "%f", &decay) != 1) {
+
+                decay = lsx_strtod(endptr = argv[i], &endptr);
+                if (endptr == argv[i] || *endptr) {
                         lsx_fail("decay `%s' is not a number", argv[i]);
+                        return (SOX_EOF);
+                }
+                if (decay < 0 || decay > 1) {
+                        lsx_fail("decays must be from 0 to 1");
                         return (SOX_EOF);
                 }
 		i++;
@@ -280,11 +298,11 @@ const sox_effect_handler_t *lsx_echos_effect_fn(void)
 "     |        |                               * decay 2 |   |",
 "     +--------+---------------------------------------->|   |",
 "                                              * decay 1 |___|",
-"         RANGE  DESCRIPTION",
-"gain-in   0-1   Proportion of input signal delivered clean to adder",
-"gain-out  0-    Final volume adjustment",
-"delay     0-    Delay in milliseconds",
-"decay     0-1   Proportion of delayed signal delivered to adder",
+"           RANGE   DESCRIPTION",
+"gain-in  -inf-inf  Proportion of input signal delivered clean to adder",
+"gain-out -inf-inf  Final volume adjustment",
+"delay       0-     Delay in milliseconds",
+"decay       0-1    Proportion of delayed signal delivered to adder",
 "",
 "When decay is close to 1.0, samples can clip and the output can saturate.",
 "Hint: gain-out < 1 / (gain-in + decay1 + ... + decayN)",
