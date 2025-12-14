@@ -1512,6 +1512,7 @@ static int update_status(sox_bool all_done, void * client_data)
                   case '-': value -= step; break;
                   case '*': value *= step; break;
                   case '/': value /= step; break;
+                  case '=': value  = step; break;
                   }
                   /* Reuse the string from handler.get() as it's mallocked[32]
                    * and it's ours now. */
@@ -2749,10 +2750,10 @@ static char parse_gopts_and_fopts(file_t * f)
         char dummy; /* Trailing garbage */
         int n;
 
-        n = sscanf(optstate.arg, "%8m[a-zA-Z0-9]:%16m[a-z].%16m[a-z]%[+-*/]%lg%c",
+        n = sscanf(optstate.arg, "%8m[a-zA-Z0-9]:%16m[a-z].%16m[-a-z]%[+-*/=]%lg%c",
                    &key, &effect, &field, &operator, &step, &dummy);
         if (n != 5) {
-          lsx_fail("can't parse `%s' as key:effect.field[+-*/]step; n=%d",
+          lsx_fail("can't parse `%s' as key:effect.field[+-*/=]value; n=%d",
                    optstate.arg, n);
           exit(1);
         }
@@ -2765,7 +2766,7 @@ static char parse_gopts_and_fopts(file_t * f)
   }
 }
 
-/* Routines to rememeber and apply keymaps.
+/* Routines to remember and forget keymaps.
  * The string values are mallocked memory which we are responsible for freeing.
  * The effect name may be "synth2" meaning "only tweak the second synth effect
  * in the effects chain".
