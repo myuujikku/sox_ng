@@ -12,6 +12,8 @@ New features:
 
   o Add effect "centrecut", a sophisticated version of "oops"
   o Add global option -A to tune A4 to something other than 440Hz
+  o Add global option --key letting key presses adjust effect parameters
+  o Add keymaps dolbyb.gain and vol.gain
   o Raise "sinc" and "hilbert" maximum number of taps to 1073741823
   o Add format names mpc and svx, for mpc2k and 8svx,
     which is what sndfile-convert calls them
