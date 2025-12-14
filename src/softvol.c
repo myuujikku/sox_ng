@@ -92,6 +92,64 @@ static int getopts_softvol(sox_effect_t * effp, int argc, char UNUSED **argv)
   return SOX_SUCCESS;
 }
 
+static char *
+get_softvol(sox_effect_t *effp, char *name)
+{
+  priv_t *p = (priv_t *)effp->priv;
+  char *s = NULL;
+
+  if (!strcmp(name, "volume")) {
+    s = lsx_malloc(32);
+    sprintf(s, "%g", p->softvol);
+  }
+  if (!strcmp(name, "double-time")) {
+    s = lsx_malloc(32);
+    sprintf(s, "%g", p->softvol);
+  }
+  if (!strcmp(name, "headroom")) {
+    double headroom = -linear_to_dB((double)p->max_amp / SOX_SAMPLE_MAX);
+    s = lsx_malloc(32);
+    sprintf(s, "%g", headroom);
+  }
+
+  return s;
+}
+
+static char *
+set_softvol(sox_effect_t *effp, char *name, char *value)
+{
+  priv_t *p = (priv_t *)effp->priv;
+  char *s = NULL;
+  char *endptr = value;
+  double v = lsx_strtod(value, &endptr);
+
+  if (endptr == value || *endptr != '\0') return NULL;
+
+  if (!strcmp(name, "volume")) {
+    if (v < 0) v = 0;
+    p->softvol = v;
+    s = malloc(32);
+    sprintf(s, "%g", v);
+  }
+  if (!strcmp(name, "double-time")) {
+    if (v < 0) v = 0;
+    p->double_time = v;
+    if (p->double_time != 0.0f)
+      p->mult_per_sample = powf(2.0f, 1.0f /
+                               (p->double_time * (float)effp->in_signal.rate));
+    s = malloc(32);
+    sprintf(s, "%g", v);
+  }
+  if (!strcmp(name, "headroom")) {
+    if (v < 0) v = 0;
+    p->max_amp = SOX_SAMPLE_MAX * dB_to_linear(-v);
+    s = malloc(32);
+    sprintf(s, "%g", v);
+  }
+
+  return s;
+}
+
 /*
  * Prepare processing.
  * Do all initializations.
@@ -100,9 +158,9 @@ static int start_softvol(sox_effect_t * effp)
 {
   priv_t *p = (priv_t *)effp->priv;
 
-  if (p->double_time != 0)
-    p->mult_per_sample = pow(2.0, 1.0 /
-                             (p->double_time * effp->in_signal.rate));
+  if (p->double_time != 0.0f)
+    p->mult_per_sample = powf(2.0f, 1.0f /
+                             (p->double_time * (float)effp->in_signal.rate));
 
   return SOX_SUCCESS;
 }
@@ -178,12 +236,13 @@ const sox_effect_handler_t *lsx_softvol_effect_fn(void)
     "volume    0-     1.0    Set the initial volume multiplier",
     "2bl-time  0-      0     In how many seconds the volume should double",
     "headroom  0-      0     Limit the maximum output in dB below full range",
+    "Keymaps: softvol.(volume|double-time|headroom)",
     NULL
   };
   static sox_effect_handler_t handler = {
     "softvol", usage, extra_usage, SOX_EFF_MCHAN | SOX_EFF_GAIN,
     getopts_softvol, start_softvol, flow_softvol, drain_softvol, NULL, NULL,
-    sizeof(priv_t), NULL, NULL,
+    sizeof(priv_t), get_softvol, set_softvol,
   };
   return &handler;
 }

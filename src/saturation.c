@@ -121,6 +121,92 @@ static int getopts(sox_effect_t * effp, int argc, char *argv[])
   return SOX_SUCCESS;
 }
 
+static char *
+get_saturation(sox_effect_t *effp, char *name)
+{
+  priv_t *p = (priv_t *)effp->priv;
+  char *s = NULL;
+
+  if (!strcmp(name, "blend")) {
+    s = lsx_malloc(32);
+    sprintf(s, "%g", p->blend);
+  }
+  if (!strcmp(name, "offset")) {
+    s = lsx_malloc(32);
+    sprintf(s, "%g", p->offset);
+  }
+  if (!strcmp(name, "drive") && p->sat_type == SAT_TANH) {
+    s = lsx_malloc(32);
+    sprintf(s, "%g", p->drive);
+  }
+  if (!strcmp(name, "color") && p->sat_type == SAT_SQRT) {
+    s = lsx_malloc(32);
+    sprintf(s, "%g", p->color);
+  }
+  if (!strcmp(name, "threshold") && p->sat_type == SAT_DIODE) {
+    s = lsx_malloc(32);
+    sprintf(s, "%g", p->threshold);
+  }
+
+  return s;
+}
+
+static char *
+set_saturation(sox_effect_t *effp, char *name, char *value)
+{
+  priv_t *p = (priv_t *)effp->priv;
+  char *s = NULL;
+  char *endptr = value;
+  double v = lsx_strtod(value, &endptr);
+
+  if (endptr == value || *endptr != '\0') return NULL;
+
+  if (!strcmp(name, "blend")) {
+    if (v < 0) v = 0;
+    if (v > 1) v = 1.0;
+    p->blend = v;
+    s = malloc(32);
+    sprintf(s, "%g", v);
+  }
+  if (!strcmp(name, "offset")) {
+    if (v < 0) v = 0;
+    if (v > 1) v = 1;
+    p->offset = v;
+    s = malloc(32);
+    sprintf(s, "%g", v);
+  }
+  if (!strcmp(name, "drive") && p->sat_type == SAT_TANH) {
+    if (v < 1) v = 1;
+    p->drive = v;
+    s = malloc(32);
+    sprintf(s, "%g", v);
+  }
+  if (!strcmp(name, "color") && p->sat_type == SAT_SQRT) {
+    if (v < 0) v = 0;
+    if (v > 1) v = 1;
+    p->color = v;
+    s = malloc(32);
+    sprintf(s, "%g", v);
+  }
+
+  /* If anything changed, recalculate dependent variables */
+  if (s) switch (p->sat_type) {
+    case SAT_TANH:
+      p->offset_out = sat_tanh(p, 0);
+      p->gain_out = SAFETY_FACTOR / fmax(sat_tanh(p, 1), fabs(sat_tanh(p, -1)));
+      break;
+    case SAT_SQRT:
+      p->offset_out = sat_sqrt(p, 0);
+      p->gain_out = SAFETY_FACTOR / fmax(sat_sqrt(p, 1), fabs(sat_sqrt(p, -1)));
+      break;
+    case SAT_DIODE:
+      p->offset_out = sat_diode(p, 0);
+      p->gain_out = SAFETY_FACTOR / fmax(sat_diode(p, 1), fabs(sat_diode(p, -1)));
+      break;
+  }
+
+  return s;
+}
 
 
 static int start(sox_effect_t * effp)
@@ -208,13 +294,14 @@ sox_effect_handler_t const * lsx_saturation_effect_fn(void)
 "drive      1-inf            1        input gain (tanh)",
 "color      0-1              0.5      mixture of two saturation colors (sqrt)",
 "threshold  0-1              0.5      level at which clipping starts (diode)",
+"Keymaps: saturation.(blend|offset|drive|color|threshold)",
     NULL
   };
 
   static sox_effect_handler_t handler = {
     "saturation", usage, extra_usage, SOX_EFF_GAIN,
     getopts, start, flow, NULL, NULL, NULL,
-    sizeof(priv_t), NULL, NULL,
+    sizeof(priv_t), get_saturation, set_saturation,
   };
 
   return &handler;

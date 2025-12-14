@@ -306,7 +306,7 @@ const sox_effect_handler_t *lsx_echos_effect_fn(void)
 "",
 "When decay is close to 1.0, samples can clip and the output can saturate.",
 "Hint: gain-out < 1 / (gain-in + decay1 + ... + decayN)",
-"Keymaps: echos.gain-in echos.gain-out",
+"Keymaps: echos.(gain-in|gain-out)",
     NULL
   };
 

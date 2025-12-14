@@ -124,7 +124,7 @@ sox_effect_handler_t const * lsx_overdrive_effect_fn(void)
     "OPTION  RANGE  DEFAULT  DESCRIPTION",
     "gain    0-100    20     Decibels of gain to apply",
     "color   0-100    20     Amount of even harmonic content in the output",
-    "Keymaps: overdrive.gain overdrive.color",
+    "Keymaps: overdrive.(gain|color)",
     NULL
   };
   static sox_effect_handler_t handler = {

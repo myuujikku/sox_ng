@@ -814,26 +814,26 @@ Seek back and forth in the audio file by 30 seconds.
 .TP
 \fBR\fR
 Restart the effects chain (like \fB:\fR)
-.RE
-.SP
+.PP
 It is enabled by default when playing, disabled otherwise.
+.RE
 .TP
 \fB\-\-keymap\fR|\fB\-k\fR \fIkey\fR:\fIeffect\fR.\fIfield\fR[\fB\(pl\fR|\fB\(mi\fR|\fB*\fR|\fB/\fR|\fB=\fR]\fIvalue\fR
 In interactive mode, pressing the specified key will change
 an effect's parameter, adding or subtracting \fIvalue\fR for linear changes,
-multiplying/dividing by \fIvalue\fR for logarithmic control or
+multiplying or dividing by \fIvalue\fR for logarithmic control or
 setting the parameter to that value.
 For example:
 .XE
    play_ng -V -k D:dolbyb.gain+2 -k d:dolbyb.gain-2 in.wav dolbyb
 .XX
 lets you hear the results of `dolbyb` removal and adjust the Threshold Gain
-of the effect in steps of 2dB steps to find the best setting.
+in steps of 2dB to find the best setting.
 \fB\-V\fR makes it display the new value each time it is changed.
 .SP
 The manual entries for individual effects say which parameters
-can be adjusted in this way, \fB\-\-help\-effect whatever\fB
-tells you which of an effect's parameters may be keymapped and
+can be adjusted in this way, \fB\-\-help\-effect\fB tells you
+which of an effect's parameters can be keymapped and
 .XE
    sox_ng --help-effect all | grep Keymap
 .XX
@@ -2138,9 +2138,9 @@ needs to be before it is considered OK. A figure of 0.0\ dB would
 mean an accuracy of about 1 sample value. The default is -5.0\ dB,
 which is accurate to less than one sample value.
 .SP
-The keymap for \fIgain\fR is \fRdolbyb.gain\fB, for example:
+The keymap for \fIgain\fR is \fRdolbyb.gain\fB. For example:
 .XE
-   play_ng -k D:dolbyb.gain+2 -k d:dolbyb.gain-2 in.wav
+   play_ng -V -k D:dolbyb.gain+2 -k d:dolbyb.gain-2 in.wav
 .XX
 lets you adjust the Threshold Gain in \(pl/\(mi 2dB steps;
 to see what the new value is as you proceed, use `\-V`.
@@ -2214,7 +2214,7 @@ between the original signal and its reflection,
 \fIdecay\fR is the loudness of the reflected signal and
 \fIgain-out\fR is a final volume adjustment of the result.
 .SP
-There are keymaps on \fIgain-in\fR and \fIgain-out\fR.
+There are keymaps for \fIgain-in\fR and \fIgain-out\fR.
 .SP
 There is no limit to the number of delay/decay pairs you can use
 and gains and decays can be negative or greater than 1 if you wish.
@@ -2256,7 +2256,9 @@ pair gives the delay in milliseconds (with a minimum of one sample)
 and the decay of that echo.
 \fIGain-out\fR is a final volume multiplier applied to the sum of
 the input\ \(mu\ \fIgain-in\fR and the delays' outputs\ \(mu
-their respective decays, and there are keymaps on both.
+their respective decays, and there are keymaps for both.
+.SP
+There are keymaps for \fIgain-in\fR and \fIgain-out\fR.
 .SP
 \fBechos\fP extends the length of the signal by the maximum delay time.
 .SP
@@ -2762,7 +2764,7 @@ Non-linear distortion.
 The \fIcolor\fR parameter controls the amount of even harmonic content
 in the overdriven output. Both parameters range from 0 to 100.
 .SP
-There are keymaps on both \fIgain\fR and \fIcolor\fR.
+There are keymaps for both \fIgain\fR and \fIcolor\fR.
 .SP
 See also \fBcentercut\fR.
 .TP
@@ -2824,7 +2826,7 @@ with one of these at the end, use \fIgain-in\fR and \fIgain-out\fR from 0 to 1,
 \fIdelay\fR from 0 to 5, \fIspeed\fR from 0\*d1 to 2
 and don't use interpolation.
 .SP
-There are keymaps on \fIgain-in\fR, \fIgain-out\fR and \fIregen\fR.
+There are keymaps for \fIgain-in\fR, \fIgain-out\fR and \fIregen\fR.
 .SP
 Technically, the SoX \fBphaser\fP is not a phaser; it is a flanger.
 A flanger does comb filtering with equidistant spacing
@@ -3303,6 +3305,9 @@ signals, effectively controls the amount of attenuation that occurs above
 the threshold, from no attenuation when \fIblend\fR is 0 to complete
 attenuation (hard clipping) when \fIblend\fR is 1.
 .SP
+There are keymaps for \fIblend\fR, \fIoffset\fR, \fIdrive\fR, \fIcolor\fR
+and \fIthreshold\fR.
+.SP
 See the \fBoverdrive\fR effect for another kind of non-linear distortion.
 When the \fIoffset\fR parameter is used to produce asymmetric distortion,
 the \fBhighpass\fR effect can be used to rebalance the waveform's positive
@@ -3525,6 +3530,8 @@ less than the 32-bit maximum.
 This may be necessary when the final bit-depth reduction and/or dithering
 make it clip.
 A value of 0.1 is sufficient to protect down to a bit-depth of 8 with dithering.
+.SP
+There are keymaps for \fIvolume\fR, \fIdouble-time\fR and \fIheadroom\fR.
 .SP
 When playing sound in interactive mode, the `\fBv\fR' and `\fBV\fR' keys
 reduce and increase the volume if there is a \fBsoftvol\fR
@@ -4791,6 +4798,8 @@ include prior to the detected trigger point.
 The amount of audio (in seconds) to preserve before the trigger point
 and any found quieter/shorter bursts.
 .RE
+.SP
+There are keymaps on \fItrigger-level\fR, \fItrigger-time\fR and \fIgap\fR.
 .TP
 \ 
 .B Advanced Options
@@ -4896,16 +4905,8 @@ Not specifying this parameter causes no limiter to be used.  In verbose
 mode, this effect displays the percentage of the audio that needed to be
 limited.
 .SP
-The keymap for \fIgain\fR is \fBvol.gain\fR, which is adjusted in the
+There is a keymap on \fIvol.gain\fR, which is adjusted in the
 units that were specified (amplitude, dB or power).
-For example, to adjust it by 10% with the \fBG\fR and \fBg\fR keys:
-.XE
-   play_ng -k G:vol.gain*1.1 -k g:vol.gain/1.1 in.wav vol 0.5
-.XX
-or in steps of 1 decibel:
-.XE
-   play_ng -k G:vol.gain+1 -k g:vol.gain-1 in.wav vol -6d
-.XX
 .SP
 See
 .B gain

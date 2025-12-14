@@ -98,6 +98,65 @@ static int create_vad(sox_effect_t * effp, int argc, char * * argv)
   return optstate.ind !=argc? lsx_usage(effp) : SOX_SUCCESS;
 }
 
+static char *
+get_vad(sox_effect_t *effp, char *name)
+{
+  priv_t *p = (priv_t *)effp->priv;
+  char *s = NULL;
+
+  if (!strcmp(name, "trigger-level")) {
+    s = lsx_malloc(32);
+    sprintf(s, "%g", p->triggerLevel);
+  }
+  if (!strcmp(name, "trigger-time")) {
+    s = lsx_malloc(32);
+    sprintf(s, "%g", p->triggerTc);
+  }
+  if (!strcmp(name, "gap")) {
+    s = lsx_malloc(32);
+    sprintf(s, "%g", p->gapTime);
+  }
+
+  return s;
+}
+
+static char *
+set_vad(sox_effect_t *effp, char *name, char *value)
+{
+  priv_t *p = (priv_t *)effp->priv;
+  char *s = NULL;
+  char *endptr = value;
+  double v = lsx_strtod(value, &endptr);
+
+  if (endptr == value || *endptr != '\0') return NULL;
+
+  if (!strcmp(name, "trigger-level")) {
+    if (v < 0)  v = 0;
+    if (v > 20) v = 20;
+    p->triggerLevel = v;
+    s = malloc(32);
+    sprintf(s, "%g", v);
+  }
+  if (!strcmp(name, "trigger-time")) {
+    if (v < 0.01) v = 0.01;
+    if (v > 1.0)  v = 1.0;
+    p->triggerTc = v;
+    p->triggerMeasTcMult = exp(-1 / (p->triggerTc * p->measureFreq));
+    s = malloc(32);
+    sprintf(s, "%g", v);
+  }
+  if (!strcmp(name, "gap")) {
+    if (v < 0.1) v = 0.1;
+    if (v > 1.0) v = 1.0;
+    p->gapTime = v;
+    p->gapLen = p->gapTime * p->measureFreq + .5;
+    s = malloc(32);
+    sprintf(s, "%g", v);
+  }
+
+  return s;
+}
+
 static int start_vad(sox_effect_t * effp)
 {
   priv_t * p = (priv_t *)effp->priv;
@@ -323,13 +382,14 @@ sox_effect_handler_t const * lsx_vad_effect_fn(void)
 "-l   1000-     6000   Low-pass filter frequency",
 "-H   10-       150    High-pass lifter frequency",
 "-L   1000-     2000   Low-pass lifter frequency",
+"Keymaps: vad.(trigger-level|trigger-time|gap)",
     NULL
   };
 
   static sox_effect_handler_t handler = {
     "vad", usage, extra_usage, SOX_EFF_MCHAN | SOX_EFF_LENGTH | SOX_EFF_MODIFY,
     create_vad, start_vad, flow_vad, drain_vad, stop_vad, NULL,
-    sizeof(priv_t), NULL, NULL,
+    sizeof(priv_t), get_vad, set_vad,
   };
 
   return &handler;
