@@ -119,7 +119,7 @@ static void output_message(
 }
 
 /* The fields must correspond to their order in sox_globals_t */
-static sox_globals_t s_sox_globals = {
+sox_globals_t sox_globals = {
   NULL,            /* char *       progname */
   2,               /* unsigned     verbosity */
   output_message,  /* sox_output_message_handler */
@@ -139,12 +139,12 @@ static sox_globals_t s_sox_globals = {
 
 sox_globals_t * sox_get_globals(void)
 {
-    return &s_sox_globals;
+    return &sox_globals;
 }
 
 /* FIXME: Not thread safe using globals */
 static sox_effects_globals_t s_sox_effects_globals =
-    {sox_plot_off, &s_sox_globals};
+    {sox_plot_off, &sox_globals};
 
 sox_effects_globals_t *
 sox_get_effects_globals(void)

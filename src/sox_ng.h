@@ -1633,10 +1633,9 @@ sox_get_globals(void);
 
 /**
 Client API:
-Deprecated macro that returns the structure with libSoX's global settings
-as an lvalue.
+The structure with libSoX's global settings.
 */
-#define sox_globals (*sox_get_globals())
+extern sox_globals_t sox_globals;
 
 /**
 Client API:
