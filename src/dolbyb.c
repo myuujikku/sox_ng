@@ -27,6 +27,10 @@
 #include "../libdolbyb/dolbyb.h"
 #endif
 
+#define MIN_TH_GAIN_DB     -100
+#define MAX_TH_GAIN_DB      100
+#define DEFAULT_TH_GAIN_DB  0
+
 /* Private data for effect */
 typedef struct {
   dolbyb_t dolbyb;
@@ -83,6 +87,110 @@ static int getopts_dolbyb(sox_effect_t * effp, int argc, char **argv)
 
   argc -= optstate.ind, argv -= optstate.ind;
   return argc ? lsx_usage(effp) : SOX_SUCCESS;
+}
+
+/*
+ * Get a dolbyb parameter's value as a double
+ *
+ * Returns NULL if you ask for other than an existing name
+ * of a pointer to mallocked memory that it is the caller's
+ * responsibility to free.
+ */
+
+/* Decibels-to-Gain and Gain-to-Decibels conversions */
+#define ConvertDb(dB) pow(10, (dB) / 20)        /* Stolen from libdolbyb */
+#define ConvertGain(Gain) (log10(Gain) * 20)    /* The inverse */
+
+static char *
+get_dolbyb(sox_effect_t *effp, char *name)
+{
+  priv_t *p = (priv_t *)effp->priv;
+  char *s = NULL;
+
+  if (!strcmp(name, "gain")) {
+    /* The inverse of #define ParamConvertDb(Db) pow(10, Db / 20) */
+    double dB = ConvertGain(p->dolbyb.ThGain);
+    s = lsx_malloc(32);
+    sprintf(s, "%14f", dB);
+  }
+
+  return s;
+}
+
+/*
+ * Set a dolbyb parameter.
+ *
+ * Returns NULL if there is no such named parameter,
+ * the value of "value" if the setting was already at that value
+ * or a pointer to mallckoed memory that it is the caller's
+ * responsabilityt to free.
+ *
+ * If you try to set a value outside the parameter's range,
+ * it returns a pointer to a copy of the maximum or minimum as a string,
+ * so you'll know you were over range by strcmping them.
+ *
+ * If the desired value is successfully set, it returns a pointer to
+ * the "value" string you passed in and no mallocking is done so the
+ * suggested calling sequence is:
+ *
+ *    char *ret = set_dolbyb(effp, name, value);
+ *    if (ret == value) ...it was successfully set but was already that..
+ *    else if (ret == NULL) {
+ *      ...what to do if the set failed...
+ *    } else {
+ *      ...whatever else you need to do if it succeeded...
+ *      free(ret);
+ *    }
+ */
+static char *
+set_dolbyb(sox_effect_t *effp, char *name, char *value)
+{
+  priv_t *p = (priv_t *)effp->priv;
+  char *s = NULL;
+  char *endptr = value;
+  double dB = lsx_strtod(value, &endptr); /* Desired setting in dB */
+
+  if (endptr == value) return NULL;
+
+  if (!strcmp(name, "gain")) {
+    double gain = ConvertDb(dB); /* Desired setting as a volume multiplier */
+
+    if (dB >= MAX_TH_GAIN_DB) {
+      static char const maxdb_string[] = "100";
+
+      dB = MAX_TH_GAIN_DB;
+      /* If it's already at the maximum, there is no change.
+       * It shouldn't be over MAX_TH_GAIN_DB but,
+       * if it is, it gets set to MAX. */
+      if (p->dolbyb.ThGain != ConvertDb(MAX_TH_GAIN_DB))
+        p->dolbyb.ThGain = ConvertDb(MAX_TH_GAIN_DB);
+      s = strdup(maxdb_string);
+
+    } else if (dB <= MIN_TH_GAIN_DB) {
+      static char mindb_string[] = "-100";
+
+      dB = MIN_TH_GAIN_DB;
+      /* If it's already at the minimum, there is no change.
+       * It shouldn't be under MIN_TH_GAIN_DB but
+       * if it is, it gets set it to MIN. */
+      if (p->dolbyb.ThGain != ConvertDb(MIN_TH_GAIN_DB))
+        p->dolbyb.ThGain = ConvertDb(MIN_TH_GAIN_DB);
+      s = strdup(mindb_string);
+    } else {
+      /* A within-range setting that's neither the maximum
+       * nor the minimum. See if it's the same. */
+      if (gain == p->dolbyb.ThGain) {
+        /* It's the same, so signal no change */
+        return value;
+      }
+      p->dolbyb.ThGain = gain;
+      p->dolbyb.ThGndB = ConvertGain(gain);
+      s = malloc(32);
+      sprintf(s, "%.14f", p->dolbyb.ThGndB);
+    }
+  }
+
+  return s;
 }
 
 /*
@@ -188,7 +296,7 @@ const sox_effect_handler_t *lsx_dolbyb_effect_fn(void)
   static sox_effect_handler_t sox_dolbyb_effect = {
     "dolbyb", usage, extra_usage, SOX_EFF_MCHAN,
     getopts_dolbyb, start_dolbyb, flow_dolbyb, NULL, NULL, kill_dolbyb,
-    sizeof(priv_t), NULL, NULL,
+    sizeof(priv_t), get_dolbyb, set_dolbyb,
   };
   return &sox_dolbyb_effect;
 }
