@@ -2410,7 +2410,7 @@ static lsx_option_t const long_options[] = {
   {"no-dither"       , lsx_option_arg_none    , NULL, 'D'},
   {"encoding"        , lsx_option_arg_required, NULL, 'e'},
   {"help"            , lsx_option_arg_none    , NULL, 'h'},
-  {"key"             , lsx_option_arg_required, NULL, 'k'},
+  {"keymap"          , lsx_option_arg_required, NULL, 'k'},
   {"null"            , lsx_option_arg_none    , NULL, 'n'},
   {"no-show-progress", lsx_option_arg_none    , NULL, 'q'},
   {"pipe"            , lsx_option_arg_none    , NULL, 'p'},
