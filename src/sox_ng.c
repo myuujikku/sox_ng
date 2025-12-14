@@ -123,8 +123,6 @@
 #undef HAVE_TERMIOS_H
 #endif
 
-/*#define MORE_INTERACTIVE 1*/
-
 #define SOX_OPTS "SOX_OPTS"
 static lsx_getopt_t optstate;
 
@@ -1404,7 +1402,6 @@ static int update_status(sox_bool all_done, void * client_data)
 
     switch (ch) {
 
-#ifdef MORE_INTERACTIVE
     case '>':
     if (files[current_input]->ft->handler.seek &&
         files[current_input]->ft->seekable) {
@@ -1441,7 +1438,6 @@ static int update_status(sox_bool all_done, void * client_data)
        */
       user_restart_eff = sox_true;
       break;
-#endif
 
     case 'q': user_abort = sox_true; break;
     case 'V': adjust_volume(+7); break;
