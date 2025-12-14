@@ -84,6 +84,48 @@ static int sox_echos_getopts(sox_effect_t * effp, int argc, char **argv)
         return (SOX_SUCCESS);
 }
 
+static char *
+get_echos(sox_effect_t *effp, char *name)
+{
+  priv_t *p = (priv_t *)effp->priv;
+  char *s = NULL;
+
+  if (!strcmp(name, "gain-in")) {
+    s = lsx_malloc(32);
+    sprintf(s, "%g", p->gain_in);
+  }
+  if (!strcmp(name, "gain-out")) {
+    s = lsx_malloc(32);
+    sprintf(s, "%g", p->gain_out);
+  }
+
+  return s;
+}
+
+static char *
+set_echos(sox_effect_t *effp, char *name, char *value)
+{
+  priv_t *p = (priv_t *)effp->priv;
+  char *s = NULL;
+  char *endptr = value;
+  double gain = lsx_strtod(value, &endptr);
+
+  if (endptr == value || *endptr != '\0') return NULL;
+
+  if (!strcmp(name, "gain-in")) {
+    p->gain_in = gain;
+    s = malloc(32);
+    sprintf(s, "%g", gain);
+  }
+  if (!strcmp(name, "gain-out")) {
+    p->gain_out = gain;
+    s = malloc(32);
+    sprintf(s, "%g", gain);
+  }
+
+  return s;
+}
+
 /*
  * Prepare for processing.
  */
@@ -246,6 +288,7 @@ const sox_effect_handler_t *lsx_echos_effect_fn(void)
 "",
 "When decay is close to 1.0, samples can clip and the output can saturate.",
 "Hint: gain-out < 1 / (gain-in + decay1 + ... + decayN)",
+"Keymaps: echos.gain-in echos.gain-out",
     NULL
   };
 
@@ -253,7 +296,7 @@ const sox_effect_handler_t *lsx_echos_effect_fn(void)
     "echos", usage, extra_usage, SOX_EFF_LENGTH | SOX_EFF_GAIN,
     sox_echos_getopts,
     sox_echos_start, sox_echos_flow, sox_echos_drain, sox_echos_stop, NULL,
-    sizeof(priv_t), NULL, NULL,
+    sizeof(priv_t), get_echos, set_echos,
   };
 
   return &handler;

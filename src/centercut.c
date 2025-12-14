@@ -593,6 +593,39 @@ static int getopts_centercut(sox_effect_t * effp, int argc, char **argv)
   return SOX_SUCCESS;
 }
 
+static char * get_centercut(sox_effect_t *effp, char *name)
+{
+  priv_t *p = (priv_t *)effp->priv;
+  char *s = NULL;
+
+  if (!strcmp(name, "gain")) {
+    s = lsx_malloc(32);
+    sprintf(s, "%g", mAmpFactor);
+  }
+
+  return s;
+}
+
+static char *
+set_centercut(sox_effect_t *effp, char *name, char *value)
+{
+  priv_t *p = (priv_t *)effp->priv;
+  char *s = NULL;
+  char *endptr = value;
+
+  if (!strcmp(name, "gain")) {
+    /* Set it in the units they specified */
+    double gain = lsx_strtod(value, &endptr);
+
+    if (endptr == value) return NULL;
+
+    mAmpFactor = gain;
+    s = malloc(32);
+    sprintf(s, "%g", gain);
+  }
+  return s;
+}
+
 /*
  * CenterCut_Init() needs to know the sample rate, which isn't set in getopts()
  * but we are an MCHAN effect so start() is only called once so we
@@ -768,6 +801,7 @@ const sox_effect_handler_t *lsx_centercut_effect_fn(void)
     "-a  Multiply all output channels by gain-out",
     "-b  Move the bass out of the center for better karaoke",
     "-w  Set the window size (default: 8192 samples)",
+    "Keymap: centercut.gain for the -a parameter",
     NULL
   };
   static sox_effect_handler_t sox_centercut_effect = {
@@ -775,7 +809,7 @@ const sox_effect_handler_t *lsx_centercut_effect_fn(void)
     SOX_EFF_MCHAN | SOX_EFF_CHAN | SOX_EFF_GAIN,
     getopts_centercut, start_centercut, flow_centercut, drain_centercut,
     stop_centercut, NULL,
-    sizeof(priv_t), NULL, NULL,
+    sizeof(priv_t), get_centercut, set_centercut,
   };
   return &sox_centercut_effect;
 }

@@ -1667,6 +1667,8 @@ A stereo equivalent of the \fBoops\fR effect is
     sox_ng in.wav centercut remix 1 2
 .XX
 .SP
+The keymap for the \fB\-a\fR option is \fBcentercut.gain\fR.
+.SP
 See also \fBoops\fR.
 .TP
 \fBchannels \fIchannels\fR
@@ -1738,6 +1740,8 @@ speed	0-192k	0.25	Modulation frequency
 depth	0-1000	2	Extra delay in milliseconds
 wave	-s|-t	-s	Sinusoidal/triangular modulation
 .TE
+.SP
+There are keymaps for \fBgain-in\fR and \fBgain-out\fR.
 .SP
 Each delay ranges from the fixed \fIdelay\fR to \fIdelay\fR\ \(pl\ \fIdepth\fR.
 .SP
@@ -1888,14 +1892,16 @@ See
 .B mcompand
 for a multiple-band companding effect.
 .TP
-\fBcontrast \fR[\fIenhancement-amount\fR(75)]
+\fBcontrast \fR[\fIamount\fR(75)]
 Comparable with compression, this effect modifies an audio signal to
 make it sound louder.
-.I enhancement-amount
+.I amount
 controls the amount of the enhancement and is a number in the range 0\-100.
 Note that
-.I enhancement-amount
+.I amount
 = 0 still gives a significant contrast enhancement.
+.SP
+There is a keymap for \fIamount\fR.
 .SP
 See the
 .B compand
@@ -2208,6 +2214,8 @@ between the original signal and its reflection,
 \fIdecay\fR is the loudness of the reflected signal and
 \fIgain-out\fR is a final volume adjustment of the result.
 .SP
+There are keymaps on \fIgain-in\fR and \fIgain-out\fR.
+.SP
 There is no limit to the number of delay/decay pairs you can use
 and gains and decays can be negative or greater than 1 if you wish.
 .SP
@@ -2247,8 +2255,8 @@ Each
 pair gives the delay in milliseconds (with a minimum of one sample)
 and the decay of that echo.
 \fIGain-out\fR is a final volume multiplier applied to the sum of
-the input \(mu \fIgain-in\fR and the delays' outputs \(mu
-their respective decays.
+the input\ \(mu\ \fIgain-in\fR and the delays' outputs\ \(mu
+their respective decays, and there are keymaps on both.
 .SP
 \fBechos\fP extends the length of the signal by the maximum delay time.
 .SP

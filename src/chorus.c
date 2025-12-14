@@ -202,6 +202,46 @@ static int sox_chorus_getopts (sox_effect_t *effp,
         return (SOX_SUCCESS);
 }
 
+static char * get_chorus(sox_effect_t *effp, char *name)
+{
+  chorus_priv_t *chorus = (chorus_priv_t *)effp->priv;
+  char *s = NULL;
+
+  if (!strcmp(name, "gain-in")) {
+    s = lsx_malloc(32);
+    sprintf(s, "%g", chorus->gain_in);
+  }
+  if (!strcmp(name, "gain-out")) {
+    s = lsx_malloc(32);
+    sprintf(s, "%g", chorus->gain_out);
+  }
+
+  return s;
+}
+
+static char *
+set_chorus(sox_effect_t *effp, char *name, char *value)
+{
+  chorus_priv_t *chorus = (chorus_priv_t *)effp->priv;
+  char *s = NULL;
+  char *endptr = value;
+
+  if (!strcmp(name, "gain-in")) {
+    double gain = lsx_strtod(value, &endptr);
+    if (endptr == value || *endptr != '\0') return NULL;
+    chorus->gain_in = gain;
+    s = malloc(32);
+    sprintf(s, "%g", gain);
+  }
+  if (!strcmp(name, "gain-out")) {
+    double gain = lsx_strtod(value, &endptr);
+    if (endptr == value || *endptr != '\0') return NULL;
+    chorus->gain_out = gain;
+    s = malloc(32);
+    sprintf(s, "%g", gain);
+  }
+  return s;
+}
 /*--------------------*/
 
 /**
@@ -604,6 +644,7 @@ const sox_effect_handler_t *lsx_chorus_effect_fn(void)
 "depth   0-1000    2    Additional variable delay in milliseconds",
 "wave     -s|-t   -s    Modulate with a sinusoidal or a triangular wave",
 "Hint: gain-out <= 1 / ( gain-in + decay 1 + ... + decay n )",
+"Keymaps: chorus.gain-in chorus.gain-out",
           NULL
 	};
 
@@ -618,8 +659,8 @@ const sox_effect_handler_t *lsx_chorus_effect_fn(void)
                 sox_chorus_stop,
                 NULL,
                 sizeof(chorus_priv_t),
-                NULL,
-                NULL,
+                get_chorus,
+                set_chorus,
         };
 
         return &sox_chorus_effect;

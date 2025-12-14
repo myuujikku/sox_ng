@@ -85,6 +85,48 @@ static int sox_echo_getopts(sox_effect_t * effp, int argc, char **argv)
         return (SOX_SUCCESS);
 }
 
+static char *
+get_echo(sox_effect_t *effp, char *name)
+{
+  priv_t *p = (priv_t *)effp->priv;
+  char *s = NULL;
+
+  if (!strcmp(name, "gain-in")) {
+    s = lsx_malloc(32);
+    sprintf(s, "%g", p->gain_in);
+  }
+  if (!strcmp(name, "gain-out")) {
+    s = lsx_malloc(32);
+    sprintf(s, "%g", p->gain_out);
+  }
+
+  return s;
+}
+
+static char *
+set_echo(sox_effect_t *effp, char *name, char *value)
+{
+  priv_t *p = (priv_t *)effp->priv;
+  char *s = NULL;
+  char *endptr = value;
+  double gain = lsx_strtod(value, &endptr);
+
+  if (endptr == value || *endptr != '\0') return NULL;
+
+  if (!strcmp(name, "gain-in")) {
+    p->gain_in = gain;
+    s = malloc(32);
+    sprintf(s, "%g", gain);
+  }
+  if (!strcmp(name, "gain-out")) {
+    p->gain_out = gain;
+    s = malloc(32);
+    sprintf(s, "%g", gain);
+  }
+
+  return s;
+}
+
 /*
  * Prepare for processing.
  */
@@ -247,6 +289,7 @@ const sox_effect_handler_t *lsx_echo_effect_fn(void)
 "gain-out -inf-inf  Final volume adjustment",
 "delay       0-inf  Delay in milliseconds",
 "decay    -inf-inf  Proportion of delayed signal delivered to adder",
+"Keymaps: echo.gain-in echo.gain-out",
     NULL
   };
 
@@ -259,8 +302,8 @@ const sox_effect_handler_t *lsx_echo_effect_fn(void)
     sox_echo_stop,
     sox_echo_kill,
     sizeof(priv_t),
-    NULL,
-    NULL,
+    get_echo,
+    set_echo,
   };
 
   return &handler;
