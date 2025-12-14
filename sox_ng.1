@@ -4882,6 +4882,17 @@ Not specifying this parameter causes no limiter to be used.  In verbose
 mode, this effect displays the percentage of the audio that needed to be
 limited.
 .SP
+The keymap for \fIgain\fR is \fBvol.gain\fR, which is adjusted in the
+units that were specified (amplitude, dB or power).
+For example, to adjust it by 10% with the \fBG\fR and \fBg\fR keys:
+.XE
+   play_ng -k G:vol.gain*1.1 -k g:vol.gain/1.1 in.wav vol 0.5
+.XX
+or in steps of 1 decibel:
+.XE
+   play_ng -k G:vol.gain+1 -k g:vol.gain-1 in.wav vol -6d
+.XX
+.SP
 See
 .B gain
 for a volume-changing effect with different capabilities and

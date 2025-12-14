@@ -9,16 +9,7 @@
 
 #include "sox_i.h"
 
-typedef struct {
-  double    gain; /* amplitude gain. */
-  sox_bool  uselimiter;
-  double    limiterthreshhold;
-  double    limitergain;
-  uint64_t  limited; /* number of limited values to report. */
-  uint64_t  totalprocessed;
-} priv_t;
-
-enum {vol_amplitude, vol_dB, vol_power};
+typedef enum {vol_amplitude, vol_dB, vol_power} vol_type_t;
 
 static lsx_enum_item const vol_types[] = {
   LSX_ENUM_ITEM(vol_,amplitude)
@@ -26,12 +17,22 @@ static lsx_enum_item const vol_types[] = {
   LSX_ENUM_ITEM(vol_,power)
   {0, 0}};
 
+typedef struct {
+  double    gain; /* amplitude gain. */
+  vol_type_t type;
+  sox_bool  uselimiter;
+  double    limiterthreshhold;
+  double    limitergain;
+  uint64_t  limited; /* number of limited values to report. */
+  uint64_t  totalprocessed;
+} priv_t;
+
 /*
  * Process options: gain (float) type (amplitude, power, dB)
  */
 static int getopts_vol(sox_effect_t * effp, int argc, char **argv)
 {
-  priv_t *     vol = (priv_t *) effp->priv;
+  priv_t *  vol = (priv_t *) effp->priv;
   char      type_string[11];
   char *    type_ptr = type_string;
   char      dummy;             /* To check for extraneous chars. */
@@ -69,6 +70,7 @@ static int getopts_vol(sox_effect_t * effp, int argc, char **argv)
         vol->gain = vol->gain > 0 ? sqrt(vol->gain) : -sqrt(-vol->gain);
         break;
     }
+    vol->type = p->value;
   }
 
   if (argc) {
@@ -88,6 +90,51 @@ static int getopts_vol(sox_effect_t * effp, int argc, char **argv)
   return SOX_SUCCESS;
 }
 
+static char * get_vol(sox_effect_t *effp, char *name)
+{
+  priv_t *vol = (priv_t *)effp->priv;
+  char *s = NULL;
+  double value;
+
+  if (!strcmp(name, "gain")) {
+    /* Return it in whatever units they specified */
+    switch (vol->type) {
+    case vol_amplitude: value = vol->gain; break;
+    case vol_dB: value = linear_to_dB(vol->gain); break;
+    case vol_power: value = (vol->gain > 0) ? sqr(vol->gain) : -sqr(-vol->gain);
+    }
+    s = lsx_malloc(32);
+    sprintf(s, "%g", value);
+  }
+
+  return s;
+}
+
+static char *
+set_vol(sox_effect_t *effp, char *name, char *value)
+{
+  priv_t *vol = (priv_t *)effp->priv;
+  char *s = NULL;
+  char *endptr = value;
+
+  if (!strcmp(name, "gain")) {
+    /* Set it in the units they specified */
+    double gain = lsx_strtod(value, &endptr);
+
+    if (endptr == value) return NULL;
+
+    switch (vol->type) {
+    case vol_amplitude: vol->gain = gain; break;
+    case vol_dB:        vol->gain = dB_to_linear(gain); break;
+    case vol_power:     vol->gain = gain > 0 ? sqrt(gain) : -sqrt(-gain); break;
+    }
+    /* Return the value in the units they specified */
+    s = malloc(32);
+    sprintf(s, "%g", gain);
+  }
+  return s;
+}
+
 /*
  * Start processing
  */
@@ -95,8 +142,10 @@ static int start_vol(sox_effect_t * effp)
 {
     priv_t * vol = (priv_t *) effp->priv;
 
+    /* No longer applies because "gain" can by be adjusted by keymap
     if (vol->gain == 1)
       return SOX_EFF_NULL;
+    */
 
     vol->limited = 0;
     vol->totalprocessed = 0;
@@ -186,13 +235,14 @@ sox_effect_handler_t const * lsx_vol_effect_fn(void)
 "      dB         <0 attenuates, >0 amplifies",
 "limitergain      Used on peaks to prevent clipping; its value should be",
 "                 much less than 1 (e.g. 0.02 or 0.05). The default is none.",
+"Keymap: vol.gain adjusted by the gain type you specified",
     NULL
   };
 
   static sox_effect_handler_t handler = {
     "vol", usage, extra_usage, SOX_EFF_MCHAN | SOX_EFF_GAIN,
     getopts_vol, start_vol, flow_vol, NULL, stop_vol, NULL,
-    sizeof(priv_t), NULL, NULL,
+    sizeof(priv_t), get_vol, set_vol,
   };
   return &handler;
 }

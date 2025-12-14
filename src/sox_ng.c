@@ -1518,16 +1518,13 @@ static int update_status(sox_bool all_done, void * client_data)
                   sprintf(valuestr, "%.14f", value);
                   result = effp->handler.set(effp, field, valuestr);
                   if (!result) {
-                    lsx_warn("\afailed to set %s.%s to %s",
+                    lsx_warn("failed to set %s.%s to %s",
                              effect, field, valuestr);
                   } else if (result == valuestr) {
                     /* No change */
+                    lsx_report("No change to %s.%s", effect, field);
                   } else {
-                    if (lsx_strtod(valuestr, NULL) == lsx_strtod(result, NULL))
-                      lsx_report("changed %s.%s to %s",
-                                 effect, field, result);
-                    else
-                      putc('\a', stderr); /* Beep when hitting the endstops */
+                    lsx_report("changed %s.%s to %s", effect, field, result);
                     free(result);
                   }
                 }
