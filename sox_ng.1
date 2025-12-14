@@ -804,8 +804,18 @@ behave as
 .TP
 \fB\-\-interactive\fR
 Enable control of `sox_ng` by keyboard strokes, making
-\fBv\fR and \fBV\fR lower and raise the master volume control
-enabled by default when playing, disabled otherwise.
+.RS
+.TP
+\fBv\fR and \fBV\fR
+lower and raise the master volume control
+.TP
+\fBd\fR and \fBD\fR
+lower and raise the Threshold Gain of \fBdolbyb\fR bu 2dB.
+Give \fB\-V\fR to see reports of new Threshold Gain values
+that are set.
+.RE
+.SP
+It is enabled by default when playing, disabled otherwise.
 .TP
 \fB\-m\fR\^|\^\fB\-M\fR
 Equivalent to \fB\-\-combine mix\fR and \fB\-\-combine merge\fR respectively.

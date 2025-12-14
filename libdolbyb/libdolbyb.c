@@ -46,6 +46,12 @@ void dolbyb_init(dolbyb_t *Param)
   Param->FETGVt = 75000*(int64_t)100000;
 }
 
+/* Change things that dpend on a changed value of ThGain */
+void dolbyb_reinit(dolbyb_t *Param)
+{
+  SidePathReinit(Param);
+}
+
 static char *SecondInit(dolbyb_t *Param)
 {
   char *err;
@@ -114,6 +120,15 @@ char *dolbyb_start(dolbyb_t *Param)
   Calibrate(Param);
 
   return NULL;
+}
+
+/* Recalculate things that depend on changed parameters.
+ * At present, only ThGndB can change and only SidePathInit()
+ * depends on that.
+ */
+char *dolbyb_restart(dolbyb_t *Param)
+{
+  return SidePathInit(Param);
 }
 
 char *dolbyb_encode(dolbyb_t *Param, void *in, void *out, size_t nframes)

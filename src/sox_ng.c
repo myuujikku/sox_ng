@@ -1443,8 +1443,69 @@ static int update_status(sox_bool all_done, void * client_data)
       break;
 #endif
 
+    case 'q': user_abort = sox_true; break;
     case 'V': adjust_volume(+7); break;
     case 'v': adjust_volume(-7); break;
+
+    /* Effect parameter-changing keys */
+    case 'D': case 'd':
+      /* Find the dolbyb effect in the effects chain */
+      {
+        sox_effect_t **e;
+        size_t n;
+
+        for (n=0, e=effects_chain->effects;
+             n < effects_chain->length;
+             n++, e++) {
+          sox_effect_t *effp = (*e);
+
+          if (!strcmp(effp->handler.name, "dolbyb")) {
+            /* This is a dolbyb effect. Tweak it. */
+            char *gainstr;
+            /* We trust to be able to strtod strings sprintfed by us */
+            double gain;
+            char *result;
+
+            gainstr = effp->handler.get((*e), "gain");
+            if (!gainstr) {
+              lsx_warn("can't get the current threshold gain");
+              goto endofd;  /* break out of the switch */
+            }
+
+            gain = strtod(gainstr, NULL);
+
+            switch (ch) {
+            case 'd': /* lower it */
+              gain -= 2;
+              break;
+            case 'D': /* raise it */
+              gain += 2;
+              break;
+            }
+            /* The set() function will limit this to the valid range */
+
+            /* Reuse the string from handler.get() as it's mallocked[32]
+             * and it's ours now. */
+            sprintf(gainstr, "%.14f", gain);
+            result = effp->handler.set(effp, "gain", gainstr);
+            if (!result) {
+              lsx_warn("\afailed to set threshold gain to %s", gainstr);
+            } if (result == gainstr) {
+              /* It was set to the same value as it already had */
+            } else {
+              if (lsx_strtod(gainstr, NULL) == lsx_strtod(result, NULL))
+                lsx_report("changed dolbyb threshold gain to %s", result);
+              else
+                putc('\a', stderr); /* Beep when hitting the endstops */
+              free(result);
+            }
+          }
+        }
+      }
+endofd:
+      break;
+    default:
+      lsx_warn("key `%c' doesn't do anything", ch);
     }
   }
 

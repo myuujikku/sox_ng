@@ -111,7 +111,7 @@ get_dolbyb(sox_effect_t *effp, char *name)
     /* The inverse of #define ParamConvertDb(Db) pow(10, Db / 20) */
     double dB = ConvertGain(p->dolbyb.ThGain);
     s = lsx_malloc(32);
-    sprintf(s, "%14f", dB);
+    sprintf(s, "%g", dB);
   }
 
   return s;
@@ -146,6 +146,7 @@ static char *
 set_dolbyb(sox_effect_t *effp, char *name, char *value)
 {
   priv_t *p = (priv_t *)effp->priv;
+  dolbyb_t *dolbyb = &(p->dolbyb);
   char *s = NULL;
   char *endptr = value;
   double dB = lsx_strtod(value, &endptr); /* Desired setting in dB */
@@ -162,8 +163,8 @@ set_dolbyb(sox_effect_t *effp, char *name, char *value)
       /* If it's already at the maximum, there is no change.
        * It shouldn't be over MAX_TH_GAIN_DB but,
        * if it is, it gets set to MAX. */
-      if (p->dolbyb.ThGain != ConvertDb(MAX_TH_GAIN_DB))
-        p->dolbyb.ThGain = ConvertDb(MAX_TH_GAIN_DB);
+      if (dolbyb->ThGain != ConvertDb(MAX_TH_GAIN_DB))
+        dolbyb->ThGain = ConvertDb(MAX_TH_GAIN_DB);
       s = strdup(maxdb_string);
 
     } else if (dB <= MIN_TH_GAIN_DB) {
@@ -173,20 +174,21 @@ set_dolbyb(sox_effect_t *effp, char *name, char *value)
       /* If it's already at the minimum, there is no change.
        * It shouldn't be under MIN_TH_GAIN_DB but
        * if it is, it gets set it to MIN. */
-      if (p->dolbyb.ThGain != ConvertDb(MIN_TH_GAIN_DB))
-        p->dolbyb.ThGain = ConvertDb(MIN_TH_GAIN_DB);
+      if (dolbyb->ThGain != ConvertDb(MIN_TH_GAIN_DB))
+        dolbyb->ThGain = ConvertDb(MIN_TH_GAIN_DB);
       s = strdup(mindb_string);
     } else {
       /* A within-range setting that's neither the maximum
        * nor the minimum. See if it's the same. */
-      if (gain == p->dolbyb.ThGain) {
+      if (gain == dolbyb->ThGain) {
         /* It's the same, so signal no change */
         return value;
       }
-      p->dolbyb.ThGain = gain;
-      p->dolbyb.ThGndB = ConvertGain(gain);
+      dolbyb->ThGain = gain;
+      dolbyb->ThGndB = ConvertGain(gain);
+      dolbyb_reinit(dolbyb);
       s = malloc(32);
-      sprintf(s, "%.14f", p->dolbyb.ThGndB);
+      sprintf(s, "%g", dolbyb->ThGndB);
     }
   }
 

@@ -65,6 +65,21 @@ char *SidePathInit(dolbyb_t *Param)
 }
 
 
+/* Update things that depend on the value of ThGain */
+char *SidePathReinit(dolbyb_t *Param)
+{
+  double AmpVal = ParamGanAmp;
+
+  if (Param->ThGain != 1.0) AmpVal *= Param->ThGain;
+  Param->SidePathGcMux = ParamMuxValue(AmpVal, 1048576L);
+  Param->SidePathGcVal = round(AmpVal * Param->SidePathGcMux);
+
+  /* SetGate() and HPF2SetVals() don't use ThGain or SidePathGc* */
+
+  return NULL;	/* Always succeeds */
+}
+
+
 int64_t SidePathCheck(dolbyb_t *Param, int64_t InSamp, uint16_t Chn)
 {
   /* Apply Dolby side path to a sample, but only as a check */
