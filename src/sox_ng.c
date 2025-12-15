@@ -150,22 +150,6 @@ static lsx_enum_item const rg_modes[] = {
 static rg_mode replay_gain_mode = RG_default;
 static sox_option_t show_progress = sox_option_default;
 
-/* --key mappings */
-typedef struct {
-  char  *key;	    /* String name of the bound key, like "D" */
-  char  *effect;    /* effect whose parameter this changes */
-  char  *field;     /* parameter changed in the effect's priv_t */
-  char   operator;  /* '+', '-', '*' or '/' */
-  double step;      /* How much to add or subtract, to multiply or divide by */
-} keymap_t;
-
-static keymap_t *keymaps = NULL;
-static unsigned keymap_count = 0;
-
-static void keymap_add(char *key, char *effect, char *field,
-                       char operator, double step);
-static void keymap_free(void);
-
 /* Input & output files */
 
 typedef struct {
@@ -1464,8 +1448,9 @@ static int update_status(sox_bool all_done, void * client_data)
         unsigned i;
         sox_bool found_key = sox_false;
         sox_bool found_effect = sox_false;
+        sox_keymap_t *keymaps = sox_globals.keymaps;
 
-        for (i=0; i < keymap_count; i++) {
+        for (i=0; i < sox_globals.keymap_count; i++) {
           /* Just single-letter-named keys for now */
           if (keymaps[i].key[0] == ch && keymaps[i].key[1] == '\0') {
             sox_effect_t **e;
@@ -2759,43 +2744,11 @@ static char parse_gopts_and_fopts(file_t * f)
         }
         key[1] = '\0';
 
-        keymap_add(key, effect, field, operator, step);
+        sox_keymap_add(key, effect, field, operator, step);
       }
       break;
     }
   }
-}
-
-/* Routines to remember and forget keymaps.
- * The string values are mallocked memory which we are responsible for freeing.
- * The effect name may be "synth2" meaning "only tweak the second synth effect
- * in the effects chain".
- */
-static void
-keymap_add(char *key, char *effect, char *field, char operator, double step)
-{
-  lsx_revalloc(keymaps, keymap_count + 1);
-  keymaps[keymap_count].key = key;
-  keymaps[keymap_count].effect = effect;
-  keymaps[keymap_count].field = field;
-  keymaps[keymap_count].operator = operator;
-  keymaps[keymap_count].step = step;
-  keymap_count++;
-}
-
-static void
-keymap_free(void)
-{
-  unsigned i;
-
-  for (i=0; i < keymap_count; i++) {
-    free(keymaps[i].key);
-    free(keymaps[i].effect);
-    free(keymaps[i].field);
-  }
-  free(keymaps);
-  keymaps = NULL;
-  keymap_count = 0;
 }
 
 static char const * device_name(char const * const type)

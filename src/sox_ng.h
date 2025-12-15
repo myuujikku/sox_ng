@@ -1277,12 +1277,30 @@ typedef struct sox_version_info {
     /* new info should be added at the end for version backwards-compatibility. */
 } sox_version_info_t;
 
+
+/**
+Client API:
+Internal representation of --keymap bindings
+*/
+typedef struct {
+  char  *key;	    /* String name of the bound key, like "D" */
+  char  *effect;    /* effect whose parameter this changes */
+  char  *field;     /* parameter changed in the effect's priv_t */
+  char   operator;  /* '+', '-', '*' or '/' */
+  double step;      /* How much to add or subtract, to multiply or divide by */
+} sox_keymap_t;
+
+extern void sox_keymap_add(char *key, char *effect, char *field,
+                           char operator, double step);
+extern void sox_keymap_free(void);
+
+
 /**
 Client API:
 Global parameters (for effects & formats), returned from the sox_get_globals
 function.
 */
-/* The public fields must correspond to the order in s_sox_globals */
+/* The public fields must correspond to the order in sox_globals */
 typedef struct {
 /* public: */
   char *       myname;  /**< argv[0] */
@@ -1320,6 +1338,9 @@ typedef struct {
   /** The frequency of A above middle C, usually 440 */
   float        A4;
 
+  /* Stuff for --keymap */
+  sox_keymap_t *keymaps;
+  unsigned     keymap_count;
 } sox_globals_t;
 
 /**
