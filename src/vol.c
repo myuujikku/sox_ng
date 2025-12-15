@@ -142,10 +142,8 @@ static int start_vol(sox_effect_t * effp)
 {
     priv_t * vol = (priv_t *) effp->priv;
 
-    /* No longer applies because "gain" can by be adjusted by keymap
-    if (vol->gain == 1)
+    if (vol->gain == 1 && !sox_is_keymapped("vol.gain"))
       return SOX_EFF_NULL;
-    */
 
     vol->limited = 0;
     vol->totalprocessed = 0;

@@ -86,12 +86,10 @@ set_overdrive(sox_effect_t *effp, char *name, char *value)
 static int start_overdrive(UNUSED sox_effect_t * effp)
 {
   /* gain is now keymapped so it may change */
-#if 0
   priv_t * p = (priv_t *)effp->priv;
 
-  if (p->gain == 1)
+  if (p->gain == 1 && !sox_is_keymapped("overdrive.gain"))
     return SOX_EFF_NULL;
-#endif
 
   return SOX_SUCCESS;
 }
