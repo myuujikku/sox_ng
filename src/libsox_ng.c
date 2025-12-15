@@ -135,6 +135,7 @@ sox_globals_t sox_globals = {
   sox_true,        /* sox_bool     use_threads */
   10,              /* size_t       log2_dft_min_size */
   440.0f,          /* float        A4 */
+  NULL, 0,         /* sox_keymap_t *keymaps, unsigned keymap_count */
 };
 
 sox_globals_t * sox_get_globals(void)
