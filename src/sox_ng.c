@@ -1444,88 +1444,12 @@ static int update_status(sox_bool all_done, void * client_data)
 
     default:
       /* See if the key is claimed by an effect parameter-changing key */
-      char key[2];
-      key[0] = ch; key[1] = '\0';
-      sox_keymap_apply(effp, key);
-
-      sox_keymap_apply(sox_effect_t *effp, char *key)
       {
-        unsigned i;
-        sox_bool found_key = sox_false;
-        sox_bool found_effect = sox_false;
-        sox_keymap_t *keymaps = sox_globals.keymaps;
-
-        for (i=0; i < sox_globals.keymap_count; i++) {
-          /* Match keymap "synth0" to effect name "synth" */
-          if (strncmp(key, keymaps[i].key, strlen(keymaps[i].key) {
-            sox_effect_t **e;
-            size_t n;
-            /* This is the Nth occurrence in the chain of
-             * an effect with this name */
-            unsigned occurrence = 0;
-
-            found_key = sox_true;
-
-            /* Find the named effect in the effects chain */
-            for (n=0, e=effects_chain->effects;
-                 n < effects_chain->length;
-                 n++, e++) {
-              sox_effect_t *effp = (*e);
-              unsigned namelen = strlen(effp->handler.name);
-              char   digit;  /* '1' to '9' in "synth2" effect name */
-              char  *effect   = keymaps[i].effect;
-              char  *field    = keymaps[i].field;
-              char   operator = keymaps[i].operator;
-              double step     = keymaps[i].step;
-
-              if (!strncmp(effect, effp->handler.name, namelen)) {
-                occurrence++;
-
-                /* Does this binding apply to all invocations of the effect */
-                if (effect[namelen] == '\0' ||
-                    /* ...or just to the Nth invocation of the effect? */
-                    (isdigit(digit = effect[namelen]) &&
-                     digit - '0' == occurrence)) {
-                  char *valuestr = effp->handler.get(effp, field);
-                  double value;
-                  char *result;
-
-                  found_effect = sox_true;
-                  if (!valuestr) {
-                    lsx_warn("can't get the current value of %s.%s",
-                             effect, field);
-                    goto endofkey;  /* break out of the switch */
-                  }
-                  value = lsx_strtod(valuestr, NULL);
-                  switch (operator) {
-                  case '+': value += step; break;
-                  case '-': value -= step; break;
-                  case '*': value *= step; break;
-                  case '/': value /= step; break;
-                  case '=': value  = step; break;
-                  }
-                  /* Reuse the string from handler.get() as it's mallocked[32]
-                   * and it's ours now. */
-                  sprintf(valuestr, "%.14f", value);
-                  result = effp->handler.set(effp, field, valuestr);
-                  if (!result) {
-                    lsx_warn("failed to set %s.%s to %s",
-                             effect, field, valuestr);
-                  } else if (result == valuestr) {
-                    /* No change */
-                    lsx_report("No change to %s.%s", effect, field);
-                  } else {
-                    lsx_report("changed %s.%s to %s", effect, field, result);
-                    free(result);
-                  }
-                }
-              }
-            }
-          }
-        }
-        if (!found_key) lsx_warn("key `%c' doesn't do anything", ch);
+        char key[2];
+        key[0] = ch; key[1] = '\0';
+        (void) sox_keymap_apply(effects_chain, key);
       }
-endofkey:
+
       break;
     }
   }

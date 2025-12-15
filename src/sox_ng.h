@@ -490,7 +490,9 @@ enum sox_error_t {
   SOX_ENOMEM,          /**< Can't alloc memory = 2002 */
   SOX_EPERM,           /**< Operation not permitted = 2003 */
   SOX_ENOTSUP,         /**< Operation not supported = 2004 */
-  SOX_EINVAL           /**< Invalid argument = 2005 */
+  SOX_EINVAL,          /**< Invalid argument = 2005 */
+  SOX_ENOKEYMAP,       /**< No such keymap = 2006 */
+  SOX_ENOEFFECT,       /**< No such effect = 2007 */
 };
 
 /**
@@ -1290,10 +1292,6 @@ typedef struct {
   double step;      /* How much to add or subtract, to multiply or divide by */
 } sox_keymap_t;
 
-extern void sox_keymap_add(char *key, char *effect, char *field,
-                           char operator, double step);
-extern void sox_keymap_free(void);
-
 
 /**
 Client API:
@@ -1668,6 +1666,34 @@ Client API:
 The structure with libSoX's global settings.
 */
 extern sox_globals_t sox_globals;
+
+/**
+Client API:
+Add a keymap
+*/
+extern void sox_keymap_add(char *key, char *effect, char *field,
+                           char operator, double step);
+/**
+Client API:
+See if a key or an effect.field is used in a keymap
+*/
+extern sox_bool sox_is_keymapped(char *key);
+
+/**
+Client API:
+Apply a keymap
+Returns: SOX_SUCCESS on successful application,
+         SOX_ENOEFFECT if the effect was not found in the chain
+         or it was found but doesn't have a keymappable parameter
+         of that name,
+         SOX_ENOKEYMAP if the key was not mapped to anything.
+*/
+extern int sox_keymap_apply(sox_effects_chain_t *effp, char *key);
+/**
+Client API:
+Free keymap memory
+*/
+extern void sox_keymap_free(void);
 
 /**
 Client API:

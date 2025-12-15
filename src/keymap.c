@@ -18,6 +18,8 @@
 
 #include "sox_i.h"
 
+#include <ctype.h>   /* for isdigit() */
+
 /* Routines to remember and forget keymaps.
  *
  * The string values are mallocked memory which we are responsible for freeing.
@@ -38,6 +40,123 @@ sox_keymap_add(char *key, char *effect, char *field, char operator, double step)
   keymaps[keymap_count].operator = operator;
   keymaps[keymap_count].step = step;
   sox_globals.keymap_count++;
+}
+
+/*
+ * Tells you whether a named key or named effect.field is mapped
+ */
+sox_bool
+sox_is_keymapped(char *key)
+{
+  sox_keymap_t *keymaps = sox_globals.keymaps;
+  char *effect = NULL, *field = NULL;
+  /* "." is a key name, not a null effect.field */
+  char *dot = strcmp(key, ".") ? strchr(key, '.') : NULL;
+  unsigned i;
+
+  if (dot) {
+    effect = key;
+    field = dot + 1;
+  }
+
+  for (i=0; i < sox_globals.keymap_count; i++) {
+    sox_keymap_t *keymap = keymaps + i;
+    /* Does a key name match? */
+    if (!strncmp(key, keymap->key, strlen(keymap->key))) {
+      return sox_true;
+    }
+    /* Do the effect and field names match? */
+    if (!strcmp(effect, keymap->effect) && !strcmp(field, keymap->field)) {
+      return sox_true;
+    }
+  }
+  return sox_false;
+}
+
+int
+sox_keymap_apply(sox_effects_chain_t *effects_chain, char *key)
+{
+  unsigned i;
+  sox_bool found_key = sox_false;
+  sox_bool found_effect = sox_false;
+  sox_keymap_t *keymaps = sox_globals.keymaps;
+
+  for (i=0; i < sox_globals.keymap_count; i++) {
+    /* Match keymap "synth0" to effect name "synth" */
+    if (strncmp(key, keymaps[i].key, strlen(keymaps[i].key))) {
+      sox_effect_t **e;
+      size_t n;
+      /* This is the Nth occurrence in the chain of
+       * an effect with this name */
+      unsigned occurrence = 0;
+
+      found_key = sox_true;
+
+      /* Find the named effect in the effects chain */
+      for (n=0, e=effects_chain->effects;
+           n < effects_chain->length;
+           n++, e++) {
+        sox_effect_t *effp = (*e);
+        unsigned namelen = strlen(effp->handler.name);
+        char   digit;  /* '1' to '9' in "synth2" effect name */
+        char  *effect   = keymaps[i].effect;
+        char  *field    = keymaps[i].field;
+        char   operator = keymaps[i].operator;
+        double step     = keymaps[i].step;
+
+        if (!strncmp(effect, effp->handler.name, namelen)) {
+          occurrence++;
+
+          /* Does this binding apply to all invocations of the effect */
+          if (effect[namelen] == '\0' ||
+              /* ...or just to the Nth invocation of the effect? */
+              (isdigit(digit = effect[namelen]) &&
+               (unsigned)(digit - '0') == occurrence)) {
+            char *valuestr = effp->handler.get(effp, field);
+            double value;
+            char *result;
+
+            found_effect = sox_true;
+            if (!valuestr) {
+              lsx_warn("can't get the current value of %s.%s",
+                       effect, field);
+              return SOX_ENOEFFECT;
+            }
+            value = lsx_strtod(valuestr, NULL);
+            switch (operator) {
+            case '+': value += step; break;
+            case '-': value -= step; break;
+            case '*': value *= step; break;
+            case '/': value /= step; break;
+            case '=': value  = step; break;
+            }
+            /* Reuse the string from handler.get() as it's mallocked[32]
+             * and it's ours now. */
+            sprintf(valuestr, "%.14f", value);
+            result = effp->handler.set(effp, field, valuestr);
+            if (!result) {
+              lsx_warn("failed to set %s.%s to %s",
+                       effect, field, valuestr);
+            } else if (result == valuestr) {
+              /* No change */
+              lsx_report("No change to %s.%s", effect, field);
+            } else {
+              lsx_report("changed %s.%s to %s", effect, field, result);
+              free(result);
+            }
+          }
+        }
+      }
+    }
+  }
+  if (!found_key) {
+    lsx_warn("key `%s' doesn't do anything", key);
+    return SOX_ENOKEYMAP;
+  }
+  if (!found_effect) {
+    return SOX_ENOEFFECT;
+  }
+  return SOX_SUCCESS;
 }
 
 void
