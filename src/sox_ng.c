@@ -1444,6 +1444,11 @@ static int update_status(sox_bool all_done, void * client_data)
 
     default:
       /* See if the key is claimed by an effect parameter-changing key */
+      char key[2];
+      key[0] = ch; key[1] = '\0';
+      sox_keymap_apply(effp, key);
+
+      sox_keymap_apply(sox_effect_t *effp, char *key)
       {
         unsigned i;
         sox_bool found_key = sox_false;
@@ -1451,13 +1456,13 @@ static int update_status(sox_bool all_done, void * client_data)
         sox_keymap_t *keymaps = sox_globals.keymaps;
 
         for (i=0; i < sox_globals.keymap_count; i++) {
-          /* Just single-letter-named keys for now */
-          if (keymaps[i].key[0] == ch && keymaps[i].key[1] == '\0') {
+          /* Match keymap "synth0" to effect name "synth" */
+          if (strncmp(key, keymaps[i].key, strlen(keymaps[i].key) {
             sox_effect_t **e;
             size_t n;
             /* This is the Nth occurrence in the chain of
              * an effect with this name */
-            int occurrence = 0;
+            unsigned occurrence = 0;
 
             found_key = sox_true;
 
@@ -1474,11 +1479,11 @@ static int update_status(sox_bool all_done, void * client_data)
               double step     = keymaps[i].step;
 
               if (!strncmp(effect, effp->handler.name, namelen)) {
-
                 occurrence++;
-                /* A matching effect name that applies to all invocations? */
+
+                /* Does this binding apply to all invocations of the effect */
                 if (effect[namelen] == '\0' ||
-                    /* A matching effect name to apply to the Nth invocation? */
+                    /* ...or just to the Nth invocation of the effect? */
                     (isdigit(digit = effect[namelen]) &&
                      digit - '0' == occurrence)) {
                   char *valuestr = effp->handler.get(effp, field);
