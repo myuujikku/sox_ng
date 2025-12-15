@@ -25,12 +25,12 @@
  */
 typedef struct {
         int     *counter;
-        int     num_delays;
-        float   **delay_buf;
-        float   gain_in, gain_out;
+        unsigned num_delays;
+        float  **delay_buf;
+        float    gain_in, gain_out;
         float   *delay, *decay;
         ptrdiff_t *samples;
-        size_t sumsamples;
+        size_t   sumsamples;
 } priv_t;
 
 /*
@@ -141,6 +141,22 @@ set_echos(sox_effect_t *effp, char *name, char *value)
     sprintf(s, "%g", gain);
   }
 
+  /* An array-based parameter */
+  if (!strncmp(name, "decay", strlen("decay"))) {
+    unsigned i;
+    unsigned nth = atoi(name + strlen("decay"));
+    /* 0 for "decay", non-zero for "decay1" etc. */
+
+    for (i=0; i < p->num_delays; i++) {
+      if (nth == 0 || nth == i+1) {
+        /* return the value of the first one */
+        if (!s) {
+          s = lsx_malloc(32);
+          sprintf(s, "%g", p->decay[i]);
+        }
+      }
+    }
+  }
   return s;
 }
 
@@ -150,7 +166,7 @@ set_echos(sox_effect_t *effp, char *name, char *value)
 static int sox_echos_start(sox_effect_t * effp)
 {
         priv_t * echos = (priv_t *) effp->priv;
-        int i;
+        unsigned i;
         float sum_in_volume;
 
 	lsx_vcalloc(echos->counter, echos->num_delays);
@@ -190,7 +206,7 @@ static int sox_echos_flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sam
                 size_t *isamp, size_t *osamp)
 {
         priv_t * echos = (priv_t *) effp->priv;
-        int j;
+        unsigned j;
         float d_in, d_out;
         size_t len = min(*isamp, *osamp);
         *isamp = *osamp = len;
@@ -228,7 +244,7 @@ static int sox_echos_drain(sox_effect_t * effp, sox_sample_t *obuf, size_t *osam
 {
         priv_t * echos = (priv_t *) effp->priv;
         float d_out;
-        int j;
+        unsigned j;
         size_t done;
 
         done = 0;
@@ -268,7 +284,7 @@ static int sox_echos_drain(sox_effect_t * effp, sox_sample_t *obuf, size_t *osam
 static int sox_echos_stop(sox_effect_t * effp)
 {
         priv_t * echos = (priv_t *) effp->priv;
-	int i;
+	unsigned i;
 
         free(echos->counter);
         free(echos->samples);

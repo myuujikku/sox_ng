@@ -17,13 +17,13 @@
 
 /* Private data */
 typedef struct {
-        int     counter;
-        int     num_delays;
+        int      counter;
+        unsigned num_delays;
         float   *delay_buf;
-        float   gain_in, gain_out;
+        float    gain_in, gain_out;
         float   *delay, *decay;
         ptrdiff_t *samples, maxsamples;
-        size_t fade_out;
+        size_t   fade_out;
 } priv_t;
 
 /*
@@ -100,6 +100,22 @@ get_echo(sox_effect_t *effp, char *name)
     sprintf(s, "%g", p->gain_out);
   }
 
+  /* An array-based parameter */
+  if (!strncmp(name, "decay", strlen("decay"))) {
+    unsigned i;
+    unsigned nth = atoi(name + strlen("decay"));
+    /* 0 for "decay", non-zero for "decay1" etc. */
+
+    for (i=0; i < p->num_delays; i++) {
+      if (nth == 0 || nth == i+1) {
+        /* return the only of the first one */
+        s = lsx_malloc(32);
+        sprintf(s, "%g", p->decay[i]);
+        return s;
+      }
+    }
+  }
+
   return s;
 }
 
@@ -124,6 +140,23 @@ set_echo(sox_effect_t *effp, char *name, char *value)
     sprintf(s, "%g", gain);
   }
 
+  /* An array-based parameter */
+  if (!strncmp(name, "decay", strlen("decay"))) {
+    unsigned i;
+    unsigned nth = atoi(name + strlen("decay"));
+    /* 0 for "decay", non-zero for "decay1" etc. */
+
+    for (i=0; i < p->num_delays; i++) {
+      if (nth == 0 || nth == i+1) {
+        p->decay[i] = gain;
+
+        /* What do we return if we adjusted several? */
+        s = malloc(32);
+        sprintf(s, "%g", gain);
+      }
+    }
+  }
+
   return s;
 }
 
@@ -133,7 +166,7 @@ set_echo(sox_effect_t *effp, char *name, char *value)
 static int sox_echo_start(sox_effect_t * effp)
 {
         priv_t * echo = (priv_t *) effp->priv;
-        int i;
+        unsigned i;
         float sum_in_volume;
 
         echo->maxsamples = 0;
@@ -171,7 +204,7 @@ static int sox_echo_flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_samp
                  size_t *isamp, size_t *osamp)
 {
         priv_t * echo = (priv_t *) effp->priv;
-        int j;
+        unsigned j;
         float d_in, d_out;
         size_t len = min(*isamp, *osamp);
         *isamp = *osamp = len;
@@ -181,7 +214,7 @@ static int sox_echo_flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_samp
                 /* Compute output first */
                 d_out = d_in * echo->gain_in;
 		if (echo->maxsamples == 0) {
-			for ( j = 0; j < echo->num_delays; j++ ) {
+			for (j = 0; j < echo->num_delays; j++ ) {
 				d_out += d_in * echo->decay[j];
 			}
 		} else {
@@ -212,7 +245,7 @@ static int sox_echo_drain(sox_effect_t * effp, sox_sample_t *obuf, size_t *osamp
 {
         priv_t * echo = (priv_t *) effp->priv;
         float d_in, d_out;
-        int j;
+        unsigned j;
         size_t done;
 
         done = 0;
@@ -221,7 +254,7 @@ static int sox_echo_drain(sox_effect_t * effp, sox_sample_t *obuf, size_t *osamp
                 d_in = 0;
                 d_out = 0;
 		if (echo->maxsamples > 0) {
-		    for ( j = 0; j < echo->num_delays; j++ ) {
+		    for (j = 0; j < echo->num_delays; j++ ) {
 			    d_out += echo->delay_buf[
     (echo->counter + echo->maxsamples - echo->samples[j]) % echo->maxsamples]
 			    * echo->decay[j];
