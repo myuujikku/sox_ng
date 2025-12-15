@@ -28,6 +28,7 @@ set(effects_srcs
   bend
   biquad
   biquads
+  centercut
   chorus
   compand
   compandt
@@ -103,6 +104,7 @@ set(formats_srcs
   dvms-fmt
   f4-fmt
   f8-fmt
+  ffmpeg
   g711
   g721
   g723_24
@@ -112,14 +114,19 @@ set(formats_srcs
   gsrt
   hcom
   htk
+  id3
   ima-fmt
   ima_rw
   la-fmt
   lpc10
   lu-fmt
   maud
+  mp3-mad
+  mp3-lame
+  mp3-twolame
   nulfile
   nsp
+  opus
   prc
   raw
   raw-fmt
@@ -156,9 +163,9 @@ set(formats_srcs
 add_library(lib${PROJECT_NAME}
   effects                 formats_i               libsox_i
   effects_i               ${formats_srcs}         ${optional_srcs}
-  effects_i_dsp           getopt
-  ${effects_srcs}         util
-  formats                 libsox_ng                  xmalloc
+  effects_i_dsp           getopt                  keymap
+  ${effects_srcs}         util                    fifo
+  formats                 libsox_ng               xmalloc
 )
 add_executable(${PROJECT_NAME} ${PROJECT_NAME}.c)
 target_link_libraries(${PROJECT_NAME} lib${PROJECT_NAME} lpc10 ${optional_libs})
