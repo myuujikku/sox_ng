@@ -219,30 +219,40 @@ static int getopts_synth(sox_effect_t * effp, int argc, char **argv)
 {
   priv_t * p = (priv_t *) effp->priv;
   channel_t master, * chan = &master;
-  int key = INT_MAX, argn = 0;
+  int key = INT_MAX;
+  int argn = 1;
   char dummy, * end_ptr;
   const char *n;
-  --argc, ++argv;
 
-  if (argc && !strcmp(*argv, "-n")) p->no_headroom = sox_true, ++argv, --argc;
+  while (argn < argc && argv[argn][0] == '-') {
+    switch (argv[argn][1]) {
+    case 'n':
+      if (argv[argn][2] != '\0') goto invalid_option;
+      p->no_headroom = sox_true;
+      break;
 
-  if (argc > 0 && !strcmp(*argv, "-j")) {
-    argc--; argv++;
-    if (argc == 0) {
-      lsx_fail("-j what?");
+    case 'j':
+      /* *Don't* accept "-jA" to prevent incompatability with older versions */
+      if (argv[argn][2] != '\0') goto invalid_option;
+      if (++argn >= argc ||
+          (sscanf(argv[argn], "%i %c", &key, &dummy) != 1 &&
+           ((key = lsx_parse_note(argv[argn], &end_ptr)) == INT_MAX || *end_ptr))) {
+        lsx_fail("-j wants a number of semitones above A or a note name");
+        return SOX_EOF;
+      }
+      break;
+
+    default:
+        fprintf(stderr, "default check\n");
+    invalid_option:
+      lsx_fail("invalid option `%s'", argv[0]);
       return SOX_EOF;
     }
-    if (sscanf(argv[0], "%i %c", &key, &dummy) == 1 ||
-        ((key = lsx_parse_note(argv[0], &end_ptr)) != INT_MAX && !*end_ptr)) {
-      argc--; argv++;
-    } else {
-      lsx_fail("-j wants a number of semitones above A or a note name");
-      return SOX_EOF;
-    }
+    argn++;
   }
 
   /* Get duration if given (if first arg starts with digit) */
-  if (argc && (isdigit((int)argv[argn][0]) || argv[argn][0] == '.')) {
+  if (argn < argc && (isdigit((int)argv[argn][0]) || argv[argn][0] == '.')) {
     p->length_str = lsx_strdup(argv[argn]);
     /* Do a dummy parse of to see if it will fail */
     n = lsx_parsesamples(0., p->length_str, &p->samples_to_do, 't');
@@ -270,7 +280,7 @@ static int getopts_synth(sox_effect_t * effp, int argc, char **argv)
 
     if (enum_p == NULL) {
       if (argv[argn][0] == '-') {
-        lsx_fail("invalid option `%s'", argv[argn]);
+        lsx_fail("invalid option 2 `%s'", argv[argn]);
         lsx_usage(effp);
       } else {
         /* We could get here for a misspelled effect name,
