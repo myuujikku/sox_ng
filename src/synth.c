@@ -226,12 +226,19 @@ static int getopts_synth(sox_effect_t * effp, int argc, char **argv)
 
   if (argc && !strcmp(*argv, "-n")) p->no_headroom = sox_true, ++argv, --argc;
 
-  if (argc > 1 && !strcmp(*argv, "-j") && (
-        sscanf(argv[1], "%i %c", &key, &dummy) == 1 || (
-          (key = lsx_parse_note(argv[1], &end_ptr)) != INT_MAX &&
-          !*end_ptr))) {
-    argc -= 2;
-    argv += 2;
+  if (argc > 0 && !strcmp(*argv, "-j")) {
+    argc--; argv++;
+    if (argc == 0) {
+      lsx_fail("-j what?");
+      return SOX_EOF;
+    }
+    if (sscanf(argv[0], "%i %c", &key, &dummy) == 1 ||
+        ((key = lsx_parse_note(argv[0], &end_ptr)) != INT_MAX && !*end_ptr)) {
+      argc--; argv++;
+    } else {
+      lsx_fail("-j wants a number of semitones above A or a note name");
+      return SOX_EOF;
+    }
   }
 
   /* Get duration if given (if first arg starts with digit) */
