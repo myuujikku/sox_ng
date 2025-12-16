@@ -817,7 +817,7 @@ const sox_effect_handler_t *lsx_synth_effect_fn(void)
   static const char usage[] =
     "[-j key] [-n] [length [offset [phase [p1 [p2 [p3]]]]]] {type [combine [fixed[,extra[,mix]]]] [freq[:|+|/|-freq2] [offset [phase [p1 [p2 [p3]]]]]]}";
   static const char * const extra_usage[] = {
-"-j key  Retune scientific note names to `key' semitones higher",
+"-j key  Use just intonation in the given key (semitones above A or a note)",
 "-n      Don't normalize the output volume",
 "length  How many seconds of audio to make. Default: input length, 0=infinite",
 "offset  DC offset -100-100; the amplitude is adjusted to give a max of +/-1",
