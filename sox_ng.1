@@ -4340,7 +4340,7 @@ for an effect that allows arbitrary channel selection, ordering and mixing.
 .TP
 .nh
 .na
-\fBsynth\fR [\fB\-j \fIkey\fR] [\fB\-n\fR] [\fIlength\fR\ [\fIoffset\fR\ [\fIphase\fR\ [\fIp1\fR\ [\fIp2\fR\ [\fIp3\fR]]]]]]
+\fBsynth\fR [\fB\-(j|p) \fIkey\fR] [\fB\-n\fR] [\fIlength\fR\ [\fIoffset\fR\ [\fIphase\fR\ [\fIp1\fR\ [\fIp2\fR\ [\fIp3\fR]]]]]]
 {\fItype\fR\ [\fIcombine\fR\ [\fIfixed\fR[\fB,\fIextra\fR[\fB,\fImix\fR]]]]
 \:[\fIfreq\fR[\fB:\fR\^|\^\fB+\fR\^|\^\fB/\fR\^|\^\fB\-\fIfreq2\fR]\ [\fIoffset\fR\ [\fIphase\fR\ [\fIp1\fR\ [\fIp2\fR\ [\fIp3\fR]]]]]]}
 .ad
@@ -4376,7 +4376,9 @@ with note notations is equal temperament; the
 option selects just intonation, where
 .I key
 is a whole number of semitones relative to A (so for example, \-9
-or 3 selects the key of C) or a note in scientific notation.
+or 3 selects the key of C) or a note in scientific notation and
+.B \-p
+selects Pythagorean tuning.
 .SP
 By default, the
 .B synth

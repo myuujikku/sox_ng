@@ -406,9 +406,31 @@ static double calc_note_freq(double note, int key, tuning_t tuning)
         j[i] = i <= 6 ? log((double)n[i - 1] / d[i - 1]) / log(2.)
                       : 1 - j[12 - i];
       note -= m;
+      /* (INT_MAX / 2) % 12 is 3 but I don't see why that's used here */
       m -= key = m - ((INT_MAX / 2 - ((INT_MAX / 2) % 12) + m - key) % 12);
       return A4 * pow(2., key / 12. + j[m] + (j[m + 1] - j[m]) * note);
     }
+    break;
+
+  case tuning_pythagorean:
+    if (key == INT_MAX) break;  /* Just with no key??? */
+    {
+      static const int n[] = {1, 256, 9, 32, 81, 4, 729, 3, 128, 27, 16, 243, 2};
+      static const int d[] = {1, 243, 8, 27, 64, 3, 512, 2,  81, 16,  9, 128, 1};
+      static double p[13];                        /* Pythagorean semitones */
+      int i, m = floor(note);
+
+      /* A4 (note 0) should remain 440 (or whatever) and other notes should be
+       * relative to that according to the above table which should start and
+       * end on whatever key they asked for. */
+
+      if (!p[0]) for (i = 0; i <= 12; ++i)
+        p[i] = (double)n[i] / (double)d[i];
+      note -= m;
+      m -= key = m - ((INT_MAX / 2 - ((INT_MAX / 2) % 12) + m - key) % 12);
+      return A4 * pow(2., key / 12. + p[m] + (p[m + 1] - p[m]) * note - 1);
+    }
+    break;
   }
 
   /* Equal temperament */

@@ -58,7 +58,7 @@ lsx_enum_item const * lsx_get_wave_enum(void);
 } while(0)
 #endif
 
-typedef enum { tuning_equal, tuning_just } tuning_t;
+typedef enum { tuning_equal, tuning_just, tuning_pythagorean } tuning_t;
 
 #ifdef _FILE_OFFSET_BITS
 assert_static(sizeof(off_t) == _FILE_OFFSET_BITS >> 3, OFF_T_BUILD_PROBLEM);

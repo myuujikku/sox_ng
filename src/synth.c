@@ -226,22 +226,27 @@ static int getopts_synth(sox_effect_t * effp, int argc, char **argv)
   const char *n;
 
   while (argn < argc && argv[argn][0] == '-') {
-    switch (argv[argn][1]) {
+    char ch = argv[argn][1];
+
+    switch (ch) {
     case 'n':
       if (argv[argn][2] != '\0') goto invalid_option;
       p->no_headroom = sox_true;
       break;
 
     case 'j':
-      /* *Don't* accept "-jA" to prevent incompatability with older versions */
+    case 'p':
       if (argv[argn][2] != '\0') goto invalid_option;
       if (++argn >= argc ||
           (sscanf(argv[argn], "%i %c", &key, &dummy) != 1 &&
            ((key = lsx_parse_note(argv[argn], &end_ptr)) == INT_MAX || *end_ptr))) {
-        lsx_fail("-j wants a number of semitones above A or a note name");
+        lsx_fail("-%c wants a number of semitones above A or a note name", ch);
         return SOX_EOF;
       }
-      tuning = tuning_just;
+      switch (ch) {
+      case 'j': tuning = tuning_just;        break;
+      case 'p': tuning = tuning_pythagorean; break;
+      }
       break;
 
     default:
@@ -839,6 +844,7 @@ const sox_effect_handler_t *lsx_synth_effect_fn(void)
     "[-j key] [-n] [length [offset [phase [p1 [p2 [p3]]]]]] {type [combine [fixed[,extra[,mix]]]] [freq[:|+|/|-freq2] [offset [phase [p1 [p2 [p3]]]]]]}";
   static const char * const extra_usage[] = {
 "-j key  Use just intonation in the given key (semitones above A or a note)",
+"-p key  Use Pythagorean intonation in the given key",
 "-n      Don't normalize the output volume",
 "length  How many seconds of audio to make. Default: input length, 0=infinite",
 "offset  DC offset -100-100; the amplitude is adjusted to give a max of +/-1",
