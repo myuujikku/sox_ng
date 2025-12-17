@@ -387,22 +387,31 @@ char const * lsx_parseposition(sox_rate_t rate, const char *str0, uint64_t *samp
  *
  * calculated by freq = 440Hz * 2**(note/12)
  */
-static double calc_note_freq(double note, int key)
+static double calc_note_freq(double note, int key, tuning_t tuning)
 {
   double A4 = sox_globals.A4;
 
-  if (key != INT_MAX) {                         /* Just intonation. */
-    static const int n[] = {16, 9, 6, 5, 4, 7}; /* Numerator. */
-    static const int d[] = {15, 8, 5, 4, 3, 5}; /* Denominator. */
-    static double j[13];                        /* Just semitones */
-    int i, m = floor(note);
+  switch (tuning) {
+  case tuning_equal: break;
 
-    if (!j[1]) for (i = 1; i <= 12; ++i)
-      j[i] = i <= 6? log((double)n[i - 1] / d[i - 1]) / log(2.) : 1 - j[12 - i];
-    note -= m;
-    m -= key = m - ((INT_MAX / 2 - ((INT_MAX / 2) % 12) + m - key) % 12);
-    return A4 * pow(2., key / 12. + j[m] + (j[m + 1] - j[m]) * note);
+  case tuning_just:
+    if (key == INT_MAX) break;  /* Just with no key??? */
+    {
+      static const int n[] = {16, 9, 6, 5, 4, 7}; /* Numerator. */
+      static const int d[] = {15, 8, 5, 4, 3, 5}; /* Denominator. */
+      static double j[13];                        /* Just semitones */
+      int i, m = floor(note);
+
+      if (!j[1]) for (i = 1; i <= 12; ++i)
+        j[i] = i <= 6 ? log((double)n[i - 1] / d[i - 1]) / log(2.)
+                      : 1 - j[12 - i];
+      note -= m;
+      m -= key = m - ((INT_MAX / 2 - ((INT_MAX / 2) % 12) + m - key) % 12);
+      return A4 * pow(2., key / 12. + j[m] + (j[m + 1] - j[m]) * note);
+    }
   }
+
+  /* Equal temperament */
   return A4 * pow(2., note / 12);
 }
 
@@ -427,7 +436,8 @@ int lsx_parse_note(char const * text, char * * end_ptr)
  * note is calculated.
  * Return -1 on error.
  */
-double lsx_parse_frequency_k(char const * text, char * * end_ptr, int key)
+double lsx_parse_frequency_k(char const * text, char * * end_ptr,
+                             int key, tuning_t tuning)
 {
   double result;
 
@@ -435,11 +445,12 @@ double lsx_parse_frequency_k(char const * text, char * * end_ptr, int key)
     result = strtod(text + 1, end_ptr);
     if (*end_ptr == text + 1 || !isfinite(result) || fabs(result) == HUGE_VAL)
       return -1;
-    return calc_note_freq(result, key);
+    return calc_note_freq(result, key, tuning);
   }
   if (*text >= 'A' && *text <= 'G') {
     int result2 = lsx_parse_note(text, end_ptr);
-    return result2 == INT_MAX? - 1 : calc_note_freq((double)result2, key);
+    return result2 == INT_MAX ? -1
+                              : calc_note_freq((double)result2, key, tuning);
   }
   result = strtod(text, end_ptr);
   if (end_ptr) {

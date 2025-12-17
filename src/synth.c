@@ -220,6 +220,7 @@ static int getopts_synth(sox_effect_t * effp, int argc, char **argv)
   priv_t * p = (priv_t *) effp->priv;
   channel_t master, * chan = &master;
   int key = INT_MAX;
+  tuning_t tuning = tuning_equal;
   int argn = 1;
   char dummy, * end_ptr;
   const char *n;
@@ -240,12 +241,12 @@ static int getopts_synth(sox_effect_t * effp, int argc, char **argv)
         lsx_fail("-j wants a number of semitones above A or a note name");
         return SOX_EOF;
       }
+      tuning = tuning_just;
       break;
 
     default:
-        fprintf(stderr, "default check\n");
     invalid_option:
-      lsx_fail("invalid option `%s'", argv[0]);
+      lsx_fail("invalid option `%s'", argv[argn]);
       return SOX_EOF;
     }
     argn++;
@@ -365,7 +366,8 @@ case3:  if (!isfinite(chan->vdelay_mix)) goto vwhat;
         argv[argn][0] != '-') {
       static const char sweeps[] = ":+/-";
 
-      chan->freq2 = chan->freq = lsx_parse_frequency_k(argv[argn], &end_ptr, key);
+      chan->freq2 = chan->freq = lsx_parse_frequency_k(argv[argn], &end_ptr,
+                                                       key, tuning);
       if (chan->freq < (chan->type == synth_pluck? 27.5 : 0) ||
           (chan->type == synth_pluck && chan->freq > 4220)) {
         lsx_fail("invalid freq `%s'", argv[argn]);
@@ -377,7 +379,8 @@ case3:  if (!isfinite(chan->vdelay_mix)) goto vwhat;
           return SOX_EOF;
         }
         chan->sweep = strchr(sweeps, *end_ptr) - sweeps;
-        chan->freq2 = lsx_parse_frequency_k(end_ptr + 1, &end_ptr, key);
+        chan->freq2 = lsx_parse_frequency_k(end_ptr + 1, &end_ptr,
+                                            key, tuning);
         if (chan->freq2 < 0) {
           lsx_fail("invalid freq2 `%s'", argv[argn]);
           return SOX_EOF;

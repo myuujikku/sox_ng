@@ -58,6 +58,8 @@ lsx_enum_item const * lsx_get_wave_enum(void);
 } while(0)
 #endif
 
+typedef enum { tuning_equal, tuning_just } tuning_t;
+
 #ifdef _FILE_OFFSET_BITS
 assert_static(sizeof(off_t) == _FILE_OFFSET_BITS >> 3, OFF_T_BUILD_PROBLEM);
 #endif
@@ -85,8 +87,9 @@ void lsx_generate_wave_table(
 char const * lsx_parsesamples(sox_rate_t rate, const char *str, uint64_t *samples, int def);
 char const * lsx_parseposition(sox_rate_t rate, const char *str, uint64_t *samples, uint64_t latest, uint64_t end, int def);
 int lsx_parse_note(char const * text, char * * end_ptr);
-double lsx_parse_frequency_k(char const * text, char * * end_ptr, int key);
-#define lsx_parse_frequency(a, b) lsx_parse_frequency_k(a, b, INT_MAX)
+double lsx_parse_frequency_k(char const * text, char * * end_ptr,
+                             int key, tuning_t tuning);
+#define lsx_parse_frequency(a, b) lsx_parse_frequency_k(a, b, INT_MAX, tuning_equal)
 FILE * lsx_open_input_file(sox_effect_t * effp, char const * filename, sox_bool text_mode);
 
 void lsx_prepare_spline3(double const * x, double const * y, int n,
