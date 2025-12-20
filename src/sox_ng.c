@@ -1245,6 +1245,11 @@ static void get_termwidth(int s UNUSED)
 
   if (!ioctl(2, TIOCGWINSZ, &w))
     termwidth = w.ws_col;
+  else
+    /* If stderr is redirected to a file, don't leave failure in errno,
+     * which will be picked up later by a file-reading routine
+     */
+    errno = 0;
 }
 #endif
 
