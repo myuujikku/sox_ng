@@ -44,11 +44,11 @@ README: README.sh FEATURES.in
 
 # Rule for making text man pages.  Uses GNU nroff's -c so not portable.
 .1.txt:
-	tbl $(srcdir)/$< | nroff -man -c | sed "s/.//g" > $@
+	tbl $(srcdir)/$< | LANG=C LC_ALL=C nroff -man -c | sed "s/.//g" > $@
 .3.txt:
-	tbl $(srcdir)/$< | nroff -man -c | sed "s/.//g" > $@
+	tbl $(srcdir)/$< | LANG=C LC_ALL=C nroff -man -c | sed "s/.//g" > $@
 .7.txt:
-	tbl $(srcdir)/$< | nroff -man -c | sed "s/.//g" > $@
+	tbl $(srcdir)/$< | LANG=C LC_ALL=C nroff -man -c | sed "s/.//g" > $@
 
 DOCTXT = sox_ng.txt soxi_ng.txt soxformat_ng.txt libsox_ng.txt README
 txt: $(DOCTXT)
