@@ -1212,6 +1212,7 @@ static int startread_wav(sox_format_t * ft)
 
     /* Data starts here */
     wav->dataStart = lsx_tell(ft);
+    ft->data_start = wav->dataStart;
 
     switch (wav->formatTag)
     {
