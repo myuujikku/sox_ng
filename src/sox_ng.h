@@ -1828,7 +1828,7 @@ sox_format_quit(void);
 
 /**
 Client API:
-Initialize effects library.
+Initialize the effects library.
 @returns SOX_SUCCESS if successful.
 */
 int
@@ -1837,7 +1837,7 @@ sox_init(void);
 
 /**
 Client API:
-Close effects library and unload format handler plugins.
+Close the effects library and unload format handler plugins.
 @returns SOX_SUCCESS if successful.
 */
 int

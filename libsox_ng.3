@@ -39,9 +39,13 @@ libsox_ng, another audio file format and effect library
 .na
 .nh
 .P
+.B int sox_init(void);
+.P
 .B int sox_format_init(void);
 .P
-.B void sox_format_quit(void);
+.B int sox_format_quit(void);
+.P
+.B void sox_quit(void);
 .P
 .B sox_format_t\ *\:sox_open_read(char\ const\ *\fIpath\fB, sox_signalinfo_t\ const\ *\fIsignal\fB, sox_encodinginfo_t\ const\ *\fIencoding\fB, char\ const\ *\fIfiletype\fB);
 .P
@@ -179,17 +183,22 @@ followed by notes on how to write new format handlers and effects.
 For an exhaustive description of the libsox_ng API see
 http://martinwguy.net/test/soxygen/sox_8h.html
 .TP
+.B int sox_init(void)
+\fBsox_init()\fR performs any initialization required by effects.
+.TP
 .B int sox_format_init(void)
 \fBsox_format_init()\fR performs initialization required by
-all file format handlers.  If compiled with dynamic
-library support, this will detect and initialize all external
-libraries.  It should be called before any file operations
+file format handlers. If SoX was compiled with dynamic
+file format support, this will detect and initialize all file format
+plugins and should be called before any file operations
 are performed.
 .TP
 .B void sox_format_quit(void)
-\fBsox_format_quit()\fR performs cleanup
-related to all file format handlers and
-should be called after all file operations are completed.
+\fBsox_format_quit()\fR unloads all dynamically-loaded file format plugins.
+\fBsox_quit()\fR calls it, so calling it yourself is pointless but harmless.
+.TP
+.B void sox_quit(void)
+\fBsox_quit()\fR performs any cleanup required by effects.
 .TP
 .nh
 .na
