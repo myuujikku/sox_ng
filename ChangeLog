@@ -10,6 +10,8 @@ sox_ng-14.6.1.2+git
 
   o Fail autodetection of some ffmpeg formats if the file is truncated
   o Fix a harmless memory leak in alsa
+  o synth: Fix the extra_usage line for -j
+  o Fix RMS Pk dB -inf when window is same as file length
 
 
 sox_ng-14.6.1.2	2025-11-06
