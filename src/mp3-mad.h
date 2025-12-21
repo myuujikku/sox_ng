@@ -17,7 +17,14 @@
 
 /* Declarations for callers of mp3-mad.c */
 
+#if HAVE_MAD
 extern int startread_mad(sox_format_t *ft);
 extern size_t read_mad(sox_format_t *ft, sox_sample_t *buf, size_t len);
 extern int seek_mad(sox_format_t * ft, sox_uint64_t offset);
 extern int stopread_mad(sox_format_t *ft);
+#else
+# define startread_mad NULL
+# define read_mad NULL
+# define seek_mad NULL
+# define stopread_mad NULL
+#endif

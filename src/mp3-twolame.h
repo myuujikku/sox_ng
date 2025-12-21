@@ -17,6 +17,12 @@
 
 /* Declarations for callers of mp3-twolame.c */
 
+#if HAVE_TWOLAME
 extern int startwrite_twolame(sox_format_t *ft);
 extern size_t write_twolame(sox_format_t *ft, const sox_sample_t *buf, size_t len);
 extern int stopwrite_twolame(sox_format_t *ft);
+#else
+# define startwrite_twolame NULL
+# define write_twolame NULL
+# define stopwrite_twolame NULL
+#endif
