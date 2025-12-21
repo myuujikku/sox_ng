@@ -94,7 +94,7 @@ static char * get_vol(sox_effect_t *effp, char *name)
 {
   priv_t *vol = (priv_t *)effp->priv;
   char *s = NULL;
-  double value;
+  double value = 0;
 
   if (!strcmp(name, "gain")) {
     /* Return it in whatever units they specified */
