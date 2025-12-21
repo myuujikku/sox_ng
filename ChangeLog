@@ -5,7 +5,7 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
-sox_ng-14.7.0+git20251215
+sox_ng-14.7.0+git20251221
 -------------------------
 
 New features:
@@ -24,17 +24,18 @@ New features:
 
 Bug fixes:
 
-  o Release input and output formats' hold on stdin and stdout so that
-    they can ve used more than once
+  o soxi: Don't include the file header in the Bitrate figure
   o pulseaudio: Ignore zero-length writes, which it supposedly doesn't like
   o wav: Disallow zero-sized chunks
   o ladspa: Allow plugins that take no input
   o stats: Don't report the crest factor in overall JSON stats
-  o Don't open files in reverse order so the first unopenable file is reported
+  o Don't open files in reverse order, so the first unopenable file is reported
     instead of the last one
   o Fix some memory leaks
   o Make file rewinding work when compiled with Emscripten
   o Fail autodetection of some ffmpeg formats if the file is truncated
+  o Release input and output formats' hold on stdin and stdout so that
+    they can be used more than once
 
 Documentation:
 
