@@ -160,7 +160,7 @@ sox_keymap_apply(sox_effects_chain_t *effects_chain, char *key)
 }
 
 void
-keymap_free(void)
+sox_keymap_free(void)
 {
   sox_keymap_t *keymaps = sox_globals.keymaps;
   unsigned i;

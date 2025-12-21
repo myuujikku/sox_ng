@@ -220,6 +220,7 @@ int sox_init(void)
 
 int sox_quit(void)
 {
+  sox_keymap_free();
   sox_format_quit();
   return lsx_effects_quit();
 }
