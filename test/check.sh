@@ -36,7 +36,9 @@ done
 args="$*"
 if [ -z "$args" ]
 then
-    args="`ls`"
+    LC_COLLATE=C       # Do upper case before lower case
+    export LC_COLLATE
+    args="`LC_COLLATE=C ls`"
 fi
 
 # By default, check the sox in the source tree
