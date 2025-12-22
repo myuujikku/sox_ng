@@ -1989,7 +1989,7 @@ static void display_supported_formats(void)
   qsort((void*)format_list, formats, sizeof(*format_list), strcmp_p);
   for (i = 0; i < formats; i++)
     printf(" %s", format_list[i]);
-  puts("\n");
+  putchar('\n');
 
   free((void*)format_list);
 }
@@ -2128,7 +2128,7 @@ static int usage_effect(char const * name)
   size_t i;
 
   if (strcmp("all", name) && !sox_find_effect(name)) {
-    printf("Cannot find an effect called `%s'.\n", name);
+    printf("Cannot find an effect called `%s'\n", name);
     display_supported_effects();
     return SOX_EOF;
   }
@@ -2230,7 +2230,7 @@ static int usage_format(char const * name)
 
   if (strcmp("all", name)) {
     if (!(f = sox_find_format(name, sox_false))) {
-      printf("Cannot find a format called `%s'.\n", name);
+      printf("Cannot find a format called `%s'\n", name);
       display_supported_formats();
       return SOX_EOF;
     } else {
@@ -2545,11 +2545,36 @@ static char parse_gopts_and_fopts(file_t * f)
       return c;
 
     case 'h':
-      usage();
+      if (optstate.argc < 3) {
+        /* Plain -h or --help */
+        usage(); exit(0);
+      }
+      for ( ; optstate.ind < optstate.argc; optstate.ind++) {
+        /* --help-effect and --help-format */
+        char *arg = optstate.argv[optstate.ind];
+        sox_effect_handler_t const *handler;
+
+        if (!strcmp(arg, "all")) {
+          lsx_fail("Use --help-format all or --help-effect all");
+          exit(1);
+        }
+        if ((handler = sox_find_effect(arg)) != NULL) {
+          (void) usage_effect(arg);
+          continue;
+        }
+        if (sox_find_format(arg, sox_false) != NULL) {
+          (void) usage_format(arg);
+          continue;
+        }
+        lsx_fail("Cannot find a format or effect called `%s'", arg);
+        display_supported_formats();
+        display_supported_effects();
+        exit(1);
+      }
       exit(0);
 
     case '?':
-      lsx_fail("invalid option");
+      lsx_fail("invalid option `%s'", optstate.argv[optstate.ind]);
       exit(1);
 
     case 't':

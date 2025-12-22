@@ -10,6 +10,7 @@ sox_ng-14.7.0+git
 
 New features:
 
+  o "sox -h foo" gives the help for format or effect "foo"
   o Add effect "centrecut", a sophisticated version of "oops"
   o Add global option -A to tune A4 to something other than 440Hz
   o Add global option --keymap letting key presses adjust effect parameters
