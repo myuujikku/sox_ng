@@ -17,8 +17,8 @@ fi
 timeio=false
 
 # Which tests should we perform?
-mono=false
-stereo=false
+mono=true
+stereo=true
 multi=true
 
 # Set options & allow user to override paths.  Useful for testing an
@@ -35,8 +35,7 @@ while [ $# -ne 0 ]; do
         ;;
 
         -a)      # Perform each test up to 3 times with different #s of
-        stereo=true
-        multi=true
+        all=all;
         ;;
 
         -1)      # do only mono tests
@@ -100,7 +99,10 @@ while [ $# -ne 0 ]; do
 	{
             echo "Usage: sh tests.sh [options]"
 	    echo "-v      Be verbose"
-	    echo "-a      Also run mono and stereo tests"
+	    echo "-1      Only run the tests for mono formats"
+	    echo "-2      Only run the tests for stereo formats"
+	    echo "-3      Only run the tests for multichannel formats"
+	    echo "-a      Also run mono and stereo tests on multichannel formats"
 	    echo "-t      Also run timing tests (cannot fail)"
 	    echo "-i path or --bindir=path"
 	    echo "        Where to find the sox executable"
@@ -283,7 +285,7 @@ fi
 
 if $stereo; then
   channels=2 
-  do_multichannel_formats
+  test "x$all" = "xall" && do_multichannel_formats
   do_twochannel_formats
   format1=cdda         # 2-channel only
   convertToAndFrom s16 u24 aiff
@@ -291,8 +293,10 @@ fi
 
 if $mono; then
   channels=1 
-  do_multichannel_formats
-  do_twochannel_formats
+  test "x$all" = "xall" && {
+    do_multichannel_formats
+    do_twochannel_formats
+  }
   do_singlechannel_formats
 fi
 
