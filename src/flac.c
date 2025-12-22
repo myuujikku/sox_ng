@@ -209,6 +209,7 @@ leftover_copy:
 static int start_read(sox_format_t * const ft)
 {
   priv_t * p = (priv_t *)ft->priv;
+
   lsx_debug("API version %u", FLAC_API_VERSION_CURRENT);
   p->decoder = FLAC__stream_decoder_new();
   if (p->decoder == NULL) {
@@ -248,6 +249,12 @@ static int start_read(sox_format_t * const ft)
   ft->encoding.bits_per_sample = p->bits_per_sample;
   ft->signal.channels = p->channels;
   ft->signal.length = p->total_samples * p->channels;
+  {
+    FLAC__uint64 position;
+    if (FLAC__stream_decoder_get_decode_position(p->decoder, &position))
+      ft->data_start = position;
+  }
+
   return SOX_SUCCESS;
 }
 
