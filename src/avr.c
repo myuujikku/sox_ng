@@ -132,6 +132,7 @@ static int startread_avr(sox_format_t * ft)
   ft->signal.rate = (avr->rate & 0x00ffffff);
 
   ft->signal.length = avr->size * ft->signal.channels;
+  ft->data_start = lsx_tell(ft);
 
   rc = lsx_rawstartread (ft);
   if (rc)
