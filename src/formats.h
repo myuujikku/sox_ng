@@ -122,6 +122,15 @@
 #if defined HAVE_SNDIO && (defined STATIC_SNDIO || !defined HAVE_LIBLTDL)
   FORMAT(sndio)
 #endif
+#if defined HAVE_SUN_AUDIO && (defined STATIC_SUN_AUDIO || !defined HAVE_LIBLTDL)
+  FORMAT(sunau)
+#endif
+#if defined HAVE_OGG_VORBIS && (defined STATIC_OGG_VORBIS || !defined HAVE_LIBLTDL)
+  FORMAT(vorbis)
+#endif
+#if defined HAVE_WAVPACK && (defined STATIC_WAVPACK || !defined HAVE_LIBLTDL)
+  FORMAT(wavpack)
+#endif
 #if defined HAVE_SNDFILE && (defined STATIC_SNDFILE || !defined HAVE_LIBLTDL)
   FORMAT(caf)
   FORMAT(fap)
@@ -137,18 +146,9 @@
   FORMAT(w64)
   FORMAT(xi)
   /* Format-specific handlers using sndfile should come first so that,
-   * when looking a filename etension up, they get the more specific one.
+   * when looking a filename extension up, they get the more specific one.
    */
   FORMAT(sndfile)
-#endif
-#if defined HAVE_SUN_AUDIO && (defined STATIC_SUN_AUDIO || !defined HAVE_LIBLTDL)
-  FORMAT(sunau)
-#endif
-#if defined HAVE_OGG_VORBIS && (defined STATIC_OGG_VORBIS || !defined HAVE_LIBLTDL)
-  FORMAT(vorbis)
-#endif
-#if defined HAVE_WAVPACK && (defined STATIC_WAVPACK || !defined HAVE_LIBLTDL)
-  FORMAT(wavpack)
 #endif
 
 /*--------------------- Handlers using an external program -------------------*/
