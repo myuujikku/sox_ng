@@ -153,6 +153,8 @@ static int startread(sox_format_t * ft)
         return SOX_EOF;
     }
 
+    ft->data_start = lsx_tell(ft);
+
     /* Validate the header */
     if (xa->header.bits != ft->encoding.bits_per_sample) {
         lsx_report("invalid sample resolution of %d bits; assuming %d",
