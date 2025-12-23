@@ -241,6 +241,8 @@ static int startread_voc(sox_format_t * ft)
       return (SOX_EOF);
     }
 
+  ft->data_start = lsx_tell(ft);
+
   v->rate = -1;
   v->block_remaining = 0;
   v->total_size = 0;    /* ANN added */
