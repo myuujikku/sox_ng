@@ -188,6 +188,8 @@ static int startread_hcom(sox_format_t * ft)
         p->dictentry = 0;
         p->nrbits = -1; /* Special case to get first byte */
 
+        ft->data_start = lsx_tell(ft);
+
         return (SOX_SUCCESS);
 }
 
