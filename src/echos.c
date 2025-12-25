@@ -10,6 +10,7 @@
  */
 
 #include "sox_i.h"
+#include <ctype.h>   /* for isdigit() */
 
 /* Private data */
 
@@ -117,6 +118,30 @@ get_echos(sox_effect_t *effp, char *name)
     sprintf(s, "%g", p->gain_out);
   }
 
+  /* An array-based parameter */
+  if (!strncmp(name, "decay", 5)) {
+    unsigned i;
+    unsigned nth = 0; /* 0 for "decay", non-zero for "decay1" etc. */
+
+    if (isdigit(name[5])) {
+      nth = atoi(name + 5);
+      if (nth == 0) {
+        lsx_warn("keymaps for individual decays start at 1");
+        return NULL;
+      }
+    }
+
+    for (i=0; i < p->num_delays; i++) {
+      if (nth == 0 || nth == i+1) {
+        /* If they ask for "decay" and there are several,
+         * return the first one */
+        s = lsx_malloc(16);
+        sprintf(s, "%g", p->decay[i]);
+        return s;
+      }
+    }
+  }
+
   return s;
 }
 
@@ -126,34 +151,41 @@ set_echos(sox_effect_t *effp, char *name, char *value)
   priv_t *p = (priv_t *)effp->priv;
   char *s = NULL;
   char *endptr = value;
-  double gain = lsx_strtod(value, &endptr);
+  double v = lsx_strtod(value, &endptr);
 
   if (endptr == value || *endptr != '\0') return NULL;
 
   if (!strcmp(name, "gain_in")) {
-    p->gain_in = gain;
+    p->gain_in = v;
     s = lsx_malloc(16);
-    sprintf(s, "%g", gain);
+    sprintf(s, "%g", v);
   }
   if (!strcmp(name, "gain_out")) {
-    p->gain_out = gain;
+    p->gain_out = v;
     s = lsx_malloc(16);
-    sprintf(s, "%g", gain);
+    sprintf(s, "%g", v);
   }
 
   /* An array-based parameter */
   if (!strncmp(name, "decay", strlen("decay"))) {
     unsigned i;
-    unsigned nth = atoi(name + strlen("decay"));
-    /* 0 for "decay", non-zero for "decay1" etc. */
+    unsigned nth = 0; /* 0 for "decay", non-zero for "decay1" etc. */
 
+    if (isdigit(name[5])) {
+      nth = atoi(name + 5);
+      if (nth == 0) {
+        lsx_warn("keymaps for individual decays start at 1");
+        return NULL;
+      }
+    }
     for (i=0; i < p->num_delays; i++) {
       if (nth == 0 || nth == i+1) {
-        /* return the value of the first one */
-        if (!s) {
-          s = lsx_malloc(16);
-          sprintf(s, "%g", p->decay[i]);
-        }
+        p->decay[i] = v;
+
+        /* If we adjust several, return the last one,
+         * after all, they'll all be the same */
+        if (!s) s = lsx_malloc(16);
+        sprintf(s, "%g", p->decay[i]);
       }
     }
   }
