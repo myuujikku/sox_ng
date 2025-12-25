@@ -90,11 +90,7 @@ static int getopts_dolbyb(sox_effect_t * effp, int argc, char **argv)
 }
 
 /*
- * Get a dolbyb parameter's value as a double
- *
- * Returns NULL if you ask for other than an existing name
- * of a pointer to mallocked memory that it is the caller's
- * responsibility to free.
+ * Get a dolbyb parameter's value
  */
 
 /* Decibels-to-Gain and Gain-to-Decibels conversions */
@@ -119,28 +115,6 @@ get_dolbyb(sox_effect_t *effp, char *name)
 
 /*
  * Set a dolbyb parameter.
- *
- * Returns NULL if there is no such named parameter,
- * the value of "value" if the setting was already at that value
- * or a pointer to mallckoed memory that it is the caller's
- * responsabilityt to free.
- *
- * If you try to set a value outside the parameter's range,
- * it returns a pointer to a copy of the maximum or minimum as a string,
- * so you'll know you were over range by strcmping them.
- *
- * If the desired value is successfully set, it returns a pointer to
- * the "value" string you passed in and no mallocking is done so the
- * suggested calling sequence is:
- *
- *    char *ret = set_dolbyb(effp, name, value);
- *    if (ret == value) ...it was successfully set but was already that..
- *    else if (ret == NULL) {
- *      ...what to do if the set failed...
- *    } else {
- *      ...whatever else you need to do if it succeeded...
- *      free(ret);
- *    }
  */
 static char *
 set_dolbyb(sox_effect_t *effp, char *name, char *value)

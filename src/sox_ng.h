@@ -1561,7 +1561,38 @@ typedef struct sox_effects_globals {
   sox_globals_t * global_info; /**< Pointer to associated SoX globals */
 } sox_effects_globals_t;
 
+/*
+ * The type of functions to read or write the value of an effect's parameters
+ * while it's running.
+ *
+ * The second argument is the name of the parameter and
+ * _set's third argument is the new value as text ("%g" is suggested).
+ *
+ * get functions return:
+ * - the current value as text in mallocked memory that the caller must free or
+ * - NULL if there is no such readable parameter or the value is garbage
+ *
+ * set functions return:
+ * - a mallocked string version of the actual value that was set
+ * - NULL if there is no such writable parameter or the value is garbage
+ *
+ * The return values are sprintfed as "%g" so, if the caller does the same
+ * it can strcmp() the strings to see it it was set to the same or different.
+ */
+/**
+Client API:
+Callback to read the current value of an effect's parameter,
+returning NULL if the parameter cannot be read, or a pointer to
+mallocked memory containing a string value sprintfed with "%g".
+*/
 typedef char *(*sox_effect_handler_get)(sox_effect_t *effp, char *);
+/**
+Client API:
+Callback to set the value of an effect's parameter while it is running,
+returning NULL if that parameter cannot be set or the value is garbage or
+a pointer to mallocked memory containing the new value sprintfed with "%g".
+Values outside the parameter's range return the minimum or maximum that was set.
+*/
 typedef char *(*sox_effect_handler_set)(sox_effect_t *effp, char *, char *);
 
 /**
@@ -1580,14 +1611,14 @@ struct sox_effect_handler {
   sox_effect_handler_stop stop;       /**< Called to shut down effect (called once per flow). */
   sox_effect_handler_kill kill;       /**< Called to shut down effect (called once per effect). */
   size_t       priv_size;             /**< Size of private data SoX should pre-allocate for effect */
-  /* Add new fields here, after priv_size, so that existing effects get NULL
+  /* Add new fields here at the end so that existing effects get NULL
    * when they say "static sox_effect_handler_t foo = {..., sizeof(priv_t)};"
    * As the aeons pass, priv_size will slowly migrate upwards through
    * the layers of pointer functions and end up cocooned in them but hey.
    * You should have put it first, folks.
    */
-  sox_effect_handler_get get;
-  sox_effect_handler_set set;
+  sox_effect_handler_get get;         /**< Called to read the value of a parameter */
+  sox_effect_handler_set set;         /**< Called to change the value of a parameter */
 };
 
 /**
