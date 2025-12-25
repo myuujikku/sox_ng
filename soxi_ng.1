@@ -88,7 +88,9 @@ Show duration in seconds (0 if unavailable).
 Show number of bits per sample (0 if not applicable).
 .TP
 \fB\-B\fR
-Show the bitrate averaged over the whole file (0 if unavailable).
+Show the average bitrate of the audio data (0 if unavailable).
+For Ogg and Opus files, it will be slightly higher than reality
+as the size of the file header is not easily discovered.
 .TP
 \fB\-p\fR
 Show estimated sample precision in bits.
