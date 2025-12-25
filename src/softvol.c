@@ -99,16 +99,16 @@ get_softvol(sox_effect_t *effp, char *name)
   char *s = NULL;
 
   if (!strcmp(name, "volume")) {
-    s = lsx_malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", p->softvol);
   }
   if (!strcmp(name, "double_time")) {
-    s = lsx_malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", p->softvol);
   }
   if (!strcmp(name, "headroom")) {
     double headroom = -linear_to_dB((double)p->max_amp / SOX_SAMPLE_MAX);
-    s = lsx_malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", headroom);
   }
 
@@ -128,7 +128,7 @@ set_softvol(sox_effect_t *effp, char *name, char *value)
   if (!strcmp(name, "volume")) {
     if (v < 0) v = 0;
     p->softvol = v;
-    s = malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", v);
   }
   if (!strcmp(name, "double_time")) {
@@ -137,13 +137,13 @@ set_softvol(sox_effect_t *effp, char *name, char *value)
     if (p->double_time != 0.0f)
       p->mult_per_sample = powf(2.0f, 1.0f /
                                (p->double_time * (float)effp->in_signal.rate));
-    s = malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", v);
   }
   if (!strcmp(name, "headroom")) {
     if (v < 0) v = 0;
     p->max_amp = SOX_SAMPLE_MAX * dB_to_linear(-v);
-    s = malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", v);
   }
 

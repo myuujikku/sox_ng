@@ -105,15 +105,15 @@ get_vad(sox_effect_t *effp, char *name)
   char *s = NULL;
 
   if (!strcmp(name, "trigger_level")) {
-    s = lsx_malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", p->triggerLevel);
   }
   if (!strcmp(name, "trigger_time")) {
-    s = lsx_malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", p->triggerTc);
   }
   if (!strcmp(name, "gap")) {
-    s = lsx_malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", p->gapTime);
   }
 
@@ -134,7 +134,7 @@ set_vad(sox_effect_t *effp, char *name, char *value)
     if (v < 0)  v = 0;
     if (v > 20) v = 20;
     p->triggerLevel = v;
-    s = malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", v);
   }
   if (!strcmp(name, "trigger_time")) {
@@ -142,7 +142,7 @@ set_vad(sox_effect_t *effp, char *name, char *value)
     if (v > 1.0)  v = 1.0;
     p->triggerTc = v;
     p->triggerMeasTcMult = exp(-1 / (p->triggerTc * p->measureFreq));
-    s = malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", v);
   }
   if (!strcmp(name, "gap")) {
@@ -150,7 +150,7 @@ set_vad(sox_effect_t *effp, char *name, char *value)
     if (v > 1.0) v = 1.0;
     p->gapTime = v;
     p->gapLen = p->gapTime * p->measureFreq + .5;
-    s = malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", v);
   }
 

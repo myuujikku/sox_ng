@@ -43,12 +43,12 @@ get_overdrive(sox_effect_t *effp, char *name)
 
   if (!strcmp(name, "gain")) {
     double v = linear_to_dB(p->gain);
-    s = lsx_malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", v);
   }
   if (!strcmp(name, "color")) {
     double v = p->color * 200;
-    s = lsx_malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", v);
   }
 
@@ -69,14 +69,14 @@ set_overdrive(sox_effect_t *effp, char *name, char *value)
     if (v < 0)   v = 0;
     if (v > 100) v = 100;
     p->gain = dB_to_linear(v);
-    s = malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", v);
   }
   if (!strcmp(name, "color")) {
     if (v < 0)   v = 0;
     if (v > 100) v = 100;
     p->color = v / 200;
-    s = malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", v);
   }
 

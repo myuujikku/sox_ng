@@ -128,23 +128,23 @@ get_saturation(sox_effect_t *effp, char *name)
   char *s = NULL;
 
   if (!strcmp(name, "blend")) {
-    s = lsx_malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", p->blend);
   }
   if (!strcmp(name, "offset")) {
-    s = lsx_malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", p->offset);
   }
   if (!strcmp(name, "drive") && p->sat_type == SAT_TANH) {
-    s = lsx_malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", p->drive);
   }
   if (!strcmp(name, "color") && p->sat_type == SAT_SQRT) {
-    s = lsx_malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", p->color);
   }
   if (!strcmp(name, "threshold") && p->sat_type == SAT_DIODE) {
-    s = lsx_malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", p->threshold);
   }
 
@@ -165,27 +165,27 @@ set_saturation(sox_effect_t *effp, char *name, char *value)
     if (v < 0) v = 0;
     if (v > 1) v = 1.0;
     p->blend = v;
-    s = malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", v);
   }
   if (!strcmp(name, "offset")) {
     if (v < 0) v = 0;
     if (v > 1) v = 1;
     p->offset = v;
-    s = malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", v);
   }
   if (!strcmp(name, "drive") && p->sat_type == SAT_TANH) {
     if (v < 1) v = 1;
     p->drive = v;
-    s = malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", v);
   }
   if (!strcmp(name, "color") && p->sat_type == SAT_SQRT) {
     if (v < 0) v = 0;
     if (v > 1) v = 1;
     p->color = v;
-    s = malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", v);
   }
 

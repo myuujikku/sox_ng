@@ -109,11 +109,11 @@ get_echos(sox_effect_t *effp, char *name)
   char *s = NULL;
 
   if (!strcmp(name, "gain_in")) {
-    s = lsx_malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", p->gain_in);
   }
   if (!strcmp(name, "gain_out")) {
-    s = lsx_malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", p->gain_out);
   }
 
@@ -132,12 +132,12 @@ set_echos(sox_effect_t *effp, char *name, char *value)
 
   if (!strcmp(name, "gain_in")) {
     p->gain_in = gain;
-    s = malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", gain);
   }
   if (!strcmp(name, "gain_out")) {
     p->gain_out = gain;
-    s = malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", gain);
   }
 
@@ -151,7 +151,7 @@ set_echos(sox_effect_t *effp, char *name, char *value)
       if (nth == 0 || nth == i+1) {
         /* return the value of the first one */
         if (!s) {
-          s = lsx_malloc(32);
+          s = lsx_malloc(16);
           sprintf(s, "%g", p->decay[i]);
         }
       }

@@ -103,7 +103,7 @@ static char * get_vol(sox_effect_t *effp, char *name)
     case vol_dB: value = linear_to_dB(vol->gain); break;
     case vol_power: value = (vol->gain > 0) ? sqr(vol->gain) : -sqr(-vol->gain);
     }
-    s = lsx_malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", value);
   }
 
@@ -129,7 +129,7 @@ set_vol(sox_effect_t *effp, char *name, char *value)
     case vol_power:     vol->gain = gain > 0 ? sqrt(gain) : -sqrt(-gain); break;
     }
     /* Return the value in the units they specified */
-    s = malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", gain);
   }
   return s;

@@ -110,7 +110,7 @@ get_dolbyb(sox_effect_t *effp, char *name)
   if (!strcmp(name, "gain")) {
     /* The inverse of #define ParamConvertDb(Db) pow(10, Db / 20) */
     double dB = ConvertGain(p->dolbyb.ThGain);
-    s = lsx_malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", dB);
   }
 
@@ -187,7 +187,7 @@ set_dolbyb(sox_effect_t *effp, char *name, char *value)
       dolbyb->ThGain = gain;
       dolbyb->ThGndB = ConvertGain(gain);
       dolbyb_reinit(dolbyb);
-      s = malloc(32);
+      s = lsx_malloc(16);
       sprintf(s, "%g", dolbyb->ThGndB);
     }
   }

@@ -130,9 +130,9 @@ sox_keymap_apply(sox_effects_chain_t *effects_chain, char *key)
             case '/': value /= step; break;
             case '=': value  = step; break;
             }
-            /* Reuse the string from handler.get() as it's mallocked[32]
+            /* Reuse the string from handler.get() as it's mallocked[16]
              * and it's ours now. */
-            sprintf(valuestr, "%.14f", value);
+            sprintf(valuestr, "%g", value);
             result = effp->handler.set(effp, field, valuestr);
             if (!result) {
               lsx_warn("failed to set %s.%s to %s",

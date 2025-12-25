@@ -92,11 +92,11 @@ get_echo(sox_effect_t *effp, char *name)
   char *s = NULL;
 
   if (!strcmp(name, "gain_in")) {
-    s = lsx_malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", p->gain_in);
   }
   if (!strcmp(name, "gain_out")) {
-    s = lsx_malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", p->gain_out);
   }
 
@@ -109,7 +109,7 @@ get_echo(sox_effect_t *effp, char *name)
     for (i=0; i < p->num_delays; i++) {
       if (nth == 0 || nth == i+1) {
         /* return the only of the first one */
-        s = lsx_malloc(32);
+        s = lsx_malloc(16);
         sprintf(s, "%g", p->decay[i]);
         return s;
       }
@@ -131,12 +131,12 @@ set_echo(sox_effect_t *effp, char *name, char *value)
 
   if (!strcmp(name, "gain_in")) {
     p->gain_in = gain;
-    s = malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", gain);
   }
   if (!strcmp(name, "gain_out")) {
     p->gain_out = gain;
-    s = malloc(32);
+    s = lsx_malloc(16);
     sprintf(s, "%g", gain);
   }
 
@@ -151,7 +151,7 @@ set_echo(sox_effect_t *effp, char *name, char *value)
         p->decay[i] = gain;
 
         /* What do we return if we adjusted several? */
-        s = malloc(32);
+        s = lsx_malloc(16);
         sprintf(s, "%g", gain);
       }
     }
