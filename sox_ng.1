@@ -816,20 +816,24 @@ Seek back and forth in the audio file by 30 seconds.
 Restart the effects chain (like \fB:\fR)
 .PP
 It is enabled by default when playing, disabled otherwise.
+To disable it when playing, redirect stdin from somewhere other than a terminal,
+e.g. \fBplay ... < file\fR
 .RE
 .TP
-\fB\-\-keymap\fR|\fB\-k\fR \fIkey\fR:\fIeffect\fR.\fIfield\fR[\fB\(pl\fR|\fB\(mi\fR|\fB*\fR|\fB/\fR|\fB=\fR]\fIvalue\fR
-In interactive mode, pressing the specified key will change
-an effect's parameter, adding or subtracting \fIvalue\fR for linear changes,
+\fB\-k\fR\^|\^\fB\-\-keymap\fR \fIkey\fR:\fIeffect\fR.\fIfield\fR[\fB\(pl\fR\^|\^\fB\(mi\fR\^|\^\fB*\fR\^|\^\fB/\fR\^|\^\fB=\fR]\fIvalue\fR
+Pressing the specified key will change an effect's parameter,
+adding or subtracting \fIvalue\fR for linear changes,
 multiplying or dividing by \fIvalue\fR for logarithmic control or
 setting the parameter to that value.
 For example:
 .XE
    play_ng -V -k D:dolbyb.gain+2 -k d:dolbyb.gain-2 in.wav dolbyb
 .XX
-lets you hear the results of `dolbyb` removal and adjust the Threshold Gain
+lets you hear the results of Dolby\ B removal and adjust the Threshold Gain
 in steps of 2dB to find the best setting.
-\fB\-V\fR makes it display the new value each time it is changed.
+.SP
+\fB\-\-keymap\fR turns \fB\-\-interactive\fR mode on
+and \fB\-V\fR makes it display the new value each time it is changed.
 .SP
 You should also be able to map \f(CWeffect2:field\fB to affect
 only the second occurrence of \fIeffect\fR in the effects chain.
