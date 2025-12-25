@@ -2040,6 +2040,10 @@ static void usage(void)
 "--help-format NAME       Show info on format NAME, or NAME=all for all",
 "--i, --info              Behave as soxi(1)",
 "--input-buffer BYTES     Override the input buffer size (default: as --buffer)",
+"--interactive            Be interactive (on when playing or with --keymap)",
+"--keymap X:effect.param(+|-|*|/|=)N",
+"                         When key X is pressed, adjust the effect's parameter",
+"                         linearly, logarithmically or set it to a value",
 "--no-clobber             Prompt to overwrite output file",
 "-m, --combine mix        Mix multiple input files (instead of concatenating)",
 "--combine mix-power      Mix to equal power (instead of concatenating)",
@@ -2055,7 +2059,7 @@ static void usage(void)
 "--norm                   Guard (see --guard) and normalize",
 "--play-rate-arg ARG      Default `rate' argument for auto-resample with `play'",
 "--plot gnuplot|octave    Generate script to plot response of filter effect",
-"-q, --no-show-progress   Run in quiet mode; opposite of -S",
+"-q, --no-show-progress   Run in quiet mode, the opposite of -S",
 "--replay-gain track|album|off  Default: off (sox, rec), track (play)",
 "-R                       Use default random numbers (same on each run of SoX)",
 "-S, --show-progress      Display progress while processing audio data",
@@ -2486,7 +2490,7 @@ static char parse_gopts_and_fopts(file_t * f)
         interactive = sox_true; break;
 #else
         lsx_fail("interactive mode was not enabled at compile time");
-        exit(1); break;
+        exit(1);
 #endif
       case 8: exit(usage_effect(optstate.arg) == SOX_SUCCESS ? 0 : 1); break;
       case 9: exit(usage_format(optstate.arg) == SOX_SUCCESS ? 0 : 1); break;
@@ -2686,7 +2690,7 @@ static char parse_gopts_and_fopts(file_t * f)
       }
       break;
     case 'k':
-      /* --key D:dolbyb.gain+2 --key d:dolbyb.gain-2 */
+      /* --keymap D:dolbyb.gain+2 --keymap d:dolbyb.gain-2 */
       {
         char *key, *effect, *field;
         char operator[2];  /* "+", "-", "*", "/" or "=" */
@@ -2704,6 +2708,8 @@ static char parse_gopts_and_fopts(file_t * f)
         key[1] = '\0';
 
         sox_keymap_add(key, effect, field, operator[0], step);
+
+        interactive = sox_true;
       }
       break;
     }
