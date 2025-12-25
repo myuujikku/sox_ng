@@ -20,7 +20,7 @@
 
 #include <ctype.h>   /* for isdigit() */
 
-/* Routines to remember and forget keymaps.
+/* Routines to remember, to apply and to forget keymaps.
  *
  * The string values are mallocked memory which we are responsible for freeing.
  * The effect name may be "synth2" meaning "only tweak the second synth effect
@@ -135,13 +135,9 @@ sox_keymap_apply(sox_effects_chain_t *effects_chain, char *key)
             sprintf(valuestr, "%g", value);
             result = effp->handler.set(effp, field, valuestr);
             if (!result) {
-              lsx_warn("failed to set %s.%s to %s",
-                       effect, field, valuestr);
-            } else if (result == valuestr) {
-              /* No change */
-              lsx_report("No change to %s.%s", effect, field);
+              lsx_warn("failed to set %s.%s to %s", effect, field, valuestr);
             } else {
-              lsx_report("changed %s.%s to %s", effect, field, result);
+              lsx_report("set %s.%s to %s", effect, field, result);
               free(result);
             }
           }

@@ -125,45 +125,20 @@ set_dolbyb(sox_effect_t *effp, char *name, char *value)
   char *endptr = value;
   double dB = lsx_strtod(value, &endptr); /* Desired setting in dB */
 
-  if (endptr == value) return NULL;
+  /* Unconvertable string or trailing garbage */
+  if (endptr == value || *endptr != '\0') return NULL;
 
   if (!strcmp(name, "gain")) {
-    double gain = ConvertDb(dB); /* Desired setting as a volume multiplier */
+    double gain; /* Desired setting as a volume multiplier */
 
-    if (dB >= MAX_TH_GAIN_DB) {
-      static char const maxdb_string[] = "100";
-
-      dB = MAX_TH_GAIN_DB;
-      /* If it's already at the maximum, there is no change.
-       * It shouldn't be over MAX_TH_GAIN_DB but,
-       * if it is, it gets set to MAX. */
-      if (dolbyb->ThGain != ConvertDb(MAX_TH_GAIN_DB))
-        dolbyb->ThGain = ConvertDb(MAX_TH_GAIN_DB);
-      s = strdup(maxdb_string);
-
-    } else if (dB <= MIN_TH_GAIN_DB) {
-      static char mindb_string[] = "-100";
-
-      dB = MIN_TH_GAIN_DB;
-      /* If it's already at the minimum, there is no change.
-       * It shouldn't be under MIN_TH_GAIN_DB but
-       * if it is, it gets set it to MIN. */
-      if (dolbyb->ThGain != ConvertDb(MIN_TH_GAIN_DB))
-        dolbyb->ThGain = ConvertDb(MIN_TH_GAIN_DB);
-      s = strdup(mindb_string);
-    } else {
-      /* A within-range setting that's neither the maximum
-       * nor the minimum. See if it's the same. */
-      if (gain == dolbyb->ThGain) {
-        /* It's the same, so signal no change */
-        return value;
-      }
-      dolbyb->ThGain = gain;
-      dolbyb->ThGndB = ConvertGain(gain);
-      dolbyb_reinit(dolbyb);
-      s = lsx_malloc(16);
-      sprintf(s, "%g", dolbyb->ThGndB);
-    }
+    if (dB >= MAX_TH_GAIN_DB) dB = MAX_TH_GAIN_DB;
+    if (dB <= MIN_TH_GAIN_DB) dB = MIN_TH_GAIN_DB;
+    gain = ConvertDb(dB);
+    dolbyb->ThGain = gain;
+    dolbyb->ThGndB = ConvertGain(gain);
+    dolbyb_reinit(dolbyb);
+    s = lsx_malloc(16);
+    sprintf(s, "%g", dolbyb->ThGndB);
   }
 
   return s;
