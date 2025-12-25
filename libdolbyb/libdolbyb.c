@@ -46,7 +46,7 @@ void dolbyb_init(dolbyb_t *Param)
   Param->FETGVt = 75000*(int64_t)100000;
 }
 
-/* Change things that dpend on a changed value of ThGain */
+/* Update things that depend on a changed value of ThGain */
 void dolbyb_reinit(dolbyb_t *Param)
 {
   SidePathReinit(Param);
