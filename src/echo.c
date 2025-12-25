@@ -8,6 +8,7 @@
  */
 
 #include "sox_i.h"
+#include <ctype.h>   /* for isdigit() */
 
 /*
  * It's faster to use floats that sox_sample_t because the
@@ -101,14 +102,22 @@ get_echo(sox_effect_t *effp, char *name)
   }
 
   /* An array-based parameter */
-  if (!strncmp(name, "decay", strlen("decay"))) {
+  if (!strncmp(name, "decay", 5)) {
     unsigned i;
-    unsigned nth = atoi(name + strlen("decay"));
-    /* 0 for "decay", non-zero for "decay1" etc. */
+    unsigned nth = 0; /* 0 for "decay", non-zero for "decay1" etc. */
+
+    if (isdigit(name[5])) {
+      nth = atoi(name + 5);
+      if (nth == 0) {
+        lsx_warn("keymaps for individual decays start at 1");
+        return NULL;
+      }
+    }
 
     for (i=0; i < p->num_delays; i++) {
       if (nth == 0 || nth == i+1) {
-        /* return the only of the first one */
+       /* If they ask for "decay" and there are several,
+        * return the first one */
         s = lsx_malloc(16);
         sprintf(s, "%g", p->decay[i]);
         return s;
@@ -125,34 +134,41 @@ set_echo(sox_effect_t *effp, char *name, char *value)
   priv_t *p = (priv_t *)effp->priv;
   char *s = NULL;
   char *endptr = value;
-  double gain = lsx_strtod(value, &endptr);
+  double v = lsx_strtod(value, &endptr);
 
   if (endptr == value || *endptr != '\0') return NULL;
 
   if (!strcmp(name, "gain_in")) {
-    p->gain_in = gain;
+    p->gain_in = v;
     s = lsx_malloc(16);
-    sprintf(s, "%g", gain);
+    sprintf(s, "%g", v);
   }
   if (!strcmp(name, "gain_out")) {
-    p->gain_out = gain;
+    p->gain_out = v;
     s = lsx_malloc(16);
-    sprintf(s, "%g", gain);
+    sprintf(s, "%g", v);
   }
 
   /* An array-based parameter */
-  if (!strncmp(name, "decay", strlen("decay"))) {
+  if (!strncmp(name, "decay", 5)) {
     unsigned i;
-    unsigned nth = atoi(name + strlen("decay"));
-    /* 0 for "decay", non-zero for "decay1" etc. */
+    unsigned nth = 0; /* 0 for "decay", non-zero for "decay1" etc. */
 
+    if (isdigit(name[5])) {
+      nth = atoi(name + 5);
+      if (nth == 0) {
+        lsx_warn("keymaps for individual decays start at 1");
+        return NULL;
+      }
+    }
     for (i=0; i < p->num_delays; i++) {
       if (nth == 0 || nth == i+1) {
-        p->decay[i] = gain;
+        p->decay[i] = v;
 
-        /* What do we return if we adjusted several? */
-        s = lsx_malloc(16);
-        sprintf(s, "%g", gain);
+        /* If we adjust several, return the last one,
+         * after all, they'll all be the same */
+        if (!s) s = lsx_malloc(16);
+        sprintf(s, "%g", v);
       }
     }
   }
