@@ -104,11 +104,11 @@ get_vad(sox_effect_t *effp, char *name)
   priv_t *p = (priv_t *)effp->priv;
   char *s = NULL;
 
-  if (!strcmp(name, "trigger-level")) {
+  if (!strcmp(name, "trigger_level")) {
     s = lsx_malloc(32);
     sprintf(s, "%g", p->triggerLevel);
   }
-  if (!strcmp(name, "trigger-time")) {
+  if (!strcmp(name, "trigger_time")) {
     s = lsx_malloc(32);
     sprintf(s, "%g", p->triggerTc);
   }
@@ -130,14 +130,14 @@ set_vad(sox_effect_t *effp, char *name, char *value)
 
   if (endptr == value || *endptr != '\0') return NULL;
 
-  if (!strcmp(name, "trigger-level")) {
+  if (!strcmp(name, "trigger_level")) {
     if (v < 0)  v = 0;
     if (v > 20) v = 20;
     p->triggerLevel = v;
     s = malloc(32);
     sprintf(s, "%g", v);
   }
-  if (!strcmp(name, "trigger-time")) {
+  if (!strcmp(name, "trigger_time")) {
     if (v < 0.01) v = 0.01;
     if (v > 1.0)  v = 1.0;
     p->triggerTc = v;

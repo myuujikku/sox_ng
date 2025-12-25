@@ -89,11 +89,11 @@ get_phaser(sox_effect_t *effp, char *name)
   priv_t *p = (priv_t *)effp->priv;
   char *s = NULL;
 
-  if (!strcmp(name, "gain-in")) {
+  if (!strcmp(name, "gain_in")) {
     s = lsx_malloc(32);
     sprintf(s, "%g", p->gain_in);
   }
-  if (!strcmp(name, "gain-out")) {
+  if (!strcmp(name, "gain_out")) {
     s = lsx_malloc(32);
     sprintf(s, "%g", p->gain_out);
   }
@@ -115,14 +115,14 @@ set_phaser(sox_effect_t *effp, char *name, char *value)
 
   if (endptr == value || *endptr != '\0') return NULL;
 
-  if (!strcmp(name, "gain-in")) {
+  if (!strcmp(name, "gain_in")) {
     if (v > 1.0)  v = 1.0;
     if (v < -1.0) v = -1.0;
     p->gain_in = v;
     s = malloc(32);
     sprintf(s, "%g", v);
   }
-  if (!strcmp(name, "gain-out")) {
+  if (!strcmp(name, "gain_out")) {
     if (v > 1.0)  v = 1.0;
     if (v < -1.0) v = -1.0;
     p->gain_out = v;

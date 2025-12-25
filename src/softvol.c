@@ -102,7 +102,7 @@ get_softvol(sox_effect_t *effp, char *name)
     s = lsx_malloc(32);
     sprintf(s, "%g", p->softvol);
   }
-  if (!strcmp(name, "double-time")) {
+  if (!strcmp(name, "double_time")) {
     s = lsx_malloc(32);
     sprintf(s, "%g", p->softvol);
   }
@@ -131,7 +131,7 @@ set_softvol(sox_effect_t *effp, char *name, char *value)
     s = malloc(32);
     sprintf(s, "%g", v);
   }
-  if (!strcmp(name, "double-time")) {
+  if (!strcmp(name, "double_time")) {
     if (v < 0) v = 0;
     p->double_time = v;
     if (p->double_time != 0.0f)

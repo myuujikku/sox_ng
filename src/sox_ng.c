@@ -2689,13 +2689,13 @@ static char parse_gopts_and_fopts(file_t * f)
       /* --key D:dolbyb.gain+2 --key d:dolbyb.gain-2 */
       {
         char *key, *effect, *field;
-        char operator;  /* '+', '-', '*' or '/' */
+        char operator[2];  /* "+", "-", "*", "/" or "=" */
         double step;
         char dummy; /* Trailing garbage */
         int n;
 
-        n = sscanf(optstate.arg, "%8m[a-zA-Z0-9]:%16m[a-z].%16m[-a-z]%[+-*/=]%lg%c",
-                   &key, &effect, &field, &operator, &step, &dummy);
+        n = sscanf(optstate.arg, "%8m[a-zA-Z0-9]:%16m[a-z].%16m[_a-z]%1[+*/=-]%lg%c",
+                   &key, &effect, &field, operator, &step, &dummy);
         if (n != 5) {
           lsx_fail("can't parse `%s' as key:effect.field[+-*/=]value; n=%d",
                    optstate.arg, n);
@@ -2703,7 +2703,7 @@ static char parse_gopts_and_fopts(file_t * f)
         }
         key[1] = '\0';
 
-        sox_keymap_add(key, effect, field, operator, step);
+        sox_keymap_add(key, effect, field, operator[0], step);
       }
       break;
     }

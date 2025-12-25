@@ -207,11 +207,11 @@ static char * get_chorus(sox_effect_t *effp, char *name)
   chorus_priv_t *chorus = (chorus_priv_t *)effp->priv;
   char *s = NULL;
 
-  if (!strcmp(name, "gain-in")) {
+  if (!strcmp(name, "gain_in")) {
     s = lsx_malloc(32);
     sprintf(s, "%g", chorus->gain_in);
   }
-  if (!strcmp(name, "gain-out")) {
+  if (!strcmp(name, "gain_out")) {
     s = lsx_malloc(32);
     sprintf(s, "%g", chorus->gain_out);
   }

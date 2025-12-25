@@ -82,8 +82,7 @@ sox_keymap_apply(sox_effects_chain_t *effects_chain, char *key)
   sox_keymap_t *keymaps = sox_globals.keymaps;
 
   for (i=0; i < sox_globals.keymap_count; i++) {
-    /* Match keymap "synth0" to effect name "synth" */
-    if (strncmp(key, keymaps[i].key, strlen(keymaps[i].key))) {
+    if (!strcmp(key, keymaps[i].key)) {
       sox_effect_t **e;
       size_t n;
       /* This is the Nth occurrence in the chain of
@@ -104,6 +103,7 @@ sox_keymap_apply(sox_effects_chain_t *effects_chain, char *key)
         char   operator = keymaps[i].operator;
         double step     = keymaps[i].step;
 
+        /* Match keymap of "synth2" etc. to effect name "synth" */
         if (!strncmp(effect, effp->handler.name, namelen)) {
           occurrence++;
 
@@ -154,6 +154,7 @@ sox_keymap_apply(sox_effects_chain_t *effects_chain, char *key)
     return SOX_ENOKEYMAP;
   }
   if (!found_effect) {
+    lsx_warn("effect not found in the chain");
     return SOX_ENOEFFECT;
   }
   return SOX_SUCCESS;
