@@ -62,11 +62,12 @@ sox_is_keymapped(char *key)
   for (i=0; i < sox_globals.keymap_count; i++) {
     sox_keymap_t *keymap = keymaps + i;
     /* Does a key name match? */
-    if (!strncmp(key, keymap->key, strlen(keymap->key))) {
+    if (!strcmp(key, keymap->key)) {
       return sox_true;
     }
     /* Do the effect and field names match? */
-    if (!strcmp(effect, keymap->effect) && !strcmp(field, keymap->field)) {
+    if (dot && !strcmp(effect, keymap->effect)
+            && !strcmp(field, keymap->field)) {
       return sox_true;
     }
   }

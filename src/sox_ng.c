@@ -1396,6 +1396,8 @@ static void adjust_volume(int delta)
 
 static int update_status(sox_bool all_done, void * client_data)
 {
+  char key[2];
+
   (void)client_data;
   if (interactive) while (kbhit()) {
 #ifdef HAVE_CONIO_H
@@ -1404,7 +1406,11 @@ static int update_status(sox_bool all_done, void * client_data)
     int ch = getchar();
 #endif
 
-    switch (ch) {
+    /* See if the key is claimed by an effect parameter-changing key */
+    key[0] = ch; key[1] = '\0';
+    if (sox_is_keymapped(key))
+      (void) sox_keymap_apply(effects_chain, key);
+    else switch (ch) {
 
     case '>':
     if (files[current_input]->ft->handler.seek &&
@@ -1445,16 +1451,10 @@ static int update_status(sox_bool all_done, void * client_data)
 
     case 'V': adjust_volume(+7); break;
     case 'v': adjust_volume(-7); break;
+      break;
 
     default:
-      /* See if the key is claimed by an effect parameter-changing key */
-      {
-        char key[2];
-        key[0] = ch; key[1] = '\0';
-        (void) sox_keymap_apply(effects_chain, key);
-      }
-
-      break;
+      lsx_warn("key `%s' doesn't do anything", key);
     }
   }
 
@@ -2691,14 +2691,14 @@ static char parse_gopts_and_fopts(file_t * f)
     case 'k':
       /* --keymap D:dolbyb.gain+2 --keymap d:dolbyb.gain-2 */
       {
-        char *key, *effect, *field;
+        char key[2], *effect, *field;
         char operator[2];  /* "+", "-", "*", "/" or "=" */
         double step;
         char dummy; /* Trailing garbage */
         int n;
 
-        n = sscanf(optstate.arg, "%8m[a-zA-Z0-9]:%16m[a-z].%16m[_a-z]%1[+*/=-]%lg%c",
-                   &key, &effect, &field, operator, &step, &dummy);
+        n = sscanf(optstate.arg, "%c:%16m[a-z].%16m[_a-z]%1[+*/=-]%lg%c",
+                   key, &effect, &field, operator, &step, &dummy);
         if (n != 5) {
           lsx_fail("can't parse `%s' as key:effect.field[+-*/=]value; n=%d",
                    optstate.arg, n);
@@ -2706,7 +2706,7 @@ static char parse_gopts_and_fopts(file_t * f)
         }
         key[1] = '\0';
 
-        sox_keymap_add(key, effect, field, operator[0], step);
+        sox_keymap_add(strdup(key), effect, field, operator[0], step);
 
         interactive = sox_true;
       }

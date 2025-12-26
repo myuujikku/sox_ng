@@ -803,7 +803,7 @@ behave as
 .BR soxi_ng .
 .TP
 \fB\-\-interactive\fR
-Enable control of `sox_ng` by keyboard strokes, making
+Enable control of SoX by keyboard strokes, making
 .RS
 .TP
 \fBv\fR and \fBV\fR
@@ -816,7 +816,9 @@ Seek back and forth in the audio file by 30 seconds.
 \fBR\fR
 Restart the effects chain (like \fB:\fR)
 .PP
-It is enabled by default when playing, disabled otherwise.
+All the above can be overridden by a \fB\-\-keymap\fR option.
+.PP
+Interactive mode is enabled by default when playing, disabled otherwise.
 To disable it when playing, redirect stdin from somewhere other than a terminal,
 e.g. \fBplay ... < file\fR
 .RE
