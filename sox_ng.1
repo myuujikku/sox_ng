@@ -2873,6 +2873,13 @@ Change the audio pitch but not the tempo.
 gives the pitch shift as positive or negative `cents' (i.e. 100ths of a
 semitone).
 .SP
+Note that raising the pitch increases the sample rate and this can
+make following effects slower, in particular \fBpitch\fR or \fBtempo\fR
+thenselves, whose running times are proportional to the sample rate times
+the overlap, all squared.
+This can be compensated for by following \fBpitch\fR with
+a fast \fBrate\fR effect.
+.SP
 .B Pitch
 and
 .B tempo
@@ -4704,6 +4711,13 @@ Its default value is 12 but the \fB\-m\fR, \fB\-s\fR and \fB\-l\fR flags
 automatically adjust it based on the segment size.
 Increasing \fIoverlap\fR increases processing time but may increase quality.
 A practical maximum for \fIoverlap\fR is a little less then \fIsearch\fR.
+.SP
+Note that lowering the tempo increases the sample rate and this can
+make following effects slower, in particular \fBtempo\fR or \fBpitch\fR
+themselves, whose running times are proportional to the sample rate times
+the overlap, all squared.
+This can be compensated for by following \fBtempo\fR with
+a fast \fBrate\fR effect.
 .SP
 See \fBspeed\fR for an effect that changes tempo and pitch together,
 \fBpitch\fR and \fBbend\fR for effects that change pitch only and
