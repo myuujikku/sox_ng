@@ -5,8 +5,8 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
-sox_ng-14.7.0+git
------------------
+sox_ng-14.7.0+git20251226
+-------------------------
 
 New features:
 
@@ -32,6 +32,8 @@ Bug fixes:
   o stats: Don't report the crest factor in overall JSON stats
   o Don't open files in reverse order, so the first unopenable file is reported
     instead of the last one
+  o For formats that only support mono, stereo or quad, convert to the closest
+    instead of writing 8-channel files that say "stereo" in the header
   o Fix some memory leaks
   o Make file rewinding work when compiled with Emscripten
   o Fail autodetection of some ffmpeg formats if the file is truncated
