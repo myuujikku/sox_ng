@@ -158,6 +158,7 @@ size_t lsx_set_dft_length(size_t num_taps) /* Set to 4 x nearest power of 2 */
 #include "fft4g.h"
 static unsigned * lsx_fft_br;
 static double * lsx_fft_sc;
+static float * lsx_fft_sc_f;
 static size_t fft_len = 0;
 #if defined HAVE_OPENMP
 static ccrw2_t fft_cache_ccrw;
@@ -167,6 +168,7 @@ void init_fft_cache(void)
 {
   assert(lsx_fft_br == NULL);
   assert(lsx_fft_sc == NULL);
+  assert(lsx_fft_sc_f == NULL);
   ccrw2_init(fft_cache_ccrw);
   fft_len = 0;
 }
@@ -176,7 +178,9 @@ void clear_fft_cache(void)
   ccrw2_clear(fft_cache_ccrw);
   free(lsx_fft_br);
   free(lsx_fft_sc);
+  free(lsx_fft_sc_f);
   lsx_fft_sc = NULL;
+  lsx_fft_sc_f = NULL;
   lsx_fft_br = NULL;
   fft_len = 0;
 }
@@ -193,6 +197,7 @@ static sox_bool update_fft_cache(size_t len)
       fft_len = len;
       lsx_revalloc(lsx_fft_br, dft_br_len(fft_len));
       lsx_revalloc(lsx_fft_sc, dft_sc_len(fft_len));
+      lsx_revalloc(lsx_fft_sc_f, dft_sc_len(fft_len));
       if (!old_n)
         lsx_fft_br[0] = 0;
       return sox_true;
@@ -221,6 +226,20 @@ void lsx_safe_cdft(unsigned len, int type, double * d)
 {
   sox_bool is_writer = update_fft_cache(len);
   lsx_cdft(len, type, d, lsx_fft_br, lsx_fft_sc);
+  done_with_fft_cache(is_writer);
+}
+
+void lsx_safe_rdft_f(unsigned len, int type, float * d)
+{
+  sox_bool is_writer = update_fft_cache(len);
+  lsx_rdft_f(len, type, d, lsx_fft_br, lsx_fft_sc_f);
+  done_with_fft_cache(is_writer);
+}
+
+void lsx_safe_cdft_f(unsigned len, int type, float * d)
+{
+  sox_bool is_writer = update_fft_cache(len);
+  lsx_cdft_f(len, type, d, lsx_fft_br, lsx_fft_sc_f);
   done_with_fft_cache(is_writer);
 }
 
