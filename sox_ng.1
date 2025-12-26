@@ -838,8 +838,11 @@ in steps of 2dB to find the best setting.
 \fB\-\-keymap\fR turns \fB\-\-interactive\fR mode on
 and \fB\-V\fR makes it display the new value each time it is changed.
 .SP
-You should also be able to map \f(CWeffect2:field\fB to affect
-only the second occurrence of \fIeffect\fR in the effects chain.
+When you have the same effect more than once, you can control just
+with something like \f\Beffect2.field\fR to affect only
+the second occurrence of \fIeffect\fR in the effects chain and
+for effects with multiple stages, like \fBecho.delay\fR, the stage
+can be selected with something like \fBeffect.field1\fR.
 .SP
 The manual entries for individual effects say which parameters
 can be adjusted in this way, \fB\-\-help\-effect\fB tells you
@@ -847,7 +850,7 @@ which of an effect's parameters can be keymapped and
 .XE
    sox_ng --help-effect all | grep Keymap
 .XX
-gives you a complete list.
+gives a complete list.
 .TP
 \fB\-m\fR\^|\^\fB\-M\fR
 Equivalent to \fB\-\-combine mix\fR and \fB\-\-combine merge\fR respectively.
