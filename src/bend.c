@@ -148,7 +148,10 @@ static int start_bend(sox_effect_t * effp)
 
   int n = effp->in_signal.rate / p->frame_rate + .5;
   for (p->fftFrameSize = 2; n > 2; p->fftFrameSize <<= 1, n >>= 1);
-  assert(p->fftFrameSize <= MAX_FRAME_LENGTH);
+  if (p->fftFrameSize > MAX_FRAME_LENGTH) {
+    lsx_fail("FFT frame size is too large (%d > %d)", p->fftFrameSize, MAX_FRAME_LENGTH);
+    return SOX_EOF;
+  }
   p->shift = 1;
   /* Re-parse now rate is known */
   if (parse(effp, 0, effp->in_signal.rate))
