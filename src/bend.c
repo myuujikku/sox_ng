@@ -62,6 +62,7 @@ typedef struct {
   float *gAnaMagn;      /* [FRAME_LENGTH] */
   float *gSynFreq;      /* [FRAME_LENGTH] */
   float *gSynMagn;      /* [FRAME_LENGTH] */
+  float *gWindow;       /* [FRAME_LENGTH] */
   long gRover;
   unsigned fftFrameSize, over_sample;
 } priv_t;
@@ -182,6 +183,13 @@ static int start_bend(sox_effect_t * effp)
   lsx_valloc(p->gAnaMagn,     p->fftFrameSize);
   lsx_valloc(p->gSynFreq,     p->fftFrameSize);
   lsx_valloc(p->gSynMagn,     p->fftFrameSize);
+  lsx_valloc(p->gWindow,      p->fftFrameSize);
+
+  /* Precalculate the window function */
+  { unsigned k;
+    for (k = 0; k < p->fftFrameSize; k++)
+      p->gWindow[k] = -.5 * cos(2 * M_PI * k / (double) p->fftFrameSize) + .5;
+  }
 
   return SOX_SUCCESS;
 }
@@ -191,7 +199,7 @@ static int flow_bend(sox_effect_t * effp, const sox_sample_t * ibuf,
 {
   priv_t *p = (priv_t *) effp->priv;
   size_t i, len = *isamp = *osamp = min(*isamp, *osamp);
-  double magn, phase, tmp, window, real, imag;
+  double magn, phase, tmp, real, imag;
   double freqPerBin, expct;
   long k, qpd, index, inFifoLatency, stepSize, fftFrameSize2;
   float pitchShift = p->shift;
@@ -234,8 +242,7 @@ static int flow_bend(sox_effect_t * effp, const sox_sample_t * ibuf,
 
       /* do windowing and re,im interleave */
       for (k = 0; k < p->fftFrameSize; k++) {
-        window = -.5 * cos(2 * M_PI * k / (double) p->fftFrameSize) + .5;
-        p->gFFTworksp[2 * k] = p->gInFIFO[k] * window;
+        p->gFFTworksp[2 * k] = p->gInFIFO[k] * p->gWindow[k];
         p->gFFTworksp[2 * k + 1] = 0.;
       }
 
@@ -309,10 +316,8 @@ static int flow_bend(sox_effect_t * effp, const sox_sample_t * ibuf,
 
       /* do windowing and add to output accumulator */
       for (k = 0; k < p->fftFrameSize; k++) {
-        window =
-            -.5 * cos(2. * M_PI * (double) k / (double) p->fftFrameSize) + .5;
         p->gOutputAccum[k] +=
-            2. * window * p->gFFTworksp[2 * k] / (fftFrameSize2 * p->over_sample);
+            2. * p->gWindow[k] * p->gFFTworksp[2 * k] / (fftFrameSize2 * p->over_sample);
       }
       for (k = 0; k < stepSize; k++)
         p->gOutFIFO[k] = p->gOutputAccum[k];
@@ -352,6 +357,7 @@ static int kill_bend(sox_effect_t * effp)
   free(p->gAnaMagn);
   free(p->gSynFreq);
   free(p->gSynMagn);
+  free(p->gWindow);
 
   for (i = 0; i < p->nbends; ++i)
     free(p->bends[i].str);
