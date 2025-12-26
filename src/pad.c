@@ -108,7 +108,6 @@ static int create_pad(sox_effect_t * effp, int argc, char * * argv)
   priv_t * p = (priv_t *)effp->priv;
   --argc, ++argv;
   p->npads = argc;
-  p->pads = lsx_calloc(p->npads, sizeof(*p->pads));
   lsx_vcalloc(p->pads, p->npads);
   return parse(effp, argv, 1e5); /* No rate yet; parse with dummy */
 }
