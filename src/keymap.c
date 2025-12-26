@@ -141,6 +141,7 @@ sox_keymap_apply(sox_effects_chain_t *effects_chain, char *key)
               lsx_report("set %s.%s to %s", effect, field, result);
               free(result);
             }
+            free(valuestr);
           }
         }
       }
