@@ -319,14 +319,15 @@ static int flow_bend(sox_effect_t * effp, const sox_sample_t * ibuf,
         p->gOutputAccum[k] +=
             2.f * p->gWindow[k] * (float)p->gFFTworksp[2 * k] / (fftFrameSize2 * p->over_sample);
       }
-      for (k = 0; k < stepSize; k++)
-        p->gOutFIFO[k] = p->gOutputAccum[k];
+
+      memcpy(p->gOutFIFO,     /* generate output */
+             p->gOutputAccum, stepSize * sizeof(float));
 
       memmove(p->gOutputAccum, /* shift accumulator */
-          p->gOutputAccum + stepSize, p->fftFrameSize * sizeof(float));
+              p->gOutputAccum + stepSize, p->fftFrameSize * sizeof(float));
 
-      for (k = 0; k < inFifoLatency; k++) /* move input FIFO */
-        p->gInFIFO[k] = p->gInFIFO[k + stepSize];
+      memmove(p->gInFIFO,      /* move input FIFO */
+              p->gInFIFO + stepSize, inFifoLatency * sizeof(float));
     }
   }
   return SOX_SUCCESS;
