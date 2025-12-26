@@ -29,6 +29,8 @@ Bug fixes:
   o pulseaudio: Ignore zero-length writes, which it supposedly doesn't like
   o wav: Disallow zero-sized chunks
   o ladspa: Allow plugins that take no input
+  o bend: Allocate buffers dynamically, allowing FFT sizes up to 2^30
+    instead of dumping core
   o echo/echos: Set the output signal's length
   o stats: Don't report the crest factor in overall JSON stats
   o Don't open files in reverse order, so the first unopenable file is reported

@@ -33,8 +33,9 @@
 #endif
 
 #include "sox_i.h"
+#include "fft4g.h"
 
-#define MAX_FRAME_LENGTH 8192
+#define MAX_FRAME_LENGTH (FFT4G_MAX_SIZE / 2)
 
 typedef struct {
   unsigned nbends;       /* Number of bends requested */
@@ -51,18 +52,18 @@ typedef struct {
 
   double shift;
 
-  float gInFIFO[MAX_FRAME_LENGTH];
-  float gOutFIFO[MAX_FRAME_LENGTH];
-  double gFFTworksp[2 * MAX_FRAME_LENGTH];
-  float gLastPhase[MAX_FRAME_LENGTH / 2 + 1];
-  float gSumPhase[MAX_FRAME_LENGTH / 2 + 1];
-  float gOutputAccum[2 * MAX_FRAME_LENGTH];
-  float gAnaFreq[MAX_FRAME_LENGTH];
-  float gAnaMagn[MAX_FRAME_LENGTH];
-  float gSynFreq[MAX_FRAME_LENGTH];
-  float gSynMagn[MAX_FRAME_LENGTH];
+  float *gInFIFO;       /* [FRAME_LENGTH] */
+  float *gOutFIFO;      /* [FRAME_LENGTH] */
+  double *gFFTworksp;   /* [2 * FRAME_LENGTH] */
+  float *gLastPhase;    /* [FRAME_LENGTH / 2 + 1] */
+  float *gSumPhase;     /* [FRAME_LENGTH / 2 + 1] */
+  float *gOutputAccum;  /* [2 * FRAME_LENGTH] */
+  float *gAnaFreq;      /* [FRAME_LENGTH] */
+  float *gAnaMagn;      /* [FRAME_LENGTH] */
+  float *gSynFreq;      /* [FRAME_LENGTH] */
+  float *gSynMagn;      /* [FRAME_LENGTH] */
   long gRover;
-  int fftFrameSize, over_sample;
+  unsigned fftFrameSize, over_sample;
 } priv_t;
 
 static int parse(sox_effect_t * effp, char **argv, sox_rate_t rate)
@@ -158,10 +159,31 @@ static int start_bend(sox_effect_t * effp)
     return SOX_EFF_NULL;
 
   p->in_pos = p->bends_pos = 0;
-  for (i = 0; i < p->nbends; ++i)
-    if (p->bends[i].duration)
-      return SOX_SUCCESS;
-  return SOX_EFF_NULL;
+
+  /* If none of the bends have any duration, we are a null effect */
+  {
+    sox_bool any_duration = sox_false;
+
+    for (i = 0; i < p->nbends; ++i)
+      if (p->bends[i].duration) {
+        any_duration = sox_true;
+        break;
+      }
+    if (!any_duration) return SOX_EFF_NULL;
+  }
+
+  lsx_valloc(p->gInFIFO,      p->fftFrameSize);
+  lsx_valloc(p->gOutFIFO,     p->fftFrameSize);
+  lsx_valloc(p->gFFTworksp,   2 * p->fftFrameSize);
+  lsx_valloc(p->gLastPhase,   p->fftFrameSize / 2 + 1);
+  lsx_valloc(p->gSumPhase,    p->fftFrameSize / 2 + 1);
+  lsx_valloc(p->gOutputAccum, 2 * p->fftFrameSize);
+  lsx_valloc(p->gAnaFreq,     p->fftFrameSize);
+  lsx_valloc(p->gAnaMagn,     p->fftFrameSize);
+  lsx_valloc(p->gSynFreq,     p->fftFrameSize);
+  lsx_valloc(p->gSynMagn,     p->fftFrameSize);
+
+  return SOX_SUCCESS;
 }
 
 static int flow_bend(sox_effect_t * effp, const sox_sample_t * ibuf,
@@ -319,6 +341,17 @@ static int kill_bend(sox_effect_t * effp)
 {
   priv_t *p = (priv_t *) effp->priv;
   unsigned i;
+
+  free(p->gInFIFO);
+  free(p->gOutFIFO);
+  free(p->gFFTworksp);
+  free(p->gLastPhase);
+  free(p->gSumPhase);
+  free(p->gOutputAccum);
+  free(p->gAnaFreq);
+  free(p->gAnaMagn);
+  free(p->gSynFreq);
+  free(p->gSynMagn);
 
   for (i = 0; i < p->nbends; ++i)
     free(p->bends[i].str);
