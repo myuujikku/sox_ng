@@ -42,7 +42,7 @@ typedef struct {
   struct {
     char *str;           /* Command-line argument to parse for this bend */
     uint64_t start;      /* Start bending when in_pos equals this */
-    double cents;
+    float cents;
     uint64_t duration;   /* Number of samples to bend */
   } *bends;
 
@@ -50,7 +50,7 @@ typedef struct {
   size_t in_pos;         /* Number of samples read from the input stream */
   unsigned bends_pos;    /* Number of bends completed so far */
 
-  double shift;
+  float shift;
 
   float *gInFIFO;       /* [FRAME_LENGTH] */
   float *gOutFIFO;      /* [FRAME_LENGTH] */
@@ -89,9 +89,9 @@ static int parse(sox_effect_t * effp, char **argv, sox_rate_t rate)
 
     {
       const char *oldnext = next;
-      p->bends[i].cents = strtod(next + 1, (char **)&next);
+      p->bends[i].cents = strtof(next + 1, (char **)&next);
       if (next == oldnext || !isfinite(p->bends[i].cents) ||
-          fabs(p->bends[i].cents) == HUGE_VAL || *next != ',')
+          fabsf(p->bends[i].cents) == HUGE_VAL || *next != ',')
         break;
     }
 
@@ -188,7 +188,7 @@ static int start_bend(sox_effect_t * effp)
   /* Precalculate the window function */
   { unsigned k;
     for (k = 0; k < p->fftFrameSize; k++)
-      p->gWindow[k] = -.5 * cos(2 * M_PI * k / (double) p->fftFrameSize) + .5;
+      p->gWindow[k] = -.5f * cosf(2 * M_PI * k / (float) p->fftFrameSize) + .5f;
   }
 
   return SOX_SUCCESS;
@@ -199,8 +199,8 @@ static int flow_bend(sox_effect_t * effp, const sox_sample_t * ibuf,
 {
   priv_t *p = (priv_t *) effp->priv;
   size_t i, len = *isamp = *osamp = min(*isamp, *osamp);
-  double magn, phase, tmp, real, imag;
-  double freqPerBin, expct;
+  float magn, phase, tmp, real, imag;
+  float freqPerBin, expct;
   long k, qpd, index, inFifoLatency, stepSize, fftFrameSize2;
   float pitchShift = p->shift;
 
@@ -208,7 +208,7 @@ static int flow_bend(sox_effect_t * effp, const sox_sample_t * ibuf,
   fftFrameSize2 = p->fftFrameSize / 2;
   stepSize = p->fftFrameSize / p->over_sample;
   freqPerBin = effp->in_signal.rate / p->fftFrameSize;
-  expct = 2. * M_PI * (double) stepSize / (double) p->fftFrameSize;
+  expct = (float)(2. * M_PI) * (float) stepSize / (float) p->fftFrameSize;
   inFifoLatency = p->fftFrameSize - stepSize;
   if (!p->gRover)
     p->gRover = inFifoLatency;
@@ -228,14 +228,14 @@ static int flow_bend(sox_effect_t * effp, const sox_sample_t * ibuf,
     if (p->gRover >= p->fftFrameSize) {
       if (p->bends_pos != p->nbends && p->in_pos >=
           p->bends[p->bends_pos].start + p->bends[p->bends_pos].duration) {
-        pitchShift = p->shift *= pow(2., p->bends[p->bends_pos].cents / 1200);
+        pitchShift = p->shift *= powf(2.f, p->bends[p->bends_pos].cents / 1200);
         ++p->bends_pos;
       }
       if (p->bends_pos != p->nbends && p->in_pos >= p->bends[p->bends_pos].start) {
-        double progress = (double)(p->in_pos - p->bends[p->bends_pos].start) /
-             p->bends[p->bends_pos].duration;
-        progress *= p->bends[p->bends_pos].cents / 1200.0;
-        pitchShift = p->shift * pow(2., progress);
+        float progress = (float)(p->in_pos - p->bends[p->bends_pos].start) /
+                         (float)p->bends[p->bends_pos].duration;
+        progress *= p->bends[p->bends_pos].cents / 1200.0f;
+        pitchShift = p->shift * powf(2.f, progress);
       }
 
       p->gRover = inFifoLatency;
@@ -256,27 +256,27 @@ static int flow_bend(sox_effect_t * effp, const sox_sample_t * ibuf,
         imag = - p->gFFTworksp[2 * k + 1];
 
         /* compute magnitude and phase */
-        magn = 2. * sqrt(real * real + imag * imag);
-        phase = atan2(imag, real);
+        magn = 2.f * sqrtf(real * real + imag * imag);
+        phase = atan2f(imag, real);
 
         /* compute phase difference */
         tmp = phase - p->gLastPhase[k];
         p->gLastPhase[k] = phase;
 
-        tmp -= (double) k *expct; /* subtract expected phase difference */
+        tmp -= (float) k *expct; /* subtract expected phase difference */
 
         /* map delta phase into +/- Pi interval */
-        qpd = tmp / M_PI;
+        qpd = tmp / (float)M_PI;
         if (qpd >= 0)
           qpd += qpd & 1;
         else qpd -= qpd & 1;
-        tmp -= M_PI * (double) qpd;
+        tmp -= (float)M_PI * (float) qpd;
 
         /* get deviation from bin frequency from the +/- Pi interval */
-        tmp = p->over_sample * tmp / (2. * M_PI);
+        tmp = p->over_sample * tmp / (float)(2. * M_PI);
 
         /* compute the k-th partials' true frequency */
-        tmp = (double) k *freqPerBin + tmp * freqPerBin;
+        tmp = (k + tmp) * freqPerBin;
 
         /* store magnitude and true frequency in analysis arrays */
         p->gAnaMagn[k] = magn;
@@ -298,15 +298,15 @@ static int flow_bend(sox_effect_t * effp, const sox_sample_t * ibuf,
       for (k = 0; k <= fftFrameSize2; k++) { /* SYNTHESIS */
         /* get magnitude and true frequency from synthesis arrays */
         magn = p->gSynMagn[k], tmp = p->gSynFreq[k];
-        tmp -= (double) k *freqPerBin; /* subtract bin mid frequency */
+        tmp -= k * freqPerBin; /* subtract bin mid frequency */
         tmp /= freqPerBin; /* get bin deviation from freq deviation */
-        tmp = 2. * M_PI * tmp / p->over_sample; /* take p->over_sample into account */
-        tmp += (double) k *expct; /* add the overlap phase advance back in */
+        tmp = 2.f * (float)M_PI * tmp / p->over_sample; /* take p->over_sample into account */
+        tmp += k * expct; /* add the overlap phase advance back in */
         p->gSumPhase[k] += tmp; /* accumulate delta phase to get bin phase */
         phase = p->gSumPhase[k];
         /* get real and imag part and re-interleave */
-        p->gFFTworksp[2 * k] = magn * cos(phase);
-        p->gFFTworksp[2 * k + 1] = - magn * sin(phase);
+        p->gFFTworksp[2 * k] = magn * cosf(phase);
+        p->gFFTworksp[2 * k + 1] = - magn * sinf(phase);
       }
 
       for (k = p->fftFrameSize + 2; k < 2 * p->fftFrameSize; k++)
@@ -317,7 +317,7 @@ static int flow_bend(sox_effect_t * effp, const sox_sample_t * ibuf,
       /* do windowing and add to output accumulator */
       for (k = 0; k < p->fftFrameSize; k++) {
         p->gOutputAccum[k] +=
-            2. * p->gWindow[k] * p->gFFTworksp[2 * k] / (fftFrameSize2 * p->over_sample);
+            2.f * p->gWindow[k] * (float)p->gFFTworksp[2 * k] / (fftFrameSize2 * p->over_sample);
       }
       for (k = 0; k < stepSize; k++)
         p->gOutFIFO[k] = p->gOutputAccum[k];
