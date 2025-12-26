@@ -225,7 +225,11 @@ static int sox_echos_start(sox_effect_t * effp)
                 lsx_warn("the output may saturate; a safe gain-out is %g",
                          1.0 / fabsf(sum_in_volume));
 
-        effp->out_signal.length = SOX_UNKNOWN_LEN; /* TODO: calculate actual length */
+        if (effp->in_signal.length == SOX_UNKNOWN_LEN)
+                effp->out_signal.length = SOX_UNKNOWN_LEN;
+        else
+                effp->out_signal.length =
+                        effp->in_signal.length + echos->sumsamples;
 
         return (SOX_SUCCESS);
 }

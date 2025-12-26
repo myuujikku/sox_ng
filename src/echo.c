@@ -207,7 +207,10 @@ static int sox_echo_start(sox_effect_t * effp)
         echo->counter = 0;
         echo->fade_out = echo->maxsamples;
 
-  effp->out_signal.length = SOX_UNKNOWN_LEN; /* TODO: calculate actual length */
+        if (effp->in_signal.length == SOX_UNKNOWN_LEN)
+            effp->out_signal.length = SOX_UNKNOWN_LEN;
+        else
+            effp->out_signal.length = effp->in_signal.length + echo->fade_out;
 
         return (SOX_SUCCESS);
 }
