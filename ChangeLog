@@ -31,7 +31,9 @@ Bug fixes:
   o ladspa: Allow plugins that take no input
   o bend: Allocate buffers dynamically, allowing FFT sizes up to 2^30
     instead of dumping core
+  o bend: Optimized to be over twice as fast
   o echo/echos: Set the output signal's length
+  o pitch: Error about a bad cents value instead of tempo about a bad factor
   o stats: Don't report the crest factor in overall JSON stats
   o Don't open files in reverse order, so the first unopenable file is reported
     instead of the last one

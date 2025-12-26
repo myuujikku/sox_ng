@@ -356,21 +356,29 @@ sox_effect_handler_t const * lsx_tempo_effect_fn(void)
 }
 
 /*---------------------------------- pitch -----------------------------------*/
+#define log2(n) log(n)/log(2.)
 
 static int getopts_pitch(sox_effect_t * effp, int argc, char **argv)
 {
-  double d;
+  double cents, factor;
   char dummy, arg[100], **argv2;
   int result, pos = (argc > 1 && !strcmp(argv[1], "-q"))? 2 : 1;
 
   lsx_valloc(argv2, argc);
-  if (argc <= pos || sscanf(argv[pos], "%lf %c", &d, &dummy) != 1) {
+  if (argc <= pos || sscanf(argv[pos], "%lf %c", &cents, &dummy) != 1) {
     lsx_fail("cannot parse shift factor `%s'", argv[pos]);
     return SOX_EOF;
   }
 
-  d = pow(2., d / 1200);  /* cents --> factor */
-  sprintf(arg, "%g", 1 / d);
+  factor = pow(2., cents / 1200);  /* cents --> factor */
+  /* "1 / factor" can be from 0.1 to 100, so "cents"... */
+  if (1/factor < 0.1 || 1/factor > 100) {
+    /* Inverting the formula... */
+    lsx_fail("pitch's cents `%g' must be from %g to %g\n", cents,
+            1200 * log2(1/100.0), 1200 * log2(1/0.1));
+    return SOX_EOF;
+  }
+  sprintf(arg, "%g", 1 / factor);
   memcpy(argv2, argv, argc * sizeof(*argv2));
   argv2[pos] = arg;
   result = getopts_tempo(effp, argc, argv2);
