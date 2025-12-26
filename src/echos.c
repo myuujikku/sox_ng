@@ -323,6 +323,8 @@ static int sox_echos_stop(sox_effect_t * effp)
 	for (i=0; i<echos->num_delays; i++)
 	    free(echos->delay_buf[i]);
         free(echos->delay_buf);
+        free(echos->delay);
+        free(echos->decay);
         echos->delay_buf = NULL;
         return (SOX_SUCCESS);
 }
