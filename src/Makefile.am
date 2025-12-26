@@ -90,7 +90,7 @@ libsox_ng_la_SOURCES += \
         dolbyb.c dop.c downsample.c \
         earwax.c echo.c echos.c \
         effects.c effects.h effects_i.c effects_i_dsp.c \
-        fade.c ffmpeg.c fft4g.c fft4g.h fifo.c fifo.h \
+        fade.c ffmpeg.c fft4g.c fft4gf.c fft4g.h fifo.c fifo.h \
         fir.c firfit.c flanger.c \
         gain.c hilbert.c input.c ladspa.h ladspa.c loudness.c \
         mcompand.c mcompand_xover.h noiseprof.c noisered.c noisered.h \

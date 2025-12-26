@@ -55,7 +55,7 @@ typedef struct {
 
   float *gInFIFO;       /* [FRAME_LENGTH] */
   float *gOutFIFO;      /* [FRAME_LENGTH] */
-  double *gFFTworksp;   /* [2 * FRAME_LENGTH] */
+  float *gFFTworksp;    /* [2 * FRAME_LENGTH] */
   float *gLastPhase;    /* [FRAME_LENGTH / 2 + 1] */
   float *gSumPhase;     /* [FRAME_LENGTH / 2 + 1] */
   float *gOutputAccum;  /* [2 * FRAME_LENGTH] */
@@ -250,7 +250,7 @@ static int flow_bend(sox_effect_t * effp, const sox_sample_t * ibuf,
       }
 
       /* ***************** ANALYSIS ******************* */
-      lsx_safe_cdft(2 * p->fftFrameSize, 1, p->gFFTworksp);
+      lsx_safe_cdft_f(2 * p->fftFrameSize, 1, p->gFFTworksp);
 
       /* this is the analysis step */
       for (k = 0; k <= fftFrameSize2; k++) {
@@ -315,12 +315,12 @@ static int flow_bend(sox_effect_t * effp, const sox_sample_t * ibuf,
       for (k = p->fftFrameSize + 2; k < 2 * p->fftFrameSize; k++)
         p->gFFTworksp[k] = 0.; /* zero negative frequencies */
 
-      lsx_safe_cdft(2 * p->fftFrameSize, -1, p->gFFTworksp);
+      lsx_safe_cdft_f(2 * p->fftFrameSize, -1, p->gFFTworksp);
 
       /* do windowing and add to output accumulator */
       for (k = 0; k < p->fftFrameSize; k++) {
         p->gOutputAccum[k] +=
-            2.f * p->gWindow[k] * (float)p->gFFTworksp[2 * k] / (fftFrameSize2 * p->over_sample);
+            2.f * p->gWindow[k] * p->gFFTworksp[2 * k] / (fftFrameSize2 * p->over_sample);
       }
 
       memcpy(p->gOutFIFO,     /* generate output */
