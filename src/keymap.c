@@ -98,7 +98,6 @@ sox_keymap_apply(sox_effects_chain_t *effects_chain, char *key)
            n++, e++) {
         sox_effect_t *effp = (*e);
         unsigned namelen = strlen(effp->handler.name);
-        char   digit;  /* '1' to '9' in "synth2" effect name */
         char  *effect   = keymaps[i].effect;
         char  *field    = keymaps[i].field;
         char   operator = keymaps[i].operator;
@@ -111,8 +110,7 @@ sox_keymap_apply(sox_effects_chain_t *effects_chain, char *key)
           /* Does this binding apply to all invocations of the effect */
           if (effect[namelen] == '\0' ||
               /* ...or just to the Nth invocation of the effect? */
-              (isdigit(digit = effect[namelen]) &&
-               (unsigned)(digit - '0') == occurrence)) {
+              (unsigned)atoi(effect+namelen) == occurrence) {
             char *valuestr = effp->handler.get(effp, field);
             double value;
             char *result;

@@ -2697,7 +2697,7 @@ static char parse_gopts_and_fopts(file_t * f)
         char dummy; /* Trailing garbage */
         int n;
 
-        n = sscanf(optstate.arg, "%c:%16m[a-z].%16m[_a-z0-9]%1[+*/=-]%lg%c",
+        n = sscanf(optstate.arg, "%c:%16m[a-z0-9].%16m[_a-z0-9]%1[+*/=-]%lg%c",
                    key, &effect, &field, operator, &step, &dummy);
         if (n != 5) {
           lsx_fail("can't parse `%s' as key:effect.field[+-*/=]value; n=%d",
