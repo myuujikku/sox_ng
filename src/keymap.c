@@ -27,7 +27,7 @@
  * in the effects chain".
  */
 void
-sox_keymap_add(char *key, char *effect, char *field, char operator, double step)
+sox_keymap_add(char *key, char *effect, char *field, char op, double step)
 {
   sox_keymap_t *keymaps;
   unsigned keymap_count = sox_globals.keymap_count;
@@ -37,7 +37,7 @@ sox_keymap_add(char *key, char *effect, char *field, char operator, double step)
   keymaps[keymap_count].key = key;
   keymaps[keymap_count].effect = effect;
   keymaps[keymap_count].field = field;
-  keymaps[keymap_count].operator = operator;
+  keymaps[keymap_count].op = op;
   keymaps[keymap_count].step = step;
   sox_globals.keymap_count++;
 }
@@ -100,7 +100,7 @@ sox_keymap_apply(sox_effects_chain_t *effects_chain, char *key)
         unsigned namelen = strlen(effp->handler.name);
         char  *effect   = keymaps[i].effect;
         char  *field    = keymaps[i].field;
-        char   operator = keymaps[i].operator;
+        char   op       = keymaps[i].op;
         double step     = keymaps[i].step;
 
         /* Match keymap of "synth2" etc. to effect name "synth" */
@@ -122,7 +122,7 @@ sox_keymap_apply(sox_effects_chain_t *effects_chain, char *key)
               return SOX_ENOEFFECT;
             }
             value = lsx_strtod(valuestr, NULL);
-            switch (operator) {
+            switch (op) {
             case '+': value += step; break;
             case '-': value -= step; break;
             case '*': value *= step; break;

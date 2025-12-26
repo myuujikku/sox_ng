@@ -1286,9 +1286,9 @@ Internal representation of --keymap bindings
 */
 typedef struct {
   char  *key;	    /* String name of the bound key, like "D" */
-  char  *effect;    /* effect whose parameter this changes */
-  char  *field;     /* parameter changed in the effect's priv_t */
-  char   operator;  /* '+', '-', '*' or '/' */
+  char  *effect;    /* Effect whose parameter this changes */
+  char  *field;     /* Parameter changed in the effect's priv_t */
+  char   op;        /* How to adjust the parameter: '+', '-', '*', '/' or '=' */
   double step;      /* How much to add or subtract, to multiply or divide by */
 } sox_keymap_t;
 
@@ -1703,7 +1703,7 @@ Client API:
 Add a keymap
 */
 extern void sox_keymap_add(char *key, char *effect, char *field,
-                           char operator, double step);
+                           char op, double step);
 /**
 Client API:
 See if a key or an effect.field is used in a keymap
