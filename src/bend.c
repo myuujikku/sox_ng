@@ -43,6 +43,7 @@ typedef struct {
     char *str;           /* Command-line argument to parse for this bend */
     uint64_t start;      /* Start bending when in_pos equals this */
     float cents;
+    float cents_1200;    /* == cents/1200 */
     uint64_t duration;   /* Number of samples to bend */
   } *bends;
 
@@ -94,6 +95,7 @@ static int parse(sox_effect_t * effp, char **argv, sox_rate_t rate)
           fabsf(p->bends[i].cents) == HUGE_VAL || *next != ',')
         break;
     }
+    p->bends[i].cents_1200 = p->bends[i].cents / 1200.f;
 
     next = lsx_parseposition(rate, next + 1,
              argv ? NULL : &p->bends[i].duration, last_seen, in_length, '+');
@@ -228,13 +230,13 @@ static int flow_bend(sox_effect_t * effp, const sox_sample_t * ibuf,
     if (p->gRover >= p->fftFrameSize) {
       if (p->bends_pos != p->nbends && p->in_pos >=
           p->bends[p->bends_pos].start + p->bends[p->bends_pos].duration) {
-        pitchShift = p->shift *= powf(2.f, p->bends[p->bends_pos].cents / 1200);
+        pitchShift = p->shift *= powf(2.f, p->bends[p->bends_pos].cents_1200);
         ++p->bends_pos;
       }
       if (p->bends_pos != p->nbends && p->in_pos >= p->bends[p->bends_pos].start) {
         float progress = (float)(p->in_pos - p->bends[p->bends_pos].start) /
                          (float)p->bends[p->bends_pos].duration;
-        progress *= p->bends[p->bends_pos].cents / 1200.0f;
+        progress *= p->bends[p->bends_pos].cents_1200;
         pitchShift = p->shift * powf(2.f, progress);
       }
 
