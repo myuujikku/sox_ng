@@ -858,7 +858,8 @@ static sox_format_t * open_read(
 {
   sox_format_t * ft = lsx_calloc(1, sizeof(*ft));
   sox_format_handler_t const * handler;
-  char const * const io_types[] = {"file", "pipe", "file URL"};
+  /* Decode lsx_io_type values to strings for error reporting */
+  char const * const io_types[] = {"file", "pipe", "URL"};
   char const * type = "";
   size_t   input_bufsiz = sox_globals.input_bufsiz?
       sox_globals.input_bufsiz : sox_globals.bufsiz;
@@ -891,7 +892,7 @@ static sox_format_t * open_read(
       type = io_types[ft->io_type];
       if (ft->fp == NULL) {
         /* Pipe and URL openers will already have emitted an error message */
-        if (strcmp(type, "file") == 0)
+        if (ft->io_type == lsx_io_file)
           lsx_fail("can't open input file `%s': %s", path, strerror(errno));
         goto error;
       }

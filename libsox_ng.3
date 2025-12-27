@@ -184,14 +184,13 @@ For an exhaustive description of the libsox_ng API see
 http://martinwguy.net/test/soxygen/sox_8h.html
 .TP
 .B int sox_init(void)
-\fBsox_init()\fR performs any initialization required by effects.
+\fBsox_init()\fR performs initialization required by effects.
 .TP
 .B int sox_format_init(void)
 \fBsox_format_init()\fR performs initialization required by
 file format handlers. If SoX was compiled with dynamic
 file format support, this will detect and initialize all file format
-plugins and should be called before any file operations
-are performed.
+plugins and should be called before any file operations are performed.
 .TP
 .B void sox_format_quit(void)
 \fBsox_format_quit()\fR unloads all dynamically-loaded file format plugins.
