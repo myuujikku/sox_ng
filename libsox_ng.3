@@ -47,9 +47,9 @@ libsox_ng, another audio file format and effect library
 .P
 .B void sox_quit(void);
 .P
-.B sox_format_t\ *\:sox_open_read(char\ const\ *\fIpath\fB, sox_signalinfo_t\ const\ *\fIsignal\fB, sox_encodinginfo_t\ const\ *\fIencoding\fB, char\ const\ *\fIfiletype\fB);
+.B sox_format_t\ *sox_open_read(char\ const\ *\fIpath\fB, sox_signalinfo_t\ const\ *\fIsignal\fB, sox_encodinginfo_t\ const\ *\fIencoding\fB, char\ const\ *\fIfiletype\fB);
 .P
-.B sox_format_t\ *\:sox_open_write(char\ const\ *\fIfilename\fB, sox_signalinfo_t\ const\ *\fIsignal\fB, sox_encodinginfo_t\ const\ *\fIencoding\fB, char\ const\ *\fIfiletype\fB, sox_oob_t\ const\ *\fIoob\fB, sox_bool\ (*overwrite_permitted)(char\ const\ *\fIfilename\fB));
+.B sox_format_t\ *sox_open_write(char\ const\ *\fIfilename\fB, sox_signalinfo_t\ const\ *\fIsignal\fB, sox_encodinginfo_t\ const\ *\fIencoding\fB, char\ const\ *\fIfiletype\fB, sox_oob_t\ const\ *\fIoob\fB, sox_bool\ (*overwrite_permitted)(char\ const\ *\fIfilename\fB));
 .P
 .B size_t\ sox_read(sox_format_t\ *\fIformat\fB, sox_sample_t\ *\fIbuf\fB, size_t\ \fIlen\fB);
 .P
@@ -59,13 +59,13 @@ libsox_ng, another audio file format and effect library
 .P
 .B int\ sox_close(sox_format_t\ *\fIformat\fB);
 .P
-.B sox_effect_handler_t\ const\ *\:sox_find_effect(char\ const\ *\fIname\fB);
+.B sox_effect_handler_t\ const\ *sox_find_effect(char\ const\ *\fIname\fB);
 .P
-.B sox_effect_t\ *\:sox_create_effect(sox_effect_handler_t\ const\ *\fIeffect\fB);
+.B sox_effect_t\ *sox_create_effect(sox_effect_handler_t\ const\ *\fIeffect\fB);
 .P
 .B int sox_effect_options(sox_effect_t\ *\fIeffect\fB, int\ \fIargc\fB, char\ *\ const\ \fIargv\fB[]);
 .P
-.B sox_effects_chain_t\ *\:sox_create_effects_chain(sox_encodinginfo_t\ const\ *\fIin_enc\fB, sox_encodinginfo_t\ const\ *\fIout_enc\fB);
+.B sox_effects_chain_t\ *sox_create_effects_chain(sox_encodinginfo_t\ const\ *\fIin_enc\fB, sox_encodinginfo_t\ const\ *\fIout_enc\fB);
 .P
 .B int sox_add_effect(sox_effects_chain_t\ *\fIchain\fB, sox_effect_t\ *\fIeffect\fB, sox_signalinfo_t\  *\fIin\fB, sox_signalinfo_t\  const\  *\fIout\fB);
 .P
@@ -202,7 +202,7 @@ are performed.
 .TP
 .nh
 .na
-.B sox_format_t\ *\:sox_open_read(char\ const\ *\fIpath\fB, sox_signalinfo_t\ const\ *\fIsignal\fB, sox_encodinginfo_t\ const\ *\fIencoding\fB, char\ const\ *\fIfiletype\fB)
+.B sox_format_t\ *sox_open_read(char\ const\ *\fIpath\fB, sox_signalinfo_t\ const\ *\fIsignal\fB, sox_encodinginfo_t\ const\ *\fIencoding\fB, char\ const\ *\fIfiletype\fB)
 .ad
 .hy
 \fBsox_open_read()\fR opens a file for reading.
@@ -225,7 +225,7 @@ except for the error message printed on the standard error output (stderr).
 .TP
 .nh
 .na
-.B sox_format_t\ *\:sox_open_write(char\ const\ *\fIfilename\fB, sox_signalinfo_t\ const\ *\fIsignal\fB, sox_encodinginfo_t\ const\ *\fIencoding\fB, char\ const\ *\fIfiletype\fB, sox_oob_t\ const\ *\fIoob\fB, sox_bool\ (*overwrite_permitted)(char\ const\ *\fIfilename\fB))
+.B sox_format_t\ *sox_open_write(char\ const\ *\fIfilename\fB, sox_signalinfo_t\ const\ *\fIsignal\fB, sox_encodinginfo_t\ const\ *\fIencoding\fB, char\ const\ *\fIfiletype\fB, sox_oob_t\ const\ *\fIoob\fB, sox_bool\ (*overwrite_permitted)(char\ const\ *\fIfilename\fB))
 .ad
 .hy
 \fBsox_open_write()\fR opens the named file for writing.
@@ -327,7 +327,7 @@ not even another call to \fBsox_close()\fR.
 .TP
 .nh
 .na
-.B sox_effect_handler_t\ const\ *\:sox_find_effect(char\ const\ *\fIname\fB)
+.B sox_effect_handler_t\ const\ *sox_find_effect(char\ const\ *\fIname\fB)
 .ad
 .hy
 \fBsox_find_effect()\fR returns a pointer to the named effect's handler
@@ -335,7 +335,7 @@ if it exists, NULL otherwise.
 .TP
 .nh
 .na
-.B sox_effect_t\ *\:sox_create_effect(sox_effect_handler_t\ const\ *\fIeffect\fB)
+.B sox_effect_t\ *sox_create_effect(sox_effect_handler_t\ const\ *\fIeffect\fB)
 .ad
 .hy
 \fBsox_create_effect()\fR instantiates an effect into a \fIsox_effect_t\fR
@@ -366,7 +366,7 @@ The behavior is undefined if its called when the effect has already started.
 .TP
 .nh
 .na
-.B sox_effects_chain_t\ *\:sox_create_effects_chain(sox_encodinginfo_t\ const\ *\fIin_enc\fB, sox_encodinginfo_t\ const\ *\fIout_enc\fB)
+.B sox_effects_chain_t\ *sox_create_effects_chain(sox_encodinginfo_t\ const\ *\fIin_enc\fB, sox_encodinginfo_t\ const\ *\fIout_enc\fB)
 .ad
 .hy
 \fBsox_create_effects_chain()\fR creates an effects chain to which
