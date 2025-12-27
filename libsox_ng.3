@@ -47,29 +47,29 @@ libsox_ng, another audio file format and effect library
 .P
 .B void sox_quit(void);
 .P
-.B sox_format_t\ *sox_open_read(char\ const\ *\fIpath\fB, sox_signalinfo_t\ const\ *\fIsignal\fB, sox_encodinginfo_t\ const\ *\fIencoding\fB, char\ const\ *\fIfiletype\fB);
+.B sox_format_t\ *sox_open_read(char\ *\fIpath\fB, sox_signalinfo_t\ *\fIsignal\fB, sox_encodinginfo_t\ *\fIencoding\fB, char\ *\fIfiletype\fB);
 .P
-.B sox_format_t\ *sox_open_write(char\ const\ *\fIfilename\fB, sox_signalinfo_t\ const\ *\fIsignal\fB, sox_encodinginfo_t\ const\ *\fIencoding\fB, char\ const\ *\fIfiletype\fB, sox_oob_t\ const\ *\fIoob\fB, sox_bool\ (*overwrite_permitted)(char\ const\ *\fIfilename\fB));
+.B sox_format_t\ *sox_open_write(char\ *\fIfilename\fB, sox_signalinfo_t\ *\fIsignal\fB, sox_encodinginfo_t\ *\fIencoding\fB, char\ *\fIfiletype\fB, sox_oob_t\ *\fIoob\fB, sox_bool\ (*overwrite_permitted)(char\ *\fIfilename\fB));
 .P
 .B size_t\ sox_read(sox_format_t\ *\fIformat\fB, sox_sample_t\ *\fIbuf\fB, size_t\ \fIlen\fB);
 .P
-.B size_t\ sox_write(sox_format_t\ *\fIformat\fB, sox_sample_t\ const\ *\fIbuf\fB, size_t\ \fIlen\fB);
+.B size_t\ sox_write(sox_format_t\ *\fIformat\fB, sox_sample_t\ *\fIbuf\fB, size_t\ \fIlen\fB);
 .P
 .B int\ sox_seek(sox_format_t\ *\fIformat\fB, size_t\ \fIoffset\fB, int\ \fIwhence\fB);
 .P
 .B int\ sox_close(sox_format_t\ *\fIformat\fB);
 .P
-.B sox_effect_handler_t\ const\ *sox_find_effect(char\ const\ *\fIname\fB);
+.B sox_effect_handler_t\ const\ *sox_find_effect(char\ *\fIname\fB);
 .P
-.B sox_effect_t\ *sox_create_effect(sox_effect_handler_t\ const\ *\fIeffect\fB);
+.B sox_effect_t\ *sox_create_effect(sox_effect_handler_t\ *\fIeffect\fB);
 .P
-.B int sox_effect_options(sox_effect_t\ *\fIeffect\fB, int\ \fIargc\fB, char\ *\ const\ \fIargv\fB[]);
+.B int sox_effect_options(sox_effect_t\ *\fIeffect\fB, int\ \fIargc\fB, char\ **\fIargv\fB);
 .P
-.B sox_effects_chain_t\ *sox_create_effects_chain(sox_encodinginfo_t\ const\ *\fIin_enc\fB, sox_encodinginfo_t\ const\ *\fIout_enc\fB);
+.B sox_effects_chain_t\ *sox_create_effects_chain(sox_encodinginfo_t\ *\fIin_enc\fB, sox_encodinginfo_t\ *\fIout_enc\fB);
 .P
-.B int sox_add_effect(sox_effects_chain_t\ *\fIchain\fB, sox_effect_t\ *\fIeffect\fB, sox_signalinfo_t\  *\fIin\fB, sox_signalinfo_t\  const\  *\fIout\fB);
+.B int sox_add_effect(sox_effects_chain_t\ *\fIchain\fB, sox_effect_t\ *\fIeffect\fB, sox_signalinfo_t\ *\fIin\fB, sox_signalinfo_t\ *\fIout\fB);
 .P
-.B void sox_delete_effects_chain(sox_effects_chain_t\  *\fIecp\fB);
+.B void sox_delete_effects_chain(sox_effects_chain_t\ *\fIecp\fB);
 .P
 .B cc \fIfile.c\fB -o \fIfile \fB-lsox_ng
 .SH TYPES
@@ -202,7 +202,7 @@ are performed.
 .TP
 .nh
 .na
-.B sox_format_t\ *sox_open_read(char\ const\ *\fIpath\fB, sox_signalinfo_t\ const\ *\fIsignal\fB, sox_encodinginfo_t\ const\ *\fIencoding\fB, char\ const\ *\fIfiletype\fB)
+.B sox_format_t\ *sox_open_read(char\ *\fIpath\fB, sox_signalinfo_t\ *\fIsignal\fB, sox_encodinginfo_t\ *\fIencoding\fB, char\ *\fIfiletype\fB)
 .ad
 .hy
 \fBsox_open_read()\fR opens a file for reading.
@@ -225,7 +225,7 @@ except for the error message printed on the standard error output (stderr).
 .TP
 .nh
 .na
-.B sox_format_t\ *sox_open_write(char\ const\ *\fIfilename\fB, sox_signalinfo_t\ const\ *\fIsignal\fB, sox_encodinginfo_t\ const\ *\fIencoding\fB, char\ const\ *\fIfiletype\fB, sox_oob_t\ const\ *\fIoob\fB, sox_bool\ (*overwrite_permitted)(char\ const\ *\fIfilename\fB))
+.B sox_format_t\ *sox_open_write(char\ *\fIfilename\fB, sox_signalinfo_t\ *\fIsignal\fB, sox_encodinginfo_t\ *\fIencoding\fB, char\ *\fIfiletype\fB, sox_oob_t\ *\fIoob\fB, sox_bool\ (*overwrite_permitted)(char\ *\fIfilename\fB))
 .ad
 .hy
 \fBsox_open_write()\fR opens the named file for writing.
@@ -291,7 +291,7 @@ depending on the function.
 .TP
 .nh
 .na
-.B size_t sox_write(sox_format_t\ *\fIformat\fB, sox_sample_t\ const\ *\fIbuf\fB, size_t\ \fIlen\fB)
+.B size_t sox_write(sox_format_t\ *\fIformat\fB, sox_sample_t\ *\fIbuf\fB, size_t\ \fIlen\fB)
 .ad
 .hy
 \fBsox_write()\fR writes \fIlen\fR samples from \fIbuf\fR
@@ -327,7 +327,7 @@ not even another call to \fBsox_close()\fR.
 .TP
 .nh
 .na
-.B sox_effect_handler_t\ const\ *sox_find_effect(char\ const\ *\fIname\fB)
+.B sox_effect_handler_t\ const\ *sox_find_effect(char\ *\fIname\fB)
 .ad
 .hy
 \fBsox_find_effect()\fR returns a pointer to the named effect's handler
@@ -335,19 +335,19 @@ if it exists, NULL otherwise.
 .TP
 .nh
 .na
-.B sox_effect_t\ *sox_create_effect(sox_effect_handler_t\ const\ *\fIeffect\fB)
+.B sox_effect_t\ *sox_create_effect(sox_effect_handler_t\ *\fIeffect\fB)
 .ad
 .hy
 \fBsox_create_effect()\fR instantiates an effect into a \fIsox_effect_t\fR
 given its \fIhandler\fR.
 Any missing methods are automatically set to the appropriate
 \fBnothing\fR method.
-It returns a pointer to the new effect 
+It returns a pointer to the new effect
 or NULL if it was not found or had problems starting up.
 .TP
 .nh
 .na
-.B int sox_effect_options(sox_effect_t\ *\fIeffect\fB, int\ \fIargc\fB, char\ *\ const\ \fIargv\fB[])
+.B int sox_effect_options(sox_effect_t\ *\fIeffect\fB, int\ \fIargc\fB, char\ **fIargv\fB)
 .ad
 .hy
 \fBsox_effect_options()\fR passes options into an effect
@@ -366,7 +366,7 @@ The behavior is undefined if its called when the effect has already started.
 .TP
 .nh
 .na
-.B sox_effects_chain_t\ *sox_create_effects_chain(sox_encodinginfo_t\ const\ *\fIin_enc\fB, sox_encodinginfo_t\ const\ *\fIout_enc\fB)
+.B sox_effects_chain_t\ *sox_create_effects_chain(sox_encodinginfo_t\ *\fIin_enc\fB, sox_encodinginfo_t\ *\fIout_enc\fB)
 .ad
 .hy
 \fBsox_create_effects_chain()\fR creates an effects chain to which
@@ -382,7 +382,7 @@ It returns a pointer to the new chain or NULL if something went wrong.
 .TP
 .nh
 .na
-.B int sox_add_effect(sox_effects_chain_t\ *\fIchain\fB, sox_effect_t\ *\fIeffect\fB, sox_signalinfo_t\  *\fIin\fB, sox_signalinfo_t\  const\  *\fIout\fB)
+.B int sox_add_effect(sox_effects_chain_t\ *\fIchain\fB, sox_effect_t\ *\fIeffect\fB, sox_signalinfo_t\ *\fIin\fB, sox_signalinfo_t\ *\fIout\fB)
 .ad
 .hy
 \fBsox_add_effect\fR adds an effect to a chain.
@@ -398,7 +398,7 @@ It returns SOX_SUCCESS if it was successful.
 .TP
 .nh
 .na
-.B void sox_delete_effects_chain(sox_effects_chain_t\  *\fIecp\fB)
+.B void sox_delete_effects_chain(sox_effects_chain_t\ *\fIecp\fB)
 .ad
 .hy
 \fBsox_delete_effects_chain()\fR closes an effects chain down and
@@ -416,14 +416,14 @@ to write applications using \fBlibsox_ng\fR and
 .P
 .SH INTERNALS
 SoX's formats and effects operate with an internal sample format of
-signed 32-bit integers.  The data processing routines are called with
+signed 32-bit integers. The data processing routines are called with
 buffers of these samples and buffer sizes which refer to the number
-of samples processed, not the number of bytes.  File readers translate
+of samples processed, not the number of bytes. File readers translate
 input samples to signed 32-bit integers and return the number of
-samples read.  For example, data in linear signed byte format is
+samples read. For example, data in linear signed byte format is
 left-shifted 24 bits.
 .P
-Representing samples as integers can cause problems when processing audio.  
+Representing samples as integers can cause problems when processing audio.
 For example, if an effect to mix down left and right channels into one
 monophonic channel were to use the obvious
 .XE
@@ -439,12 +439,12 @@ Stereo data is stored with the left and right speaker data
 in successive samples and
 quadraphonic data is stored left front, right front, left rear, right rear.
 .SH FORMATS
-A 
-.I format 
+A
+.I format
 is responsible for translating between sound sample files
 and an internal buffer.
 The internal buffer is stored in signed longs with a fixed sampling rate.
-The 
+The
 .I format
 operates from two data structures:
 a format structure and a private structure.
@@ -455,25 +455,25 @@ encoding (unsigned, signed, floating point etc.),
 and the number of sound channels.
 It also contains other state information: whether the sample file
 needs to be byte-swapped, whether \fBsox_seek()\fR will work, its suffix,
-its file stream pointer, its 
+its file stream pointer, its
 .I format
 pointer and the format's private structure.
 .P
-The 
-.I private 
-area is a preallocated data array for the 
+The
+.I private
+area is a preallocated data array for the
 .I format
-to use however it wishes.  
+to use however it wishes.
 It should have a defined data structure
-and cast the array to that structure.  
-See \fBvoc.c\fR for an example of the use of a private data area.  
-\fBvoc.c\fR has to track the number of samples it 
+and cast the array to that structure.
+See \fBvoc.c\fR for an example of the use of a private data area.
+\fBvoc.c\fR has to track the number of samples it
 writes and, when finishing, seek back to the beginning of the file
 and write it into the header.
 The private area is usually not very large and some effects,
 such as \fBecho\fR, \fBlsx_malloc()\fR larger areas for delay lines and such.
 .P
-A 
+A
 .I format
 has 6 routines:
 .TP 20
@@ -483,7 +483,7 @@ a data header and do anything else that needs to be done.
 .TP 20
 read
 Given a buffer and a length,
-read up to that many samples, 
+read up to that many samples,
 transform them into signed long integers,
 and copy them into the buffer.
 It returns the number of samples actually read.
@@ -492,7 +492,7 @@ stopread
 Do what needs to be done when it has finished reading.
 .TP 20
 startwrite
-Set up the format parameters, maybe write out 
+Set up the format parameters, maybe write out
 a data header and any other preliminaries for writing the format.
 .TP 20
 write
@@ -528,7 +528,7 @@ LOOP (invocations with different parameters)
 Functions that an effect does not need can be NULL.
 An effect that is marked `MCHAN' does not use the LOOP
 (channels) lines and must perform multiple channel processing
-inside the affected functions.  Multiple effect instances may be
+inside the affected functions. Multiple effect instances may be
 processed in parallel.
 .TP 20
 getopts
@@ -537,7 +537,7 @@ is called with a character string argument list for the effect.
 start
 is called with the signal parameters for the input and output
 streams.
-.TP 20 
+.TP 20
 flow
 is called with input and output data buffers,
 and (by reference) the input and output data buffer sizes.
@@ -545,11 +545,11 @@ It processes the input buffer into the output buffer,
 and sets the size variables to the numbers of samples
 actually processed.
 It is under no obligation to read from the input buffer or
-write to the output buffer during the same call.  If the
+write to the output buffer during the same call. If the
 call returns \fBSOX_EOF\fR, this means
 that the effect will not read any more data and can be used
 to switch to drain mode sooner.
-.TP 20 
+.TP 20
 drain
 is called when there are no more input data samples.
 If the effect wishes to generate more data samples,
