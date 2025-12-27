@@ -859,7 +859,7 @@ Equivalent to \fB\-\-combine mix\fR and \fB\-\-combine merge\fR respectively.
 If SoX has been built with the optional `libmagic' library, this
 option enables its use in helping to detect audio file types.
 .TP
-\fB\-\-multi\-threaded\fR | \fB\-\-single\-threaded\fR
+\fB\-\-multi\-threaded\fR\^|\^\fB\-\-single\-threaded\fR
 By default, SoX is `multi threaded' and
 processes audio channels for most multichannel effects in parallel
 on hyperthreading and multicore processors.
@@ -1513,7 +1513,7 @@ and look for its name in the \fBEFFECTS\fR list;
 a categorized list of the effects can be found in the
 accompanying README file.
 .TP
-\fBallpass\fR [\fB\-1\fR\^|\^\fB\-2\fR] \fIfrequency \fR[\fIwidth\fR[\fBh\fR\^|\^\fBk\fR\^|\^\fBo\fR\^|\^\fBq\fR]]
+\fBallpass\fR [\fB\-1\fR\^|\^\fB2\fR] \fIfrequency \fR[\fIwidth\fR[\fBh\fR\^|\^\fBk\fR\^|\^\fBo\fR\^|\^\fBq\fR]]
 Apply a two-pole all-pass filter with central frequency \fIfrequency\fR
 and filter width \fIwidth\fR.
 An all-pass filter changes the
@@ -1715,7 +1715,7 @@ See
 .B remix
 for an effect that allows channels to be mixed and selected arbitrarily.
 .TP
-\fBchorus [\fB\-n\fR|\fB\-l\fR|\fB\-q\fR] [\fB-s\fR|\fB-t\fR] [\fIgain-in [gain-out\fR {\fIdelay [decay [speed [depth [\fB\-s\fR\^|\^\fB\-t\fR]]]]}]]
+\fBchorus [\fB\-n\fR\^|\^\fBl\fR\^|\^\fBq\fR] [\fB\-s\fR\^|\^\fBt\fR] [\fIgain-in [gain-out\fR {\fIdelay [decay [speed [depth [\fB\-s\fR\^|\^\fBt\fR]]]]}]]
 Add a chorus effect to the audio.  This can make a single voice sound
 like a chorus but can also be applied to instrumentation.
 .SP
@@ -1751,7 +1751,7 @@ delay	0-1000	40-60	Fixed delay in milliseconds
 decay	-1-1	0.5	Volume of delayed output
 speed	0-192k	0.25	Modulation frequency
 depth	0-1000	2	Extra delay in milliseconds
-wave	-s|-t	-s	Sinusoidal/triangular modulation
+wave	-s\^|\^-t	-s	Sinusoidal/triangular modulation
 .TE
 .SP
 There are keymaps for \fBgain_in\fR and \fBgain_out\fR.
@@ -2037,7 +2037,7 @@ the following list:
 .nh
 \fBlipshitz\fR, \fBf-weighted\fR, \fBmodified-e-weighted\fR,
 \fBimproved-e-weighted\fR, \fBgesemann\fR, \fBshibata\fR, \fBlow-shibata\fR,
-\fBhigh-shibata\fR, \fBshibata-\fR(\fBA\fR|\fBB\fR)(\fB0\fR|\fB1\fR|\fB2\fR|\fB3\fR|\fB4\fR|\fB5\fR|\fB6\fR) and \fBshibata-A-saturated\fR.
+\fBhigh-shibata\fR, \fBshibata-\fR(\fBA\fR\^|\^\fBB\fR)(\fB0\fR\^|\^\fB1\fR\^|\^\fB2\fR\^|\^\fB3\fR\^|\^\fB4\fR\^|\^\fB5\fR\^|\^\fB6\fR) and \fBshibata-A-saturated\fR.
 .hy
 The latter \fBshibata-\fR ones use the new shaper coefficients
 from Naoki Shibata's \fBSSRC\fR package, described at https://shibatch.org/ssrc
@@ -2094,7 +2094,7 @@ options.
 .SP
 See the above section on \fBDithering\fR.
 .TP
-\fBdolbyb\fR [\fB\-e\fR|\fB\-d\fR] [\fB\-u\ \fIupsamp\fR] [\fB\-h\fR] [\fB\-t\ \fIgain\fR(1.0)] [\fB\-a\ prec\fR(-5.0)] [\fB\-f\ \fR{\fB1\fR|\fB2\fR|\fB3\fR|\fB4\fR}]
+\fBdolbyb\fR [\fB\-e\fR\^|\^\fBd\fR] [\fB\-u\ \fIupsamp\fR] [\fB\-h\fR] [\fB\-t\ \fIgain\fR(1.0)] [\fB\-a\ prec\fR(-5.0)] [\fB\-f\ \fR{\fB1\fR\^|\^\fB2\fR\^|\^\fB3\fR\^|\^\fB4\fR}]
 \fBdolbyb\fR is a Dolby B decoder/encoder based on dolbybcsoftwaredecode
 which simulates the operation of a Dolby\ B en/decoder's electronic circuit.
 .SP
@@ -2405,7 +2405,7 @@ approximates the response of a carbon microphone telephone.
 .SP
 This effect supports the \fB\-\-plot\fR global option.
 .TP
-\fBflanger\fR [-n|-l|-q] [-s|-t] [\fIdelay\fR(0) [\fIdepth\fR(2) [\fIregen\fR(0) [\fIwidth\fR(71) [\fIspeed\fR(0\*d5) [\fIshape\fR(sine)] [\fIphase\fR(25) [\fIinterp\fR(linear)]]]]]]]
+\fBflanger\fR [\-n\^|\^l\^|\^q] [\-s\^|\^t] [\fIdelay\fR(0) [\fIdepth\fR(2) [\fIregen\fR(0) [\fIwidth\fR(71) [\fIspeed\fR(0\*d5) [\fIshape\fR(sine)] [\fIphase\fR(25) [\fIinterp\fR(linear)]]]]]]]
 Apply a flanging effect to the audio.
 See [3] for a detailed description of flanging.
 .SP
@@ -2443,7 +2443,7 @@ without having to specify the rest of the parameters.
 For a flow diagram of how \fBflanger\fR works,
 say \fBsox_ng \-\-help\-effect flanger\fR.
 .TP
-\fBgain \fR[\fB\-e\fR\^|\^\fB\-B\fR\^|\^\fB\-b\fR\^|\^\fB\-r\fR] [\fB\-n\fR] [\fB\-l\fR\^|\^\fB\-h\fR] [\fIgain-dB\fR(0)]
+\fBgain \fR[\fB\-e\fR\^|\^\fBB\fR\^|\^\fBb\fR\^|\^\fBr\fR] [\fB\-n\fR] [\fB\-l\fR\^|\^\fBh\fR] [\fIgain-dB\fR(0)]
 Apply amplification or attenuation to the audio signal or, in some
 cases, to some of its channels.
 Note that use of any of
@@ -2581,8 +2581,8 @@ and
 .B vol
 effects.
 .TP
-\fBhighpass\fR\^|\^\fBlowpass\fR [\fB\-1\fR|\fB\-2\fR] \fIfrequency\fR [\fRwidth\fR[\fBq\fR\^|\^\fBo\fR\^|\^\fBh\fR\^|\^\fBk\fR]]
-Apply a high-pass or low-pass filter with 3dB point \fIfrequency\fR.
+\fBhighpass\fR [\fB\-1\fR\^|\^\fB2\fR] \fIfrequency\fR [\fRwidth\fR[\fBq\fR\^|\^\fBo\fR\^|\^\fBh\fR\^|\^\fBk\fR]]
+Apply a high-pass filter with 3dB point \fIfrequency\fR.
 The filter can be either single-pole (with
 .BR \-1 ),
 or double-pole (the default, or with
@@ -2593,7 +2593,7 @@ the default is Q = 0\*d707 and gives a Butterworth response.  The filters
 roll off at 6dB per pole per octave (20dB per pole per decade).  The
 double-pole filters are described in detail in [1].
 .SP
-These effects support the \fB\-\-plot\fR global option.
+This effect supports the \fB\-\-plot\fR global option.
 .SP
 See \fBsinc\fR for filters with a steeper roll-off.
 .TP
@@ -2663,7 +2663,7 @@ See the
 .B gain
 effect.
 .TP
-\fBlowpass\fR [\fB\-1\fR|\fB\-2\fR] \fIfrequency\fR [\fRwidth\fR[\fBq\fR\^|\^\fBo\fR\^|\^\fBh\fR\^|\^\fBk\fR]]
+\fBlowpass\fR [\fB\-1\fR\^|\^\fB2\fR] \fIfrequency\fR [\fRwidth\fR[\fBq\fR\^|\^\fBo\fR\^|\^\fBh\fR\^|\^\fBk\fR]]
 Apply a low-pass filter.
 See the description of the \fBhighpass\fR effect for details.
 .TP
@@ -2811,7 +2811,7 @@ See
 for an effect that can add silence at the beginning of
 the audio on a channel-by-channel basis.
 .TP
-\fBphaser\fR [\fB\-n\fR|\fBl\fR|\fBq\fR] [\fB\-s\fR|\fBt\fR] [\fIgain-in\fR(.4) \fIgain-out\fR(.74) \fIdelay\fR(3) \fIregen\fR(.4) \fIspeed\fR(.5) [\fB\-s\fR\^|\^\fB\-t\fR(\fB\-s\fR)]
+\fBphaser\fR [\fB\-n\fR\^|\^\fBl\fR\^|\^\fBq\fR] [\fB\-s\fR\^|\^\fBt\fR] [\fIgain-in\fR(.4) \fIgain-out\fR(.74) \fIdelay\fR(3) \fIregen\fR(.4) \fIspeed\fR(.5) [\fB\-s\fR\^|\^\fBt\fR]
 Add a phasing effect to the audio.
 See [3] for a detailed description of phasing.
 .SP
@@ -2819,8 +2819,8 @@ See [3] for a detailed description of phasing.
 \fIregen\fR the amount of feedback from the delay from \(mi1 to \(pl1
 and \fIspeed\fR the frequency of delay-time modulation wave in Hz.
 .SP
-The modulation is either sinusoidal (\fB\-s\fR), which is preferable
-for multiple instruments, or triangular
+The modulation is either sinusoidal (\fB\-s\fR, the default),
+which is preferable for multiple instruments, or triangular
 (\fB\-t\fR) which gives single instruments a sharper phasing effect.
 \fIregen\fR can be from \(mi1 to \(pl1 but should usually be less than
 0\*d5 to avoid clipping and \fIgain-out\fR is the final volume adjustment
@@ -2888,7 +2888,7 @@ effect for a description of the other parameters.
 .SP
 See the \fBbend\fR, \fBspeed\fR and \fBtempo\fR effects.
 .TP
-\fBrate\fR [\fB\-q\fR\^|\^\fB\-l\fR\^|\^\fB\-m\fR\^|\^\fB\-g\fR\^|\^\fB\-h\fR\^|\^\fB\-e\fR\^|\^\fB\-v\fR\^|\^\fB\-u\fR] [override-options] [\fIfrequency\fR]
+\fBrate\fR [\fB\-q\fR\^|\^\fBl\fR\^|\^\fBm\fR\^|\^\fBg\fR\^|\^\fBh\fR\^|\^\fBe\fR\^|\^\fBv\fR\^|\^\fBu\fR] [override-options] [\fIfrequency\fR]
 Change the audio sampling rate (i.e. resample the audio) to any given
 .I frequency
 (even non-integer if this is supported by the output file format)
@@ -2900,48 +2900,48 @@ center;
 cI cI cI cI lxI
 cB c c c lx.
 \ 	Quality	T{
-.na
 B/W
 T}	Rej dB	T{
 .na
 Typical Use
+.ad
 T}
 \-q	T{
-.na
 quick
 T}	n/a	T{
-.na
 \(~=30\^@\^Fs/4
 T}	T{
 .na
 playback on ancient hardware
+.ad
 T}
 \-l	low	80%	100	T{
 .na
 playback on old hardware
+.ad
 T}
 \-m	medium	95%	100	T{
 .na
 audio playback
+.ad
 T}
 \-g	generic	95%	100	T{
-.na
 16-bit
 T}
 \-h	high	95%	125	T{
 .na
 20-bit for 16-bit mastering
+.ad
 T}
 \-e	extreme	95%	150	T{
-.na
 24-bit
 T}
 \-v	T{
 .na
 very high
+.ad
 T}	95%	175	28-bit for 24-bit mastering
 \-u	T{
-.na
 ultra
 T}	95%	200	32-bit
 .TE
@@ -3003,6 +3003,7 @@ lB lx.
 \-p\ \fIphase\fR	T{
 .na
 Any phase response (0=minimum, 25=intermediate, 50=linear, 100=maximum)
+.ad
 T}
 .TE
 .SP
@@ -3108,7 +3109,7 @@ disables internal small-integer optimizations and
 .B \-t
 increases the irrational ratio accuracy.
 .TP
-\fBremix\fR [\fB\-a\fR\^|\^\fB\-m\fR] [\fB\-p\fR] <\fIout-spec\fR>
+\fBremix\fR [\fB\-a\fR\^|\^\fBm\fR] [\fB\-p\fR] <\fIout-spec\fR>
 \fIout-spec\fR	= \fB0\fR | \fIin-spec\fR{\fB,\fIin-spec\fR}
 .br
 \fIin-spec\fR	= [\fIin-chan\fR]\^[\fB\-\fR[\fIin-chan2\fR]]\^[\fIvol-spec\fR]
@@ -3171,6 +3172,7 @@ p	power adjust in dB	0 = no change
 i	power adjust in dB	T{
 .na
 As for \fBp\fR but invert the audio
+.ad
 T}
 v	voltage multiplier	T{
 .na
@@ -3178,6 +3180,7 @@ v	voltage multiplier	T{
 0\*d5\ \(~=\ 6dB\ attenuation;
 2\ \(~=\ 6dB\ gain;
 \-1\ =\ invert
+.ad
 T}
 .TE
 .SP
@@ -3238,7 +3241,7 @@ channels are involved, a script such as the following is useful:
 chans=\`soxi_ng \-c "$1"\`
 while [ $chans \-ge 1 ]; do
    chans0=\`printf %02i $chans\`   # 2 digits hence up to 99 chans
-   out=\`echo "$1"|sed "s/\\(.*\\)\\.\\(.*\\)/\\1\-$chans0.\\2/"\`
+   out=\`echo "$1" | sed "s/\\(.*\\)\\.\\(.*\\)/\\1\-$chans0.\\2/"\`
    sox_ng "$1" "$out" remix $chans
    chans=\`expr $chans \- 1\`
 done
@@ -3253,7 +3256,7 @@ output files:
 .SP
 See the \fBswap\fR effect.
 .TP
-\fBrepeat\fR [\fIcount\fR(1)|\fB\-\fR]
+\fBrepeat\fR [\fIcount\fR(1)\^|\^\fB\-\fR]
 Repeat the entire audio \fIcount\fR times, or once if \fIcount\fR is not given.
 The special value \fB\-\fR requests infinite repetition.
 It requires temporary file space to store the audio to be repeated.
@@ -3296,7 +3299,7 @@ The sampling rate must be 44\*d1, 48, 88\*d2, 96 or 192kHz.
 .SP
 This effect supports the \fB\-\-plot\fR global option.
 .TP
-\fBsaturation\fR [\fItype\fR [\fIblend\fR [\fIoffset\fR [\fIdrive|color|threshold\fR]]]]
+\fBsaturation\fR [\fItype\fR [\fIblend\fR [\fIoffset\fR [\fIdrive\^|\^color\^|\^threshold\fR]]]]
 Add saturation, which can produce effects ranging from subtle warmth to
 crunchy fuzz. The \fItype\fR parameter selects the saturation type:
 \fBtanh\fR (the default), \fBsqrt\fR or \fBdiode\fR.
@@ -3851,7 +3854,7 @@ The default is derived from the \fB\-fps\fR setting
 so that frames abut but do not overlap.
 .RE
 .TP
-\fBsplice \fR [\fB\-h\fR\^|\^\fB\-t\fR\^|\^\fB\-q\fR] {\fIposition(=)\fR[\fB,\fIexcess\fR[\fB,\fIleeway\fR]]}
+\fBsplice \fR [\fB\-h\fR\^|\^\fBt\fR\^|\^\fBq\fR] {\fIposition(=)\fR[\fB,\fIexcess\fR[\fB,\fIleeway\fR]]}
 Splice audio sections together.  This effect provides two things over
 simple audio concatenation: a (usually short) cross-fade is applied at
 the join and a wave similarity comparison is made to help determine the
@@ -4343,8 +4346,7 @@ The default value depends on \fIfactor\fR and \fIshift\fR:
 .SP
 The duration of \fBstretch\fR's output is slightly longer than
 the duration of the input multiplied by \fIfactor\fR as it has to empty
-the delay line it uses;
-\fBtempo\fR is more precise.
+the delay line it uses; \fBtempo\fR is more precise.
 .TP
 \fBswap\fR
 Swap stereo channels.  If the input is not stereo, pairs of channels are
@@ -4354,12 +4356,10 @@ channels, the output order will be 2, 1, 4, 3, 6, 5, 7.
 See
 .B remix
 for an effect that allows arbitrary channel selection, ordering and mixing.
-.TP
 .nh
 .na
-\fBsynth\fR [\fB\-(j|p) \fIkey\fR] [\fB\-n\fR] [\fIlength\fR\ [\fIoffset\fR\ [\fIphase\fR\ [\fIp1\fR\ [\fIp2\fR\ [\fIp3\fR]]]]]]
-{\fItype\fR\ [\fIcombine\fR\ [\fIfixed\fR[\fB,\fIextra\fR[\fB,\fImix\fR]]]]
-\:[\fIfreq\fR[\fB:\fR\^|\^\fB+\fR\^|\^\fB/\fR\^|\^\fB\-\fIfreq2\fR]\ [\fIoffset\fR\ [\fIphase\fR\ [\fIp1\fR\ [\fIp2\fR\ [\fIp3\fR]]]]]]}
+.TP
+\fBsynth\fR [\fB\-j\^\fR\^|\^\fBp \fIkey\fR] [\fB\-n\fR] \:[\fIlength\fR [\fIoffset\fR [\fIphase\fR [\fIp1\fR [\fIp2\fR [\fIp3\fR]]]]]] \:{\fItype\fR [\fIcombine\fR [\fIfixed\fR[\fB,\fIextra\fR[\fB,\fImix\fR]]]] \:[\fIfreq\fR[\fB:\fR\^|\^\fB+\fR\^|\^\fB/\fR\^|\^\fB\-\fIfreq2\fR] \:[\fIoffset\fR \:[\fIphase\fR \:[\fIp1\fR [\fIp2\fR [\fIp3\fR]]]]]]}
 .ad
 .hy
 .SP
@@ -4642,8 +4642,11 @@ The following could be used to help tune a guitar:
    for n in E2 A2 D3 G3 B3 E4; do
 	play_ng \-n synth 4 pluck $n repeat 2; done
 .XX
+.nh
+.\" Otherwise it may hyphenate overlap
 .TP
-\fBtempo \fR[\fB\-q\fR] [\fB\-m\fR\^|\^\fB\-s\fR\^|\^\fB\-l\fR] \fIfactor\fR [\fIsegment\fR(82) [\fIsearch\fR(14.68) [\fIoverlap\fR(12)]]]
+\fBtempo \fR[\fB\-q\fR] [\fB\-m\fR\^|\^\fBs\fR\^|\^\fBl\fR] \fIfactor\fR [\fIsegment\fR(82) [\fIsearch\fR(14.68) [\fIoverlap\fR(12)]]]
+.hy
 Change the audio playback speed but not its pitch. This effect uses the
 WSOLA (Waveform Similarity OverLap and Add) algorithm.
 The audio is chopped up into segments which are then
