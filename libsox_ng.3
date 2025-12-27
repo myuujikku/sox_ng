@@ -36,6 +36,8 @@
 libsox_ng, another audio file format and effect library
 .SH SYNOPSIS
 .B #include <sox_ng.h>
+.P
+.B cc \-o \fIfile file.c\fB \-lsox_ng
 .na
 .nh
 .P
@@ -63,15 +65,13 @@ libsox_ng, another audio file format and effect library
 .P
 .B sox_effect_t\ *sox_create_effect(sox_effect_handler_t\ *\fIeffect\fB);
 .P
-.B int sox_effect_options(sox_effect_t\ *\fIeffect\fB, int\ \fIargc\fB, char\ **\fIargv\fB);
+.B int sox_effect_options(sox_effect_t\ *\:\fIeffect\fB, int\ \fIargc\fB, char\ **\fIargv\fB);
 .P
-.B sox_effects_chain_t\ *sox_create_effects_chain(sox_encodinginfo_t\ *\fIin_enc\fB, sox_encodinginfo_t\ *\fIout_enc\fB);
+.B sox_effects_chain_t\ *\:sox_create_effects_chain(sox_encodinginfo_t\ *\fIin_enc\fB, sox_encodinginfo_t\ *\fIout_enc\fB);
 .P
-.B int sox_add_effect(sox_effects_chain_t\ *\fIchain\fB, sox_effect_t\ *\fIeffect\fB, sox_signalinfo_t\ *\fIin\fB, sox_signalinfo_t\ *\fIout\fB);
+.B int sox_add_effect(sox_effects_chain_t\ *\:\fIchain\fB, sox_effect_t\ *\fIeffect\fB, sox_signalinfo_t\ *\fIin\fB, sox_signalinfo_t\ *\fIout\fB);
 .P
-.B void sox_delete_effects_chain(sox_effects_chain_t\ *\fIecp\fB);
-.P
-.B cc \fIfile.c\fB -o \fIfile \fB-lsox_ng
+.B void sox_delete_effects_chain(sox_effects_chain_t\ *\fIchain\fB);
 .SH TYPES
 The following structures describe audio file formats
 and how they encode samples:
@@ -171,7 +171,7 @@ SOX_ENCODINGS           /* end of list marker                        */
 .hy
 .ad
 .SH DESCRIPTION
-.I libsox_ng
+.B libsox_ng
 is a library of sound sample file format readers/writers and sound
 effects processors. It is mainly developed to be used by SoX
 but any audio application might find it useful.
@@ -181,7 +181,29 @@ it is an introduction to the basic operations
 for reading and writing audio files and how to use effect chains,
 followed by notes on how to write new format handlers and effects.
 For an exhaustive description of the libsox_ng API see
-http://martinwguy.net/test/soxygen/sox_8h.html
+.nh
+\f(CWhttp://martinwguy.net/test/soxygen/sox_8h.html\fR
+.hy
+.TP
+.B #include <sox_ng.h>
+Declarations to use all of the below (and a lot more!).
+However, ideally you should only use items whose names begin with
+\fBsox_\fR or \fBSOX_\fR; the \fBlsx_\fR and \fBLSX_\fR items
+are intended for internal use by SoX's format and effect handlers.
+They are exported by \fBlibsox\fR so that dynamically-loaded
+format handlers and custom format and effect handlers can use them
+but should not be used by libSoX-based applications.
+.SP
+Your programs should probably include \fB<sox.h>\fR to be portable to systems
+that have not upgraded to \fBsox_ng\fR yet; those that have upgraded should
+provide \fB<sox.h>\fR as an alias for \fB<sox_ng.h>\fR and the interface is
+unlikely to change.
+.TP
+.B cc \-o \fIfile file.c\fB \-lsox_ng
+Ensure that if a program includes \fB<sox.h>\fR, it is linked
+with \fB-lsox\fR, and \fB<sox_ng.h>\fR with \fB-lsox_ng\fR as
+some software distributions (or you) may choose to install them both
+side by side and the contents of their internal structures differ.
 .TP
 .B int sox_init(void)
 \fBsox_init()\fR performs initialization required by effects.
@@ -218,9 +240,37 @@ and/or the file's contents.
 .SP
 Upon successful completion, \fBsox_open_read()\fR returns a
 pointer to a filled \fIsox_format_t\fR, which should eventually
-be closed with \fBsox_close()\fR, or NULL otherwise.
-Currently there is no way to determine the reason for failure
-except for the error message printed on the standard error output (stderr).
+be closed with \fBsox_close()\fR.
+.PP
+It can fail and return NULL
+if the file, pipe or URL cannot be opened,
+if you specify an unknown filetype,
+if \fIfiletype\fR is NULL and it cannot autodetect the file format,
+if it doesn't have a handler for that format or
+if the handler finds invalid data for the format in question.
+.PP
+The only way to determine the reason for failure is to store the address of
+a user-defined function in \fBsox_globals.output_message_handler\fR
+(there are examples in \f(CWdemo/soxcopy.c\fR and \f(CWsrc/example3.c\fR)
+otherwise it just prints an error message on the standard error output.
+.TP
+.nh
+.na
+.B sox_format_t\ *sox_open_mem_read(char\ *\fIbuffer\fB, size_t size, sox_signalinfo_t\ *\fIsignal\fB, sox_encodinginfo_t\ *\fIencoding\fB, char\ *\fIfiletype\fB)
+.ad
+.hy
+\fBsox_open_mem_read()\fR is like \fBsox_open_read()\fR
+but instead of reading data from a file it reads from the memory pointed to
+by \fIbuffer\fR, of \fIsize\fR bytes. It is most often used with buffers of
+samples using \fIfiletype\fR \fB"raw"\fR,
+\fIsignal\fB.rate\fR and \fB.channels\fB and
+\fIencoding\fB.encoding\fR and \fB.bits_per_sample\fR
+but it can autodetect and decode any supported format.
+.PP
+Unlike \fBsox_open_read()\fR, it cannot open pipes or URLs.
+.PP
+It can fail and return NULL for the same reasons as \fBsox_open_read()\fR
+or if the buffer is NULL or the size zero.
 .TP
 .nh
 .na
@@ -249,8 +299,8 @@ If it is NULL, existing files are overwritten.
 .SP
 \fBsox_open_write()\fR returns a pointer to a \fIsox_format_t\fR
 which must be closed with \fBsox_close()\fR, or NULL if it fails.
-Like \fBsox_open_read()\fR, there is no way to determine the reason for failure
-except for the error message it prints.
+Like \fBsox_open_read()\fR, the only way for a program to determine
+the reason for failure is by using the \fBsox_globals.output_message_handler\fR.
 .TP
 .nh
 .na
@@ -365,7 +415,7 @@ The behavior is undefined if its called when the effect has already started.
 .TP
 .nh
 .na
-.B sox_effects_chain_t\ *sox_create_effects_chain(sox_encodinginfo_t\ *\fIin_enc\fB, sox_encodinginfo_t\ *\fIout_enc\fB)
+.B sox_effects_chain_t\ *\:sox_create_effects_chain(sox_encodinginfo_t\ *\fIin_enc\fB, sox_encodinginfo_t\ *\fIout_enc\fB)
 .ad
 .hy
 \fBsox_create_effects_chain()\fR creates an effects chain to which
@@ -397,7 +447,7 @@ It returns SOX_SUCCESS if it was successful.
 .TP
 .nh
 .na
-.B void sox_delete_effects_chain(sox_effects_chain_t\ *\fIecp\fB)
+.B void sox_delete_effects_chain(sox_effects_chain_t\ *\fIchain\fB)
 .ad
 .hy
 \fBsox_delete_effects_chain()\fR closes an effects chain down and
@@ -405,7 +455,7 @@ releases any resources reserved during the creation of the chain.
 It also deletes all the effects in the chain.
 .SH EXAMPLES
 SoX includes skeleton C files to assist you in writing new
-formats (\fBskelform.c\fR) and effects (\fBskeleff.c\fR).
+formats (\fBsrc/skelform.c\fR) and effects (\fBsrc/skeleff.c\fR).
 New formats can often just deal with the header and then use
 \fBraw.c\fR's routines for reading and writing.
 .P
@@ -456,21 +506,9 @@ It also contains other state information: whether the sample file
 needs to be byte-swapped, whether \fBsox_seek()\fR will work, its suffix,
 its file stream pointer, its
 .I format
-pointer and the format's private structure.
-.P
-The
-.I private
-area is a preallocated data array for the
+pointer and the format's private structure, a preallocated data array for the
 .I format
 to use however it wishes.
-It should have a defined data structure
-and cast the array to that structure.
-See \fBvoc.c\fR for an example of the use of a private data area.
-\fBvoc.c\fR has to track the number of samples it
-writes and, when finishing, seek back to the beginning of the file
-and write it into the header.
-The private area is usually not very large and some effects,
-such as \fBecho\fR, \fBlsx_malloc()\fR larger areas for delay lines and such.
 .P
 A
 .I format
