@@ -1411,6 +1411,10 @@ sox_format_t * sox_open_memstream_write(
 size_t sox_read(sox_format_t * ft, sox_sample_t * buf, size_t len)
 {
   size_t actual;
+  if (ft->mode != 'r') {
+    lsx_warn("attempt to read from output file `%s'", ft->filename);
+    return 0;
+  }
   if (ft->signal.length != SOX_UNSPEC)
     len = min(len, ft->signal.length - ft->olength);
   actual = ft->handler.read? (*ft->handler.read)(ft, buf, len) : 0;
@@ -1421,7 +1425,13 @@ size_t sox_read(sox_format_t * ft, sox_sample_t * buf, size_t len)
 
 size_t sox_write(sox_format_t * ft, const sox_sample_t *buf, size_t len)
 {
-  size_t actual = ft->handler.write? (*ft->handler.write)(ft, buf, len) : 0;
+  size_t actual;
+
+  if (ft->mode != 'w') {
+    lsx_warn("attempt to write to input file `%s'", ft->filename);
+    return 0;
+  }
+  actual = ft->handler.write? (*ft->handler.write)(ft, buf, len) : 0;
   ft->olength += actual;
   return actual;
 }
