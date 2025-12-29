@@ -85,6 +85,7 @@ typedef struct {
   sox_bool   truncated;
   double     * buf;             /* [dft_size] */
   double     * dft_buf;         /* [dft_size] */
+  double     * dft_buf2;        /* [dft_size] */
   double     * window;          /* [dft_size + 1] */
   double     block_norm, max;
   double     * magnitudes;      /* [dft_size / 2 + 1] */
@@ -566,13 +567,18 @@ static int start_spectrogram(sox_effect_t * effp)
   /* Now that dft_size is set, allocate variable-sized elements of priv_t */
   lsx_vcalloc(p->buf, p->dft_size);
   lsx_vcalloc(p->dft_buf, p->dft_size);
+  lsx_vcalloc(p->dft_buf2, p->dft_size);
   lsx_vcalloc(p->window, p->dft_size + 1);
   lsx_vcalloc(p->magnitudes, p->dft_size / 2 + 1);
 
   /* Initialize the FFT routine */
 #if HAVE_FFTW
   /* We have one FFT plan per flow because the input/output arrays differ. */
-  p->fftw_plan = fftw_plan_r2r_1d(p->dft_size, p->dft_buf, p->dft_buf,
+  /* Out-of-place FFTs are slightly faster than in-place so when we preprocess
+   * the audio buffer, we do into dft_buf2, then use that as the input to
+   * achieve an in-place transform.
+   */
+  p->fftw_plan = fftw_plan_r2r_1d(p->dft_size, p->dft_buf2, p->dft_buf,
                       FFTW_R2HC, FFTW_MEASURE);
 #else
   if (is_p2(p->dft_size) && !effp->flow)
@@ -667,7 +673,7 @@ static int flow_spectrogram(sox_effect_t * effp,
 
     if ((p->end = max(p->end, p->end_min)) != p->last_end)
       make_window(p, p->last_end = p->end);
-    for (i = 0; i < p->dft_size; ++i) p->dft_buf[i] = p->buf[i] * p->window[i];
+    for (i = 0; i < p->dft_size; ++i) p->dft_buf2[i] = p->buf[i] * p->window[i];
 #if HAVE_FFTW
     fftw_execute(p->fftw_plan);
     /* Convert from FFTW's "half complex" format to an array of magnitudes.
