@@ -144,6 +144,10 @@ static int start(sox_effect_t * effp)
 
   /* Create the LFO lookup table: */
   f->lfo_length = effp->in_signal.rate / f->speed;
+  if (lfo_length < 1) {
+    lsx_fail("speed can't be more that the sample rate");
+    return SOX_EOF;
+  }
   f->lfo = lsx_calloc(f->lfo_length, sizeof(*f->lfo));
   lsx_generate_wave_table(
       f->wave_shape,
