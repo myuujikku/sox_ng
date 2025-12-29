@@ -239,12 +239,15 @@ static int stopread_vorbis(sox_format_t * ft)
  * oggenc.   Returns the number of bytes written. */
 static int oe_write_page(ogg_page * page, sox_format_t * ft)
 {
-  int written;
+  size_t written;
+  size_t written2;
 
   written = lsx_writebuf(ft, page->header, (size_t) page->header_len);
-  written += lsx_writebuf(ft, page->body, (size_t) page->body_len);
+  if (written != (size_t) page->header_len) return 0;
+  written2 = lsx_writebuf(ft, page->body, (size_t) page->body_len);
+  if (written2 != (size_t) page->body_len) return 0;
 
-  return written;
+  return written + written2;
 }
 
 /* Write out the header packets.  Derived mostly from encode.c in oggenc.
