@@ -95,7 +95,7 @@
 #endif
 
 #if defined HAVE_MP3 && (defined STATIC_MP3 || !defined HAVE_LIBLTDL)
-  /* HAVE_MP3 refers to the dynamic format plugin, not the encoding */
+  /* HAVE_MP3 refers to the format, not the encoding */
 # if HAVE_MAD
   FORMAT(mp1)
 # endif
@@ -104,6 +104,15 @@
 # endif
 # if HAVE_MAD || HAVE_LAME
   FORMAT(mp3)
+# endif
+# if HAVE_MAD
+  FORMAT(mad)
+# endif
+# if HAVE_LAME
+  FORMAT(lame)
+# endif
+# if HAVE_TWOLAME
+  FORMAT(twolame)
 # endif
 #endif
 

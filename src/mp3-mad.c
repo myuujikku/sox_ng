@@ -626,4 +626,15 @@ int seek_mad(sox_format_t * ft, sox_uint64_t offset)
   return SOX_EOF;
 }
 
+LSX_FORMAT_HANDLER(mad)
+{
+  static char const * const names[] = {"mad", "mp1", "mp2", "mp3", NULL};
+  static sox_format_handler_t const handler = {SOX_LIB_VERSION_CODE,
+    "MPEG-1 Layer 3 lossy audio compression", names, 0,
+    startread_mad, read_mad, stopread_mad,
+    NULL, NULL, NULL,
+    seek_mad, NULL, NULL, sizeof(priv_t)
+  };
+  return &handler;
+}
 #endif /* HAVE_MAD */

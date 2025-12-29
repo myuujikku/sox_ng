@@ -16,12 +16,7 @@
  */
 
 
-/* MP3 support for SoX
- *
- * Uses libmad for MP3 decoding
- * libmp3lame for MP3 encoding
- * and libtwolame for MP2 encoding
- */
+/* libmp3lame support for SoX */
 
 #include "sox_i.h"
 #include "mp3.h"
@@ -525,6 +520,22 @@ int stopwrite_lame(sox_format_t * ft)
   p->lame_close(p->gfp);
   LSX_DLLIBRARY_CLOSE(p, lame_dl);
   return SOX_SUCCESS;
+}
+
+LSX_FORMAT_HANDLER(lame)
+{
+  static char const * const names[] = {"lame", "mp3", NULL};
+  static unsigned const write_encodings[] = {
+    SOX_ENCODING_MP3, 0, 0};
+  static sox_rate_t const write_rates[] = {
+    8000, 11025, 12000, 16000, 22050, 24000, 32000, 44100, 48000, 0};
+  static sox_format_handler_t const handler = {SOX_LIB_VERSION_CODE,
+    "MPEG-1 Layer 3 lossy audio compression", names, 0,
+    NULL, NULL, NULL,
+    startwrite_lame, write_lame, stopwrite_lame,
+    NULL, write_encodings, write_rates, sizeof(priv_t)
+  };
+  return &handler;
 }
 
 #endif /* HAVE_LAME */

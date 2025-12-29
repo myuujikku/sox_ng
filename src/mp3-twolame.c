@@ -183,4 +183,20 @@ int stopwrite_twolame(sox_format_t * ft)
   return SOX_SUCCESS;
 }
 
+LSX_FORMAT_HANDLER(twolame)
+{
+  static char const * const names[] = {"twolame", "mp2", NULL};
+  static unsigned const write_encodings[] = {
+    SOX_ENCODING_MP2, 0, 0};
+  static sox_rate_t const write_rates[] = {
+    16000, 22050, 24000, 32000, 44100, 48000, 0};
+  static sox_format_handler_t const handler = {SOX_LIB_VERSION_CODE,
+    "MPEG-1 Layer 2 lossy audio compression", names, 0,
+    NULL, NULL, NULL,
+    startwrite_twolame, write_twolame, stopwrite_twolame,
+    NULL, write_encodings, write_rates, sizeof(priv_t)
+  };
+  return &handler;
+}
+
 #endif /* HAVE_TWOLAME */
