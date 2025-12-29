@@ -73,6 +73,7 @@ typedef struct {
   char const *duration_str, *start_time_str;
   sox_bool   using_stdout; /* output image to stdout */
   sox_bool   log10_axis;   /* plot frequency on log10 axis */
+  sox_bool   interpolate;  /* Should we interpolate between frequency bins? */
   int        low_freq, high_freq;
 
   /* Shared work area */
@@ -234,7 +235,7 @@ static int getopts_spectrogram(sox_effect_t * effp, int argc, char **argv)
   char const * next;
   int c;
   lsx_getopt_t optstate;
-  lsx_getopt_init(argc, argv, "+S:d:x:X:y:Y:z:Z:q:p:W:w:st:c:AarmnlhTo:LR:", NULL, lsx_getopt_flag_none, 1, &optstate);
+  lsx_getopt_init(argc, argv, "+S:d:x:X:y:Y:z:Z:q:p:W:w:st:c:AarmnlhTo:LiR:", NULL, lsx_getopt_flag_none, 1, &optstate);
 
   p->dB_range = 120, p->spectrum_points = 249, p->perm = 1; /* Non-0 defaults */
   p->out_name = "spectrogram.png", p->comment = "Created by SoX";
@@ -268,6 +269,7 @@ static int getopts_spectrogram(sox_effect_t * effp, int argc, char **argv)
     case 'h': p->high_color       = sox_true;   break;
     case 'T': p->truncate         = sox_true;   break;
     case 'L': p->log10_axis       = sox_true;   break;
+    case 'i': p->interpolate      = sox_true;   break;
     case 't': p->title            = optstate.arg; break;
     case 'c': p->comment          = optstate.arg; break;
     case 'o': p->out_name         = optstate.arg; break;
@@ -899,6 +901,17 @@ static int stop_spectrogram(sox_effect_t * effp) /* only called, by end(), on fl
 
   if (effp->flow != 0) goto free_flow_data;
 
+/* Map a frequency to its index in dBfs[] (Note: floating point) */
+#define freq_to_index(freq) ((freq) * p->rows / nyquist_freq)
+
+/* Map a pixel row to the frequency its center represents */
+#define row_to_freq(row) (p->log10_axis \
+             ? powf(10.0f, (float)(row) * log_scale_factor + log10_low_freq) \
+             : (float)(row) * lin_scale_factor + p->low_freq)
+
+/* Map a pixel row to its index in dBfs */
+#define row_to_index(row) freq_to_index(row_to_freq(row))
+
   /* Set default values for frequency range */
   if (p->high_freq == -1) {
     p->high_freq = effp->in_signal.rate/2;
@@ -939,30 +952,80 @@ static int stop_spectrogram(sox_effect_t * effp) /* only called, by end(), on fl
 	int row, col;
 
 	for (row=p->rows-1; row >=0; row--)
-	  for (col=p->cols-1; col >=0; col--)
+	  for (col=p->cols-1; col >= 0; col--)
 	    pdBfs(q, row, col) += autogain;
       }
 
       base = !p->raw * below + (chans - 1 - chan) * (p->rows + (!p->raw && !p->no_axes));
 
       for (row = 0; row < p->rows; ++row) {
-	int dBfsi, col;
-	float freq;
+        if (!p->interpolate) {
+	  /* dBfsi: index into dBfs[] nearest to the frequency */
+	  int this_i = lrint(row_to_index(row));
+          int col;
 
-	if (p->log10_axis) {
-	  freq = powf(10.0f, (float)row * log_scale_factor + log10_low_freq);
-	} else {
-	  freq = (float)row * lin_scale_factor + p->low_freq;
-	}
-	/* dBfsi: index into dBfs[] corresponding to frequency at this row */
-	dBfsi = lrint(freq * p->rows / nyquist_freq);
-	/* It is possible that upper freq > Nyquist freq: deal with that */
-	if (dBfsi >= p->rows) {
-	  dBfsi = p->rows - 1;
-	}
-	for (col = 0; col < p->cols; ++col) {
-	  pixel(!p->raw * left + col, base + row) =
-	    color(p, pdBfs(q, dBfsi, col));
+          if (this_i >= p->rows) this_i = p->rows - 1;
+
+	  for (col = 0; col < p->cols; ++col)
+	     pixel(!p->raw * left + col, base + row) =
+                   color(p, pdBfs(q, this_i, col));
+        } else {
+          /* Interpolation, of two kinds:
+           * when output pixels are denser that the frequency bins,
+           * we invent more output points with a weighted average of
+           * the magnitudes of the bins below and above;
+           * when output pixels are denser than the frequency bins we
+           * average the magnitudes of bins that fall within this pixel row.
+           */
+          /* Indices into the frequency bins for this row and the one above */
+          float this = row_to_index(row);
+          float next = row_to_index(row + 1);
+
+          if (next - this <= 1.0) {
+            /* Output pixels are denser than frequency bins:
+             * do a weighted average of the bins below and above. */
+
+	    /* The index into dBfs[] at or below this row */
+	    int this_i = (int) this;
+            float fraction = this - this_i;
+            int col;
+
+            /* Deal with freq > Nyquist freq and < lowest frequency */
+
+            if (fraction) for (col = 0; col < p->cols; ++col) {
+              float dBfs = pdBfs(q, this_i, col);
+              dBfs += fraction * (pdBfs(q, this_i + 1, col) - dBfs);
+              pixel(!p->raw * left + col, base + row) = color(p, dBfs);
+            } else for (col = 0; col < p->cols; ++col) {
+              float dBfs = pdBfs(q, this_i, col);
+              pixel(!p->raw * left + col, base + row) = color(p, dBfs);
+            }
+          } else {
+            /* Output pixels are sparser than the frequency bins:
+             * average the bins that fall into this output row. */
+	    int this_i = (int)this;
+	    int next_i = (int)next;
+            int col;
+
+            for (col = 0; col < p->cols; ++col) {
+              /* Take a proportion of the first bin */
+              float count = 1.0 - (this - this_i);
+              float sum = pdBfs(q, this_i, col) * count;
+              int i;
+
+              /* plus the ones in between */
+              for (i = this_i + 1; i < next_i; i++) {
+                sum += pdBfs(q, i, col);
+                count++;
+              }
+
+              /* and part of the last one */
+              sum += pdBfs(q, next_i, col) * (next - next_i);
+              count += next - next_i;
+
+              pixel(!p->raw * left + col, base + row) = color(p, sum/count);
+            }
+          }
 	}
 	/* Y-axis lines */
 	if (!p->raw && !p->no_axes) {
@@ -1214,10 +1277,11 @@ sox_effect_handler_t const * lsx_spectrogram_effect_fn(void)
 "-d time Time to fit to the X-axis (default: all of it unless -X and -x)",
 "-y num  Y-axis size in pixels per channel; default: -Y num / nchannels, ",
 "-Y num  Total height; default 550",
-"-L      Plot the frequency on a logarithmic axis",
-"-R L:H  Specify the frequency range (from L to H)",
 "-z num  Z-axis range in dB; default 120",
 "-Z num  Z-axis maximum in dBFS; default 0",
+"-L      Plot the frequency on a logarithmic axis",
+"-R L:H  Specify the frequency range (from L to H)",
+"-i      Interpolate between or average frequency bins",
 "-n      normalize: Set Z-axis maximum to the brightest pixel",
 "-q num  Z-axis quantization (0-249); default 249",
 "-w name Window: Hann(default)/Hamming/Bartlett/Rectangular/Kaiser/Dolph",
