@@ -861,6 +861,19 @@ static void print_at_(png_byte * pixels, int cols, int x, int y, int c, char con
   }
 }
 
+/*
+ * For a frequency range from 0 to "to", for a maximum number of steps
+ * (one less than the number of labels), return the frequency step to use,
+ * store the highest frequency to show in *limit and store a pointer to a
+ * string in *prefix, the first character of which will be printed before
+ * "Hz" or "s" (the string pointed to will be "" if no scalar is required).
+ *
+ * The algorithm is to find the largest version of 1, 2, 3 or 10, 20, 30
+ * or 100, 200, 300 etc. that gives less than or equal to max_steps and
+ * to return 1, 10 or 100 etc.  Poking the highest value into *limit seems
+ * redundant as presumably the caller knows what the maximum value is and
+ * could stop at <= that.
+ */
 static int axis(double to, int max_steps, double * limit, char * * prefix)
 {
   double scale = 1, step = max(1, 10 * to);
@@ -872,6 +885,7 @@ static int axis(double to, int max_steps, double * limit, char * * prefix)
     prefix_num = floor(log_10 / 3);
     scale = pow(10., -3. * prefix_num);
   }
+  /* pico, nano, micro, nothing, kilo, mega etc. */
   *prefix = &"pnum-kMGTPE"[prefix_num + (prefix_num? 4 : 11)];
   *limit = to * scale;
   return step * scale + .5;
