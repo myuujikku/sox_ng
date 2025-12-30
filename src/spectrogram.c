@@ -109,6 +109,14 @@ typedef struct {
  * makes the entire system grind to a halt.
  */
 
+/*
+ * Each flow has its own square array of dBfs values for its spectrogram,
+ * stored as an array of pointers to tile columns, where each element is
+ * an array of pointers to a column of blocks piled on top of one another
+ * and each block a regular square array of TILE_HEIGHT rows,
+ * each TILE_WIDTH wide.
+ */
+
 #define PAGE_SIZE 4096
 #define TILE_HEIGHT 32  /* = sqrt(PAGE_SIZE / sizeof(float)) */
 #define TILE_WIDTH  32  /* = sqrt(PAGE_SIZE / sizeof(float)) */
@@ -753,7 +761,9 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
   float log10_low_freq, log10_high_freq;
   float nyquist_freq = (float)effp->in_signal.rate / 2;
 
-  /* set default values for frequency range */
+  if (effp->flow != 0) goto free_flow_data;
+
+  /* Set default values for frequency range */
   if (p->high_freq == -1) {
     p->high_freq = effp->in_signal.rate/2;
   }
@@ -1045,6 +1055,8 @@ error:
     free(png_rows);
   }
   free(pixels);
+
+free_flow_data:
   free_tiles(p);
   free(p->buf);
   free(p->dft_buf);
@@ -1052,18 +1064,6 @@ error:
   free(p->magnitudes);
 #if HAVE_FFTW
   fftw_destroy_plan(p->fftw_plan);
-#endif
-  return SOX_SUCCESS;
-}
-
-static int end(sox_effect_t * effp)
-{
-  priv_t *p = (priv_t *)effp->priv;
-  if (effp->flow == 0)
-    return stop(effp);
-  free_tiles(p);
-#if HAVE_FFTW
-  if (p->fftw_plan) fftw_destroy_plan(p->fftw_plan);
 #endif
   return SOX_SUCCESS;
 }
@@ -1101,7 +1101,7 @@ sox_effect_handler_t const * lsx_spectrogram_effect_fn(void)
   };
   static sox_effect_handler_t handler = {
     "spectrogram", usage, extra_usage, SOX_EFF_MODIFY,
-    getopts, start, flow, drain, end, 0, sizeof(priv_t)};
+    getopts, start, flow, drain, stop, 0, sizeof(priv_t)};
 
   return &handler;
 }
