@@ -561,16 +561,16 @@ static int start_spectrogram(sox_effect_t * effp)
   p->dft_size = 2 * (p->y_size - 1);
 #if !HAVE_FFTW
   if (!is_p2(p->dft_size) && !effp->flow) {
-    lsx_warn("a DFT size of %d is much slower than 2^n ones", p->dft_size);
-    lsx_warn("The nearest faster -y size to %d is %d", p->y_size,
-             nearest_p2_dft_size(p->dft_size) / 2 + 1);
+    if (effp->flow == 0)
+      lsx_warn("-y %d would be faster than %d",
+               nearest_p2_dft_size(p->dft_size) / 2 + 1, p->y_size);
     p->shared = rdft_init(p->dft_size);
   }
 #else
   if (!is_good_dft_size(p->dft_size)) {
-    lsx_warn("a DFT size of %d is slower than ones 2^a*3^b*5^c*7^d*11^e*13^f|e+f<2", p->dft_size);
-    lsx_warn("The nearest faster -y size to %d is %d", p->y_size,
-             nearest_good_dft_size(p->dft_size) / 2 + 1);
+    if (effp->flow == 0)
+      lsx_warn("-y %d would be faster than %d",
+               nearest_good_dft_size(p->dft_size) / 2 + 1, p->y_size);
   }
 #endif
 
