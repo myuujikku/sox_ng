@@ -709,20 +709,96 @@ static void print_at_(png_byte * pixels, int cols, int x, int y, int c, char con
   }
 }
 
-static int axis(double to, int max_steps, double * limit, char * * prefix)
+/*
+ * axis(): Choose linear label positions at a power of ten times 1, 2 or 5
+ * for a range of values from "from" to "to" covering a range of "total" pixels,
+ * for labels of "label_size" pixels with a minimum distance in pixels
+ * between labels of "min_spacing".
+ *
+ * Returns a mallocked array of values at which ticks should be placed,
+ * which it is the caller's responsibility to free, and stores the
+ * size of the array in *nlabels and a pointer to a string whose
+ * first character should be printed as the unit scalar ("m", "k" etc
+ * or "" if there is no scalar).
+ *
+ * The logarithmic frequency axis has its own separate labelling code.
+ */
+
+/* Forward declarations for axis() */
+static float *linear_axis(float from, float to, float step, unsigned *nlabels);
+
+static float *axis(float from, float to, unsigned total, unsigned min_spacing,
+                   unsigned * nlabels_p, float *scale_p, char * * prefix_p)
 {
-  double scale = 1, step = max(1, 10 * to);
-  int i, prefix_num = 0;
-  if (max_steps) {
-    double try, log_10 = HUGE_VAL, min_step = (to *= 10) / max_steps;
-    for (i = 5; i; i >>= 1) if ((try = ceil(log10(min_step * i))) <= log_10)
-      step = pow(10., log_10 = try) / i, log_10 -= i > 1;
-    prefix_num = floor(log_10 / 3);
-    scale = pow(10., -3. * prefix_num);
+  if (min_spacing == 0) return NULL; /* Otherwise it may never terminate or
+                                      * return an infinite list */
+  int prefix_num;
+  float scale;      /* Power of ten we are considering as a step */
+
+  for (scale=1e-12, prefix_num=0; scale <= 1e+18; scale *= 1000, prefix_num++)
+  {
+    /* The difference in pixels if you add scale to a value */
+    float distance = total / ((to - from) / scale);
+
+    *prefix_p = prefix_num == 4 ? "" : "pnum-kMGTPE" + prefix_num;
+    *scale_p = scale;
+    if (distance * .1 >= min_spacing)
+      return linear_axis(from, to, scale * .1, nlabels_p);
+    if (distance * .2 >= min_spacing)
+      return linear_axis(from, to, scale * .2, nlabels_p);
+    if (distance * .5 >= min_spacing)
+      return linear_axis(from, to, scale * .5, nlabels_p);
+    if (distance * 1 >= min_spacing)
+      return linear_axis(from, to, scale * 1, nlabels_p);
+    if (distance * 2 >= min_spacing)
+      return linear_axis(from, to, scale * 2, nlabels_p);
+    if (distance * 5 >= min_spacing)
+      return linear_axis(from, to, scale * 5, nlabels_p);
+    if (distance * 10 >= min_spacing)
+      return linear_axis(from, to, scale * 10, nlabels_p);
+    if (distance * 20 >= min_spacing)
+      return linear_axis(from, to, scale * 20, nlabels_p);
+    if (distance * 50 >= min_spacing)
+      return linear_axis(from, to, scale * 50, nlabels_p);
   }
-  *prefix = &"pnum-kMGTPE"[prefix_num + (prefix_num? 4 : 11)];
-  *limit = to * scale;
-  return step * scale + .5;
+  /* "can't happen" */
+  *prefix_p = "?";
+  *scale_p = scale;
+  return linear_axis(from, to, scale * 1, nlabels_p);
+}
+
+/* Slop factor to allow for rounding errors at boundaries */
+#define DELTA 1e-6
+/* Comparisons allowing for slop */
+#define DELTA_LT(a,b) ((a) < (b) - DELTA)
+#define DELTA_LE(a,b) ((a) <= (b) + DELTA)
+#define DELTA_GT(a,b) ((a) > (b) + DELTA)
+#define DELTA_GE(a,b) ((a) >= (b) - DELTA)
+#define DELTA_EQ(a,b) (DELTA_GE(a,b) && DELTA_LE(a,b))
+#define DELTA_NE(a,b) (!DELTA_NE(a,b))
+
+static float *linear_axis(float from, float to, float step, unsigned *nlabels)
+{
+  float first_label;  /* The lowest multiple of step that's >= from */
+  float last_label;   /* The highest multiple of step that's <= to */
+  unsigned n;         /* The number of labels we have placed */
+  float *labels;      /* What we will return */
+  float value;        /* Loop variable for the values of labels */
+
+  for (first_label = 0; DELTA_LT(first_label, from); first_label += step)
+    ;
+  for (last_label = first_label;
+       DELTA_LE(last_label + step, to);
+       last_label += step) ;
+  n = 1;
+  lsx_valloc(labels, n);
+  labels[0] = first_label;
+  for (value = first_label + step; DELTA_LE(value, last_label); value += step) {
+    lsx_revalloc(labels, n + 1);
+    labels[n++] = value;
+  }
+
+  *nlabels = n; return labels;
 }
 
 #define below 48
@@ -844,33 +920,45 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
 
     /* X-axis */
     {
-      int step;
-      double dstep;
-      double limit;
+      float *labels;
+      unsigned nlabels;
+      float scale;
       char *prefix;
       char text[16];
 
-      dstep = step =
-	axis(secs(p->cols), p->cols / (font_X * 9 / 2), &limit, &prefix);
+      labels = axis(0, secs(p->cols), p->cols, (font_X * 9 / 2),
+                    &nlabels, &scale, &prefix);
       sprintf(text, "Time (%.1ss)", prefix);               /* Axis label */
       print_at(left + (p->cols - font_X * (int)strlen(text)) / 2, 24, Text, text);
-      { int i, di;
-	for (i = 0, di = 0; i <= limit; i += step, di += dstep) {
-	  int x = limit? di / limit * p->cols + .5 : 0;
+      { unsigned i;
+
+	for (i = 0; i < nlabels; i++) {
+          float f = labels[i];
+	  int x = left + (p->cols * f / secs(p->cols));
 	  int y;
 
 	  for (y = 0; y < tick_len; ++y) {                   /* Ticks */
-	    pixel(left-1+x, below-1-y) = Grid;
-	    pixel(left-1+x, below+c_rows+y) = Grid;
+	    pixel(x-1, below-1-y) = Grid;
+	    pixel(x-1, below+c_rows+y) = Grid;
 	  }
-	  if (step == 5 && (i%10))
-	    continue;
-	  sprintf(text, "%g", .1 * di);     /* Tick labels */
-	  x = left + x - 3 * strlen(text);
+          /* Omit labels and just put ticks for 10.5 etc
+           * when the step is 0.5 */
+          if (DELTA_EQ(f/scale - floor(f/scale), 0.5)) {
+            /* Check the step size too */
+            if (i > 0 &&
+                DELTA_EQ(labels[i]/scale - labels[i-1]/scale, 0.5))
+              continue;
+            if (i < nlabels - 1 &&
+                DELTA_EQ(labels[i+1]/scale - labels[i]/scale, 0.5))
+              continue;
+          }
+	  sprintf(text, "%g", f / scale);     /* Labels */
+	  x = x - 3 * strlen(text);
 	  print_at(x, below - 6, Labels, text);
 	  print_at(x, below + c_rows + 14, Labels, text);
 	}
       }
+      free(labels);
 
       /* Y-axis */
       if (p->log10_axis) {
@@ -927,43 +1015,50 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
 	  }
 	}
       } else {
-	/* Linear Y axis ticks and labels */
-	double limit;
-	char *prefix;
+        /* Linear Y axis ticks and labels */
+        float *labels;
+        unsigned nlabels;
+        char *prefix;
+        float scale;
         char text[16]; /* exactly! */
-	int step;
-	double dstep;
 
-	dstep = step = axis(p->high_freq - p->low_freq,
-			    (p->rows - 1) / ((font_y * 3 + 1) >> 1),
-			    &limit, &prefix);
-	sprintf(text, "Frequency (%.1sHz)", prefix);         /* Axis label */
-	print_up(10, below + (c_rows - font_X * (int)strlen(text)) / 2, Text, text);
-	{ int chan;
-	  for (chan = 0; chan < chans; ++chan) {
-	    int base = below + chan * (p->rows + 1);
-	    int i;
-	    double di;
+        labels = axis(p->low_freq, p->high_freq, p->rows, (font_y * 3) / 2,
+                      &nlabels, &scale, &prefix);
+        sprintf(text, "Frequency (%.1sHz)", prefix);         /* Axis label */
+        print_up(10, below + (c_rows - font_X * (int)strlen(text)) / 2, Text, text);
+        { int chan;
+          for (chan = 0; chan < chans; ++chan) {
+            int base = below + chan * (p->rows + (!p->raw && !p->no_axes));
+            unsigned i;
 
-	    for (di = i = 0; i <= limit; i += step, di += dstep) {
-	      int f = p->low_freq/100 + i;       /* Frequency in 100Hz units */
-	      int y = limit ? di / limit * (p->rows - 1) + .5 : 0;
-	      int x;
+            for (i=0; i < nlabels; i++) {
+              float f = labels[i];
+              int y = base + p->rows * (f - p->low_freq)
+                                     / (p->high_freq - p->low_freq);
+              int x;
 
-	      for (x = 0; x < tick_len; ++x) {                 /* Ticks */
-		pixel(left - 1 - x, base + y) = Grid;
-	        pixel(left + p->cols + x, base + y) = Grid;
-	      }
-	      if ((step == 5 && (i % 10)) || (!i && chan && chans > 1))
-		continue;
-
-	      sprintf(text, f?"%5g":"   DC", .1 * f);         /* Tick labels */
-	      print_at(left - 4 - font_X * 5, base + y + 5, Labels, text);
-	      sprintf(text, f?"%g":"DC", .1 * f);
-	      print_at(left + p->cols + 6, base + y + 5, Labels, text);
-	    }
-	  }
-	}
+              for (x = 0; x < tick_len; ++x) {                 /* Ticks */
+                pixel(left - 1 - x, y) = Grid;
+                pixel(left + p->cols + x, y) = Grid;
+              }
+              /* Omit labels and just put ticks for 9.5, 10.5 etc.
+               * when the step is 0.5 */
+              if (DELTA_EQ(f/scale - floor(f/scale), 0.5)) {
+                if (i > 0 &&
+                    DELTA_EQ(labels[i]/scale - labels[i-1]/scale, 0.5))
+                  continue;
+                if (i < nlabels - 1 &&
+                    DELTA_EQ(labels[i+1]/scale - labels[i]/scale, 0.5))
+                  continue;
+              }
+              sprintf(text, f?"%5g":"   DC", f / scale);         /* Labels */
+              print_at(left - 4 - font_X * 5, y + 5, Labels, text);
+              sprintf(text, f?"%g":"DC", f / scale);
+              print_at(left + p->cols + 6, y + 5, Labels, text);
+            }
+          }
+        }
+        free(labels);
       }
     }
 
