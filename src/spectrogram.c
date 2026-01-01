@@ -1214,7 +1214,7 @@ static int stop_spectrogram(sox_effect_t * effp) /* only called, by end(), on fl
 		for (j = 1; j <= 10; j++) {
 		  int y = (log10f((float)(j * f)) - log10_low_freq) * log_scale;
 
-		  if (y > 0 && y < p->rows) {
+		  if (y >= 0 && y < p->rows) {
 		    int x;
 
 		    for (x = 0; x < tick_len; ++x) {
