@@ -959,6 +959,16 @@ static float *linear_axis(float from, float to, float step, unsigned *nlabels)
 #define spectrum_width 14
 #define right 35
 
+/* Code use in several places to draw frequency labels */
+#define frequency_label(y, f)                                       \
+do { char text[16];                                              \
+  if ((y) >= 0 && (y) < p->rows) {                                   \
+    sprintf(text, "%5i", (f));  /* Tick label (left) */            \
+    print_at(left - 4 - font_X * 5, base + (y) + 5, Labels, text); \
+    sprintf(text, "%i",  (f));     /* Tick label (right) */        \
+    print_at(left + p->cols + 6, base + (y) + 5, Labels, text);    \
+  } } while(0)
+
 static int stop_spectrogram(sox_effect_t * effp) /* only called, by end(), on flow 0 */
 {
   priv_t *    p        = (priv_t *) effp->priv;
@@ -1197,18 +1207,9 @@ static int stop_spectrogram(sox_effect_t * effp) /* only called, by end(), on fl
 	    /* Label 10^n decades in view */
 	    for (fi = i = start_decade; i <= end_decade; i++, fi++) {
 	      int f = (int)powf(10.0, fi);
+	      int y = (fi - log10_low_freq) * log_scale;
 
-	      {
-		int y = (fi - log10_low_freq) * log_scale;
-
-		if (y >= 0) {
-		  char text[16];
-		  sprintf(text, "%5i", f);  /* Tick label (left) */
-		  print_at(left - 4 - font_X * 5, base + y + 5, Labels, text);
-		  sprintf(text, "%i",  f);     /* Tick label (right) */
-		  print_at(left + p->cols + 6, base + y + 5, Labels, text);
-		}
-	      }
+              frequency_label(y, f);
 
 	      /* intra-decade tick marks */
 	      {
@@ -1224,6 +1225,28 @@ static int stop_spectrogram(sox_effect_t * effp) /* only called, by end(), on fl
 		      pixel(left - 1 - x, base + y) = Grid;
 		      pixel(left + p->cols + x, base + y) = Grid;
 		    }
+		  }
+		}
+	      }
+	      /* intra-decade labels on every tick or at 2 and 5
+               * depending how close together 9 and 10 are. */
+	      {
+                int y9, y10;
+	        int j, y;
+
+                /* put then on every tick if the distance between 9 and 10
+                 * respects the minimum label spacing, 2 and 5 otherwise */
+                y9  = (log10f((float)( 9 * f)) - log10_low_freq) * log_scale;
+                y10 = (log10f((float)(10 * f)) - log10_low_freq) * log_scale;
+                if (y10 - y9 >= (font_y * 3) / 2) {
+		  for (j = 1; j <= 9; j++) {
+		    y = (log10f((float)(j * f)) - log10_low_freq) * log_scale;
+                    frequency_label(y, j * f);
+                  }
+		} else {
+		  for (j = 2; j <= 5; j+=3) {
+		    y = (log10f((float)(j * f)) - log10_low_freq) * log_scale;
+                    frequency_label(y, j * f);
 		  }
 		}
 	      }
