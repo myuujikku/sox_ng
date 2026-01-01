@@ -20,6 +20,8 @@ New features:
     which is what sndfile-convert calls them
   o Add ffmpeg's "aa", "ea" and "act" formats
   o coreaudio: Allow selection of devices by number as well as by name
+  o spectrogram: Improve labelling of logarithmic axes
+  o spectrogram: Add -i to interpolate between or average frequency bins
   o sox_open_memstream_write(): Work for formats that rewrite the header
   o wavpack: Fix the check for successfully rewriting the file header
 
@@ -34,6 +36,7 @@ Bug fixes:
   o bend: Optimized to be over twice as fast
   o echo/echos: Set the output signal's length
   o pitch: Error about a bad cents value instead of tempo about a bad factor
+  o spectrogram: Fix labelling of linear axes with range
   o stats: Don't report the crest factor in overall JSON stats
   o Don't open files in reverse order, so the first unopenable file is reported
     instead of the last one
