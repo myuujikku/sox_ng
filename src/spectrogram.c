@@ -856,8 +856,10 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
     int chan;
 
     for (chan = 0; chan < chans; ++chan) {
-      float log_scale_factor = (log10_high_freq- log10_low_freq)/(float)p->rows;
-      float lin_scale_factor = (p->high_freq-p->low_freq)/(float)(p->rows);
+      float log_scale_factor = (log10_high_freq - log10_low_freq) /
+                               (float)(p->rows - 1);
+      float lin_scale_factor = (p->high_freq - p->low_freq) /
+                               (float)(p->rows - 1);
       priv_t * q = (priv_t *)(effp - effp->flow + chan)->priv;
       int row, base;
 
@@ -965,7 +967,8 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
 	/* Log Y axis ticks and labels */
 	int start_decade = (int)log10_low_freq;
 	int end_decade = (int)log10_high_freq;
-	float log_scale = (float)p->rows / (log10_high_freq - log10_low_freq);
+	float log_scale = (float)(p->rows - 1) /
+                          (log10_high_freq - log10_low_freq);
 
 	sprintf(text, "Frequency (Hz)");
 	print_up(10, below + (c_rows - font_X * (int)strlen(text)) / 2, Text, text);
