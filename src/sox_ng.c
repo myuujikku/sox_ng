@@ -1419,11 +1419,12 @@ static int update_status(sox_bool all_done, void * client_data)
         if (input_wide_samples == 0 ||
                   read_wide_samples+jump < input_wide_samples) {
           read_wide_samples += jump;
-          sox_seek(files[current_input]->ft, read_wide_samples,
-                   SOX_SEEK_SET);
-          /* FIXME: Do something if seek fails. */
+          if (sox_seek(files[current_input]->ft, read_wide_samples,
+                   SOX_SEEK_SET) != SOX_SUCCESS)
+            lsx_warn("seeking failed");
         }
-      }
+      } else /* FIXME: Seek forward by discarding samples */
+        lsx_warn("this file type is not seekable");
       break;
 
     case '<':
@@ -1432,10 +1433,11 @@ static int update_status(sox_bool all_done, void * client_data)
         uint64_t jump = files[current_input]->ft->signal.rate*30; /* 30 sec. */
         read_wide_samples = jump < read_wide_samples ?
             read_wide_samples-jump : 0;
-        sox_seek(files[current_input]->ft, read_wide_samples,
-                 SOX_SEEK_SET);
-        /* FIXME: Do something if seek fails. */
-      }
+        if (sox_seek(files[current_input]->ft, read_wide_samples,
+                 SOX_SEEK_SET) != SOX_SUCCESS)
+          lsx_warn("seeking failed");
+      } else
+        lsx_warn("this file type is not seekable");
       break;
 
     case 'R':
