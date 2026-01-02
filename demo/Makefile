@@ -1,2 +1,7 @@
+all: soxcopy synth
+
 soxcopy: soxcopy.c
-	$(CC) $(CFLAGS) -o soxcopy soxcopy.c -lsox_ng
+	$(CC) $(CFLAGS) -o $@ $< -lsox_ng
+
+synth: synth.c
+	$(CC) $(CFLAGS) -o $ $@ $< -lsox_ng
