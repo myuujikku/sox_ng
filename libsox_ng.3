@@ -415,6 +415,12 @@ It returns the actual number of samples encoded, zero if an error occurred.
 .ad
 \fBsox_seek()\fR repositions the offset of the file associated with
 \fIformat\fR to the given \fIoffset\fR.
+The \fIoffset\fR is measured in samples, so if you want to seek to
+\fIN\fR seconds, use
+.nh
+\fIN\fR\ \(mu\ \fIformat\fB->signal.rate\fR\ \(mu\ \fIformat\fB->signal.channels\fR.
+.hy
+.SP
 On success, it returns \fBSOX_SUCCESS\fR; \fBSOX_EOF\fR otherwise.
 Since \fBsox_read()\fR and \fBsox_write()\fR carry out complex transformations
 of files' data, its usefulness is questionable.
