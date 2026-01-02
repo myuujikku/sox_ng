@@ -34,7 +34,11 @@ static int startread_ffmpeg(sox_format_t * ft)
 {
   char *quoted_filename;
   char *p, *q;
+#ifndef _WIN32
+  char const * const command_fmt = "exec ffmpeg -loglevel quiet -nostdin -strict -2 -i \"%s\" -f au -";
+#else
   char const * const command_fmt = "ffmpeg -loglevel quiet -nostdin -strict -2 -i \"%s\" -f au -";
+#endif
   char *command;
 
   /* Quote special characters in the filename. */
