@@ -260,6 +260,17 @@ The only way to determine the reason for failure is to store the address of
 a user-defined function in \fBsox_globals.output_message_handler\fR
 (there are examples in \f(CWdemo/soxcopy.c\fR and \f(CWsrc/example3.c\fR)
 otherwise it just prints an error message on the standard error output.
+.SP
+For an infinite amount of zero data (like \fB\-n\fR), use, for example:
+.XE
+.ne 6
+   static sox_signalinfo_t signal;  /* Starts as all zeroes */
+   sox_format_t *in;
+
+   signal.rate = 44100;
+   signal.channels = 2;
+   in = sox_open_read("", &signal, 0, "null", 0, 0);
+.XX
 .TP
 .nh
 .na
@@ -310,6 +321,19 @@ If it is NULL, existing files are overwritten.
 which must be closed with \fBsox_close()\fR, or NULL if it fails.
 Like \fBsox_open_read()\fR, the only way for a program to determine
 the reason for failure is by using the \fBsox_globals.output_message_handler\fR.
+.SP
+To send audio to the line-out socket, use, for example:
+.XE
+.ne 6
+   static sox_signalinfo_t signal;  /* Starts as all zeroes */
+   sox_format_t *out;
+
+   signal.rate = 48000;
+   signal.channels = 1;
+   out = sox_open_write("default", &signal, 0, "alsa", 0, 0);
+.XX
+See \fBsoxformat_ng(7)\fR for other ALSA device names than \f(CW"default"\fR
+and for other audio device drivers and their device names.
 .TP
 .nh
 .na
