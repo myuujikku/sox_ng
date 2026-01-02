@@ -543,8 +543,10 @@ static int start_spectrogram(sox_effect_t * effp)
     if (!duration && effp->in_signal.length != SOX_UNKNOWN_LEN) {
       duration = effp->in_signal.length / (effp->in_signal.rate * effp->in_signal.channels);
       duration -= start_time;
-      if (duration < 0)
-        duration = 0;
+      if (duration <= 0) {
+        lsx_fail("start time is beyond the end of the audio");
+        return SOX_EOF;
+      }
       continue;
     } else if (!p->x_size) {
       p->x_size = 800;
