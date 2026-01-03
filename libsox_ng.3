@@ -388,16 +388,6 @@ there will be a more explicit reason in \fBformat->sox_errstr\fR.
 .TP
 .nh
 .na
-.B size_t sox_read(sox_format_t\ *\fIformat\fB, sox_sample_t\ *\fIbuf\fB, size_t\ \fIlen\fB)
-.ad
-.hy
-\fBsox_read()\fR returns the number of samples successfully read,
-If an error occurs or the end of the file has been reached,
-the return value is zero or \fBSOX_EOF\fR,
-depending on the function.
-.TP
-.nh
-.na
 .B size_t sox_write(sox_format_t\ *\fIformat\fB, sox_sample_t\ *\fIbuf\fB, size_t\ \fIlen\fB)
 .ad
 .hy
