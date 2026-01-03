@@ -256,8 +256,12 @@ if \fIfiletype\fR is NULL and it cannot autodetect the file format,
 if it doesn't have a handler for that format or
 if the handler finds invalid data for the format in question.
 .SP
-The only way to determine the reason for failure is to store the address of
-a user-defined function in \fBsox_globals.output_message_handler\fR
+The reason for failure may be indicated by \fBerrno\fR but it may be zero
+if there was a problem decoding the file's data, in which case
+the only way to find out is to store the address of a user-defined function in
+.nh
+\fBsox_globals.output_message_handler\fR
+.hy
 otherwise it just prints an error message on the standard error output
 (see \fBGLOBALS\fR: output_message_handler).
 .SP
@@ -319,8 +323,9 @@ If it is NULL, existing files are overwritten.
 .SP
 \fBsox_open_write()\fR returns a pointer to a \fIsox_format_t\fR
 which must be closed with \fBsox_close()\fR, or NULL if it fails.
-Like \fBsox_open_read()\fR, the only way for a program to determine
-the reason for failure is the \fBsox_globals.output_message_handler\fR.
+Like \fBsox_open_read()\fR, the reason for failure may be given by \fBerrno\fR
+but if that's zero there's only the \fBsox_globals.output_message_handler\fR.
+It depends how much work you want to do to serenade your users.
 .SP
 To send audio to the line-out socket, use, for example:
 .XE
