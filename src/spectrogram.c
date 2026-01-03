@@ -415,7 +415,7 @@ static sox_bool nearest_p2_dft_size(int size)
    * higher one if it's geometrically closer to the ideal
    * not arithmetically
    */
-  for (distance = 1; ; distance++) {
+  for (distance = 2; ; distance += 2) {  /* dft sizes are always even */
     int upper, lower;
     /*
      * Consider an upper one before a lower one That way, if they are at the
@@ -487,7 +487,8 @@ static int nearest_good_dft_size(int size)
 {
   int distance;
 
-  for (distance = 1; ; distance++) {
+  /* dft sizes calculated always even */
+  for (distance = 2; ; distance += 2) {
     /* We consider the one above to be nearer than one below
      * because the ratio between them is lower. */
     if (is_good_dft_size(size + distance)) return size + distance;
