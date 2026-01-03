@@ -502,27 +502,27 @@ The frequency of A above middle C that is used to convert note names
 into frequencies, usually 440.
 .TP
 .B sox_keymap_t *keymaps
-The array of keymaps you've added.
+The array of keymaps you've added, each containing:
 .RS
 .TP
 .B char *key
-String name of the bound key, like "D".
+String name of the bound key, like "D"
 .TP
 .B char *effect
-Effect whose parameter this changes
+Name of effect whose parameter this changes
 .TP
 .B char  *field
-Parameter changed in the effect's priv_t, by a string of its name
+Name of parameter changed in the effect's priv_t (with underscores, not minuses)
 .TP
 .B char op
-How to adjust the parameter, one of '+', '-', '*', '/' or '='
+How to adjust the parameter, one of '+', '-', '*', '/' and '='
 .TP
 .B double step
-How much to add or subtract, multiply or divide by or set to.
+How much to add or subtract, multiply or divide by or set to
 .RE
 .TP
 .B unsigned keymap_count
-How many key maps have been added, hence how many \fBsox_keymap_t\fRs
+How many key map entries there are
 .RE
 .TP
 .B sox_effects_globals_t\ *sox_effects_globals(void)
@@ -544,7 +544,21 @@ Octave plot
 Gnuplot plot
 .TP
 .B sox_plot_data
-Plot data
+Plot as textual data, e.g.
+.XE
+.ne 11
+   # SoX effect: sinc filter freq=1550-24000
+   # FIR filter
+   # rate: 48000
+   # name: b
+   # type: matrix
+   # rows: 321
+   # columns: 1
+    -5.4186014597620447e-08
+    -7.3103153366770867e-08
+    -8.5021354907586689e-08
+   ...
+.XX
 .RE
 .TP
 .B sox_globals_t *global_info
