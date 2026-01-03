@@ -258,8 +258,8 @@ if the handler finds invalid data for the format in question.
 .SP
 The only way to determine the reason for failure is to store the address of
 a user-defined function in \fBsox_globals.output_message_handler\fR
-(there are examples in \f(CWdemo/soxcopy.c\fR and \f(CWsrc/example3.c\fR)
-otherwise it just prints an error message on the standard error output.
+otherwise it just prints an error message on the standard error output
+(see \fBGLOBALS\fR: output_message_handler).
 .SP
 For an infinite amount of zero data (like \fB\-n\fR), use, for example:
 .XE
@@ -320,7 +320,7 @@ If it is NULL, existing files are overwritten.
 \fBsox_open_write()\fR returns a pointer to a \fIsox_format_t\fR
 which must be closed with \fBsox_close()\fR, or NULL if it fails.
 Like \fBsox_open_read()\fR, the only way for a program to determine
-the reason for failure is by using the \fBsox_globals.output_message_handler\fR.
+the reason for failure is the \fBsox_globals.output_message_handler\fR.
 .SP
 To send audio to the line-out socket, use, for example:
 .XE
@@ -447,41 +447,47 @@ not even another call to \fBsox_close()\fR.
 NULL otherwise.
 .SH GLOBALS
 .TP
-.B sox_effects_globals_t\ *sox_effects_globals(void)
-\fBsox_effects_globals()\fR returns a pointer to the global effect structure
-containing
-.RS
-.TP
-.B sox_plot_t plot
-Whether effects should do a plot, one of:
-.RS
-.TP
-.B sox_plot_off
-No plot = 0
-.TP
-.B sox_plot_octave
-Octave plot
-.TP
-.B sox_plot_gnuplot
-Gnuplot plot
-.TP
-.B sox_plot_data
-Plot data
-.RE
-.TP
-sox_globals_t *global_info
-Pointer to the SoX globals
+.B sox_globals_t *sox_get_globals()
+The global settings, containing:
 .RS
 .TP
 .B char *myname
 The name that the program was invoked as, without any initial directory path.
 .TP
 .B unsigned verbosity
-Messages are only written if globals.verbosity >= message.level.
+Messages are only written by the default output message handler if
+.nh
+\f(CWglobals.verbosity >= message.level\fR where
+.hy
+.RS
+.TP
+1
+Fatal errors
+.TP
+2
+Warnings
+.TP
+3
+Informational messages (\f(CWlsx_report()\fR)
+.TP
+4\-6
+Debug, debug more and debug most.
+.RE
 .TP
 .B sox_output_message_handler_t output_message_handler
 Client-specified message output callback instead of the usual default
-spew-it-to-stderr one.
+spew-it-to-stderr.
+.XE
+   /* Only show failure messages */
+   static void show_fatal(unsigned level, const char *filename,
+                          const char *format, va_list ap)
+   { if (level == 1) { vfprintf(stderr, format, ap);
+                       putc('\en', stderr); } }
+   int main()
+   {
+     if (sox_init()) return 1;
+     sox_get_globals()->output_message_handler = show_fatal;
+.XX
 .TP
 .B sox_bool repeatable
 True if using, or to use pre-determined timestamps and PRNG seed.
@@ -528,6 +534,31 @@ How much to add or subtract, multiply or divide by or set to.
 .B unsigned keymap_count
 How many key maps have been added, hence how many \fBsox_keymap_t\fRs
 .RE
+.TP
+.B sox_effects_globals_t\ *sox_effects_globals(void)
+\fBsox_effects_globals()\fR returns a pointer to the global effect structure
+containing:
+.RS
+.TP
+.B sox_plot_t plot
+Whether effects should do a plot, one of:
+.RS
+.TP
+.B sox_plot_off
+No plot = 0
+.TP
+.B sox_plot_octave
+Octave plot
+.TP
+.B sox_plot_gnuplot
+Gnuplot plot
+.TP
+.B sox_plot_data
+Plot data
+.RE
+.TP
+.B sox_globals_t *global_info
+The same as \fBsox_get_globals()\fR.
 .SH EFFECTS
 .TP
 .nh
