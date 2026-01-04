@@ -574,10 +574,14 @@ it has read all audio data from the input files.
 It can also be terminated earlier by sending it an
 interrupt signal, usually by pressing the
 keyboard interrupt key which is normally Ctrl-C.  This is required
-in some circumstances such as when using SoX to make a recording.
+It is needed when using SoX to make a recording.
+.SP
 When SoX is playing multiple files, Ctrl-C behaves slightly
 differently: pressing it once skips to the next file;
 pressing it twice in quick succession causes SoX to exit.
+However, when playing multiple files decoded with \fBffmpeg\fR,
+this will kill all the pending file reads, resulting in a
+second or so of each \- what each process had already written to its pipe.
 .SP
 Another way to stop processing early is to use an effect that
 has a time period or sample count;

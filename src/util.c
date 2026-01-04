@@ -17,6 +17,7 @@
  */
 
 #include "sox_i.h"
+#include <unistd.h>
 #include <ctype.h>
 
 int lsx_strcasecmp(const char * s1, const char * s2)
@@ -373,4 +374,68 @@ void lsx_close_dllibrary(
     lt_dlexit();
   }
 #endif /* HAVE_LIBLTDL */
+}
+
+/* Our own version of popen() that doesn't use the shell, adapted from
+ * android.googlesource.com/platform/bionic/+/3884bfe/libc/unistd/popen.c
+ * derived from software written by Ken Arnold and published in
+ * UNIX Review, Vol. 6, No. 8.
+ */
+
+FILE * lsx_popen(char ** argv, char * type)
+{
+  FILE *iop;
+  int pdes[2];
+
+  if (*type != 'r' && *type != 'w') {
+    errno = EINVAL;
+    return NULL;
+  }
+  if (pipe(pdes) < 0) {
+    return NULL;
+  }
+  switch (fork()) {
+    int i;
+
+  case -1:      /* Error. */
+    close(pdes[0]);
+    close(pdes[1]);
+    return NULL;
+
+  case 0:        /* Child. */
+    /* Close all other file descriptors except
+     * stdin, in case the input file is "-" and
+     * stderr in case the program spouts errors.
+     * stdout will be closed by dup2().
+     */
+    for (i=3; ; i++) {
+      if (i == pdes[0] || i == pdes[1]) continue;
+      if (close(i) != 0) break;
+    }
+    if (*type == 'r') {
+      close(pdes[0]);
+      if (pdes[1] != 1) {
+        dup2(pdes[1], 1);
+        close(pdes[1]);
+      }
+    } else {
+      close(pdes[1]);
+      if (pdes[0] != 0) {
+        dup2(pdes[0], 0);
+        close(pdes[0]);
+      }
+    }
+    execvp(argv[0], argv);
+    _exit(127);
+    /* NOTREACHED */
+  }
+  /* Parent; assume fdopen can't fail. */
+  if (*type == 'r') {
+    iop = fdopen(pdes[0], type);
+    close(pdes[1]);
+  } else {
+    iop = fdopen(pdes[1], type);
+    close(pdes[0]);
+  }
+  return iop;
 }
