@@ -1451,6 +1451,14 @@ static int update_status(sox_bool all_done, void * client_data)
       user_restart_eff = sox_true;
       break;
 
+    case 'n':
+      user_skip = sox_true;
+      break;
+
+    case 'q': case 27: /* Escape key */
+      user_abort = sox_true;
+      break;
+
     case 'V': adjust_volume(+7); break;
     case 'v': adjust_volume(-7); break;
       break;
