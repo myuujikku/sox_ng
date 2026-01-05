@@ -31,9 +31,9 @@
 .SP
 .fi
 ..
-.TH SoX 7 "November 28, 2024" "soxformat_ng" "Sound eXchange_ng"
+.TH SOXFORMAT_NG 7 "November 28, 2024" "SoX" "Sound eXchange_ng"
 .SH NAME
-SoX \- Sound eXchange_ng, another Swiss Army knife of audio manipulation
+soxformat_ng \- Audio file formats supported by sox_ng and libsox_ng
 .SH DESCRIPTION
 This manual describes the file formats and audio device types supported by SoX;
 the SoX manual set starts with
@@ -66,7 +66,7 @@ and what encodings it can write \- enter something like
 .B \-\-help\-format wav
 or, to see details for all formats,
 .BR \-\-help\-format\ all .
-.SS FORMATS & DEVICE DRIVERS
+.SH FORMATS & DEVICE DRIVERS
 .TP
 \fB.raw\fR (also with \fB\-t sndfile\fR), \
 \fB.f32\fR, \fB.f64\fR, \
@@ -1019,12 +1019,8 @@ although adding write support should not be very difficult.
 .TP
 \fB.xi\fR (with sndfile)
 Fasttracker 2 Extended Instrument format.
-.SH SEE ALSO
-.BR sox_ng (1),
-.BR soxi_ng (1).
-.SP
-The SoX web site at https://codeberg.org/sox_ng
-.SS References
+.ne 3
+.SH REFERENCES
 .TP
 [1]
 Wikipedia,
@@ -1035,6 +1031,10 @@ http://en.wikipedia.org/wiki/M3U
 Wikipedia,
 .IR "PLS" ,
 http://en.wikipedia.org/wiki/PLS_(file_format)
+.ne 2
+.SH SEE ALSO
+.BR sox_ng (1),
+\f(CWhttps://codeberg.org/sox_ng\fR
 .SH AUTHORS
 Lance Norskog, Chris Bagwell and many other authors and contributors
 listed in the README file that is distributed with the source code.
