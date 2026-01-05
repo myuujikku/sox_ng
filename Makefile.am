@@ -25,8 +25,10 @@ RM = rm -f
 
 # man pages are not considered to be sources, so need to add "dist_"
 # prefix to ensure they are added to the distribution.
-dist_man_MANS = sox_ng.1 soxi_ng.1 soxformat_ng.7 libsox_ng.3
+dist_man_MANS = sox_ng.1 soxi_ng.1 soxformat_ng.7 \
+                libsox_ng.3 libsoxeffect_ng.3 libsoxformat_ng.3
 EXTRA_DIST = sox_ng.txt soxi_ng.txt soxformat_ng.txt libsox_ng.txt \
+             libsoxeffect_ng.txt libsoxformat_ng.txt \
 	     CMakeLists.txt sox_ng.pc.in COPYING AUTHORS INSTALL \
 	     README.win32 scripts/batch-example.bat \
 	     README.md RULES.md RULES-issues.md RULES-wiki.md \
@@ -50,7 +52,8 @@ README: README.sh FEATURES.in
 .7.txt:
 	tbl $(srcdir)/$< | LANG=C LC_ALL=C nroff -man -c | sed "s/.//g" > $@
 
-DOCTXT = sox_ng.txt soxi_ng.txt soxformat_ng.txt libsox_ng.txt README
+DOCTXT = sox_ng.txt soxi_ng.txt soxformat_ng.txt \
+         libsox_ng.txt libsoxeffect_ng.txt libsoxformat_ng.txt README
 txt: $(DOCTXT)
 
 # Rule for making PDF man pages
@@ -61,7 +64,8 @@ txt: $(DOCTXT)
 .7.pdf:
 	pdfroff -t -man --no-toc-relocation -Tps $(srcdir)/$< > $@
 
-DOCPDF = sox_ng.pdf soxi_ng.pdf soxformat_ng.pdf libsox_ng.pdf
+DOCPDF = sox_ng.pdf soxi_ng.pdf soxformat_ng.pdf \
+         libsox_ng.pdf libsoxeffect_ng.pdf libsoxformat_ng.pdf
 pdf: $(DOCPDF)
 
 install-pdf: pdf
@@ -105,7 +109,8 @@ FIXHTML = sed 's,<head>,&<link rel="stylesheet" href="http://sox.sourceforge.net
 .7.html:
 	groff -t -man -Thtml -P -Dsoxpng $(srcdir)/$< | $(FIXHTML) > $@
 
-DOCHTML = sox_ng.html soxi_ng.html soxformat_ng.html libsox_ng.html
+DOCHTML = sox_ng.html soxi_ng.html soxformat_ng.html \
+          libsox_ng.html libsoxeffect_ng.html libsoxformat_ng.html
 html: $(DOCHTML)
 
 install-html: html 	 
@@ -145,6 +150,8 @@ install-data-hook:
 	@if test "$(REPLACE)" = "yes"; then \
 		cd $(DESTDIR)$(mandir)/man1 && $(RM) sox.1 && $(LN_S) sox_ng.1 sox.1; \
 		cd $(DESTDIR)$(mandir)/man3 && $(RM) libsox.3 && $(LN_S) libsox_ng.3 libsox.3; \
+		cd $(DESTDIR)$(mandir)/man3 && $(RM) libsoxeffect.3 && $(LN_S) libsoxeffect_ng.3 libsoxeffect.3; \
+		cd $(DESTDIR)$(mandir)/man3 && $(RM) libsoxformat.3 && $(LN_S) libsoxformat_ng.3 libsoxformat.3; \
 		cd $(DESTDIR)$(mandir)/man7 && $(RM) soxformat.7 && $(LN_S) soxformat_ng.7 soxformat.7; \
 		cd $(DESTDIR)$(mandir)/man7 && $(RM) soxeffect.7 && $(LN_S) soxeffect_ng.7 soxeffect.7; \
 		if test "$(PLAYRECLINKS)" = "yes"; then	\
@@ -171,6 +178,8 @@ uninstall-hook:
 	@if test "$(REPLACE)" = "yes"; then \
 		$(RM) $(DESTDIR)$(mandir)/man1/sox.1; \
 		$(RM) $(DESTDIR)$(mandir)/man3/libsox.3; \
+		$(RM) $(DESTDIR)$(mandir)/man3/libsoxeffect.3; \
+		$(RM) $(DESTDIR)$(mandir)/man3/libsoxformat.3; \
 		$(RM) $(DESTDIR)$(mandir)/man7/soxformat.7; \
 		$(RM) $(DESTDIR)$(mandir)/man7/soxeffect.7; \
 		if test "$(PLAYRECLINKS)" = "yes"; then	\

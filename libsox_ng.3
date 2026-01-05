@@ -183,14 +183,6 @@ is a library of sound sample file format readers/writers and sound
 effects processors. It is mainly developed to be used by SoX
 but any audio application might find it useful.
 .P
-This is not really a manual for the libsox_ng API;
-it is an introduction to the basic operations
-for reading and writing audio files and how to use effect chains,
-followed by notes on how to write new format handlers and effects.
-For an exhaustive description of the libsox_ng API see
-.XE
-   http://martinwguy.net/test/soxygen/sox_8h.html
-.XX
 .TP
 .B #include <sox_ng.h>
 Declarations to use all of the below (and a lot more!).
@@ -432,6 +424,21 @@ other than the messages printed to stderr.
 In either case, no further use should be made to the handle,
 not even another call to \fBsox_close()\fR.
 .SH FORMATS
+.P
+The \fBsox_format_t\fR structure contains information about the audio:
+its sampling rate, data size (8, 16 or 32 bits),
+encoding (unsigned, signed, floating point etc.),
+the number of sound channels, whether the sample file needs to be byte-swapped,
+whether \fBsox_seek()\fR will work, the format's possible filename extensions,
+its file stream pointer, a pointer to its \fBsox_format_handler_t\fR
+and the format's private data, a preallocated data array for the
+format handler to use however it wishes.
+.P
+A \fBsox_format_hander_t\fR instead contains information about the
+format handler's characteristics, including the data encodings and
+sample rates it can write and pointers to its internal functions.
+See
+.BR libsoxformat (3).
 .TP
 .nh
 .na
@@ -531,43 +538,8 @@ How many key map entries there are
 .RE
 .TP
 .B sox_effects_globals_t\ *sox_effects_globals(void)
-\fBsox_effects_globals()\fR returns a pointer to the global effect structure
-containing:
-.RS
-.TP
-.B sox_plot_t plot
-Whether effects should do a plot, one of:
-.RS
-.TP
-.B sox_plot_off
-No plot = 0
-.TP
-.B sox_plot_octave
-Octave plot
-.TP
-.B sox_plot_gnuplot
-Gnuplot plot
-.TP
-.B sox_plot_data
-Plot as textual data, e.g.
-.XE
-.ne 11
-   # SoX effect: sinc filter freq=1550-24000
-   # FIR filter
-   # rate: 48000
-   # name: b
-   # type: matrix
-   # rows: 321
-   # columns: 1
-    -5.4186014597620447e-08
-    -7.3103153366770867e-08
-    -8.5021354907586689e-08
-   ...
-.XX
-.RE
-.TP
-.B sox_globals_t *global_info
-The same as \fBsox_get_globals()\fR.
+\fBsox_effects_globals()\fR returns a pointer to the global effect structure.
+See \fBlibsoxeffect_ng(3).
 .SH EFFECTS
 .TP
 .nh
@@ -658,152 +630,6 @@ New formats can often just deal with the header and then use
 \fBexample0.c\fR and \fBexample1.c\fR are a good starting point to see how
 to write applications using \fBlibsox_ng\fR and
 \fBsox_ng.c\fR itself is also a good reference.
-.P
-.SH INTERNALS
-SoX's formats and effects operate with an internal sample format of
-signed 32-bit integers. The data processing routines are called with
-buffers of these samples and buffer sizes which refer to the number
-of samples processed, not the number of bytes. File readers translate
-input samples to signed 32-bit integers and return the number of
-samples read. For example, data in linear signed byte format is
-left-shifted 24 bits.
-.P
-Representing samples as integers can cause problems when processing audio.
-For example, if an effect to mix down left and right channels into one
-monophonic channel were to use the obvious
-.XE
-   *obuf++ = (*ibuf++ + *ibuf++)/2;
-.XX
-distortion may occur since the intermediate addition can overflow 32 bits.
-.XE
-   *obuf++ = *ibuf++/2 + *ibuf++/2;
-.XX
-would get round the overflow but at the expense of the least significant bit.
-.P
-Stereo data is stored with the left and right speaker data
-in successive samples and
-quadraphonic data is stored left front, right front, left rear, right rear.
-.SH FORMATS
-A
-.I format
-is responsible for translating between sound sample files
-and an internal buffer.
-The internal buffer is stored in signed longs with a fixed sampling rate.
-The
-.I format
-operates from two data structures:
-a format structure and a private structure.
-.P
-The format structure contains a list of control parameters for
-the audio: sampling rate, data size (8, 16 or 32 bits),
-encoding (unsigned, signed, floating point etc.),
-and the number of sound channels.
-It also contains other state information: whether the sample file
-needs to be byte-swapped, whether \fBsox_seek()\fR will work, its suffix,
-its file stream pointer, its
-.I format
-pointer and the format's private structure, a preallocated data array for the
-.I format
-to use however it wishes.
-.P
-A
-.I format
-has 6 routines:
-.TP 20
-startread
-Set up the format parameters, read in
-a data header and do anything else that needs to be done.
-.TP 20
-read
-Given a buffer and a length,
-read up to that many samples,
-transform them into signed long integers,
-and copy them into the buffer.
-It returns the number of samples actually read.
-.TP 20
-stopread
-Do what needs to be done when it has finished reading.
-.TP 20
-startwrite
-Set up the format parameters, maybe write out
-a data header and any other preliminaries for writing the format.
-.TP 20
-write
-Given a buffer and a length,
-copy that many samples out of the buffer,
-convert them from signed longs to the appropriate data
-and write them to the file.
-If it can't write out all the samples, it will return
-a lesser number of samples.
-.TP 20
-stopwrite
-Typically, fix up the file header or whatever else needs to be done.
-.SH EFFECTS
-Each effect runs with one input and one output stream.
-An effect's implementation comprises six functions that may be called
-according to the following flow diagram:
-.XE
-LOOP (invocations with different parameters)
-  getopts
-  LOOP (invocations with the same parameters)
-    LOOP (channels)
-      start
-    LOOP (while there is input audio to process)
-      LOOP (channels)
-        flow
-    LOOP (while there is output audio to generate)
-      LOOP (channels)
-        drain
-    LOOP (channels)
-      stop
-  kill
-.XX
-Functions that an effect does not need can be NULL.
-An effect that is marked `MCHAN' does not use the LOOP
-(channels) lines and must perform multiple channel processing
-inside the affected functions. Multiple effect instances may be
-processed in parallel.
-.TP 20
-getopts
-is called with a character string argument list for the effect.
-.TP 20
-start
-is called with the signal parameters for the input and output
-streams.
-.TP 20
-flow
-is called with input and output data buffers,
-and (by reference) the input and output data buffer sizes.
-It processes the input buffer into the output buffer,
-and sets the size variables to the numbers of samples
-actually processed.
-It is under no obligation to read from the input buffer or
-write to the output buffer during the same call. If the
-call returns \fBSOX_EOF\fR, this means
-that the effect will not read any more data and can be used
-to switch to drain mode sooner.
-.TP 20
-drain
-is called when there are no more input data samples.
-If the effect wishes to generate more data samples,
-it copies the generated data into the given buffer
-and returns the number of samples generated.
-If it fills the buffer, it will be called again;
-The \fBecho\fR effect uses this to fade away.
-.TP 20
-stop
-is called when there are no more input samples and no more output
-samples to process.
-It is typically used to close or free resources such as
-memory and temporary files that were allocated during
-.IR start .
-See \fBecho.c\fR for an example.
-.TP 20
-kill
-is called to allow resources allocated by
-.I getopts
-to be released.
-See \fBpad.c\fR for an example.
 .SH LINKING
 How you link against libsox_ng depends on how SoX was
 built on your system. For a static build, just link against the
@@ -829,5 +655,10 @@ The many authors and contributors are listed in the README file that
 is distributed with the source code.
 .SH SEE ALSO
 .BR sox_ng (1),
+.BR libsoxeffect_ng (3),
 .BR soxformat_ng (7),
-\fBsrc/example*.c\fR in the SoX source distribution.
+\f(CWsrc/example*.c\fR and \f(CWdemo/*.c\fR in the SoX source distribution
+and, for an exhaustive description of the libsox_ng API,
+.XE
+   http://martinwguy.net/test/soxygen/sox_8h.html
+.XX
