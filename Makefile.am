@@ -25,10 +25,10 @@ RM = rm -f
 
 # man pages are not considered to be sources, so need to add "dist_"
 # prefix to ensure they are added to the distribution.
-dist_man_MANS = sox_ng.1 soxi_ng.1 soxformat_ng.7 \
+dist_man_MANS = sox_ng.1 soxi_ng.1 soxeffect_ng.7 soxformat_ng.7 \
                 libsox_ng.3 libsoxeffect_ng.3 libsoxformat_ng.3
-EXTRA_DIST = sox_ng.txt soxi_ng.txt soxformat_ng.txt libsox_ng.txt \
-             libsoxeffect_ng.txt libsoxformat_ng.txt \
+EXTRA_DIST = sox_ng.txt soxi_ng.txt soxeffect_ng.txt soxformat_ng.txt \
+             libsox_ng.txt libsoxeffect_ng.txt libsoxformat_ng.txt \
 	     CMakeLists.txt sox_ng.pc.in COPYING AUTHORS INSTALL \
 	     README.win32 scripts/batch-example.bat \
 	     README.md RULES.md RULES-issues.md RULES-wiki.md \
@@ -52,7 +52,7 @@ README: README.sh FEATURES.in
 .7.txt:
 	tbl $(srcdir)/$< | LANG=C LC_ALL=C nroff -man -c | sed "s/.//g" > $@
 
-DOCTXT = sox_ng.txt soxi_ng.txt soxformat_ng.txt \
+DOCTXT = sox_ng.txt soxi_ng.txt soxeffect_ng.txt soxformat_ng.txt \
          libsox_ng.txt libsoxeffect_ng.txt libsoxformat_ng.txt README
 txt: $(DOCTXT)
 
@@ -64,7 +64,7 @@ txt: $(DOCTXT)
 .7.pdf:
 	pdfroff -t -man --no-toc-relocation -Tps $(srcdir)/$< > $@
 
-DOCPDF = sox_ng.pdf soxi_ng.pdf soxformat_ng.pdf \
+DOCPDF = sox_ng.pdf soxi_ng.pdf soxeffect_ng.pdf soxformat_ng.pdf \
          libsox_ng.pdf libsoxeffect_ng.pdf libsoxformat_ng.pdf
 pdf: $(DOCPDF)
 
@@ -109,7 +109,7 @@ FIXHTML = sed 's,<head>,&<link rel="stylesheet" href="http://sox.sourceforge.net
 .7.html:
 	groff -t -man -Thtml -P -Dsoxpng $(srcdir)/$< | $(FIXHTML) > $@
 
-DOCHTML = sox_ng.html soxi_ng.html soxformat_ng.html \
+DOCHTML = sox_ng.html soxi_ng.html soxeffect_ng.html soxformat_ng.html \
           libsox_ng.html libsoxeffect_ng.html libsoxformat_ng.html
 html: $(DOCHTML)
 
@@ -146,14 +146,13 @@ install-data-hook:
 	    cd $(DESTDIR)$(mandir)/man1 && $(RM) play_ng.1 && $(LN_S) sox_ng.1 play_ng.1; \
 	    cd $(DESTDIR)$(mandir)/man1 && $(RM) rec_ng.1 && $(LN_S) sox_ng.1 rec_ng.1; \
 	fi
-	@cd $(DESTDIR)$(mandir)/man7 && $(RM) soxeffect_ng.7 && $(LN_S) ../man1/sox_ng.1 soxeffect_ng.7
 	@if test "$(REPLACE)" = "yes"; then \
 		cd $(DESTDIR)$(mandir)/man1 && $(RM) sox.1 && $(LN_S) sox_ng.1 sox.1; \
 		cd $(DESTDIR)$(mandir)/man3 && $(RM) libsox.3 && $(LN_S) libsox_ng.3 libsox.3; \
 		cd $(DESTDIR)$(mandir)/man3 && $(RM) libsoxeffect.3 && $(LN_S) libsoxeffect_ng.3 libsoxeffect.3; \
 		cd $(DESTDIR)$(mandir)/man3 && $(RM) libsoxformat.3 && $(LN_S) libsoxformat_ng.3 libsoxformat.3; \
-		cd $(DESTDIR)$(mandir)/man7 && $(RM) soxformat.7 && $(LN_S) soxformat_ng.7 soxformat.7; \
 		cd $(DESTDIR)$(mandir)/man7 && $(RM) soxeffect.7 && $(LN_S) soxeffect_ng.7 soxeffect.7; \
+		cd $(DESTDIR)$(mandir)/man7 && $(RM) soxformat.7 && $(LN_S) soxformat_ng.7 soxformat.7; \
 		if test "$(PLAYRECLINKS)" = "yes"; then	\
 			cd $(DESTDIR)$(mandir)/man1 && $(RM) play.1 rec.1 && \
 			    $(LN_S) play_ng.1 play.1 && \
@@ -174,7 +173,6 @@ uninstall-hook:
 		$(RM) $(DESTDIR)$(mandir)/man1/play_ng.1; \
 		$(RM) $(DESTDIR)$(mandir)/man1/rec_ng.1; \
 	fi
-	@$(RM) $(DESTDIR)$(mandir)/man7/soxeffect_ng.7
 	@if test "$(REPLACE)" = "yes"; then \
 		$(RM) $(DESTDIR)$(mandir)/man1/sox.1; \
 		$(RM) $(DESTDIR)$(mandir)/man3/libsox.3; \

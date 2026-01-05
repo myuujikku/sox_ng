@@ -52,6 +52,7 @@ Documentation:
 
   o spectrogram: Improve description of -y and -Y
   o spectrogram: Warn about non-optimal DFT sizes and suggest the nearest one
+  o Move description of effects from sox_ng.1 into soxeffect_ng.7
   o Move internals from libsox_ng.3 into libsoxeffect_ng.3 and libsoxformat_ng.3
 
 Internal:
