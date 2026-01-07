@@ -1,26 +1,24 @@
-/* ****************************************************************************
-//
-// Center Cut GUI 1.4.0
-// Copyright (C) 2006-2007  Moitah (moitah@yahoo.com)
-//
-// Translated from C# to C and adapted to SoX
-// by Martin Guy <martinwguy@gmail.com>
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//
-// ***************************************************************************/
+/*
+ * Center Cut 1.4.0
+ * Copyright (C) 2006-2007  Moitah (moitah@yahoo.com)
+ *
+ * Translated from C# to C and adapted to SoX
+ * by Martin Guy <martinwguy@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 
 #include "sox_i.h"
 
@@ -196,15 +194,15 @@ static void CenterCut_Init(sox_effect_t *effp) {
   scale = (1.0 / (double)kWindowSize) * (2.0 / (double)kOverlapCount) * 0.5 * ccscale;
   for (i = 0; i < kWindowSize; i++) {
     /* The correct Hartley<->FFT conversion is:
-    //
-    //  Fr(i) = 0.5(Hr(i) + Hi(i))
-    //  Fi(i) = 0.5(Hr(i) - Hi(i))
-    //
-    // We omit the 0.5 in both the forward and reverse directions,
-    // so we have a 0.25 to put here.  On the other hand, we are
-    // using a raised cosine window with 1/4 step instead of a 1/2
-    // step, which gives us a 2.0 factor.  So we only need 0.5. */
-
+     *
+     *  Fr(i) = 0.5(Hr(i) + Hi(i))
+     *  Fi(i) = 0.5(Hr(i) - Hi(i))
+     *
+     * We omit the 0.5 in both the forward and reverse directions,
+     * so we have a 0.25 to put here.  On the other hand, we are
+     * using a raised cosine window with 1/4 step instead of a 1/2
+     * step, which gives us a 2.0 factor.  So we only need 0.5.
+     */
     mPreWindow[i] = window[mBitRev[i]] * scale;
   }
 
