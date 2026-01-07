@@ -153,13 +153,30 @@ to be released.
 .TP
 .B get
 is used by the \fBkeymap\fR mechanism to read the value of one of the
-effect's parameters from its \fBpriv_t\fR and
+effect's parameters from its \fBpriv_t\fR, returned as a string
+formatted with \fBsprintf\fR in \f(CW"%g"\fR format
+in mallocked memory that it is the caller's responsibility to free,
+or NULL if there is no such readable parameter.
 .TP
 .B set
 is used to set a parameter's value. The \fIname\fR of the parameter
 should match what it is called in the effect's \fBusage\fR string
-but with underscores instead of hyphens and numerical values
-are passed as strings in \fBprintf(3)\fR's \fB%g\fR format.
+but with underscores instead of hyphens. and numerical values
+are passed as numeric strings (\fBsprintf(3)\fR's \f(CW%g\fR format
+is recommended).
+.SP
+It returns a mallocked string version of the value that was actually set
+and which it is the caller's rsponsibility to free.
+The return values are sprintfed with \f(CW"%g"\fR so, if the caller does
+the same it can \fBstrcmp()\fR the strings to see it it was set to the
+requested value or something different, which happens if the specified value
+is outside the parameter's range, in which case the maximum or minimum is set.
+It returns NULL is there is not a settable field of that name
+or if the value is garbage.
+.PP
+Effects that can have multiple stages, like \fBecho\fR and \fBchorus\fR,
+accept field names like \fBdecay2\fR to adjust only the \fBdecay\fR of
+the second stage; otherwise the parameter is changed in all of its stages.
 .SH FLAGS
 The \fBflags\fR field tell SoX more about how the effect behaves.
 It is the logical OR of a number of bits:

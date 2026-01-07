@@ -24,7 +24,8 @@
  *
  * The string values are mallocked memory which we are responsible for freeing.
  * The effect name may be "synth2" meaning "only tweak the second synth effect
- * in the effects chain".
+ * in the effects chain" and a field name like "decay2" means "only change the
+ * "decay" field of the second delay/decay pair of the effect.
  */
 void
 sox_keymap_add(char *key, char *effect, char *field, char op, double step)
