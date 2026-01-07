@@ -1270,8 +1270,8 @@ function.
 typedef struct sox_version_info {
     size_t       size;         /**< structure size = sizeof(sox_version_info_t) */
     sox_version_flags_t flags; /**< feature flags = popen | magic | threads | memopen */
-    sox_uint32_t version_code; /**< version number = 0x140400 */
-    char const * version;      /**< version string = sox_version(), for example, "14.4.0" */
+    sox_uint32_t version_code; /**< version number = 0x0E0402 */
+    char const * version;      /**< version string = sox_version(), for example, "14.4.2" */
     char const * version_extra;/**< version extra info or null = "PACKAGE_EXTRA", for example, "beta" */
     char const * distro;       /**< distro or null = "DISTRO", for example, "Debian" */
     char const * compiler;     /**< compiler info or null, for example, "msvc 160040219" */
