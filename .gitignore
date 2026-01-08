@@ -18,9 +18,10 @@
 /ltmain.sh
 /sox_ng-*.tar.gz
 /libsox_ng.txt
+/soxeffect_ng.txt
+/soxformat_ng.txt
 /libsoxeffect_ng.txt
 /libsoxformat_ng.txt
-/soxformat_ng.txt
 /soxi_ng.txt
 /sox_ng.txt
 /sox_ng.pc
