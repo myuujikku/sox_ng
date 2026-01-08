@@ -155,6 +155,8 @@ sox_get_effects_globals(void)
 
 char const * sox_strerror(int sox_errno)
 {
+  /* The order of the entries must correspond to the order of
+   * the entries in enum sox_error_t */
   static char const * const errors[] = {
     "Invalid Audio Header",
     "Unsupported data format",
@@ -162,6 +164,8 @@ char const * sox_strerror(int sox_errno)
     "Operation not permitted",
     "Operation not supported",
     "Invalid argument",
+    "No such keymap",
+    "No such effect",
   };
   if (sox_errno < SOX_EHDR)
     return strerror(sox_errno);
