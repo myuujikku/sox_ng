@@ -52,7 +52,7 @@ static int seek(sox_format_t *ft, sox_uint64_t offset);
 
 sox_format_handler_t const *lsx_whatever_format_fn(void)
 {
-  static char const description[] = "Whatever format, used by Whatever toys";
+  static char const description[] = "Whatever format";
   static char const * const names = { "wvr", NULL };
   static unsigned const write_encodings[] = {
     SOX_ENCODING_*, \fR{\fP\fIbitwidth\fP,\fR}\fP 0,
@@ -84,8 +84,8 @@ in successive samples and
 quadraphonic data is stored left front, right front, left rear, right rear.
 .P
 A format handler is responsible for translating between sound sample files
-and an internal buffer.
-The internal buffer is stored in signed longs with a fixed sampling rate.
+and an internal buffer in which sound data is stored as signed 32-bit integers
+with a fixed sampling rate.
 .XE
 .ne 5
 struct sox_format_handler {
@@ -106,105 +106,84 @@ struct sox_format_handler {
 };
 .XX
 .TP
-.B sox_lib_version_code
+.B sox_uint32_t sox_lib_version_code
 Checked when format plugins are loaded to ensure they were compiled
 for the same version of libsox that is calling them.
 .TP
-.B description
+.B char *description
 A short description of the format, printed by \fBsox_ng\ --help-format\fR.
 .TP
-.B names
+.B char **names
 A null-terminated array of filename extensions (without the dot) that
 are handled by this format.
 .TP
-.B flags
+.B unsigned int flags
 The logical OR of:
+.sp .5
 .RS
-.TP
-.B SOX_FILE_NOSTDIO
-The handler does not use stdio routines.
-.TP
-.B SOX_FILE_DEVICE
-File is an audio device.
-.TP
-.B SOX_FILE_PHONY
-Phony file/device (for example /dev/null).
-.TP
-.B SOX_FILE_REWIND
-File should be rewound to write its header.
-.TP
-.B SOX_FILE_BIT_REV
-Are data in the file bit-reversed?
-.TP
-.B SOX_FILE_NIB_REV
-Are data in the file nibble-reversed?
-.TP
-.B SOX_FILE_ENDIAN
-Are data in file format endian?
-.TP
-.B SOX_FILE_ENDBIG
-For endian file formats, is it big endian?
-.TP
-.B SOX_FILE_MONO
-Do channel restrictions allow mono?
-.TP
-.B SOX_FILE_STEREO
-Do channel restrictions allow stereo?
-.TP
-.B SOX_FILE_QUAD
-Do channel restrictions allow quad?
-.PP
-.ne 3
-There are two convenience macros:
-.TP
-.B SOX_FILE_LIT_END
-The file is little-endian.
-.TP
-.B SOX_FILE_BIG_END
-The file is big-endian.
-.PP
-.ne 4
-and a bit mask is defined:
-.TP
-.B ft->flags & SOX_FILE_CHANS
-to interrogate restrictions on the number of channels.
-If this is 0, it can handle any number of channels.
+.TS
+lB l.
+SOX_FILE_NOSTDIO	The handler does not use stdio routines
+SOX_FILE_DEVICE	The file is an audio device
+SOX_FILE_PHONY	Phony file/device (for example /dev/null)
+SOX_FILE_REWIND	File should be rewound to write header
+SOX_FILE_BIT_REV	Is the file bit-reversed?
+SOX_FILE_NIB_REV	Is the file nibble-reversed?
+SOX_FILE_ENDIAN	Is the file format endian?
+SOX_FILE_ENDBIG	For an endian file format, is it big endian?
+SOX_FILE_MONO	Do channel restrictions allow mono?
+SOX_FILE_STEREO	Do channel restrictions allow stereo?
+SOX_FILE_QUAD	Do channel restrictions allow quad?
+SOX_FILE_LIT_END	A mask to OR in if the file is little-endian
+SOX_FILE_BIG_END	A mask to OR in if the file is big-endian
+SOX_FILE_CHANS	T{
+A mask to interrogate channels restrictions.
+If \fBflags\ &\ SOX_FILE_CHANS\fR is 0, there are no restrictions
+T}
+.TE
 .RE
 .TP
-.B startread
+.B int (*startread)(sox_format_t *\fIfp\fP)
 A function to set up the format parameters, read in a data header and
 do anything else that needs to be done before decoding data.
 It returns \fBSOX_SUCCESS\fR if all went well,
 or a non-zero value if there was some problem with the file,
 in which case \fBread\fR and \fBstopread\fR will not be called.
+.SP
+At exit from \fBstartread\fP, \fBsox_format_t.signal\fP should be
+completely filled in, using either data from the file's headers (if available)
+or whatever the format is guessing/assuming if header data is not available.
 .TP
-.B read
+.B size_t (*read)(sox_format_t *\fIft\fP, sox_sample_t *\fIbuf\fP, size_t \fIlen\fP)
 Given a buffer and a length, read up to that many samples,
 transform them into signed long integers and copy them into the buffer.
 It returns the number of samples actually read.
 .TP
-.B stopread
-Do what needs to be done when it has finished reading.
+.B int (*stopread)(sox_format_t *\fIft\fP)
+Does what needs to be done when it has finished reading.
 .TP
-.B startwrite
+.B int (*startwrite)(sox_format_t *\fIft\fP)
 Set up the format parameters, maybe write out a data header,
 and any other preliminaries for encoding the format.
 It returns \fBSOX_SUCCESS\fR if all went well,
 or a non-zero value if there was some problem,
 in which case \fBwrite\fR and \fBstopwrite\fR will not be called.
+.SP
+At exit from \fBstartwrite\fP, \fBsox_format_t.signal\fP should be
+completely filled in, using either the data that was specified, or
+values chosen by the format based on the format's defaults or capabilities.
 .TP
-.B write
+.B size_t (*write)(sox_format_t *\fIft\fP, sox_sample_t *\fIbuf\fP, size_t \fIlen\fP)
 Given a buffer and a length, copy that many samples out of the buffer,
-convert them from signed longs to the appropriate data
+convert them from signed longs to the appropriate data types
 and write them to the file.
-If it can't write out all the samples, it will return
-a lesser number of samples.
+If it can't write all the samples out, it returns a lesser number of samples.
 .TP
-.B stopwrite
+.B int (*stopwrite)(sox_format_t *\fIft\fP)
 Fix up the file header or whatever else needs to be done
 before closing the file.
 .TP
-.B write_formats
+.B unsigned *write_formats
 An array of values indicating the encodings and precisions supported for
 writing (encoding). Precisions are specified with default precision first,
 and with 0 and repeat, and list ends with with one more 0.
@@ -219,11 +198,11 @@ with a default of 16, and 8-bit unsigned:
      0 };
 .XX
 .TP
-.B write_rates
+.B sox_rate_t *write_rates
 An zero-terminated array of sample rates that are supported for writing,
 NULL if all rates are supported.
 .TP
-.B priv_size
+.B size_t priv_size
 The size of the format's \fBpriv_t\fR.
 SoX automatically allocates a buffer in which the handler can store
 its private data, of which the size is specified here.
@@ -232,7 +211,13 @@ The buffer is allocated and zeroed before the call to
 \fBstartread\fR/\fBstartwrite\fR,
 is freed after the call to \fBstopread\fR/\fBstopwrite\fR
 and is provided via \fBft->priv\fR in each call to the handler's functions.
+.SH EXAMPLES
+The SoX source code includes a skeleton C file to assist you in writing new
+formats (\fBsrc/skelform.c\fR).
+New formats can often just deal with the header and then use
+\fBraw.c\fR's routines for reading and writing.
 .SH SEE ALSO
 .BR sox_ng (1),
 .BR libsox_ng (3),
+.BR soxformat_ng (7) and
 \f(CWsrc/skelform.c\fR in the SoX source code.

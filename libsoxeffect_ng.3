@@ -105,7 +105,9 @@ according to the following pseudocode:
          stop
      kill
 .XX
-Any function that an effect does not need can be NULL.
+Any function that an effect does not need can be NULL and
+any missing methods are automatically set to the appropriate
+\fBnothing\fR method.
 .TP
 .B getopts
 is called once when the effect is created, with an argv-like array
@@ -251,4 +253,5 @@ the SoX command-line tools. It applies to \fBinput\fR and \fBoutput\fR.
 .SH SEE ALSO
 .BR sox_ng (1),
 .BR libsox_ng (3),
+.BR soxeffect_ng (7) and
 \f(CWsrc/skeleff.c\fR in the SoX source code.

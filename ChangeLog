@@ -50,6 +50,9 @@ Bug fixes:
 
 Documentation:
 
+  o libsox_ng.3 is completely rewritten
+  o The effects descriptions have moved from sox_ng.1 to soxeffect.7
+  o There are new manual pages libsoxeffects.3 and libsoxformats_ng.3
   o spectrogram: Improve description of -y and -Y
   o spectrogram: Warn about non-optimal DFT sizes and suggest the nearest one
   o Move description of effects from sox_ng.1 into soxeffect_ng.7
