@@ -656,9 +656,11 @@ static int combiner_stop(sox_effect_t *effp)
 static sox_effect_handler_t const * input_combiner_effect_fn(void)
 {
   static sox_effect_handler_t handler = {
-    "input", NULL, NULL, SOX_EFF_MCHAN |
+    "input", NULL, SOX_EFF_MCHAN |
     SOX_EFF_MODIFY, 0, combiner_start, 0, combiner_drain,
-    combiner_stop, 0, sizeof(input_combiner_t)
+    combiner_stop, 0,
+    sizeof(input_combiner_t),
+    NULL,
   };
   return &handler;
 }
@@ -703,9 +705,10 @@ static int output_flow(sox_effect_t UNUSED *effp, sox_sample_t const * ibuf,
 
 static sox_effect_handler_t const * output_effect_fn(void)
 {
-  static sox_effect_handler_t handler = {"output", NULL, NULL,
+  static sox_effect_handler_t handler = {"output", NULL,
     SOX_EFF_MCHAN | SOX_EFF_MODIFY | SOX_EFF_PREC,
-    NULL, ostart, output_flow, NULL, NULL, NULL, 0
+    NULL, ostart, output_flow, NULL, NULL, NULL,
+    0, NULL,
   };
   return &handler;
 }

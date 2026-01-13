@@ -1150,8 +1150,10 @@ const sox_effect_handler_t *lsx_sdm_effect_fn(void)
     NULL
   };
   static sox_effect_handler_t handler = {
-    "sdm", "[-f filter] [-t order] [-n num] [-l latency]", extra_usage,
-    SOX_EFF_PREC, getopts, start, flow, drain, stop, 0, sizeof(sdm_effect_t),
+    "sdm", "[-f filter] [-t order] [-n num] [-l latency]",
+    SOX_EFF_PREC, getopts, start, flow, drain, stop, 0,
+    sizeof(sdm_effect_t),
+    extra_usage,
   };
   return &handler;
 }

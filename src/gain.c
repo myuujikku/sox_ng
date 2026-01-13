@@ -245,10 +245,13 @@ sox_effect_handler_t const * lsx_gain_effect_fn(void)
     NULL
   };
   static sox_effect_handler_t handler = {
-    "gain", usage, extra_usage, SOX_EFF_GAIN,
-    create, start, flow, drain, stop, NULL, sizeof(priv_t)};
+    "gain", usage, SOX_EFF_GAIN,
+    create, start, flow, drain, stop, NULL,
+    sizeof(priv_t),
+    extra_usage,
+  };
 
-    return &handler;
+  return &handler;
 }
 
 /*------------------ emulation of the old `normalise' effect -----------------*/

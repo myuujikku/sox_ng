@@ -69,7 +69,10 @@ static int flow(sox_effect_t * effp, const sox_sample_t * ibuf,
 sox_effect_handler_t const * lsx_overdrive_effect_fn(void)
 {
   static sox_effect_handler_t handler = {
-    "overdrive", "[gain(20) [colour(20)]]", NULL,
-    SOX_EFF_GAIN, create, start, flow, NULL, NULL, NULL, sizeof(priv_t)};
+    "overdrive", "[gain(20) [color(20)]]", SOX_EFF_GAIN,
+    create, start, flow, NULL, NULL, NULL,
+    sizeof(priv_t),
+    NULL,
+  };
   return &handler;
 }

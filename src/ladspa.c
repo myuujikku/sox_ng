@@ -541,7 +541,7 @@ static char const * const extra_usage[] = {
 
 static sox_effect_handler_t sox_ladspa_effect = {
   "ladspa",
-  "[-l] [-r] module [plugin] {argument}", extra_usage,
+  "[-l] [-r] module [plugin] {argument}",
   SOX_EFF_MCHAN | SOX_EFF_CHAN | SOX_EFF_GAIN,
   sox_ladspa_getopts,
   sox_ladspa_start,
@@ -549,7 +549,8 @@ static sox_effect_handler_t sox_ladspa_effect = {
   sox_ladspa_drain,
   sox_ladspa_stop,
   sox_ladspa_kill,
-  sizeof(priv_t)
+  sizeof(priv_t),
+  extra_usage,
 };
 
 const sox_effect_handler_t *lsx_ladspa_effect_fn(void)
