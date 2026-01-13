@@ -126,9 +126,9 @@ sox_effect_handler_t const * lsx_overdrive_effect_fn(void)
     NULL
   };
   static sox_effect_handler_t handler = {
-    "overdrive", usage, extra_usage, SOX_EFF_GAIN,
+    "overdrive", usage, SOX_EFF_GAIN,
     create_overdrive, start_overdrive, flow_overdrive, NULL, NULL, NULL,
-    sizeof(priv_t), get_overdrive, set_overdrive,
+    sizeof(priv_t), extra_usage, get_overdrive, set_overdrive,
   };
   return &handler;
 }

@@ -1445,10 +1445,10 @@ sox_effect_handler_t const * lsx_spectrogram_effect_fn(void)
     NULL
   };
   static sox_effect_handler_t handler = {
-    "spectrogram", usage, extra_usage, SOX_EFF_MODIFY,
+    "spectrogram", usage, SOX_EFF_MODIFY,
     getopts_spectrogram, start_spectrogram, flow_spectrogram,
     drain_spectrogram, stop_spectrogram, NULL,
-    sizeof(priv_t), NULL, NULL,
+    sizeof(priv_t), extra_usage, NULL, NULL,
   };
 
   return &handler;

@@ -339,7 +339,7 @@ static int sox_noisered_stop(sox_effect_t * effp)
 
 static sox_effect_handler_t sox_noisered_effect = {
   "noisered",
-  "[profile-file(-) [amount(0.5)]]", NULL,
+  "[profile-file(-) [amount(0.5)]]",
   SOX_EFF_MCHAN|SOX_EFF_LENGTH,
   sox_noisered_getopts,
   sox_noisered_start,
@@ -348,6 +348,7 @@ static sox_effect_handler_t sox_noisered_effect = {
   sox_noisered_stop,
   NULL,
   sizeof(priv_t),
+  NULL,
   NULL,
   NULL,
 };

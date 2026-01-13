@@ -185,7 +185,7 @@ static char const * const extra_usage[] = {
 
 static sox_effect_handler_t sox_dcshift_effect = {
    "dcshift",
-   usage, extra_usage,
+   usage,
    SOX_EFF_MCHAN | SOX_EFF_GAIN,
    sox_dcshift_getopts,
    sox_dcshift_start,
@@ -194,6 +194,7 @@ static sox_effect_handler_t sox_dcshift_effect = {
    sox_dcshift_stop,
    NULL,
    sizeof(priv_t),
+   extra_usage,
    NULL,
    NULL,
 };

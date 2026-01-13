@@ -238,9 +238,9 @@ sox_effect_handler_t const * lsx_vol_effect_fn(void)
   };
 
   static sox_effect_handler_t handler = {
-    "vol", usage, extra_usage, SOX_EFF_MCHAN | SOX_EFF_GAIN,
+    "vol", usage, SOX_EFF_MCHAN | SOX_EFF_GAIN,
     getopts_vol, start_vol, flow_vol, NULL, stop_vol, NULL,
-    sizeof(priv_t), get_vol, set_vol,
+    sizeof(priv_t), extra_usage, get_vol, set_vol,
   };
   return &handler;
 }

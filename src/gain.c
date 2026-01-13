@@ -245,9 +245,9 @@ sox_effect_handler_t const * lsx_gain_effect_fn(void)
     NULL
   };
   static sox_effect_handler_t handler = {
-    "gain", usage, extra_usage, SOX_EFF_GAIN,
+    "gain", usage, SOX_EFF_GAIN,
     create_gain, start_gain, flow_gain, drain_gain, stop_gain, NULL,
-    sizeof(priv_t), NULL, NULL,
+    sizeof(priv_t), extra_usage, NULL, NULL,
   };
 
   return &handler;

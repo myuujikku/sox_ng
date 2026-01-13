@@ -240,9 +240,9 @@ const sox_effect_handler_t *lsx_softvol_effect_fn(void)
     NULL
   };
   static sox_effect_handler_t handler = {
-    "softvol", usage, extra_usage, SOX_EFF_MCHAN | SOX_EFF_GAIN,
+    "softvol", usage, SOX_EFF_MCHAN | SOX_EFF_GAIN,
     getopts_softvol, start_softvol, flow_softvol, drain_softvol, NULL, NULL,
-    sizeof(priv_t), get_softvol, set_softvol,
+    sizeof(priv_t), extra_usage, get_softvol, set_softvol,
   };
   return &handler;
 }

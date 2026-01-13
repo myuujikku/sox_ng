@@ -1604,7 +1604,6 @@ Effect handler information.
 struct sox_effect_handler {
   char const * name;  /**< Effect name */
   char const * usage; /**< Short explanation of parameters accepted by effect */
-  char const * const * extra_usage;           /**< Additional lines of usage */
   unsigned int flags; /**< Combination of SOX_EFF_* flags */
   sox_effect_handler_getopts getopts; /**< Called to parse command-line arguments (called once per effect). */
   sox_effect_handler_start start;     /**< Called to initialize effect (called once per flow). */
@@ -1619,6 +1618,7 @@ struct sox_effect_handler {
    * the layers of pointer functions and end up cocooned in them but hey.
    * You should have put it first, folks.
    */
+  char const * const * extra_usage;           /**< Additional lines of usage */
   sox_effect_handler_get get;         /**< Called to read the value of a parameter */
   sox_effect_handler_set set;         /**< Called to change the value of a parameter */
 };

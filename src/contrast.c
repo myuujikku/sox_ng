@@ -82,9 +82,10 @@ sox_effect_handler_t const * lsx_contrast_effect_fn(void)
     NULL
   };
   static sox_effect_handler_t handler = {
-    "contrast", "[amount]", extra_usage,
+    "contrast", "[amount]",
     0, create_contrast, NULL, flow_contrast, NULL, NULL, NULL,
-    sizeof(priv_t), get_contrast, set_contrast,
+    sizeof(priv_t),
+    extra_usage, get_contrast, set_contrast,
   };
   return &handler;
 }

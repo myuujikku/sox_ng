@@ -457,7 +457,7 @@ static char const * const extra_usage[] = {
 
 static sox_effect_handler_t sox_stat_effect = {
   "stat",
-  usage, extra_usage,
+  usage,
   SOX_EFF_MCHAN | SOX_EFF_MODIFY,
   sox_stat_getopts,
   sox_stat_start,
@@ -466,6 +466,7 @@ static sox_effect_handler_t sox_stat_effect = {
   sox_stat_stop,
   NULL,
   sizeof(priv_t),
+  extra_usage,
   NULL,
   NULL,
 };

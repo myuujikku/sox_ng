@@ -717,7 +717,7 @@ static char const * const extra_usage[] = {
 };
 static sox_effect_handler_t sox_silence_effect = {
   "silence",
-  usage, extra_usage,
+  usage,
   SOX_EFF_MCHAN | SOX_EFF_MODIFY | SOX_EFF_LENGTH,
   sox_silence_getopts,
   sox_silence_start,
@@ -726,6 +726,7 @@ static sox_effect_handler_t sox_silence_effect = {
   sox_silence_stop,
   lsx_kill,
   sizeof(priv_t),
+  extra_usage,
   NULL,
   NULL,
 };
