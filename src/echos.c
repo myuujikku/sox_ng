@@ -262,10 +262,11 @@ const sox_effect_handler_t *lsx_echos_effect_fn(void)
   };
 
   static sox_effect_handler_t handler = {
-    "echos", usage, extra_usage, SOX_EFF_LENGTH | SOX_EFF_GAIN,
+    "echos", usage, SOX_EFF_LENGTH | SOX_EFF_GAIN,
     echos_getopts,
     echos_start, echos_flow, echos_drain, echos_stop, echos_kill,
-    sizeof(priv_t)
+    sizeof(priv_t),
+    extra_usage,
   };
 
   return &handler;

@@ -1147,9 +1147,10 @@ const sox_effect_handler_t *lsx_sdm_effect_fn(void)
     NULL
   };
   static sox_effect_handler_t handler = {
-    "sdm", usage, extra_usage, SOX_EFF_PREC,
+    "sdm", usage, SOX_EFF_PREC,
     getopts_sdm, start_sdm, flow_sdm, drain_sdm, stop_sdm, NULL,
     sizeof(sdm_effect_t),
+    extra_usage,
   };
   return &handler;
 }

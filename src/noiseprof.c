@@ -207,14 +207,15 @@ static int sox_noiseprof_stop(sox_effect_t * effp)
 
 static sox_effect_handler_t sox_noiseprof_effect = {
   "noiseprof",
-  "[profile-file(-)]", NULL,
+  "[profile-file(-)]",
   SOX_EFF_MCHAN | SOX_EFF_MODIFY,
   sox_noiseprof_getopts,
   sox_noiseprof_start,
   sox_noiseprof_flow,
   sox_noiseprof_drain,
   sox_noiseprof_stop,
-  NULL, sizeof(priv_t)
+  NULL, sizeof(priv_t),
+  NULL,
 };
 
 const sox_effect_handler_t *lsx_noiseprof_effect_fn(void)
