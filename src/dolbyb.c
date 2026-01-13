@@ -175,8 +175,10 @@ const sox_effect_handler_t *lsx_dolbyb_effect_fn(void)
     NULL
   };
   static sox_effect_handler_t sox_dolbyb_effect = {
-    "dolbyb", usage, extra_usage, SOX_EFF_MCHAN,
-    init, start, flow, drain, stop, lsx_kill, sizeof(priv_t)
+    "dolbyb", usage, SOX_EFF_MCHAN,
+    init, start, flow, drain, stop, lsx_kill,
+    sizeof(priv_t),
+    extra_usage,
   };
   return &sox_dolbyb_effect;
 }

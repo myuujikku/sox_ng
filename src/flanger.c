@@ -278,8 +278,11 @@ sox_effect_handler_t const * lsx_flanger_effect_fn(void)
   };
 
   static sox_effect_handler_t handler = {
-    "flanger", usage, extra_usage, SOX_EFF_MCHAN,
-    getopts, start, flow, NULL, stop, NULL, sizeof(priv_t)};
+    "flanger", usage, SOX_EFF_MCHAN,
+    getopts, start, flow, NULL, stop, NULL,
+    sizeof(priv_t),
+    extra_usage,
+  };
 
   return &handler;
 }

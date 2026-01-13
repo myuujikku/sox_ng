@@ -186,10 +186,11 @@ static int lsx_kill(sox_effect_t *effp)
 sox_effect_handler_t const *lsx_trim_effect_fn(void)
 {
   static sox_effect_handler_t handler = {
-    "trim", "{position(+)}", NULL,
+    "trim", "{position(+)}",
     SOX_EFF_MCHAN | SOX_EFF_LENGTH | SOX_EFF_MODIFY,
     parse, start, flow, drain, NULL, lsx_kill,
-    sizeof(priv_t)
+    sizeof(priv_t),
+    NULL,
   };
   return &handler;
 }

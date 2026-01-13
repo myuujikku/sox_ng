@@ -202,9 +202,11 @@ sox_effect_handler_t const * lsx_remix_effect_fn(void)
     NULL
   };
   static sox_effect_handler_t handler = {
-    "remix", usage, extra_usage,
+    "remix", usage,
     SOX_EFF_MCHAN | SOX_EFF_CHAN | SOX_EFF_GAIN | SOX_EFF_PREC,
-    create, start, flow, NULL, NULL, closedown, sizeof(priv_t)
+    create, start, flow, NULL, NULL, closedown,
+    sizeof(priv_t),
+    extra_usage,
   };
   return &handler;
 }

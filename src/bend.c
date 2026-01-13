@@ -332,8 +332,10 @@ static char const * const extra_usage[] = {
 sox_effect_handler_t const *lsx_bend_effect_fn(void)
 {
   static sox_effect_handler_t handler = {
-    "bend", usage, extra_usage, 0,
-    create, start, flow, NULL, stop, lsx_kill, sizeof(priv_t)
+    "bend", usage, 0,
+    create, start, flow, NULL, stop, lsx_kill,
+    sizeof(priv_t),
+    extra_usage,
   };
   return &handler;
 }

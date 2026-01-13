@@ -325,9 +325,11 @@ const sox_effect_handler_t *lsx_stretch_effect_fn(void)
   };
 
   static const sox_effect_handler_t handler = {
-    "stretch", usage, extra_usage,
+    "stretch", usage,
     SOX_EFF_LENGTH,
-    getopts, start, flow, drain, stop, NULL, sizeof(priv_t)
+    getopts, start, flow, drain, stop, NULL,
+    sizeof(priv_t),
+    extra_usage,
   };
   return &handler;
 }

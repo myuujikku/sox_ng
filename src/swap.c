@@ -53,10 +53,10 @@ static int flow(sox_effect_t *effp, const sox_sample_t *ibuf,
 sox_effect_handler_t const *lsx_swap_effect_fn(void)
 {
   static sox_effect_handler_t handler = {
-    "swap", NULL, NULL,
-    SOX_EFF_MCHAN | SOX_EFF_MODIFY,
+    "swap", NULL, SOX_EFF_MCHAN | SOX_EFF_MODIFY,
     NULL, start, flow, NULL, NULL, NULL,
-    0
+    0,
+    NULL,
   };
   return &handler;
 }

@@ -301,9 +301,11 @@ sox_effect_handler_t const * lsx_splice_effect_fn(void)
   };
 
   static sox_effect_handler_t handler = {
-    "splice", usage, extra_usage,
+    "splice", usage,
     SOX_EFF_MCHAN | SOX_EFF_LENGTH,
-    create, start, flow, drain, stop, lsx_kill, sizeof(priv_t)
+    create, start, flow, drain, stop, lsx_kill,
+    sizeof(priv_t),
+    extra_usage,
   };
   return &handler;
 }

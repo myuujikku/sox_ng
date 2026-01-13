@@ -9,6 +9,7 @@ sox_ng-14.6.2+git
 -----------------
 
   o Revert to --single-threaded by default
+  o Put extra_usage after priv_size so 3rd party effects compile
 
 
 sox_ng-14.6.2.1	2026-02-23
