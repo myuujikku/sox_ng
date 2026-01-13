@@ -490,9 +490,12 @@ if test "$with_mad" != "no"; then
     else
       enable_dl_mad="no"
       AC_CHECK_LIB(mad, mad_stream_buffer, MP3_LIBS="$MP3_LIBS -lmad",using_mad=no)
-      if test "$with_mad" = "yes" -a "$using_mad" = "no"; then
-        AC_MSG_FAILURE([cannot find libmad])
-      fi
+    fi
+    if test "x$using_mad" = "xyes"; then
+      AC_DEFINE(HAVE_MAD, 1, [Define if the MAD library was found.])
+    fi
+    if test "$with_mad" = "yes" && test "$using_mad" = "no"; then
+      AC_MSG_FAILURE([cannot find libmad])
     fi
 fi
 

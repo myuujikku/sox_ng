@@ -18,11 +18,11 @@
 #include <sys/stat.h>
 
 #ifdef USING_ID3TAG
-#if defined(HAVE_MAD_H) || defined(HAVE_MPG123_H)
+#if defined(HAVE_MAD)
 
 extern char const * lsx_id3tagmap[][2];
 
-#endif /* HAVE_MAD_H */
+#endif /* HAVE_MAD */
 #endif /* USING_ID3TAG */
 
 #if defined(HAVE_LAME)
@@ -70,7 +70,7 @@ static void write_comments(sox_format_t * ft)
 
 #endif /* HAVE_LAME */
 
-#ifdef HAVE_MAD_H
+#ifdef HAVE_MAD
 
 static unsigned long xing_frames(priv_t * p, struct mad_bitptr ptr, unsigned bitlen)
 {
@@ -179,4 +179,4 @@ static size_t mp3_duration_ms(sox_format_t * ft)
   return p->mad_timer_count(time, MAD_UNITS_MILLISECONDS);
 }
 
-#endif /* HAVE_MAD_H */
+#endif /* HAVE_MAD */
