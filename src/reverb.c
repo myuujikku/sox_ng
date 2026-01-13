@@ -277,10 +277,11 @@ sox_effect_handler_t const *lsx_reverb_effect_fn(void)
     " [stereo-depth(100%)"
     " [pre-delay(0ms)"
     " [wet-gain(0dB)"
-    "]]]]]]", extra_usage,
+    "]]]]]]",
     SOX_EFF_MCHAN | SOX_EFF_CHAN,
     getopts_reverb, start_reverb, flow_reverb, NULL, stop_reverb, NULL,
-    sizeof(priv_t)
+    sizeof(priv_t),
+    extra_usage,
   };
   return &handler;
 }

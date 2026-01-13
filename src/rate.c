@@ -746,9 +746,10 @@ sox_effect_handler_t const * lsx_rate_effect_fn(void)
   };
 
   static sox_effect_handler_t handler = {
-    "rate", usage, extra_usage, SOX_EFF_RATE,
+    "rate", usage, SOX_EFF_RATE,
     create_rate, start_rate, flow_rate, drain_rate, stop_rate, NULL,
-    sizeof(priv_t)
+    sizeof(priv_t),
+    extra_usage,
   };
 
   return &handler;
