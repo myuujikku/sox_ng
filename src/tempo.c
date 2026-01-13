@@ -348,9 +348,10 @@ sox_effect_handler_t const * lsx_tempo_effect_fn(void)
   };
 
   static sox_effect_handler_t handler = {
-    "tempo", usage, extra_usage, SOX_EFF_MCHAN | SOX_EFF_LENGTH,
+    "tempo", usage, SOX_EFF_MCHAN | SOX_EFF_LENGTH,
     getopts_tempo, start_tempo, flow_tempo, drain_tempo, stop_tempo, NULL,
-    sizeof(priv_t)
+    sizeof(priv_t),
+    extra_usage,
   };
   return &handler;
 }

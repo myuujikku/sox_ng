@@ -609,7 +609,7 @@ const sox_effect_handler_t *lsx_chorus_effect_fn(void)
 
         static sox_effect_handler_t sox_chorus_effect = {
                 "chorus",
-                usage, extra_usage,
+                usage,
                 SOX_EFF_LENGTH | SOX_EFF_GAIN,
                 sox_chorus_getopts,
                 sox_chorus_start,
@@ -617,7 +617,8 @@ const sox_effect_handler_t *lsx_chorus_effect_fn(void)
                 sox_chorus_drain,
                 sox_chorus_stop,
                 NULL,
-                sizeof(chorus_priv_t)
+                sizeof(chorus_priv_t),
+                extra_usage,
         };
 
         return &sox_chorus_effect;

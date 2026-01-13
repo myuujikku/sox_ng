@@ -327,8 +327,9 @@ sox_effect_handler_t const * lsx_vad_effect_fn(void)
   };
 
   static sox_effect_handler_t handler = {
-    "vad", usage, extra_usage, SOX_EFF_MCHAN | SOX_EFF_LENGTH | SOX_EFF_MODIFY,
-    create_vad, start_vad, flow_vad, drain_vad, stop_vad, NULL, sizeof(priv_t)
+    "vad", usage, SOX_EFF_MCHAN | SOX_EFF_LENGTH | SOX_EFF_MODIFY,
+    create_vad, start_vad, flow_vad, drain_vad, stop_vad, NULL, sizeof(priv_t),
+    extra_usage,
   };
 
   return &handler;

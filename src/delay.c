@@ -162,9 +162,10 @@ sox_effect_handler_t const * lsx_delay_effect_fn(void)
   };
 
   static sox_effect_handler_t handler = {
-    "delay", "{position(=)}", extra_usage, SOX_EFF_LENGTH | SOX_EFF_MODIFY,
+    "delay", "{position(=)}", SOX_EFF_LENGTH | SOX_EFF_MODIFY,
     create_delay, start_delay, flow_delay, drain_delay,
-    stop_delay, kill_delay, sizeof(priv_t)
+    stop_delay, kill_delay, sizeof(priv_t),
+    extra_usage,
   };
 
   return &handler;
