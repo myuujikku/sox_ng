@@ -5,6 +5,13 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
+sox_ng-14.7.0.4	2026-01-13
+---------------
+
+  o Make spectrogram -S with a time after EOF fail instead of looping forever
+  o Put extra_usage after priv_size in effects' options
+
+
 sox_ng-14.7.0.3	2025-12-03
 ---------------
 
