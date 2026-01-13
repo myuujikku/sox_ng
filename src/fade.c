@@ -393,13 +393,14 @@ static char const * const extra_usage[] = {
 };
 
 static sox_effect_handler_t sox_fade_effect = {
-  "fade", usage, extra_usage, SOX_EFF_MCHAN | SOX_EFF_LENGTH,
+  "fade", usage, SOX_EFF_MCHAN | SOX_EFF_LENGTH,
   sox_fade_getopts,
   sox_fade_start,
   sox_fade_flow,
   sox_fade_drain,
   NULL,
-  lsx_kill, sizeof(priv_t)
+  lsx_kill, sizeof(priv_t),
+  extra_usage,
 };
 
 const sox_effect_handler_t *lsx_fade_effect_fn(void)
