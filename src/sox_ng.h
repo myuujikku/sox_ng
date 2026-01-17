@@ -19,10 +19,11 @@ LSX_ and lsx_ symbols should not be used by libSoX-based applications.
 #ifndef SOX_H
 #define SOX_H /**< Client API: This macro is defined if sox_ng.h has been included. */
 
-#include <limits.h>
-#include <stdarg.h>
-#include <stddef.h>
-#include <stdint.h>
+#include <stdarg.h>  /* For va_list */
+#include <stddef.h>  /* To define size_t */
+#include <stdint.h>  /* To automatically determine appropriate
+                      * 8, 16, 32 and 64 bit types */
+#include <limits.h>  /* For UINT_MAX etc. to help with the above */
 
 #if defined(__cplusplus)
 extern "C" {
