@@ -195,20 +195,6 @@ static struct {
   { "wav",      SF_FORMAT_WAV },
   { "au",       SF_FORMAT_AU },
   { "snd",      SF_FORMAT_AU },
-  { "caf",      SF_FORMAT_CAF },
-  { "flac",     SF_FORMAT_FLAC },
-  { "wve",      SF_FORMAT_WVE },  /* Probably broken before 1.0.18 */
-#ifdef HAVE_SF_FORMAT_OGG
-  { "ogg",      SF_FORMAT_OGG | SF_FORMAT_VORBIS },  /* From 1.0.16 */
-#endif
-#ifdef HAVE_SF_FORMAT_MPC2K
-  { "mpc",      SF_FORMAT_MPC2K },  /* From 1.0.25 */
-  { "mpc2k",    SF_FORMAT_MPC2K },  /* From 1.0.25 */
-#endif
-#ifdef HAVE_SF_FORMAT_MPEG
-  { "mp2",      SF_FORMAT_MPEG | SF_FORMAT_MPEG_LAYER_II },  /* From 1.1.0 */
-  { "mp3",      SF_FORMAT_MPEG | SF_FORMAT_MPEG_LAYER_III },  /* From 1.1.0 */
-#endif
   { "svx",      SF_FORMAT_SVX | SF_FORMAT_PCM_S8 },
   { "8svx",     SF_FORMAT_SVX | SF_FORMAT_PCM_S8 },
   { "paf",      SF_ENDIAN_BIG | SF_FORMAT_PAF },
@@ -226,9 +212,31 @@ static struct {
   { "mat",      SF_FORMAT_MAT4 },
   { "pvf",      SF_FORMAT_PVF },
   { "sds",      SF_FORMAT_SDS },
-  { "sd2",      SF_FORMAT_SD2 },
   { "vox",      SF_FORMAT_RAW | SF_FORMAT_VOX_ADPCM },
-  { "xi",       SF_FORMAT_XI }
+  { "xi",       SF_FORMAT_XI },
+#ifdef HAVE_SF_FORMAT_SD2
+  { "sd2",      SF_FORMAT_SD2 }, /* From 1.0.11 */
+#endif
+#ifdef HAVE_SF_FORMAT_CAF
+  { "caf",      SF_FORMAT_CAF }, /* From 1.0.12 */
+#endif
+#ifdef HAVE_SF_FORMAT_FLAC
+  { "flac",     SF_FORMAT_FLAC }, /* From 1.0.12 */
+#endif
+#ifdef HAVE_SF_FORMAT_WVE
+  { "wve",      SF_FORMAT_WVE },  /* Probably broken before 1.0.18 */
+#endif
+#ifdef HAVE_SF_FORMAT_OGG
+  { "ogg",      SF_FORMAT_OGG | SF_FORMAT_VORBIS },  /* From 1.0.18 */
+#endif
+#ifdef HAVE_SF_FORMAT_MPC2K
+  { "mpc",      SF_FORMAT_MPC2K },  /* From 1.0.25 */
+  { "mpc2k",    SF_FORMAT_MPC2K },  /* From 1.0.25 */
+#endif
+#ifdef HAVE_SF_FORMAT_MPEG
+  { "mp2",      SF_FORMAT_MPEG | SF_FORMAT_MPEG_LAYER_II },  /* From 1.1.0 */
+  { "mp3",      SF_FORMAT_MPEG | SF_FORMAT_MPEG_LAYER_III },  /* From 1.1.0 */
+#endif
 };
 
 static int sf_stop_stub(SNDFILE *sndfile UNUSED)
@@ -567,7 +575,11 @@ LSX_FORMAT_HANDLER(sndfile)
     "w64",
     "xi",
     /* Other extensions that it can code */
-    "aif", "au", "flac", "gsm", "ircam",
+    "aif", "au",
+#ifdef HAVE_SF_FORMAT_FLAC
+    "flac",
+#endif
+    "gsm", "ircam",
 #ifdef HAVE_SF_FORMAT_MPEG
     "mp1", "mp2", "mp3",
 #endif
@@ -603,6 +615,7 @@ LSX_FORMAT_HANDLER(sndfile)
   return &format;
 }
 
+#if HAVE_SF_FORMAT_CAF
 LSX_FORMAT_HANDLER(caf)
 {
   static char const * const names[] = {"caf", NULL};
@@ -619,6 +632,7 @@ LSX_FORMAT_HANDLER(caf)
   handler.write_formats = write_encodings;
   return &handler;
 }
+#endif
 
 LSX_FORMAT_HANDLER(fap)
 {
@@ -703,6 +717,7 @@ LSX_FORMAT_HANDLER(pvf)
   return &handler;
 }
 
+#if HAVE_SF_FORMAT_SD2
 LSX_FORMAT_HANDLER(sd2)
 {
   static char const * const names[] = {"sd2", NULL};
@@ -714,6 +729,7 @@ LSX_FORMAT_HANDLER(sd2)
   handler.write_formats = write_encodings;
   return &handler;
 }
+#endif
 
 LSX_FORMAT_HANDLER(sds)
 {
