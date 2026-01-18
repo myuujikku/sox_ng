@@ -369,7 +369,15 @@ int lsx_seeki(sox_format_t * ft, off_t offset, int whence)
           ft->last_byte_was_zero = sox_false;
         }
 
-        if (fseeko((FILE*)ft->fp, offset, whence))
+        /* There is a bug in glibc < 2.22 with SEEK_END on a stream created
+         * by fmemopen(): the offset was subtracted from the end-of-stream
+         * position instead of being added.
+         * Workaround: in this case, seek to the end and then seek back.
+         */
+        if (whence == SEEK_END
+            ? (fseeko((FILE*)ft->fp, (off_t)0, whence) ||
+               fseeko((FILE*)ft->fp, offset, SEEK_CUR))
+            : fseeko((FILE*)ft->fp, offset, whence))
             lsx_fail_errno(ft,errno, "%s", strerror(errno));
         else {
             ft->tell_off = lsx_tell(ft);
