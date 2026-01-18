@@ -576,6 +576,9 @@ LSX_FORMAT_HANDLER(sndfile)
     "xi",
     /* Other extensions that it can code */
     "aif", "au",
+#ifdef HAVE_SF_FORMAT_AVR
+    "avr",
+#endif
 #ifdef HAVE_SF_FORMAT_FLAC
     "flac",
 #endif
