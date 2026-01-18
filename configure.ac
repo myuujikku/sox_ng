@@ -775,7 +775,9 @@ AC_OPTIONAL_FORMAT(amrnb, AMRNB, [if test "x$tmp_using_amrnb" = "xno"; then usin
 
 
 AC_OPTIONAL_FORMAT(wavpack, WAVPACK, [AC_CHECK_HEADER(wavpack/wavpack.h, [AC_CHECK_LIB(wavpack, WavpackGetSampleRate, WAVPACK_LIBS="$WAVPACK_LIBS -lwavpack",using_wavpack=no)], using_wavpack=no)])
-
+if test "$using_wavpack" = yes; then
+  AC_CHECK_LIB(wavpack, WavpackOpenFileInputEx64, [AC_DEFINE([HAVE_LIBWAVPACK5], 1, [Define if libwavpack >= 5.0])])
+fi
 
 
 AC_OPTIONAL_FORMAT(sndio, SNDIO, [AC_CHECK_HEADER(sndio.h, [AC_CHECK_LIB(sndio, sio_open, SNDIO_LIBS="$SNDIO_LIBS -lsndio",using_sndio=no)], using_sndio=no)])
