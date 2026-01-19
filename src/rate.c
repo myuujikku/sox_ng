@@ -260,9 +260,11 @@ static int dft_stage_init(
 
 typedef struct {
   double     factor;
-  uint64_t   samples_in, samples_out;
+  int64_t    samples_in, samples_out;
   int        num_stages;
   stage_t    * stages;
+  sox_sample_t *lpc_buffer;
+  int        lpc_length, lpc_trim, lpc_count, lpc_inratio;
 } rate_t;
 
 #define pre_stage       p->stages[shift]
@@ -279,13 +281,199 @@ typedef enum {
   rolloff_none, rolloff_small /* <= 0.01 dB */, rolloff_medium /* <= 0.35 dB */
 } rolloff_t;
 
+static size_t local_gcd(size_t a, size_t b)
+{
+  size_t res = ((a < b) ? a : b);
+  while (res > 0) {
+    if ((a % res == 0) && (b % res == 0)) {
+      break;
+    }
+    res--;
+  }
+  return res;
+}
+
+static void calc_optimal_lpc_buffer_sizes(size_t inrate, size_t outrate, int *in_len, int *out_len, int *in_ratio)
+{
+  const size_t gcd = local_gcd(inrate, outrate);
+  const size_t in = inrate / gcd;
+  const size_t out = outrate / gcd;
+  const size_t c = max((inrate / 20) / in, 1); /* try to get ~50 ms extrapolation buffer */
+  *in_len = (int)(c * in);
+  *out_len = (int)(c * out);
+  *in_ratio = (int)in;
+}
+
+static int lpc_length(int samples, int ideallength, int in_ratio)
+{
+  if (samples >= ideallength) return ideallength;
+  const int c = max(samples / in_ratio, 1);
+  return min(c * in_ratio, samples);
+}
+
+static void vorbis_lpc_from_data(sample_t *data, sample_t *lpci, int n, int m, int stride)
+{
+  double *aut = (double *)malloc((m + 1) * sizeof(double));
+  double *lpc = (double *)malloc((m) * sizeof(double));
+  double error;
+  double epsilon;
+  int i, j;
+  if (!aut || !lpc) {
+    free(lpc); free(aut);
+    return;
+  }
+
+  /* FIXME: Apply a window to the input. */
+  /* autocorrelation, p+1 lag coefficients */
+  j = m + 1;
+  while (j--) {
+    double d = 0; /* double needed for accumulator depth */
+    for (i = j; i < n; i++) d += (double)data[i * stride] * data[(i - j) * stride];
+    aut[j] = d;
+  }
+
+  /* Apply lag windowing (better than bandwidth expansion) */
+  if (m <= 64) {
+    for (i = 1; i <= m; i++) {
+      /* Approximate this gaussian for low enough order. */
+      /* aut[i] *= exp(-.5*(2*M_PI*.002*i)*(2*M_PI*.002*i));*/
+      aut[i] -= aut[i] * (0.008f * 0.008f) * i * i;
+    }
+  }
+  /* Generate lpc coefficients from autocorr values */
+
+  /* set our noise floor to about -100dB */
+  error = aut[0] * (1. + 1e-7);
+  epsilon = 1e-6 * aut[0] + 1e-7;
+
+  for (i = 0; i < m; i++) {
+    double r = -aut[i + 1];
+
+    if (error < epsilon) {
+      memset(lpc + i, 0, (m - i) * sizeof(*lpc));
+      goto done;
+    }
+
+    /* Sum up this iteration's reflection coefficient; note that in
+       Vorbis we don't save it.  If anyone wants to recycle this code
+       and needs reflection coefficients, save the results of 'r' from
+       each iteration. */
+
+    for (j = 0; j < i; j++) r -= lpc[j] * aut[i - j];
+    r /= error;
+
+    /* Update LPC coefficients and total error */
+
+    lpc[i] = r;
+    for (j = 0; j < i / 2; j++) {
+      double tmp = lpc[j];
+
+      lpc[j] += r * lpc[i - 1 - j];
+      lpc[i - 1 - j] += r * tmp;
+    }
+    if (i & 1) lpc[j] += lpc[j] * r;
+
+    error *= 1. - r * r;
+  }
+
+done:
+
+  /* slightly damp the filter */
+  {
+    const double g = .9999;
+    double damp = g;
+    for (j = 0; j < m; j++) {
+      lpc[j] *= damp;
+      damp *= g;
+    }
+  }
+
+  for (j = 0; j < m; j++) lpci[j] = (sample_t)lpc[j];
+
+  free(lpc);
+  free(aut);
+}
+
+static void extend_signal_out(sox_sample_t *x, int before, int after, int lpc_order, int channels)
+{
+  if (after == 0) return;
+  //before = MIN(before, LPC_INPUT);
+  if ((before - 1) / 2 > lpc_order) lpc_order = (before - 1) / 2;
+  //float window[LPC_PADDING];
+  sample_t *work = (sample_t *)malloc((before + after) * sizeof(sample_t));
+  sample_t *window = (sample_t *)malloc(after * sizeof(sample_t));
+  sample_t *lpc = (sample_t *)malloc(lpc_order * sizeof(sample_t));
+  if (before < 2 * lpc_order || !work || !window || !lpc) { // was 4 *
+    for (int i = 0; i < after * channels; i++) x[i] = 0;
+    if (!work || !window || !lpc) {
+      free(work); free(lpc); free(window);
+      return;
+    }
+  }
+
+  {
+    const sample_t LPC_GOERTZEL_CONST = (sample_t)(2.0 * cos(M_PI / after));
+    /* Generate Window using a resonating IIR aka Goertzel's algorithm. */
+    sample_t m0 = 1, m1 = 0.5 * LPC_GOERTZEL_CONST;
+    sample_t a1 = LPC_GOERTZEL_CONST;
+    window[0] = 1;
+    for (int i = 1; i < after; i++) {
+      window[i] = a1 * m0 - m1;
+      m1 = m0;
+      m0 = window[i];
+    }
+    for (int i = 0; i < after; i++) window[i] = 0.5 + 0.5 * window[i];
+  }
+  for (int c = 0; c < channels; c++) {
+    //sample_t lpc[LPC_ORDER];
+    for (int i = 0; i < before; ++i) work[i] = (sample_t)x[(i - before) * channels + c] / (sample_t)(1ul << 31ul);
+    vorbis_lpc_from_data(work, lpc, before, lpc_order, 1);
+    for (int i = 0; i < after; i++) {
+      sample_t sum = 0;
+      for (int j = 0; j < lpc_order; j++) sum -= work[before + i - j - 1] * lpc[j];
+      work[i + before] = sum;
+    }
+    for (int i = 0; i < after; i++) x[i * channels + c] = (sox_sample_t)(work[i + before] * (sample_t)(1ul << 31ul) * window[i]);
+  }
+  free(work);
+  free(lpc);
+  free(window);
+}
+
+static void extend_signal_in(sox_sample_t *x, int before, int after, int lpc_order, int channels)
+{
+  if (after == 0) return;
+  sox_sample_t *rev = (sox_sample_t *)malloc((before + after) * channels * sizeof(sox_sample_t));
+  if (!rev) {
+    for (int i = 0; i < after * channels; ++i) x[i - after * channels] = 0;
+    return;
+  }
+  for (int c = 0; c < channels; c++) {
+    for (int i = 0; i < before; i++) {
+      rev[i * channels + c] = x[(before - i - 1) * channels + c];
+    }
+  }
+
+  extend_signal_out(rev + before * channels, before, after, lpc_order, channels);
+
+  for (int c = 0; c < channels; c++) {
+    for (int i = 0; i < after; i++) {
+      x[(i - after) * channels + c] = rev[(before + after - i - 1) * channels + c];
+    }
+  }
+
+  free(rev);
+}
+
 static int rate_init(
   /* Private work areas (to be supplied by the client):                       */
   rate_t * p,                /* Per audio channel.                            */
   rate_shared_t * shared,    /* Between channels (undergoing same rate change)*/
                             
   /* Public parameters:                                             Typically */
-  double factor,             /* Input rate divided by output rate.            */
+  sox_rate_t inrate,         /* Input samplerate                              */
+  sox_rate_t outrate,        /* Output samplerate                             */
+  /*double factor,*/         /* Input rate divided by output rate.            */
   double bits,               /* Required bit-accuracy (pass + stop)  16|20|28 */
   double phase,              /* Linear/minimum etc. filter phase.       50    */
   double bw_pc,              /* Pass-band % (0dB pt.) to preserve.   91.3|98.4*/
@@ -299,6 +487,7 @@ static int rate_init(
   int max_coefs_size,        /* k bytes of coefs to try to keep below.  400   */
   sox_bool noSmallIntOpt)    /* Disable small integer optimizations.  false   */
 {
+  double factor = (outrate != 0) ? (double)inrate / (double)outrate : 0;
   double att = (bits + 1) * linear_to_dB(2.), attArb = att;    /* pass + stop */
   double tbw0 = 1 - bw_pc / 100, Fs_a = 2 - anti_aliasing_pc / 100;
   double arbM = factor, tbw_tighten = 1;
@@ -350,6 +539,13 @@ static int rate_init(
 
   if (!p->num_stages)
     return SOX_SUCCESS;
+
+  calc_optimal_lpc_buffer_sizes((size_t)inrate, (size_t)outrate, &p->lpc_length, &p->lpc_trim, &p->lpc_inratio);
+  if (p->lpc_length > 0) {
+    p->lpc_buffer = (sox_sample_t *)malloc(p->lpc_length * 2 * sizeof(sox_sample_t));
+    if (!p->lpc_buffer) return SOX_ENOMEM;
+  }
+  p->lpc_count = 0;
 
   lsx_vcalloc(p->stages, p->num_stages + 1);
   for (i = 0; i < p->num_stages; ++i)
@@ -500,7 +696,7 @@ static sample_t const * rate_output(rate_t * p, sample_t * samples, size_t * n)
 static void rate_flush(rate_t * p)
 {
   fifo_t * fifo = &p->stages[p->num_stages].fifo;
-  uint64_t samples_out = p->samples_in / p->factor + .5;
+  int64_t samples_out = p->samples_in / p->factor + .5;
   size_t remaining = samples_out > p->samples_out ?
       (size_t)(samples_out - p->samples_out) : 0;
   sample_t * buff;
@@ -525,6 +721,8 @@ static void rate_close(rate_t * p)
 
   if (!p->num_stages)
     return;
+
+  free(p->lpc_buffer);
 
   shared = p->stages[0].shared;
 
@@ -661,7 +859,7 @@ static int start_rate(sox_effect_t * effp)
 
   effp->out_signal.channels = effp->in_signal.channels;
   effp->out_signal.rate = out_rate;
-  err = rate_init(&p->rate, p->shared_ptr, effp->in_signal.rate / out_rate,
+  err = rate_init(&p->rate, p->shared_ptr, effp->in_signal.rate, out_rate,
       p->bit_depth, p->phase, p->bw_0dB_pc, p->anti_aliasing_pc, p->rolloff,
       !p->given_0dB_pt, p->use_hi_prec_clock, p->coef_interp,
       p->max_coefs_size, p->noIOpt);
@@ -681,14 +879,60 @@ static int flow_rate(sox_effect_t * effp, const sox_sample_t * ibuf,
                 sox_sample_t * obuf, size_t * isamp, size_t * osamp)
 {
   priv_t * p = (priv_t *)effp->priv;
+  rate_t * rp = (rate_t *)&p->rate;
+  size_t iavail = *isamp;
   size_t odone = *osamp;
+  sample_t const *s;
 
-  sample_t const * s = rate_output(&p->rate, NULL, &odone);
-  lsx_save_samples(obuf, s, odone, &effp->clips);
+  if (rp->lpc_count < rp->lpc_length) {
+    int i;
+    const int fill_buffer = (rp->lpc_count + (int)iavail < rp->lpc_length) ? (int)iavail : rp->lpc_length - rp->lpc_count;
+    sox_sample_t *lpcbuf = rp->lpc_buffer + rp->lpc_length + rp->lpc_count; /* initially fill the end to leave room for backwards extrapolation */
+    for (i=0; i<fill_buffer; i++) {
+      *lpcbuf++ = *ibuf++;
+    }
+    rp->lpc_count += fill_buffer;
+    iavail -= fill_buffer;
+    if (rp->lpc_count == rp->lpc_length) {
+      sample_t *t;
+      extend_signal_in(rp->lpc_buffer + rp->lpc_length, rp->lpc_length, rp->lpc_length, 32, 1);
+      t = rate_input(rp, NULL, rp->lpc_length * 2);
+      lsx_load_samples(t, rp->lpc_buffer, rp->lpc_length * 2);
+      rate_process(&p->rate);
+      memmove(rp->lpc_buffer, rp->lpc_buffer + rp->lpc_length, rp->lpc_length * sizeof(sox_sample_t));
+      rp->samples_in -= rp->lpc_length;
+    } else {
+      *osamp = 0;
+      return SOX_SUCCESS;
+    }
+  }
 
-  if (*isamp && odone < *osamp) {
-    sample_t * t = rate_input(&p->rate, NULL, *isamp);
-    lsx_load_samples(t, ibuf, *isamp);
+  { /* keep last input samples buffered for end extrapolation */
+    const size_t keep_new_samples = (iavail < (size_t)rp->lpc_length) ? iavail : (size_t)rp->lpc_length;
+    if (keep_new_samples < (size_t)rp->lpc_length) {
+      memmove(rp->lpc_buffer, rp->lpc_buffer + keep_new_samples, ((size_t)rp->lpc_length - keep_new_samples) * sizeof(sox_sample_t));
+    }
+    memcpy(rp->lpc_buffer + (rp->lpc_length - keep_new_samples), (ibuf + iavail - keep_new_samples), keep_new_samples * sizeof(sox_sample_t));
+  }
+
+  if (rp->lpc_trim > 0) {
+    s = rate_output(&p->rate, NULL, &odone);
+    const size_t skip = (odone < (size_t)rp->lpc_trim) ? odone : (size_t)rp->lpc_trim;
+    rp->lpc_trim -= skip;
+    odone -= skip;
+    s += skip;
+    rp->samples_out -= skip;
+    if (odone > 0) {
+      lsx_save_samples(obuf, s, odone, &effp->clips);
+    }
+  } else {
+    s = rate_output(&p->rate, NULL, &odone);
+    lsx_save_samples(obuf, s, odone, &effp->clips);
+  }
+
+  if (iavail && odone < *osamp) {
+    sample_t * t = rate_input(&p->rate, NULL, iavail);
+    lsx_load_samples(t, ibuf, iavail);
     rate_process(&p->rate);
   }
   else *isamp = 0;
@@ -699,9 +943,77 @@ static int flow_rate(sox_effect_t * effp, const sox_sample_t * ibuf,
 static int drain_rate(sox_effect_t * effp, sox_sample_t * obuf, size_t * osamp)
 {
   priv_t * p = (priv_t *)effp->priv;
-  static size_t isamp = 0;
-  rate_flush(&p->rate);
-  return flow_rate(effp, 0, obuf, &isamp, osamp);
+  rate_t * rp = (rate_t *)&p->rate;
+  sample_t const *s;
+  size_t odone = *osamp;
+  size_t oavail = *osamp;
+  size_t odone_tot = 0;
+  int64_t samples_out_max = rp->samples_in / rp->factor + .5;
+
+  if ((rp->lpc_count > 0) && (rp->lpc_count < rp->lpc_length) && (rp->lpc_trim > 0)) { /* not extrapolated yet */
+    sample_t *t;
+    const int use_samples = lpc_length(rp->lpc_count, rp->lpc_length, rp->lpc_inratio);
+    extend_signal_in(rp->lpc_buffer + rp->lpc_length, use_samples, use_samples, 32, 1);
+    t = rate_input(&p->rate, NULL, use_samples + rp->lpc_count);
+    lsx_load_samples(t, rp->lpc_buffer + (rp->lpc_length - use_samples), use_samples + rp->lpc_count);
+    rate_process(&p->rate);
+    memmove(rp->lpc_buffer, rp->lpc_buffer + rp->lpc_length, rp->lpc_count * sizeof(sox_sample_t));
+    rp->samples_in -= use_samples;
+    samples_out_max = rp->samples_in / rp->factor + .5;
+    rp->lpc_trim = use_samples / rp->factor + .5;
+  }
+
+  do {
+    if ((rp->lpc_count > 0) && (rp->lpc_trim > 0)) { /* extrapolated beginning not trimmed away yet */
+      odone = oavail;
+      s = rate_output(&p->rate, NULL, &odone);
+      const size_t skip = (odone < (size_t)rp->lpc_trim) ? odone : (size_t)rp->lpc_trim;
+      rp->lpc_trim -= skip;
+      odone -= skip;
+      s += skip;
+      rp->samples_out -= skip;
+      if (odone > 0) {
+        lsx_save_samples(obuf, s, odone, &effp->clips);
+        obuf += odone;
+        odone_tot += odone;
+        oavail -= odone;
+      }
+      odone = oavail;
+    }
+
+    if (rp->lpc_count > 0) { /* extrapolate the end of the file */
+      sample_t *t;
+      const size_t samples_left = (size_t)(samples_out_max - rp->samples_out);
+      const int use_samples = lpc_length(rp->lpc_count, rp->lpc_length, rp->lpc_inratio);
+      size_t skip;
+      extend_signal_out(rp->lpc_buffer + rp->lpc_count, use_samples, use_samples, 32, 1);
+      rp->samples_in -= use_samples;
+      t = rate_input(&p->rate, NULL, use_samples);
+      lsx_load_samples(t, rp->lpc_buffer + rp->lpc_count, use_samples);
+      rp->lpc_count = 0;
+      rate_process(&p->rate);
+      s = rate_output(&p->rate, NULL, &odone);
+      skip = (odone < (size_t)rp->lpc_trim) ? odone : (size_t)rp->lpc_trim;
+      s += skip;
+      odone -= skip;
+      rp->lpc_trim -= skip;
+      if (odone > samples_left) odone = samples_left;
+      lsx_save_samples(obuf, s, odone, &effp->clips);
+      obuf += odone;
+      odone_tot += odone;
+    }
+
+    rate_flush(&p->rate);
+
+    odone = *osamp - odone_tot;
+    if (rp->samples_out + (int64_t)odone > samples_out_max) odone = (rp->samples_out < samples_out_max) ? (size_t)(samples_out_max - rp->samples_out) : 0;
+    s = rate_output(&p->rate, NULL, &odone);
+    lsx_save_samples(obuf, s, odone, &effp->clips);
+    obuf += odone;
+  } while (odone > 0);
+
+  *osamp = odone_tot;
+  return SOX_SUCCESS;
 }
 
 static int stop_rate(sox_effect_t * effp)
