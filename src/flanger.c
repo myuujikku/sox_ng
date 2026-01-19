@@ -96,8 +96,10 @@ static int getopts_flanger(sox_effect_t * effp, int argc, char *argv[])
     TEXTUAL_PARAMETER(interpolation, interp_enum)
   } while (0);
 
-  if (argc != 0)
+  if (argc != 0) {
+    lsx_fail("extra crap on the end `%s'...", argv[0]);
     return lsx_usage(effp);
+  }
 
   lsx_report("parameters:\n"
       "delay = %gms\n"
