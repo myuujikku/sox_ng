@@ -64,14 +64,14 @@ typedef struct {
   float *gSynFreq;      /* [FRAME_LENGTH] */
   float *gSynMagn;      /* [FRAME_LENGTH] */
   float *gWindow;       /* [FRAME_LENGTH] */
-  long gRover;
+  unsigned gRover;
   unsigned fftFrameSize, over_sample;
 } priv_t;
 
 static int parse(sox_effect_t * effp, char **argv, sox_rate_t rate)
 {
   priv_t *p = (priv_t *) effp->priv;
-  size_t i;
+  unsigned i;
   char const *next;
   uint64_t last_seen = 0;
   const uint64_t in_length = argv ? 0 :
@@ -105,11 +105,11 @@ static int parse(sox_effect_t * effp, char **argv, sox_rate_t rate)
 
     /* sanity checks */
     if (!argv && p->bends[i].duration < p->bends[i].start) {
-      lsx_fail("bend %" PRIuPTR " has negative width", i+1);
+      lsx_fail("bend %u has negative width", i+1);
       return SOX_EOF;
     }
     if (!argv && i && p->bends[i].start < p->bends[i-1].start) {
-      lsx_fail("bend %" PRIuPTR " overlaps with previous one", i+1);
+      lsx_fail("bend %u overlaps with previous one", i+1);
       return SOX_EOF;
     }
 
@@ -203,7 +203,8 @@ static int flow_bend(sox_effect_t * effp, const sox_sample_t * ibuf,
   size_t i, len = *isamp = *osamp = min(*isamp, *osamp);
   float magn, phase, tmp, real, imag;
   float freqPerBin, expct;
-  long k, qpd, index, inFifoLatency, stepSize, fftFrameSize2;
+  unsigned k, index, inFifoLatency, stepSize, fftFrameSize2;
+  long qpd;
   float pitchShift = p->shift;
 
   /* set up some handy variables */
