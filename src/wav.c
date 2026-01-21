@@ -60,33 +60,33 @@ typedef struct {
     /* samples/channel reading: starts at total count and decremented  */
     /* writing: starts at 0 and counts samples written */
     uint64_t  numSamples;    
-    size_t    dataLength;     /* needed for ADPCM writing */
-    unsigned short formatTag;       /* What type of encoding file is using */
+    size_t    dataLength;           /* Needed for ADPCM writing */
+    unsigned short formatTag;       /* What type of encoding file is in use */
     unsigned short samplesPerBlock;
     unsigned short blockAlign;
-    size_t dataStart;           /* need to for seeking */
+    size_t dataStart;               /* Needed for seeking */
     char           * comment;
-    int ignoreSize;                 /* ignoreSize allows us to process 32-bit WAV files that are
-                                     * greater then 2 Gb and can't be represented by the
-                                     * 32-bit size field. */
-  /* FIXME: Have some front-end code which sets this flag. */
+    int ignoreSize;                 /* ignoreSize allows us to process 32-bit
+                                     * WAV files that are greater then 2Gb
+                                     * and can't be represented by
+                                     * the 32-bit size field. */
 
-    /* following used by *ADPCM wav files */
+    /* The following are used by *ADPCM wav files */
     unsigned short nCoefs;          /* ADPCM: number of coef sets */
-    short         *lsx_ms_adpcm_i_coefs;          /* ADPCM: coef sets           */
+    short         *lsx_ms_adpcm_i_coefs;  /* ADPCM: coef sets */
     void          *ms_adpcm_data;   /* Private data of adpcm decoder */
     unsigned char *packet;          /* Temporary buffer for packets */
-    short         *samples;         /* interleaved samples buffer */
+    short         *samples;         /* Interleaved samples buffer */
     short         *samplePtr;       /* Pointer to current sample  */
-    short         *sampleTop;       /* End of samples-buffer      */
-    unsigned short blockSamplesRemaining;/* Samples remaining per channel */
-    int            state[16];       /* step-size info for *ADPCM writes */
+    short         *sampleTop;       /* End of samples-buffer */
+    unsigned short blockSamplesRemaining;  /* Samples remaining per channel */
+    int            state[16];       /* Step-size info for *ADPCM writes */
 
-    /* following used by GSM 6.10 wav */
+    /* The following are used by GSM 6.10 wav files */
     gsm            gsmhandle;
     gsm_signal     *gsmsample;
     int            gsmindex;
-    size_t      gsmbytecount;    /* counts bytes written to data block */
+    size_t         gsmbytecount;    /* Count of bytes written to data block */
     sox_bool       isRF64;          /* True if file being read is a RF64 */
     uint64_t       ds64_dataSize;   /* Size of data chunk from ds64 header */
 } priv_t;
