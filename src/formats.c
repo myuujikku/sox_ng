@@ -497,7 +497,6 @@ static void set_endiannesses(sox_format_t * ft)
 
 static sox_bool is_seekable(sox_format_t const * ft)
 {
-  struct stat st;
   int seekable;
   FILE *fp;
 
@@ -509,6 +508,7 @@ static sox_bool is_seekable(sox_format_t const * ft)
 
 #if defined HAVE_POSIX_FADVISE && defined POSIX_FADV_SEQUENTIAL
   if (seekable) {
+    struct stat st;
     int fd = fileno(fp);
 
     /* open_memstream()ed and fopenmem()ed files are seekable
