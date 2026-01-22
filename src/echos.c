@@ -37,7 +37,7 @@ typedef struct {
 /*
  * Process options
  */
-static int sox_echos_getopts(sox_effect_t * effp, int argc, char **argv)
+static int echos_getopts(sox_effect_t * effp, int argc, char **argv)
 {
         priv_t * echos = (priv_t *) effp->priv;
         char *endptr;
@@ -195,7 +195,7 @@ set_echos(sox_effect_t *effp, char *name, char *value)
 /*
  * Prepare for processing.
  */
-static int sox_echos_start(sox_effect_t * effp)
+static int echos_start(sox_effect_t * effp)
 {
         priv_t * echos = (priv_t *) effp->priv;
         unsigned i;
@@ -238,7 +238,7 @@ static int sox_echos_start(sox_effect_t * effp)
  * Processed signed long samples from ibuf to obuf.
  * Return number of samples processed.
  */
-static int sox_echos_flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sample_t *obuf,
+static int echos_flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sample_t *obuf,
                 size_t *isamp, size_t *osamp)
 {
         priv_t * echos = (priv_t *) effp->priv;
@@ -276,7 +276,7 @@ static int sox_echos_flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sam
 /*
  * Drain out reverb lines.
  */
-static int sox_echos_drain(sox_effect_t * effp, sox_sample_t *obuf, size_t *osamp)
+static int echos_drain(sox_effect_t * effp, sox_sample_t *obuf, size_t *osamp)
 {
         priv_t * echos = (priv_t *) effp->priv;
         float d_out;
@@ -315,9 +315,9 @@ static int sox_echos_drain(sox_effect_t * effp, sox_sample_t *obuf, size_t *osam
 }
 
 /*
- * Clean up echos effect.
+ * Clean up echos effect per-flow.
  */
-static int sox_echos_stop(sox_effect_t * effp)
+static int echos_stop(sox_effect_t * effp)
 {
         priv_t * echos = (priv_t *) effp->priv;
 	unsigned i;
@@ -327,9 +327,19 @@ static int sox_echos_stop(sox_effect_t * effp)
 	for (i=0; i<echos->num_delays; i++)
 	    free(echos->delay_buf[i]);
         free(echos->delay_buf);
+        echos->delay_buf = NULL;
+        return (SOX_SUCCESS);
+}
+
+/*
+ * Clean up echos effect per-effect.
+ */
+static int echos_kill(sox_effect_t * effp)
+{
+        priv_t * echos = (priv_t *) effp->priv;
+
         free(echos->delay);
         free(echos->decay);
-        echos->delay_buf = NULL;
         return (SOX_SUCCESS);
 }
 
@@ -366,8 +376,8 @@ const sox_effect_handler_t *lsx_echos_effect_fn(void)
 
   static sox_effect_handler_t handler = {
     "echos", usage, SOX_EFF_LENGTH | SOX_EFF_GAIN,
-    sox_echos_getopts,
-    sox_echos_start, sox_echos_flow, sox_echos_drain, sox_echos_stop, NULL,
+    echos_getopts,
+    echos_start, echos_flow, echos_drain, echos_stop, echos_kill,
     sizeof(priv_t), extra_usage, get_echos, set_echos,
   };
 
