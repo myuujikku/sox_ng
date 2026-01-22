@@ -137,9 +137,8 @@ static int flow(sox_effect_t * effp, const sox_sample_t *ibuf, sox_sample_t *obu
     }
 
     /* If it would exceed maximum volume, lower softvol so that it doesn't. */
-    if (maxamp * p->softvol > p->max_amp) {
-      p->softvol = p->max_amp / maxamp;
-    }
+    if (maxamp * p->softvol > p->max_amp)
+      p->softvol = (float)p->max_amp / (float)maxamp;
 
     for (chan = 0; chan < chans; chan++)
       *optr++ = *iptr++ * p->softvol;
