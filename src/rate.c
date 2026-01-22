@@ -398,7 +398,7 @@ static void extend_signal_out(sox_sample_t *x, int before, int after, int lpc_or
 {
   if (after == 0) return;
   //before = MIN(before, LPC_INPUT);
-  if ((before - 1) / 2 > lpc_order) lpc_order = (before - 1) / 2;
+  if ((before - 1) / 2 < lpc_order) lpc_order = (before - 1) / 2;
   //float window[LPC_PADDING];
   sample_t *work = (sample_t *)malloc((before + after) * sizeof(sample_t));
   sample_t *window = (sample_t *)malloc(after * sizeof(sample_t));
