@@ -5,6 +5,12 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
+sox_ng-14.7.0.5	2026-01-22
+---------------
+
+  o Fix softvol suddenly dropping to zero
+
+
 sox_ng-14.7.0.4	2026-01-13
 ---------------
 
