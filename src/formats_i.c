@@ -243,15 +243,15 @@ int lsx_padbytes(sox_format_t * ft, size_t n)
 /* See if a data buffer contains all zero bytes. */
 static sox_bool is_zero(void const *buf, size_t len)
 {
-  static char *zerobuf = NULL;
-  static size_t zerobuflen = 0;
+  static char zerobuf[1024];
+  char const *bufp = buf;
 
-  if (len > zerobuflen) {
-    free(zerobuf);
-    zerobuf = lsx_calloc(len, 1);
-    zerobuflen = len;
+  while (len > 0) {
+    size_t n = min(len, sizeof(zerobuf));
+    if (memcmp(bufp, zerobuf, n) != 0) return sox_false;
+    bufp += n; len -= n;
   }
-  return !memcmp(buf, zerobuf, len);
+  return sox_true;
 }
 
 /* Write a buffer of data of length bytes.
