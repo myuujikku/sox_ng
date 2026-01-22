@@ -175,17 +175,17 @@ static int start_bend(sox_effect_t * effp)
     if (!any_duration) return SOX_EFF_NULL;
   }
 
-  lsx_valloc(p->gInFIFO,      p->fftFrameSize);
-  lsx_valloc(p->gOutFIFO,     p->fftFrameSize);
-  lsx_valloc(p->gFFTworksp,   2 * p->fftFrameSize);
-  lsx_valloc(p->gLastPhase,   p->fftFrameSize / 2 + 1);
-  lsx_valloc(p->gSumPhase,    p->fftFrameSize / 2 + 1);
-  lsx_valloc(p->gOutputAccum, 2 * p->fftFrameSize);
-  lsx_valloc(p->gAnaFreq,     p->fftFrameSize);
-  lsx_valloc(p->gAnaMagn,     p->fftFrameSize);
-  lsx_valloc(p->gSynFreq,     p->fftFrameSize);
-  lsx_valloc(p->gSynMagn,     p->fftFrameSize);
-  lsx_valloc(p->gWindow,      p->fftFrameSize);
+  lsx_vcalloc(p->gInFIFO,      p->fftFrameSize);
+  lsx_vcalloc(p->gOutFIFO,     p->fftFrameSize);
+  lsx_vcalloc(p->gFFTworksp,   2 * p->fftFrameSize);
+  lsx_vcalloc(p->gLastPhase,   p->fftFrameSize / 2 + 1);
+  lsx_vcalloc(p->gSumPhase,    p->fftFrameSize / 2 + 1);
+  lsx_vcalloc(p->gOutputAccum, 2 * p->fftFrameSize);
+  lsx_vcalloc(p->gAnaFreq,     p->fftFrameSize);
+  lsx_vcalloc(p->gAnaMagn,     p->fftFrameSize);
+  lsx_vcalloc(p->gSynFreq,     p->fftFrameSize);
+  lsx_vcalloc(p->gSynMagn,     p->fftFrameSize);
+  lsx_vcalloc(p->gWindow,      p->fftFrameSize);
 
   /* Precalculate the window function */
   { unsigned k;
