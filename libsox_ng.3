@@ -303,7 +303,11 @@ T}
 The function to initialize the decoder.
 If it is \fBNULL\fP, the format cannot be read.
 .TP
+.nh
+.na
 .B size_t (*read)(sox_format_t *\fIft\fP, sox_sample_t *\fIbuf\fP, size_t \fIlen\fP)
+.ad
+.hy
 Decode a block of samples.
 .TP
 .B int (*stopread)(sox_format_t *\fIft\fP)
@@ -313,7 +317,11 @@ Close reader (decoder); \fBNULL\fP if no closing necessary.
 The function to initialize the encoder.
 If it is \fBNULL\fP, the format cannot be written.
 .TP
+.nh
+.na
 .B size_t (*write)(sox_format_t *\fIft\fP, sox_sample_t *\fIbuf\fP, size_t \fIlen\fP);
+.ad
+.hy
 Encode a block of sample.
 .TP
 .B int (*stopwrite)(sox_format_t *\fIft\fP)
@@ -486,10 +494,18 @@ The name of the format handler.
 The function to call to get a pointer to the format handler's data.
 .RE
 .TP
+.nh
+.na
 .B sox_format_handler_t *sox_find_format(char *\fIname\fB, sox_bool \fIignore_devices\fB)
+.ad
+.hy
 Finds a format handler by name and returns it, or \fBNULL\fP if it is not found.
 .TP
+.nh
+.na
 .B sox_bool sox_format_supports_encoding(char *\fIpath\fR, char *\fIfiletype\fR, sox_encodinginfo_t *\fIencoding\fR)
+.ad
+.hy
 .TP 10
 .I path
 Path to file to be examined (required if \fIfiletype\fP is \fBNULL\fP).
@@ -505,7 +521,11 @@ Returns true if the format handler for the specified file type supports the spec
 .RS
 .RE
 .TP
+.nh
+.na
 .B sox_format_handler_t sox_write_handler(char *\fIpath\fB, char *\fIfiletype\fB, char **\fIfiletype1\fB)
+.ad
+.hy
 Gets the format handler for a specified file type.
 Returns the found format handler, or \fBNULL\fP if not found.
 .RS
@@ -591,7 +611,11 @@ Description of the encoding.
 .B void sox_init_encodinginfo(sox_encodinginfo_t *\fIe\fP)
 Fills in a \fBsox_encodinginfo_t\fP with default values.
 .TP
+.nh
+.na
 .B unsigned sox_precision(sox_encoding_t \fIencoding\fP, unsigned \fIbits\fP)
+.ad
+.hy
 Given an encoding and the encoded bits_per_sample,
 returns the number of useful bits per sample in the decoded data,
 or 0 to indicate that the value returned by the format handler
@@ -606,7 +630,11 @@ The number of encoded bits per sample.
 .RE
 .SH READING AND WRITING AUDIO FILES
 .TP
+.nh
+.na
 .B sox_format_t *sox_open_read(char *\fIpath\fP, sox_signalinfo_t *\fIsignal\fP, sox_encodinginfo_t *\fIencoding\fP, char *\fIfiletype\fP)
+.ad
+.hy
 Opens a decoding session for a file.
 .RS
 .TP 10
@@ -626,7 +654,11 @@ Returns the handle for the new session, which must be closed with \fBsox_close()
 or \fBNULL\fP on failure.
 .RE
 .TP
+.nh
+.na
 .B sox_format_t *sox_open_mem_read(void *\fIbuffer\fB, size_t \fIsize\fB, sox_signalinfo_t *\fIsignal\fB, sox_encodinginfo_t *\fIencoding\fB, char *\fIfiletype\fB)
+.ad
+.hy
 Opens a decoding session for a memory buffer.
 .RS
 .TP 10
@@ -649,7 +681,11 @@ Returns a handle for the new session, which must be closed with \fBsox_close()\f
 or \fBNULL\fP on failure.
 .RE
 .TP
+.nh
+.na
 .B size_t sox_read(sox_format_t *\fIft\fB, sox_sample_t *\fIbuf\fB, size_t \fIlen\fB)
+.ad
+.hy
 Reads samples from a decoding session into a sample buffer.
 .RS
 .TP 10
@@ -664,7 +700,11 @@ If it was the end of the file, \fBerrno\fP will be zero,
 non-zero if there was a read error.
 .RE
 .TP
+.nh
+.na
 .B int sox_seek(sox_format_t *\fIft\fB, sox_uint64_t \fIoffset\fB, int \fIwhence\fB)
+.ad
+.hy
 Sets the location at which the next samples will be decoded.
 .RS
 .TP 10
@@ -677,7 +717,11 @@ Only \fBSOX_SEEK_SET\fR is currently supported.
 Returns \fBSOX_SUCCESS\fP if successful.
 .RE
 .TP
+.nh
+.na
 .B sox_format_t *sox_open_write(char *\fIpath\fB, sox_signalinfo_t *\fIsignal\fB, sox_encodinginfo_t *\fIencoding\fB, char *\fIfiletype\fB, sox_oob_t *\fIoob\fB, sox_bool (*\fIoverwrite\fB)(char *\fIfilename\fB))
+.ad
+.hy
 Opens an encoding session for a file.
 .RS
 .TP 10
@@ -703,7 +747,11 @@ Returns the new session handle, which must be closed with \fBsox_close()\fP,
 or \fBNULL\fP on failure.
 .RE
 .TP
+.nh
+.na
 .B sox_format_t *sox_open_mem_write(void *\fIbuffer\fB, size_t \fIsize\fB, sox_signalinfo_t *\fIsignal\fB, sox_encodinginfo_t *\fIencoding\fB, char *\fIfiletype\fB, sox_oob_t *\fIoob\fB)
+.ad
+.hy
 Opens an encoding session for a memory buffer.
 .RS
 .TP 10
@@ -729,7 +777,11 @@ Returns the new session handle, which must be closed with \fBsox_close()\fP,
 or \fBNULL\fP on failure.
 .RE
 .TP
+.nh
+.na
 .B sox_format_t *sox_open_memstream_write(char **\fIbuffer_p\fB, size_t *\fIsize_p\fB, sox_signalinfo_t *\fIsignal\fB, sox_encodinginfo_t *\fIencoding\fB, char *\fIfiletype\fB, sox_oob_t *\fIoob\fB)
+.ad
+.hy
 Opens an encoding session for a memstream buffer. 
 .RS
 .TP 10
@@ -755,7 +807,11 @@ Returns the new session handle, which must be closed with \fBsox_close()\fP,
 or \fBNULL\fP on failure.
 .RE
 .TP
+.nh
+.na
 .B size_t sox_write(sox_format_t *\fIft\fB, sox_sample_t *\fIbuf\fB, size_t \fIlen\fB)
+.ad
+.hy
 Writes samples to an encoding session from a sample buffer.
 .RS
 .TP 10
@@ -912,7 +968,11 @@ The effect's function to parse command-line arguments, called once per effect.
 .B int (*start)(sox_effect_t *effp)
 The function to initialize effect, called once per flow.
 .TP
+.nh
+.na
 .B int (*flow)(sox_effect_t *effp, sox_sample_t *ibuf, sox_sample_t *obuf, size_t *isamp, size_t *osamp)
+.ad
+.hy
 The function to process samples.
 .RS
 .TP 10
@@ -996,7 +1056,11 @@ Returns the number of arguments consumed.
 .B sox_effect_handler_t *sox_get_effect_fns(void)
 Returns an null-terminated array of the known effect handlers.
 .TP
+.nh
+.na
 .B sox_effects_chain_t *sox_create_effects_chain(sox_encodinginfo_t *\fIin_enc\fP, sox_encodinginfo_t *\fIout_enc\fB)
+.ad
+.hy
 Initializes an effects chain.
 .RS
 .TP 10
@@ -1013,7 +1077,11 @@ or \fBNULL\fP on failure.
 .B void sox_delete_effects_chain(sox_effects_chain_t *\fIchain\fB)
 Closes an effects chain and deletes all the effects in it.
 .TP
+.nh
+.na
 .B int sox_add_effect(sox_effects_chain_t *\fIchain\fB, sox_effect_t *\fIeffp\fB, sox_signalinfo_t *\fIin\fB, sox_signalinfo_t *\fIout\fB)
+.ad
+.hy
 Adds an effect to the end of the effects chain.
 Returns \fBSOX_SUCCESS\fP if successful.
 .RS
@@ -1025,7 +1093,11 @@ Characteristics of the input signal to the chain.
 Characteristics of the output signal from the chain.
 .RE
 .TP
+.nh
+.na
 .B int sox_flow_effects(sox_effects_chain_t *\fIchain\fB, int (*\fIcallback\fP)(sox_bool \fIall_done\fP, void *\fIdata), void *\fIdata\fB)
+.ad
+.hy
 Runs the effects chain. Returns \fBSOX_SUCCESS\fP if successful.
 .RS
 .TP 10
@@ -1050,7 +1122,11 @@ Returns the number of clips that occurred while running an effects chain.
 Shuts down an effect (calls stop on each of its flows) and
 returns the number of clips from all flows.
 .TP
+.nh
+.na
 .B void sox_push_effect_last(sox_effects_chain_t *\fIchain\fB, sox_effect_t *\fIeffp\fB)
+.ad
+.hy
 Adds an already-initialized effect to the end of the chain.
 .TP
 .B sox_effect_t *sox_pop_effect_last(sox_effects_chain_t *\fIchain\fB)
