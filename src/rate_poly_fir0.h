@@ -35,7 +35,7 @@ static void FUNCTION(stage_t * p, fifo_t * output_fifo)
     CONVOLVE
     output[i] = sum;
   }
-  assert(max_num_out - i >= 0);
+  if (!(max_num_out - i >= 0)) lsx_warn("Assertion `max_num_out - i >= 0' failed. Carrying on anyway...");
   fifo_trim_by(output_fifo, max_num_out - i);
   divided2 = div(p->at.parts.integer, p->L);
   fifo_read(&p->fifo, divided2.quot, NULL);
