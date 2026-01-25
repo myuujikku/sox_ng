@@ -5,8 +5,31 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
-sox_ng-14.7.0+git
------------------
+sox_ng-14.7.0+git20260125
+-------------------------
+
+Changes since +git20251226b:
+
+  o In interactive mode, make [n] skip and [q] and [esc] quit
+  o bend: Raise maximum FFT size from 8192 to 1<<30
+  o bend: Optimized to run twice as fast
+  o echo/echos: Get the output signal length right
+  o rate: Extrapolate the ends of the signal to improve end effects
+  o softvol: Fix bug whereby rising volume suddenly dropped to zero
+  o spectrogram: Add -i option to interpolate frequency bins
+  o spectrogram: Fix linear axis with frequency ranges
+  o spectrogram: On log axis, add labels at 2 and 5 or 1 to 9
+  o spectrogram: Slightly faster by doing out-of-place FFTs
+  o spectrogram: Fail if the start time is beyond the end
+  o Add format handlers mad, lame and twolame to pick a codec
+  o ogg: Detect disk-full when writing and stop
+  o -t sndfile now handles AVR format
+  o Update to wavpack 5.0 giving 64-bit file lengths
+  o Fix some core dumps, assertion failures and memory leaks
+  o New demo miniprograms demo/soxcopy and demo/synth
+  o Move manual entries for effects from sox_ng.1 to soxeffect_ng.7 
+  o Completely rewrite libsox_ng.3 making it complete and accurate
+  o New manual pages libsoxeffect and libsoxformat on writing handlers
 
 New features:
 
