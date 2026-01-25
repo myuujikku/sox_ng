@@ -298,6 +298,27 @@ static int sox_mad_inputtag(sox_format_t * ft)
     return rc;
 }
 
+/*
+ * This is the error callback function. It is called whenever a decoding
+ * error occurs. The error is indicated by stream->error; the list of
+ * possible MAD_ERROR_* errors can be found in the mad.h (or stream.h)
+ * header file.
+ */
+
+static char const *mad_error = NULL;
+
+static
+enum mad_flow error(LSX_UNUSED void *data,
+                    struct mad_stream *stream,
+                    LSX_UNUSED struct mad_frame *frame)
+{
+  mad_error = mad_stream_errorstr(stream);
+
+  /* return MAD_FLOW_BREAK here to stop decoding (and propagate an error) */
+
+  return MAD_FLOW_CONTINUE;
+}
+
 int startread_mad(sox_format_t * ft)
 {
   priv_t *p = (priv_t *) ft->priv;
@@ -305,6 +326,7 @@ int startread_mad(sox_format_t * ft)
   sox_bool ignore_length = ft->signal.length == SOX_IGNORE_LENGTH;
   int open_library_result;
   sox_bool done_init = sox_false;
+  struct mad_decoder decoder;
 
   LSX_DLLIBRARY_OPEN(
       p,
@@ -318,6 +340,12 @@ int startread_mad(sox_format_t * ft)
 
   p->mp3_buffer_size = sox_globals.bufsiz;
   p->mp3_buffer = lsx_malloc(p->mp3_buffer_size);
+
+  /* configure error function */
+
+  mad_decoder_init(&decoder, NULL,
+                   0 /* input */, 0 /* header */, 0 /* filter */,
+                   0 /* output */, error, 0 /* message */);
 
   ft->signal.length = SOX_UNSPEC;
   if (ft->seekable) {
@@ -377,6 +405,11 @@ int startread_mad(sox_format_t * ft)
       p->Stream.error = 0;
   }
 
+  if (mad_error)
+  {
+      lsx_fail(mad_error);
+      return SOX_EOF;
+  }
   if (p->Stream.error)
   {
       lsx_fail_errno(ft,SOX_EOF,"no valid MP3 frame found");
