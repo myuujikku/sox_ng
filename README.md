@@ -163,6 +163,22 @@ As well as the above, you can also install it with Homebrew:
 
     brew install sox_ng
 
+### NetBSD, OpenWRT and Solus
+
+There are packages for these [on `pkgs.org`](https://pkgs.org/download/sox_ng)
+
+### Windows
+
+On the [releases page](https://codeberg.org/sox_ng/sox_ng/releases)
+you'll find `zip` files containing a Windows `exe` for `sox_ng`,
+which you can copy to `sox.exe`, `soxi.exe`, `play.exe` and `rec.exe'
+(they are all the same program which behaves differently according to
+its name).
+
+You may also be able to
+
+    winget --install sox_ng.sox_ng -e
+
 ## Accessibility
 
 You can edit and commit to the code and the wiki using Codeberg's web interface
