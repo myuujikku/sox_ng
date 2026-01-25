@@ -98,13 +98,7 @@ static int startread_ffmpeg(sox_format_t * ft)
 #endif
   }
 
-  {
-#ifdef _WIN32
-    ft->fp = lsx_popen(command_argv, "rb");
-#else
-    ft->fp = lsx_popen(command_argv, "r");
-#endif
-  }
+  ft->fp = lsx_popen(command_argv, 'r', filename_index);
   if (ft->fp == NULL) {
     lsx_fail("could not create a pipe for ffmpeg");
     return SOX_EOF;

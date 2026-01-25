@@ -285,4 +285,4 @@ extern double lsx_strtod(char const *nptr, char **endptr);
 extern int lsx_sscanf(const char *str, const char *format, ...);
 #define sscanf lsx_sscanf
 
-extern FILE *lsx_popen(char ** argv, char *type);
+extern FILE *lsx_popen(char **argv, char type, int filename_index);
