@@ -25,26 +25,27 @@ and is composed of a SoX code base, a wiki and an issue tracker.
 
 ### Releases
 
-Download one of the
-[release tarballs](https://codeberg.org/sox_ng/sox_ng/releases).
+On the [releases page](https://codeberg.org/sox_ng/sox_ng/releases)
+you'll find source code tarballs and Windows `exe`s.
 
-Extract it:
-```
-gzip -d < sox_ng-*.tar.gz | tar xf -
-```
+#### Compiling it from source
+
+On Unix-compatible systems, extract it:
+
+    gzip -d < sox_ng-*.tar.gz | tar xf -
+
 Build it:
-```
-cd sox_ng*
-./configure
-make
-```
+
+    cd sox_ng*
+    ./configure
+    make
+
 On most systems you should only get two compiler warnings
 about `#pragma STDC FENV_ACCESS`
 
 Install it:
-```
-make install
-```
+
+    sudo make install
 
 It installs as `sox_ng`, `sox_ng.h`, `libsox_ng.so` and so on
 so that `sox` and `sox_ng` can coexist on the same system.
@@ -56,26 +57,25 @@ To make it work the same as the original `sox`, use
 #### main
 
 To fetch the latest version:
-```
-git clone https://codeberg.org/sox_ng/sox_ng
-cd sox_ng
-```
+
+    git clone https://codeberg.org/sox_ng/sox_ng
+    cd sox_ng
+
 and to make local copies of the wiki and the issues:
-```
-git clone https://codeberg.org/sox_ng/sox_ng.wiki wiki
-issues/getissues.sh
-```
+
+    git clone https://codeberg.org/sox_ng/sox_ng.wiki wiki
+    issues/getissues.sh
 
 To compile it:
-```
-autoreconf -i
-./configure
-make
-```
+
+    autoreconf -i
+    ./configure
+    make
+
 and to install it:
-```
-sudo make install
-```
+
+    sudo make install
+
 This installs it as `sox_ng`, `sox_ng.h`, `libsox_ng` and so on,
 so that it can coexist with traditional `sox`. If you want it to work
 the same as the original `sox`, use `./configure --enable-replace`
@@ -110,40 +110,38 @@ To enable all of SoX's optional modules you can install
 `wavpack`.
 
 ### Debian, Ubuntu, Mint etc.
-```
-apt install gcc make libtool ladspa-sdk libao-dev libasound2-dev libfftw3-dev \
+
+    apt install gcc make libtool ladspa-sdk libao-dev libasound2-dev libfftw3-dev \
 	libgsm1-dev libid3tag0-dev libltdl-dev libmad0-dev libmagic-dev \
 	libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev \
 	libopusfile-dev libpng-dev libpulse-dev \
 	libsndfile1-dev libspeex-dev libspeexdsp-dev libtwolame-dev \
 	libvorbis-dev libwavpack-dev
-```
+
 and to run `issues/getissues.sh` and the `makehtml.sh` scripts you will need
-```
-apt-get install jq libtext-multimarkdown-perl
-```
+
+    apt-get install jq libtext-multimarkdown-perl
 
 ### Fedora, Red Hat, CentOS etc.
-```
-yum install gcc make libtool \
+
+    yum install gcc make libtool \
 	alsa-lib-devel fftw-devel file-devel flac-devel gsm-devel \
 	ladspa-devel lame-devel libao-devel libid3tag-devel \
 	libmad-devel libpng-devel libsndfile-devel \
 	libtool-ltdl-devel libvorbis-devel opencore-amr-devel \
 	opusfile-devel pulseaudio-libs-devel speex-devel speexdsp-devel \
 	twolame-devel wavpack-devel
-```
+
 and to run `issues/getissues.sh` and the `makehtml.sh` scripts you will need
-```
-yum install jq multimarkdown
-```
+
+    yum install jq multimarkdown
 
 ### FreeBSD
-```
-pkg install gcc dmake fftw3 file ladspa libid3tag png \
+
+    pkg install gcc dmake fftw3 file ladspa libid3tag png \
 	flac gsm lame libmad libsndfile libvorbis opencore-amr \
 	opusfile speex speexdsp twolame wavpack
-```
+
 but you can almost certainly omit `file` which it wants for `libmagic`
 which is installed in a default FreeBSD installation in `/usr/lib`.
 If you install it with `pkg`, you get a second copy under `/usr/local`.
@@ -152,21 +150,18 @@ You can also install `pulseaudio` `alsa-libs` and `libao`
 if you want support for those alternative sound I/O systems.
 
 If you are compiling its development git tree you will also need to
-```
-pkg install autotools libtool
-```
+
+    pkg install autotools libtool
 
 To run `issues/getissues.sh` and the `makehtml.sh` scripts you will need
-```
-pkg install jq multimarkdown
-```
+
+    pkg install jq multimarkdown
 
 ### MacOS/X
 
 As well as the above, you can also install it with Homebrew:
-```
-brew install sox_ng
-```
+
+    brew install sox_ng
 
 ## Accessibility
 
