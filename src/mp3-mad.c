@@ -304,6 +304,7 @@ int startread_mad(sox_format_t * ft)
   size_t ReadSize;
   sox_bool ignore_length = ft->signal.length == SOX_IGNORE_LENGTH;
   int open_library_result;
+  sox_bool done_init = sox_false;
 
   LSX_DLLIBRARY_OPEN(
       p,
@@ -325,13 +326,17 @@ int startread_mad(sox_format_t * ft)
     lsx_rewind(ft);
     if (!ft->signal.length)
 #endif
-      if (!ignore_length)
+      if (!ignore_length) {
         ft->signal.length = mp3_duration_ms(ft);
+        done_init = sox_true;
+      }
   }
 
-  p->mad_stream_init(&p->Stream);
-  p->mad_frame_init(&p->Frame);
-  p->mad_synth_init(&p->Synth);
+  if (!done_init) {
+    p->mad_stream_init(&p->Stream);
+    p->mad_frame_init(&p->Frame);
+    p->mad_synth_init(&p->Synth);
+  }
   mad_timer_reset(&p->Timer);
 
   /* Decode at least one valid frame to find out the input
