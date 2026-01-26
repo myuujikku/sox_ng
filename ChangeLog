@@ -5,13 +5,13 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
-sox_ng-14.7.0+git20260126
--------------------------
+sox_ng-14.7.0+git
+-----------------
 
 Changes since +git20260125:
 
-  o dff/dsf/wsd: Automatically resample to supported sample rates
-  o dff/dsf: Autodetect the formats when reading from stdin
+  o dff/dsf: Automatically resample to supported sample rates when writing
+  o dff/dsf/wsd: Autodetect the formats when reading from stdin
   o rate: More fixes to the extrapolator
   o Portability fixes for C89/C90
 
@@ -31,7 +31,7 @@ Changes since +git20251226b:
   o Add format handlers mad, lame and twolame to pick a codec
   o ogg: Detect disk-full when writing and stop
   o -t sndfile now handles AVR format
-  o Update to wavpack 5.0 giving 64-bit file lengths
+  o Update to WavPack 5.0 giving 64-bit file lengths
   o Fix some core dumps, assertion failures and memory leaks
   o New demo miniprograms demo/soxcopy and demo/synth
   o Move manual entries for effects from sox_ng.1 to soxeffect_ng.7 
