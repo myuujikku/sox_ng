@@ -88,7 +88,7 @@ static int create(sox_effect_t * effp, int argc, char * * argv)
           lsx_fail("%s requires an argument", argv[optstate.ind - 2]);
           return SOX_EOF;
         }
-        if (isdigit(argv[optstate.ind - 1][1])) {
+        if (isdigit((unsigned char)argv[optstate.ind - 1][1])) {
           /* -1 to -9: optstate.ind advances for an unknown single-char flag */
 	  /* Not sure what -0 is supposed to mean - it gives silence */
           optstate.ind--;
