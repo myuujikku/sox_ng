@@ -128,6 +128,9 @@ static char const * auto_detect_format(sox_format_t * ft, char const * ext)
   /* First 16 bits for MPEG 1 layer 2 */
   CHECK(mp2   , 0, 0, ""     , 0,  2, "\xFF\xFC") /* CRC protected */
   CHECK(mp2   , 0, 0, ""     , 0,  2, "\xFF\xFD") /* Not protected */
+  CHECK(dff   , 0, 4, "FRM8" ,12,  4, "DSD ")
+  CHECK(dsf   , 0, 4, "DSD " ,28,  4, "fmt ")
+  CHECK(wsd   , 0, 0, ""     , 0,  4, "1bit")
 
 #if HAVE_SNDFILE
   CHECK(sds   , 0, 0, ""     , 0,  2, "\xF0\x7E")
