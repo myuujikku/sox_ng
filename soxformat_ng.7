@@ -366,10 +366,17 @@ does not end in `.dts', you will need to prefix it with `\fB-t\ ffmpeg\fR'.
 Direct Stream Digital Interchange File Format (DSDIFF) is a format
 defined by Philips for storing 1-bit DSD data, used in SACD mastering
 and occasionally for online distribution.
+SoX can write single-, double- and quad-sample rates of
+64, 128 and 256 times 44100Hz (2822400, 5644800 and 11289600Hz),
+known as DSD64, DSD128 and DSD256,
+but not the octuple- and sexdecuple- variants (DSD512 and DSD1024).
 .TP
 \fB.dsf\fR, \fB.wsd\fR
-DSD Stream File is a format defined by Sony for storing 1-bit DSD data,
-commonly used for online distribution of audiophile recordings.
+DSD Stream File and Wideband Single-bit Data are formats defined by Sony
+and by Sharp and Pioneer for storing 1-bit DSD data,
+commonly used for online distribution of audiophile recordings,
+supporting the same sample rates as \fBdff\fP.
+The \fBwsd\fR variant can be read but not written.
 .TP
 \fB.dvms\fR, \fB.vms\fR
 The Digital Voice Messaging System format is used in Germany
