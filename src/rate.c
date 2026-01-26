@@ -306,8 +306,10 @@ static void calc_optimal_lpc_buffer_sizes(size_t inrate, size_t outrate, int *in
 
 static int lpc_length(int samples, int ideallength, int in_ratio)
 {
+  int c;
+
   if (samples >= ideallength) return ideallength;
-  const int c = max(samples / in_ratio, 1);
+  c = max(samples / in_ratio, 1);
   return min(c * in_ratio, samples);
 }
 
@@ -396,16 +398,17 @@ done:
 
 static void extend_signal_out(sox_sample_t *x, int before, int after, int channels)
 {
-  if (after == 0) return;
+  sample_t *work, *window, *lpc;
   int lpc_order = 512;
-  //before = MIN(before, LPC_INPUT);
+  int i, c;
+
+  if (after == 0) return;
   if ((before - 1) / 2 < lpc_order) lpc_order = (before - 1) / 2;
-  //float window[LPC_PADDING];
-  sample_t *work = (sample_t *)malloc((before + after) * sizeof(sample_t));
-  sample_t *window = (sample_t *)malloc(after * sizeof(sample_t));
-  sample_t *lpc = (sample_t *)malloc(lpc_order * sizeof(sample_t));
-  if (before < 2 * lpc_order || !work || !window || !lpc) { // was 4 *
-    for (int i = 0; i < after * channels; i++) x[i] = 0;
+  work = (sample_t *)malloc((before + after) * sizeof(sample_t));
+  window = (sample_t *)malloc(after * sizeof(sample_t));
+  lpc = (sample_t *)malloc(lpc_order * sizeof(sample_t));
+  if (before < 2 * lpc_order || !work || !window || !lpc) { /* was 4 */
+    for (i = 0; i < after * channels; i++) x[i] = 0;
     if (!work || !window || !lpc) {
       free(work); free(lpc); free(window);
       return;
@@ -418,23 +421,24 @@ static void extend_signal_out(sox_sample_t *x, int before, int after, int channe
     sample_t m0 = 1, m1 = 0.5 * LPC_GOERTZEL_CONST;
     sample_t a1 = LPC_GOERTZEL_CONST;
     window[0] = 1;
-    for (int i = 1; i < after; i++) {
+    for (i = 1; i < after; i++) {
       window[i] = a1 * m0 - m1;
       m1 = m0;
       m0 = window[i];
     }
-    for (int i = 0; i < after; i++) window[i] = 0.5 + 0.5 * window[i];
+    for (i = 0; i < after; i++) window[i] = 0.5 + 0.5 * window[i];
   }
-  for (int c = 0; c < channels; c++) {
-    //sample_t lpc[LPC_ORDER];
-    for (int i = 0; i < before; ++i) work[i] = (sample_t)x[(i - before) * channels + c] / (sample_t)(1ul << 31ul);
+  for (c = 0; c < channels; c++) {
+    for (i = 0; i < before; ++i) work[i] = (sample_t)x[(i - before) * channels + c] / (sample_t)(1ul << 31ul);
     vorbis_lpc_from_data(work, lpc, before, lpc_order, 1);
-    for (int i = 0; i < after; i++) {
+    for (i = 0; i < after; i++) {
       sample_t sum = 0;
-      for (int j = 0; j < lpc_order; j++) sum -= work[before + i - j - 1] * lpc[j];
+      int j;
+
+      for (j = 0; j < lpc_order; j++) sum -= work[before + i - j - 1] * lpc[j];
       work[i + before] = sum;
     }
-    for (int i = 0; i < after; i++) x[i * channels + c] = (sox_sample_t)(work[i + before] * (sample_t)(1ul << 31ul) * window[i]);
+    for (i = 0; i < after; i++) x[i * channels + c] = (sox_sample_t)(work[i + before] * (sample_t)(1ul << 31ul) * window[i]);
   }
   free(work);
   free(lpc);
@@ -443,22 +447,25 @@ static void extend_signal_out(sox_sample_t *x, int before, int after, int channe
 
 static void extend_signal_in(sox_sample_t *x, int before, int after, int channels)
 {
+  sox_sample_t *rev;
+  int i, c;
+
   if (after == 0) return;
-  sox_sample_t *rev = (sox_sample_t *)malloc((before + after) * channels * sizeof(sox_sample_t));
+  rev = (sox_sample_t *)malloc((before + after) * channels * sizeof(sox_sample_t));
   if (!rev) {
-    for (int i = 0; i < after * channels; ++i) x[i - after * channels] = 0;
+    for (i = 0; i < after * channels; ++i) x[i - after * channels] = 0;
     return;
   }
-  for (int c = 0; c < channels; c++) {
-    for (int i = 0; i < before; i++) {
+  for (c = 0; c < channels; c++) {
+    for (i = 0; i < before; i++) {
       rev[i * channels + c] = x[(before - i - 1) * channels + c];
     }
   }
 
   extend_signal_out(rev + before * channels, before, after, channels);
 
-  for (int c = 0; c < channels; c++) {
-    for (int i = 0; i < after; i++) {
+  for (c = 0; c < channels; c++) {
+    for (i = 0; i < after; i++) {
       x[(i - after) * channels + c] = rev[(before + after - i - 1) * channels + c];
     }
   }
@@ -918,8 +925,10 @@ static int flow_rate(sox_effect_t * effp, const sox_sample_t * ibuf,
   }
 
   if (rp->lpc_trim > 0) {
+    size_t skip;
+
     s = rate_output(&p->rate, NULL, &odone);
-    const size_t skip = (odone < (size_t)rp->lpc_trim) ? odone : (size_t)rp->lpc_trim;
+    skip = (odone < (size_t)rp->lpc_trim) ? odone : (size_t)rp->lpc_trim;
     rp->lpc_trim -= skip;
     odone -= skip;
     s += skip;
@@ -966,10 +975,12 @@ static int drain_rate(sox_effect_t * effp, sox_sample_t * obuf, size_t * osamp)
   }
 
   do {
+    size_t skip;
+
     if (rp->lpc_trim > 0) { /* extrapolated beginning not trimmed away yet */
       odone = oavail;
       s = rate_output(&p->rate, NULL, &odone);
-      const size_t skip = (odone < (size_t)rp->lpc_trim) ? odone : (size_t)rp->lpc_trim;
+      skip = (odone < (size_t)rp->lpc_trim) ? odone : (size_t)rp->lpc_trim;
       rp->lpc_trim -= skip;
       s += skip;
       odone -= skip;

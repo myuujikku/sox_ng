@@ -1343,10 +1343,11 @@ static int kbhit(void)
 static void adjust_volume(int delta)
 {
   char * from_env;
+  int vol1 = 0, vol2 = 0, fd;
 
   if (lsx_adjust_softvol(delta) == SOX_SUCCESS) return;
   from_env = getenv("MIXERDEV");
-  int vol1 = 0, vol2 = 0, fd = open(from_env? from_env : "/dev/mixer", O_RDWR);
+  fd = open(from_env? from_env : "/dev/mixer", O_RDWR);
   if (fd >= 0) {
     if (ioctl(fd, MIXER_READ(SOUND_MIXER_PCM), &vol1) != -1) {
       int side1 = vol1 & 0xff, side2 = (vol1 >> 8) & 0xff;
@@ -2620,7 +2621,7 @@ static char parse_gopts_and_fopts(file_t * f)
 
     case 'A':
       if (sscanf(optstate.arg, "%f %c", &sox_globals.A4, &dummy) != 1 ||
-          !isfinite(sox_globals.A4) || sox_globals.A4 <= 0) {
+          /* !isfinite(sox_globals.A4) || */ sox_globals.A4 <= 0) {
         lsx_fail("concert pitch `%s' is not a positive number", optstate.arg);
         exit(1);
       }

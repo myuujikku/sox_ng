@@ -10,6 +10,11 @@
 
 #include "../src/soxconfig.h"
 
+/* Extra declarations for C89/90 */
+#ifndef M_PI
+# define M_PI 3.14159265358979323846
+#endif
+
 /* Most systems have <sys/queue.h> but AIX 7.3 has one that defines the
  * doubly-linked list macros (TAILQ_*) but not the singly-linked ones used here
  * (STAILQ_*) and there seems to be no way for configure.ac to check
@@ -905,6 +910,9 @@ exit:
 
 int ebur128_set_max_window(ebur128_state* st, unsigned long window) {
   int errcode = EBUR128_SUCCESS;
+  size_t new_audio_data_frames;
+  size_t new_audio_data_size;
+  double* new_audio_data;
   size_t j;
 
   if ((st->mode & EBUR128_MODE_S) == EBUR128_MODE_S && window < 3000) {
@@ -917,7 +925,6 @@ int ebur128_set_max_window(ebur128_state* st, unsigned long window) {
     return EBUR128_ERROR_NO_CHANGE;
   }
 
-  size_t new_audio_data_frames;
   if (safe_size_mul(st->samplerate, window, &new_audio_data_frames) != 0 ||
       new_audio_data_frames > ((size_t) -1) - st->d->samples_in_100ms) {
     return EBUR128_ERROR_NOMEM;
@@ -928,13 +935,12 @@ int ebur128_set_max_window(ebur128_state* st, unsigned long window) {
                             (new_audio_data_frames % st->d->samples_in_100ms);
   }
 
-  size_t new_audio_data_size;
   if (safe_size_mul(new_audio_data_frames, st->channels * sizeof(double),
                     &new_audio_data_size) != 0) {
     return EBUR128_ERROR_NOMEM;
   }
 
-  double* new_audio_data = (double*) malloc(new_audio_data_size);
+  new_audio_data = (double*) malloc(new_audio_data_size);
   CHECK_ERROR(!new_audio_data, EBUR128_ERROR_NOMEM, exit)
 
   st->d->window = window;

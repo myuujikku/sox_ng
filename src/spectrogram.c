@@ -885,10 +885,11 @@ static float *linear_axis(float from, float to, float step, unsigned *nlabels);
 static float *axis(float from, float to, unsigned total, unsigned min_spacing,
                    unsigned * nlabels_p, float *scale_p, char * * prefix_p)
 {
-  if (min_spacing == 0) return NULL; /* Otherwise it may never terminate or
-                                      * return an infinite list */
   int prefix_num;
   float scale;      /* Power of ten we are considering as a step */
+
+  if (min_spacing == 0) return NULL; /* Otherwise it may never terminate or
+                                      * return an infinite list */
 
   for (scale=1e-12, prefix_num=0; scale <= 1e+18; scale *= 1000, prefix_num++)
   {

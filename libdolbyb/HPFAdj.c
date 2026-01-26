@@ -23,6 +23,9 @@
 #include <stdint.h>
 #include <math.h>
 
+/* Extra declarations for C89/C90 */
+extern double round(double);
+
 #define HPFAdjTabSize   1000
 
 static uint16_t const HPFAdjTab[HPFAdjTabSize] = {

@@ -454,12 +454,12 @@ static int sox_chorus_flow_or_drain (sox_effect_t *effp,
 			((stage->delay_line_index + stage->delay_line_length - offset_i)
 			 % stage->delay_line_length);
 		    chorus_delay_sample_t delayed_0, delayed_1;
+		    chorus_delay_sample_t sample;
 
 		    stage->delay_line[stage->delay_line_index] = d_in;
 		    delayed_0 = stage->delay_line[delay_line_index];
 		    delayed_1 = stage->delay_line[(delay_line_index + stage->delay_line_length - 1) % stage->delay_line_length];
-		    chorus_delay_sample_t sample =
-			delayed_0 * (1 - frac) + delayed_1 * frac;
+		    sample = delayed_0 * (1 - frac) + delayed_1 * frac;
 
 		    d_out += sample * stage->decay;
 		    MODULAR_INCREMENT(stage->delay_line_index,
@@ -497,12 +497,12 @@ static int sox_chorus_flow_or_drain (sox_effect_t *effp,
 			((stage->delay_line_index + stage->delay_line_length - offset_i)
 			 % stage->delay_line_length);
 		    chorus_delay_sample_t delayed_0, delayed_1, delayed_2;
+		    chorus_delay_sample_t sample;
 
 		    stage->delay_line[stage->delay_line_index] = d_in;
 		    delayed_0 = stage->delay_line[delay_line_index];
 		    delayed_1 = stage->delay_line[(delay_line_index + stage->delay_line_length - 1) % stage->delay_line_length];
 		    delayed_2 = stage->delay_line[(delay_line_index + stage->delay_line_length - 2) % stage->delay_line_length];
-		    chorus_delay_sample_t sample;
 
 		    {
 		      double a, b;

@@ -23,6 +23,9 @@
 #include <stdint.h>
 #include <math.h>
 
+/* Extra declarations for C89/C90 */
+extern double round(double);
+
 #define LPFadjTabSize   800
 
 static uint16_t const LPFadjTab[LPFadjTabSize] = {

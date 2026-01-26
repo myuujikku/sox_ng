@@ -271,12 +271,14 @@ static void CenterCut_Run(sox_effect_t *effp) {
     double diffSq = diffR * diffR + diffI * diffI;
     double alpha = 0.0;
 
+    double cR, cI;
+
     if (sumSq > nodivbyzero) {
       alpha = 0.5 - sqrt(diffSq / sumSq) * 0.5;
     }
 
-    double cR = sumR * alpha;
-    double cI = sumI * alpha;
+    cR = sumR * alpha;
+    cI = sumI * alpha;
 
     if (mBassToSides && (i < freqBelowToSides)) {
       cR = cI = 0.0;
@@ -360,8 +362,9 @@ static double *CreatePostWindow(int windowSize, int power) {
   double powerIntegrals[] = { 1.0, 1.0/2.0, 3.0/8.0, 5.0/16.0,
     35.0/128.0, 63.0/256.0, 231.0/1024.0, 429.0/2048.0 };
   double scalefac = powerIntegrals[1] / powerIntegrals[power + 1];
+  int i;
 
-  for(int i = 0; i < windowSize; i++) {
+  for(i = 0; i < windowSize; i++) {
     post[i] *= scalefac;
   }
 
@@ -371,10 +374,11 @@ static double *CreatePostWindow(int windowSize, int power) {
 static double *VDCreateRaisedCosineWindow(int n, double power) {
   double twopi_over_n = twopi / n;
   double *dst;
+  int i;
 
   lsx_valloc(dst, n);
 
-  for (int i = 0; i < n; i++) {
+  for (i = 0; i < n; i++) {
     dst[i] = pow(0.5 * (1.0 - cos(twopi_over_n * (i + 0.5))), power);
   }
 
@@ -384,10 +388,11 @@ static double *VDCreateRaisedCosineWindow(int n, double power) {
 static double *VDCreateHalfSineTable(int n) {
   double twopi_over_n = twopi / n;
   double *dst;
+  int i;
 
   lsx_valloc(dst, n);
 
-  for (int i = 0; i < n; i++) {
+  for (i = 0; i < n; i++) {
     dst[i] = sin(twopi_over_n * i);
   }
 
@@ -397,10 +402,11 @@ static double *VDCreateHalfSineTable(int n) {
 static uint *VDCreateBitRevTable(int n) {
   uint bits = IntegerLog2((uint)n);
   uint *dst;
+  int i;
 
   lsx_valloc(dst, n);
 
-  for (int i = 0; i < n; i++) {
+  for (i = 0; i < n; i++) {
     dst[i] = RevBits((uint)i, bits);
   }
 

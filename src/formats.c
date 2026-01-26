@@ -1765,9 +1765,11 @@ int sox_format_init(void) /* Find & load format handlers.  */
     {
       char *ld_library_path = getenv("LD_LIBRARY_PATH");
       if (ld_library_path) {
+        char *colonp;
+
         /* We mustn't modify the process environment */
         copy = strdup(ld_library_path);
-        char *colonp = copy ? strchr(copy, ':') : NULL;
+        colonp = copy ? strchr(copy, ':') : NULL;
         if (colonp && colonp - copy >= 6 &&
             !(*colonp = '\0', strcmp(colonp-6, "/.libs")))
           pkglibdir = copy;

@@ -22,16 +22,14 @@
 
 typedef enum {SAT_TANH, SAT_SQRT, SAT_DIODE} sat_t;
 
-typedef struct {
+typedef struct priv {
   /* Parameters */
   sat_t  sat_type;
   float blend;
   float offset;
-  union {
-    float drive; /* tanh */
-    float color; /* sqrt */
-    float threshold; /* diode */
-  };
+  float drive;     /* used by tanh */
+  float color;     /* used by sqrt */
+  float threshold; /* used by diode */
 
   /* Recenter the output so zero in -> zero out */
   float offset_out;
@@ -57,10 +55,11 @@ static float sat_tanh(priv_t *p, float d) {
 
 
 static float sat_sqrt(priv_t *p, float d) {
+  float root_d, sign_d_root_d, d_root_d;
   d += p->offset;
-  float root_d = sqrtf(fabsf(d));
-  float sign_d_root_d = d < 0 ? -root_d : root_d;
-  float d_root_d = d * root_d;
+  root_d = sqrtf(fabsf(d));
+  sign_d_root_d = d < 0 ? -root_d : root_d;
+  d_root_d = d * root_d;
   return sign_d_root_d * p->color + d_root_d * (1 - p->color) - p->offset_out;
 }
 
@@ -246,8 +245,9 @@ static int flow(sox_effect_t * effp, sox_sample_t const * ibuf,
   SOX_SAMPLE_LOCALS;
   priv_t * p = (priv_t *) effp->priv;
   size_t len = *isamp > *osamp ? *osamp : *isamp;
-  *isamp = *osamp = len;
   float in, fx;
+
+  *isamp = *osamp = len;
 
   switch (p->sat_type) {
     case SAT_TANH:

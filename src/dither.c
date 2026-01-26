@@ -29,7 +29,7 @@ typedef enum { /* Collection of various filters from the net */
   Shape_none, Shape_lipshitz, Shape_f_weighted, Shape_modified_e_weighted,
   Shape_improved_e_weighted, Shape_gesemann, Shape_shibata, Shape_low_shibata, Shape_high_shibata,
   Shape_shibata_A0, Shape_shibata_A1, Shape_shibata_A2, Shape_shibata_A3, Shape_shibata_A4, Shape_shibata_A5, Shape_shibata_A6, Shape_shibata_A_saturated,
-  Shape_shibata_B0, Shape_shibata_B1, Shape_shibata_B2, Shape_shibata_B3, Shape_shibata_B4, Shape_shibata_B5, Shape_shibata_B6,
+  Shape_shibata_B0, Shape_shibata_B1, Shape_shibata_B2, Shape_shibata_B3, Shape_shibata_B4, Shape_shibata_B5, Shape_shibata_B6
 } filter_name_t;
 static lsx_enum_item const filter_names[] = {
   LSX_ENUM_ITEM(Shape_,none)
