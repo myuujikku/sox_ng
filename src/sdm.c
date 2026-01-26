@@ -1105,11 +1105,7 @@ static int start_sdm(sox_effect_t *effp)
 {
   sdm_effect_t *p = effp->priv;
 
-  fprintf(stderr, "trellis order=%d num=%d latency=%d\n",
-                    p->trellis_order, p->trellis_num, p->trellis_lat);
   p->sdm = sdm_init(p->filter_name, effp->in_signal.rate,
-                    p->trellis_order, p->trellis_num, p->trellis_lat);
-  fprintf(stderr, "trellis order=%d num=%d latency=%d\n",
                     p->trellis_order, p->trellis_num, p->trellis_lat);
   if (!p->sdm)
     return SOX_EOF;
