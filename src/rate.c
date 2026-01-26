@@ -260,7 +260,7 @@ static int dft_stage_init(
 
 typedef struct {
   double     factor;
-  int64_t    samples_in, samples_out;
+  int64_t    samples_in, samples_out, samples_out_max;
   int        num_stages;
   stage_t    * stages;
   sox_sample_t *lpc_buffer;
@@ -547,6 +547,7 @@ static int rate_init(
     if (!p->lpc_buffer) return SOX_ENOMEM;
   }
   p->lpc_count = 0;
+  p->samples_out_max = 0;
 
   lsx_vcalloc(p->stages, p->num_stages + 1);
   for (i = 0; i < p->num_stages; ++i)
@@ -949,7 +950,7 @@ static int drain_rate(sox_effect_t * effp, sox_sample_t * obuf, size_t * osamp)
   size_t odone = *osamp;
   size_t oavail = *osamp;
   size_t odone_tot = 0;
-  int64_t samples_out_max = rp->samples_in / rp->factor + .5;
+  if (rp->samples_out_max == 0) rp->samples_out_max = rp->samples_in / rp->factor + .5;
 
   if ((rp->lpc_count > 0) && (rp->lpc_count < rp->lpc_length) && (rp->lpc_trim > 0)) { /* not extrapolated yet */
     sample_t *t;
@@ -960,31 +961,31 @@ static int drain_rate(sox_effect_t * effp, sox_sample_t * obuf, size_t * osamp)
     rate_process(&p->rate);
     memmove(rp->lpc_buffer, rp->lpc_buffer + rp->lpc_length, rp->lpc_count * sizeof(sox_sample_t));
     rp->samples_in -= use_samples;
-    samples_out_max = rp->samples_in / rp->factor + .5;
+    rp->samples_out_max = rp->samples_in / rp->factor + .5;
     rp->lpc_trim = use_samples / rp->factor + .5;
   }
 
   do {
-    if ((rp->lpc_count > 0) && (rp->lpc_trim > 0)) { /* extrapolated beginning not trimmed away yet */
+    if (rp->lpc_trim > 0) { /* extrapolated beginning not trimmed away yet */
       odone = oavail;
       s = rate_output(&p->rate, NULL, &odone);
       const size_t skip = (odone < (size_t)rp->lpc_trim) ? odone : (size_t)rp->lpc_trim;
       rp->lpc_trim -= skip;
-      odone -= skip;
       s += skip;
+      odone -= skip;
       rp->samples_out -= skip;
       if (odone > 0) {
         lsx_save_samples(obuf, s, odone, &effp->clips);
         obuf += odone;
-        odone_tot += odone;
         oavail -= odone;
+        odone_tot += odone;
       }
       odone = oavail;
     }
 
     if (rp->lpc_count > 0) { /* extrapolate the end of the file */
       sample_t *t;
-      const size_t samples_left = (size_t)(samples_out_max - rp->samples_out);
+      const size_t samples_left = (size_t)(rp->samples_out_max - rp->samples_out);
       const int use_samples = lpc_length(rp->lpc_count, rp->lpc_length, rp->lpc_inratio);
       size_t skip;
       extend_signal_out(rp->lpc_buffer + rp->lpc_count, use_samples, use_samples, 1);
@@ -995,23 +996,31 @@ static int drain_rate(sox_effect_t * effp, sox_sample_t * obuf, size_t * osamp)
       rate_process(&p->rate);
       s = rate_output(&p->rate, NULL, &odone);
       skip = (odone < (size_t)rp->lpc_trim) ? odone : (size_t)rp->lpc_trim;
+      rp->lpc_trim -= skip;
       s += skip;
       odone -= skip;
-      rp->lpc_trim -= skip;
+      rp->samples_out -= skip;
       if (odone > samples_left) odone = samples_left;
-      lsx_save_samples(obuf, s, odone, &effp->clips);
-      obuf += odone;
-      odone_tot += odone;
+      if (odone > 0) {
+        lsx_save_samples(obuf, s, odone, &effp->clips);
+        obuf += odone;
+        oavail -= odone;
+        odone_tot += odone;
+      }
     }
 
-    rate_flush(&p->rate);
+    if (rp->samples_out + (int64_t)oavail > rp->samples_out_max) oavail = (rp->samples_out < rp->samples_out_max) ? (size_t)(rp->samples_out_max - rp->samples_out) : 0;
 
-    odone = *osamp - odone_tot;
-    if (rp->samples_out + (int64_t)odone > samples_out_max) odone = (rp->samples_out < samples_out_max) ? (size_t)(samples_out_max - rp->samples_out) : 0;
-    s = rate_output(&p->rate, NULL, &odone);
-    lsx_save_samples(obuf, s, odone, &effp->clips);
-    obuf += odone;
-  } while (odone > 0);
+    if ((rp->lpc_trim == 0) && (oavail > 0)) {
+      rate_flush(&p->rate);
+      odone = oavail;
+      s = rate_output(&p->rate, NULL, &odone);
+      lsx_save_samples(obuf, s, odone, &effp->clips);
+      obuf += odone;
+      oavail -= odone;
+      odone_tot += odone;
+    }
+  } while (oavail > 0);
 
   *osamp = odone_tot;
   return SOX_SUCCESS;
