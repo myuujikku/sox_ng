@@ -98,10 +98,11 @@ static int setup(sox_format_t *ft, int is_input)
        ToDo: Add a pacat/parec-like --latency-msec option?
     */
     buffer_attr.fragsize = sox_globals.input_bufsiz ? sox_globals.input_bufsiz : (uint32_t) -1;
-    lsx_debug("INPUT cmd buffer size=%zu, pulseaudio buffer size=%u", sox_globals.input_bufsiz, buffer_attr.fragsize);
+    lsx_debug("INPUT cmd buffer size=%" PRIu64 ", pulseaudio buffer size=%u", (uint64_t)sox_globals.input_bufsiz, buffer_attr.fragsize);
   } else {
     buffer_attr.tlength = sox_globals.bufsiz ? sox_globals.bufsiz : (uint32_t) -1;
-    lsx_debug("OUTPUT cmd buffer size=%zu, pulseaudio buffer size=%u", sox_globals.bufsiz, buffer_attr.tlength);
+    lsx_debug("OUTPUT cmd buffer size=%" PRIu64 ", pulseaudio buffer size=%u",
+              (uint64_t)sox_globals.bufsiz, buffer_attr.tlength);
   }
 
   pa_channel_map_init_auto(&map, spec.channels, PA_CHANNEL_MAP_ALSA);

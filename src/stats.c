@@ -213,7 +213,7 @@ static int stop_stats(sox_effect_t * effp)
       fprintf(stderr, "    \"flat_factor\": %g,\n", linear_to_dB((min_runs + max_runs) / (min_count + max_count)));
       b1 = bit_depth(maskLo, maskHi, &b2);
       fprintf(stderr, "    \"bit_depth\": [%u, %u],\n", b1, b2);
-      fprintf(stderr, "    \"num_samples\": %jd,\n", (intmax_t)p->num_samples);
+      fprintf(stderr, "    \"num_samples\": %" PRIu64 ",\n", (uint64_t)p->num_samples);
       fprintf(stderr, "    \"length\": %g,\n", p->num_samples / effp->in_signal.rate);
       fprintf(stderr, "    \"scale_max\": 1.0,\n");
       fprintf(stderr, "    \"window\": %g\n", p->window_time);
@@ -239,7 +239,7 @@ static int stop_stats(sox_effect_t * effp)
           fprintf(stderr, "      \"rms_trough_db\": %g,\n", linear_to_dB(sqrt(q->min_sigma_x2)));
         fprintf(stderr, "      \"crest_factor\": %g,\n", q->sigma_x2? max(-q->min, q->max) / sqrt(q->sigma_x2 / q->num_samples) : 1);
         fprintf(stderr, "      \"flat_factor\": %g,\n", linear_to_dB((q->min_runs + q->max_runs) / (q->min_count + q->max_count)));
-        fprintf(stderr, "      \"peak_count\": %ju,\n", (intmax_t)(q->min_count + q->max_count));
+        fprintf(stderr, "      \"peak_count\": %" PRIu64 ",\n", (uint64_t)(q->min_count + q->max_count));
         b1 = bit_depth(q->maskLo, q->maskHi, &b2);
         fprintf(stderr, "      \"bit_depth\": [%u, %u]\n", b1, b2);
         fprintf(stderr, "    }");

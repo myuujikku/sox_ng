@@ -1305,18 +1305,20 @@ static void display_status(sox_bool all_done)
   if (all_done || since(&then, .1, sox_false)) {
     double read_time = (double)read_wide_samples / combiner_signal.rate;
     double left_time = 0, in_time = 0, percentage = 0;
-    char buf[128];
+    char buf[80]; /* actually uses 78 + '\0' */
+    int nchars = min(termwidth + 2, sizeof(buf));
 
     if (input_wide_samples) {
       in_time = (double)input_wide_samples / combiner_signal.rate;
       left_time = max(in_time - read_time, 0);
       percentage = max(100. * read_wide_samples / input_wide_samples, 0);
     }
-    snprintf(buf, min(termwidth + 2, sizeof(buf)),
+    sprintf(buf,
       "\rIn:%-5s %s [%s] Out:%-5s [%6s|%-6s] %s Clip:%-5s",
       lsx_sigfigs3p(percentage), str_time(read_time), str_time(left_time),
       lsx_sigfigs3((double)output_samples),
       vu(0), vu(1), headroom(), lsx_sigfigs3((double)total_clips()));
+    buf[nchars - 1] = '\0';
     fputs(buf, stderr);
   }
   if (all_done)

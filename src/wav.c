@@ -399,7 +399,7 @@ static int sndfile_workaround(uint64_t *len, sox_format_t *ft) {
     if (memcmp(magic, "fmt ", (size_t)4)==0)
     {
         /* If the last four bytes were "fmt ", len is almost certainly four bytes too big. */
-        lsx_debug("File had libsndfile bug, working around tell=%lld", (long long int)lsx_tell(ft));
+        lsx_debug("File had libsndfile bug, working around tell=%" PRId64, (uint64_t)lsx_tell(ft));
         *len -= 4;
     }
     return SOX_SUCCESS;

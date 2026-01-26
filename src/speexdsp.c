@@ -165,7 +165,7 @@ static int getopts_speexdsp(sox_effect_t* effp, int argc, char** argv)
 
     if (!p->agc && !p->denoise && !p->dereverb)
     {
-        lsx_report("no features specified. Enabling default settings \"-agc %zu -denoise %zu\".", agcDefault, denoiseDefault);
+        lsx_report("no features specified. Enabling default settings \"-agc %" PRIu64 " -denoise %" PRIu64 "\".", (uint64_t)agcDefault, (uint64_t)denoiseDefault);
         p->agc = agcDefault;
         p->denoise = denoiseDefault;
     }

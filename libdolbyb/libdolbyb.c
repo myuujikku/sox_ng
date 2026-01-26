@@ -29,6 +29,7 @@
 
 #include <stdlib.h>  /* for free() */
 #include <string.h>  /* for memset() */
+#include <stdio.h>
 
 /* Set default values */
 void dolbyb_init(dolbyb_t *Param)
@@ -87,6 +88,7 @@ char *dolbyb_start(dolbyb_t *Param)
 {
   char *err;
 
+  fprintf(stderr, "dolbyb_start()...\n");
   /* Check validity of parameters */
 
   if (Param->SmpSec <= 0)
@@ -117,6 +119,7 @@ char *dolbyb_start(dolbyb_t *Param)
 
   if ((err = SecondInit(Param))) return err;
 
+  fprintf(stderr, "Calling Calibrate()...\n");
   Calibrate(Param);
 
   return NULL;

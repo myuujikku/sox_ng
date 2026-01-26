@@ -522,9 +522,9 @@ void lsx_fir_to_phase(double * * h, int * len, size_t * post_len, double phase)
     work[(begin + (phase > 50 ? *len - 1 - i : i) + work_len) & (work_len - 1)];
   *post_len = phase > 50 ? peak - begin : begin + *len - (peak + 1);
 
-  lsx_debug("nPI=%g peak-sum@%i=%g (val@%i=%g); len=%i post=%zu (%g%%)",
+  lsx_debug("nPI=%g peak-sum@%i=%g (val@%i=%g); len=%i post=%" PRIu64 " (%g%%)",
       pi_wraps[work_len >> 1] / M_PI, peak, peak_imp_sum, imp_peak,
-      work[imp_peak], *len, *post_len, 100 - 100. * *post_len / (*len - 1));
+      work[imp_peak], *len, (uint64_t)*post_len, 100 - 100. * *post_len / (*len - 1));
   free(pi_wraps), free(work);
 }
 

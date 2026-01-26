@@ -160,6 +160,7 @@ static int start_dolbyb(sox_effect_t * effp)
   dolbyb->SmpSec = effp->in_signal.rate;
   dolbyb->BDepth = 16;
 
+  fprintf(stderr, "Calling dolbyb_start...\n");
   if (dolbyb_start(dolbyb)) return SOX_EOF;
 
   effp->out_signal.length = effp->in_signal.length;
