@@ -5,7 +5,7 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
-sox_ng-14.7.0+git
+sox_ng-14.7.0+git20260126
 -------------------------
 
 Changes since +git20260125:
@@ -13,6 +13,7 @@ Changes since +git20260125:
   o dff/dsf/wsd: Automatically resample to supported sample rates
   o dff/dsf: Autodetect the formats when reading from stdin
   o rate: More fixes to the extrapolator
+  o Portability fixes for C89/C90
 
 Changes since +git20251226b:
 
