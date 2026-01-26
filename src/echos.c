@@ -123,7 +123,7 @@ get_echos(sox_effect_t *effp, char *name)
     unsigned i;
     unsigned nth = 0; /* 0 for "decay", non-zero for "decay1" etc. */
 
-    if (isdigit(name[5])) {
+    if (isdigit((unsigned char)name[5])) {
       nth = atoi(name + 5);
       if (nth == 0) {
         lsx_warn("keymaps for individual decays start at 1");
@@ -171,7 +171,7 @@ set_echos(sox_effect_t *effp, char *name, char *value)
     unsigned i;
     unsigned nth = 0; /* 0 for "decay", non-zero for "decay1" etc. */
 
-    if (isdigit(name[5])) {
+    if (isdigit((unsigned char)name[5])) {
       nth = atoi(name + 5);
       if (nth == 0) {
         lsx_warn("keymaps for individual decays start at 1");
