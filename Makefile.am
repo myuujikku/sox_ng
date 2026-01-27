@@ -29,6 +29,8 @@ dist_man_MANS = sox_ng.1 soxi_ng.1 soxeffect_ng.7 soxformat_ng.7 \
                 libsox_ng.3 libsoxeffect_ng.3 libsoxformat_ng.3
 EXTRA_DIST = sox_ng.txt soxi_ng.txt soxeffect_ng.txt soxformat_ng.txt \
              libsox_ng.txt libsoxeffect_ng.txt libsoxformat_ng.txt \
+             sox_ng.pdf soxi_ng.pdf soxeffect_ng.pdf soxformat_ng.pdf \
+             libsox_ng.pdf libsoxeffect_ng.pdf libsoxformat_ng.pdf \
 	     CMakeLists.txt sox_ng.pc.in COPYING AUTHORS INSTALL \
 	     README.win32 scripts/batch-example.bat \
 	     README.md RULES.md RULES-issues.md RULES-wiki.md \
