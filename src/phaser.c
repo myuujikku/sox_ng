@@ -293,7 +293,7 @@ sox_effect_handler_t const * lsx_phaser_effect_fn(void)
 "",
 "Hint: gain-in  < (1 - regen * regen)",
 "      gain-out < (1 - regen) / gain-in",
-"Keymaps: phaser.(gain-in|gain-out|regen)",
+"Keymaps: phaser.(gain_in|gain_out|regen)",
     NULL
   };
 

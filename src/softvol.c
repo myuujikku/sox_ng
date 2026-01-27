@@ -235,7 +235,7 @@ const sox_effect_handler_t *lsx_softvol_effect_fn(void)
     "volume    0-     1.0    Set the initial volume multiplier",
     "2bl-time  0-      0     In how many seconds the volume should double",
     "headroom  0-      0     Limit the maximum output in dB below full range",
-    "Keymaps: softvol.(volume|double-time|headroom)",
+    "Keymaps: softvol.(volume|double_time|headroom)",
     NULL
   };
   static sox_effect_handler_t handler = {

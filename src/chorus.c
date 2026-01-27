@@ -644,7 +644,7 @@ const sox_effect_handler_t *lsx_chorus_effect_fn(void)
 "depth   0-1000    2    Additional variable delay in milliseconds",
 "wave     -s|-t   -s    Modulate with a sinusoidal or a triangular wave",
 "Hint: gain-out <= 1 / ( gain-in + decay 1 + ... + decay n )",
-"Keymaps: chorus.(gain-in|gain-out)",
+"Keymaps: chorus.(gain_in|gain_out)",
           NULL
 	};
 

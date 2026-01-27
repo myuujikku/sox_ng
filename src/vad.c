@@ -382,7 +382,7 @@ sox_effect_handler_t const * lsx_vad_effect_fn(void)
 "-l   1000-     6000   Low-pass filter frequency",
 "-H   10-       150    High-pass lifter frequency",
 "-L   1000-     2000   Low-pass lifter frequency",
-"Keymaps: vad.(trigger-level|trigger-time|gap)",
+"Keymaps: vad.(trigger_level|trigger_time|gap)",
     NULL
   };
 

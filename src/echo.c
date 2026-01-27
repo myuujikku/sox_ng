@@ -341,7 +341,7 @@ const sox_effect_handler_t *lsx_echo_effect_fn(void)
 "gain-out -inf-inf  Final volume adjustment",
 "delay       0-inf  Delay in milliseconds",
 "decay    -inf-inf  Proportion of delayed signal delivered to adder",
-"Keymaps: echo.(gain-in|gain-out)",
+"Keymaps: echo.(gain_in|gain_out)",
     NULL
   };
 
