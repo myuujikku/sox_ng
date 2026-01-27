@@ -27,6 +27,7 @@ RM = rm -f
 # prefix to ensure they are added to the distribution.
 dist_man_MANS = sox_ng.1 soxi_ng.1 soxformat_ng.7 libsox_ng.3
 EXTRA_DIST = sox_ng.txt soxi_ng.txt soxformat_ng.txt libsox_ng.txt \
+             sox_ng.pdf soxi_ng.pdf soxformat_ng.pdf libsox_ng.pdf \
 	     CMakeLists.txt sox_ng.pc.in COPYING AUTHORS INSTALL \
 	     README.win32 README.osx scripts/batch-example.bat \
 	     README.md RULES.md RULES-issues.md RULES-wiki.md \
