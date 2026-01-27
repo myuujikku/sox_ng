@@ -218,7 +218,7 @@ static int dft_stage_init(
     double phase, stage_t * stage, int L, int M)
 {
   dft_filter_t * f = &stage->shared->dft_filter[instance];
-  
+
   if (!f->num_taps) {
     int num_taps = 0, dft_length, i;
     int k = phase == 50 && lsx_is_power_of_2(L) && Fn == L? L << 1 : 4;
@@ -477,7 +477,7 @@ static int rate_init(
   /* Private work areas (to be supplied by the client):                       */
   rate_t * p,                /* Per audio channel.                            */
   rate_shared_t * shared,    /* Between channels (undergoing same rate change)*/
-                            
+
   /* Public parameters:                                             Typically */
   sox_rate_t inrate,         /* Input samplerate                              */
   sox_rate_t outrate,        /* Output samplerate                             */
@@ -488,7 +488,7 @@ static int rate_init(
   double anti_aliasing_pc,   /* % bandwidth without aliasing            100   */
   rolloff_t rolloff,         /* Pass-band roll-off                    small   */
   sox_bool maintain_3dB_pt,  /*                                        true   */
-                            
+
   /* Primarily for test/development purposes:                                 */
   sox_bool use_hi_prec_clock,/* Increase irrational ratio accuracy.   false   */
   int interpolator,          /* Force a particular coef interpolator.   -1    */
@@ -562,7 +562,7 @@ static int rate_init(
 
   if ((n = p->num_stages) > 1) {                              /* Att. budget: */
     if (have_arb_stage)
-      att += linear_to_dB(2.), attArb = att, --n; 
+      att += linear_to_dB(2.), attArb = att, --n;
     att += linear_to_dB((double)n);
   }
 
@@ -991,6 +991,9 @@ static int drain_rate(sox_effect_t * effp, sox_sample_t * obuf, size_t * osamp)
         oavail -= odone;
         odone_tot += odone;
       }
+      if ((odone == 0) && (skip == 0) && (rp->lpc_count == 0)) { /* no samples generated even though everything has been processed - signal flush */
+        rate_flush(&p->rate);
+      }
       odone = oavail;
     }
 
@@ -1000,7 +1003,6 @@ static int drain_rate(sox_effect_t * effp, sox_sample_t * obuf, size_t * osamp)
       const int use_samples = lpc_length(rp->lpc_count, rp->lpc_length, rp->lpc_inratio);
       size_t skip;
       extend_signal_out(rp->lpc_buffer + rp->lpc_count, use_samples, use_samples, 1);
-      rp->samples_in -= use_samples;
       t = rate_input(&p->rate, NULL, use_samples);
       lsx_load_samples(t, rp->lpc_buffer + rp->lpc_count, use_samples);
       rp->lpc_count = 0;
