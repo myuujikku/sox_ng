@@ -710,7 +710,17 @@ which causes the sound to glitch every tenth of a second.
 \fBpulseaudio\fR (optional)
 PulseAudio is a cross-platform networked sound server.
 The PulseAudio driver supports both playing and recording of audio.
-If a file name is specified with this driver, it is ignored.
+If a file name is specified with this driver, it selects the audio
+source or sink device, for example:
+.XE
+sox_ng in.au -t pulseaudio alsa_output.pci-0000_01_00.1.hdmi-stereo
+.XX
+You can also do this with SoX's \fBAUDIODEV\fP
+and PulseAudio's \fBPULSE_SOURCE\fR and \fBPULSE_SINK\fR environment variables
+(\fBAUDIODEV\fR overrides \fBPULSE_*\fR and a filename overrides both).
+.TP
+\fBpactl list sinks short\fR gives a list of playing devices and
+\fBpactl list sources short\fR a list of recording devices.
 .TP
 \fB.pvf\fR (with sndfile)
 Portable Voice Format.
