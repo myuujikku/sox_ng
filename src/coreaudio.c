@@ -284,7 +284,7 @@ nodevices:  lsx_fail_errno(ft, SOX_EPERM,
 
 	if (ac->adid == kAudioDeviceUnknown) {
 	   lsx_fail_errno(ft, SOX_EPERM,
-	                  "can't find %s device '%s'. Try -V3\n",
+	                  "can't find %s device '%s'. Try -V.\n",
                           io, ft->filename);
 	   free(devices);
 	   return SOX_EOF;
