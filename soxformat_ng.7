@@ -710,17 +710,29 @@ which causes the sound to glitch every tenth of a second.
 \fBpulseaudio\fR (optional)
 PulseAudio is a cross-platform networked sound server.
 The PulseAudio driver supports both playing and recording of audio.
-If a file name is specified with this driver, it selects the audio
-source or sink device, for example:
+.SP
+If a file name is given to this driver, it selects the pulse server,
+the audio source or sink device and/or the application name under which SoX
+registers itself with PulseAudio.
+\fBapp:foo\fR changes the application name
+from the default of \fBSoX\fR, anything else with a colon on it
+is a server name and anything without a colon is the device name.
+To specify more than one of these, or multiple servers to try in sequence,
+use a single filename with the entries separated by spaces;
+as application names can contain spaces, an "app:" field must come last.
+For example:
 .XE
 sox_ng in.au -t pulseaudio alsa_output.pci-0000_01_00.1.hdmi-stereo
 .XX
-You can also do this with SoX's \fBAUDIODEV\fP
-and PulseAudio's \fBPULSE_SOURCE\fR and \fBPULSE_SINK\fR environment variables
-(\fBAUDIODEV\fR overrides \fBPULSE_*\fR and a filename overrides both).
-.TP
-\fBpactl list sinks short\fR gives a list of playing devices and
+.SP
+Where \fBpactl list sinks short\fR gives a list of playing devices and
 \fBpactl list sources short\fR a list of recording devices.
+.SP
+You can also set the PulseAudio device with SoX's \fBAUDIODEV\fP
+and PulseAudio's \fBPULSE_SOURCE\fR and \fBPULSE_SINK\fR environment variables
+(\fBAUDIODEV\fR overrides \fBPULSE_*\fR and a filename overrides both) and
+the server with \fBPULSE_SERVER\fR. For details of the server name's syntax,
+search for "pulseaudio format of server strings".
 .TP
 \fB.pvf\fR (with sndfile)
 Portable Voice Format.

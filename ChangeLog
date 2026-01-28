@@ -8,6 +8,10 @@ sox-11gamma.
 sox_ng-14.7.0+git
 -----------------
 
+Changes since +git20260127:
+
+  o pulseaudio: Filename also sets server and application name (app:foo)
+
 Changes since +git20260125:
 
   o dff/dsf: Automatically resample to supported sample rates when writing
