@@ -2176,14 +2176,23 @@ static int usage_effect(char const * name)
 
 static void usage_format1(sox_format_handler_t const * f)
 {
-  char const * const * names;
-
   printf("Format: %s\n", f->names[0]);
   printf("Description: %s\n", f->description);
   if (f->names[1]) {
+    char const ** names; /* Local copy of the pointers except the first one */
+    char const ** namep; /* Loop variable */
+    size_t nitems = 0;
+
+    while (f->names[nitems]) nitems++;
+    nitems--; /* We don't want the first canonical name */
+    lsx_valloc(names, nitems);
+    /* nitems + 1 to copy the terminating NULL */
+    memcpy(names, f->names + 1, (nitems + 1) * sizeof(*names));
+
+    qsort((void*)names, nitems, sizeof(*names), strcmp_p);
     printf("Also handles:");
-    for (names = f->names + 1; *names; ++names)
-      printf(" %s", *names);
+    for (namep = names; *namep; ++namep)
+      printf(" %s", *namep);
     putchar('\n');
   }
   if (f->flags & SOX_FILE_CHANS) {
