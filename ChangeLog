@@ -5,18 +5,20 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
-sox_ng-14.7.0+git
------------------
+sox_ng-14.7.0+git20260129
+-------------------------
 
 Changes since +git20260127:
 
-  o pulseaudio: Filename also sets server and application name (app:foo)
+  o pulseaudio: Filename can also set server and application name (app:foo)
+  o The Windows exes include opus support
+  o The Windows exes are optimized for speed
 
 Changes since +git20260125:
 
   o dff/dsf: Automatically resample to supported sample rates when writing
   o dff/dsf/wsd: Autodetect the formats when reading from stdin
-  o rate: More fixes to the extrapolator
+  o rate: Bug fixes to the extrapolator
   o Portability fixes for C89/C90
 
 Changes since +git20251226b:
@@ -36,11 +38,11 @@ Changes since +git20251226b:
   o ogg: Detect disk-full when writing and stop
   o -t sndfile now handles AVR format
   o Update to WavPack 5.0 giving 64-bit file lengths
-  o Fix some core dumps, assertion failures and memory leaks
   o New demo miniprograms demo/soxcopy and demo/synth
   o Move manual entries for effects from sox_ng.1 to soxeffect_ng.7 
   o Completely rewrite libsox_ng.3 making it complete and accurate
   o New manual pages libsoxeffect and libsoxformat on writing handlers
+  o Fix some core dumps, assertion failures and memory leaks
 
 New features:
 
@@ -76,7 +78,6 @@ Bug fixes:
     instead of the last one
   o For formats that only support mono, stereo or quad, convert to the closest
     instead of writing 8-channel files that say "stereo" in the header
-  o Fix some memory leaks
   o Make file rewinding work when compiled with Emscripten
   o Fail autodetection of some ffmpeg formats if the file is truncated
   o Release input and output formats' hold on stdin and stdout so that
@@ -90,12 +91,16 @@ Documentation:
   o spectrogram: Improve description of -y and -Y
   o spectrogram: Warn about non-optimal DFT sizes and suggest the nearest one
   o Move description of effects from sox_ng.1 into soxeffect_ng.7
+
   o Move internals from libsox_ng.3 into libsoxeffect_ng.3 and libsoxformat_ng.3
 
 Internal:
 
   o Source file mp3.c has split into mp3-mad.c, mp3-lame.c and mp3-twolame.c
     and mp3-util.h has gone
+
+Thanks to akwizgran, Case@hydrogenaudio, Dave Jones, Doug Lee and jwdevel
+and others for creative input.
 
 
 sox_ng-14.7.0	2025-11-18
