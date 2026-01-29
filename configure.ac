@@ -707,7 +707,7 @@ CFLAGS="$(echo "$CFLAGS" | sed 's|\(-I[[^ ]]*\)|\1 \1/opus|g') -I/usr/local/incl
 
 AC_OPTIONAL_FORMAT(opus, OPUS, [AC_CHECK_HEADER(opus/opusfile.h,
   [AC_CHECK_LIB(opus, opus_decoder_create, OPUS_LIBS="$OPUS_LIBS -lopus", using_opus=no)
-   AC_CHECK_LIB(opusfile, op_open_callbacks, OPUS_LIBS="$OPUS_LIBS -lopusfile", using_opus=no, $OPUS_LIBS)],
+   AC_CHECK_LIB(opusfile, op_open_callbacks, OPUS_LIBS="$OPUS_LIBS -lopusfile", using_opus=no, $OPUS_LIBS $OGG_VORBIS_LIBS)],
   using_opus=no)])
 
 # Check for FLAC libraries
