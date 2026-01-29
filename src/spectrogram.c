@@ -896,7 +896,7 @@ static float *axis(float from, float to, unsigned total, unsigned min_spacing,
     /* The difference in pixels if you add scale to a value */
     float distance = total / ((to - from) / scale);
 
-    *prefix_p = prefix_num == 4 ? "" : "pnum-kMGTPE" + prefix_num;
+    *prefix_p = prefix_num == 4 ? "" : &"pnum-kMGTPE"[prefix_num];
     *scale_p = scale;
     if (distance * .1 >= min_spacing)
       return linear_axis(from, to, scale * .1, nlabels_p);

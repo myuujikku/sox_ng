@@ -407,7 +407,7 @@ int startread_mad(sox_format_t * ft)
 
   if (mad_error)
   {
-      lsx_fail(mad_error);
+      lsx_fail("%s", mad_error);
       return SOX_EOF;
   }
   if (p->Stream.error)
