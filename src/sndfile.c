@@ -683,7 +683,7 @@ LSX_FORMAT_HANDLER(mat5)
 #if HAVE_SF_FORMAT_MPC2K
 LSX_FORMAT_HANDLER(mpc2k)
 {
-  static char const * const names[] = { "mpc2k", NULL };
+  static char const * const names[] = { "mpc2k", "mpc", NULL };
   static unsigned const write_encodings[] = {SOX_ENCODING_SIGN2, 16, 0, 0};
   static sox_format_handler_t handler;
 
