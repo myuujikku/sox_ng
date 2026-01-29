@@ -833,8 +833,13 @@ dnl AC_SUBST(OSS_LIBS)
 
 
 
-AC_OPTIONAL_FORMAT(sunaudio, SUN_AUDIO, [AC_CHECK_HEADERS(sys/audioio.h,,
-      [AC_CHECK_HEADERS(sun/audioio.h,, using_sunaudio=no)])])
+# There is a <sys/audioio.h> on OpenBSD that doesn't define AUDIO_GETINFO
+# and a load of other things SoX uses.
+AC_OPTIONAL_FORMAT(sunaudio, SUN_AUDIO,
+                   [AC_CHECK_HEADERS(sys/audioio.h,
+                     [AC_CHECK_DECL(AUDIO_GETINFO,[],using_sunaudio=no,
+                       [#include <sys/audioio.h>])],
+                     [AC_CHECK_HEADERS(sun/audioio.h,, using_sunaudio=no)])])
 
 
 
