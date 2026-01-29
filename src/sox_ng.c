@@ -62,6 +62,7 @@
   #include <io.h>
 #endif
 
+#if HAVE_SUN_AUDIO
 #ifdef HAVE_SUN_AUDIOIO_H
   #include <sun/audioio.h>
   #define HAVE_AUDIOIO_H 1
@@ -71,6 +72,7 @@
   typedef unsigned char u_char;
   #include <sys/audioio.h>
   #define HAVE_AUDIOIO_H 1
+#endif
 #endif
 #endif
 
@@ -1363,7 +1365,7 @@ static void adjust_volume(int delta)
   if (vol1 == vol2)
     putc('\a', stderr);
 }
-#elif defined(HAVE_AUDIOIO_H)
+#elif defined(HAVE_SUN_AUDIO)
 static void adjust_volume(int delta)
 {
   int vol1 = 0, vol2 = 0, fd = fileno((FILE*)ofile->ft->fp);
