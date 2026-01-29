@@ -229,6 +229,7 @@ void lsx_safe_cdft(unsigned len, int type, double * d)
   done_with_fft_cache(is_writer);
 }
 
+#if 0
 void lsx_safe_rdft_f(unsigned len, int type, float * d)
 {
   sox_bool is_writer = update_fft_cache(len);
@@ -242,6 +243,7 @@ void lsx_safe_cdft_f(unsigned len, int type, float * d)
   lsx_cdft_f(len, type, d, lsx_fft_br, lsx_fft_sc_f);
   done_with_fft_cache(is_writer);
 }
+#endif
 
 void lsx_power_spectrum(unsigned n, double const * in, double * out)
 {
