@@ -266,11 +266,11 @@ static int write_vorbis_header(sox_format_t * ft, vorbis_enc_t * ve)
     lsx_vcalloc(vc.comment_lengths, vc.comments);
     lsx_vcalloc(vc.user_comments, vc.comments);
     for (i = 0; i < vc.comments; ++i) {
-      static const char prepend[] = "Comment=";
-      char * text = lsx_calloc(strlen(prepend) + strlen(ft->oob.comments[i]) + 1, sizeof(*text));
-      /* Prepend `Comment=' if no field-name already in the comment */
+      static const char prefix[] = "Comment=";
+      char * text = lsx_calloc(strlen(prefix) + strlen(ft->oob.comments[i]) + 1, sizeof(*text));
+      /* Prefix `Comment=' if no field-name already in the comment */
       if (!strchr(ft->oob.comments[i], '='))
-        strcpy(text, prepend);
+        strcpy(text, prefix);
       vc.user_comments[i] = strcat(text, ft->oob.comments[i]);
       vc.comment_lengths[i] = strlen(text);
     }

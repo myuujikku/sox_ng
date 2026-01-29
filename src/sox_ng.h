@@ -2425,7 +2425,7 @@ typedef struct lsx_enum_item {
 Plugins API:
 Declares a static instance of an lsx_enum_item structure in format
 { "item", prefixitem }, for use in declaring lsx_enum_item[] arrays.
-@param prefix The prefix to prepend to the item in the enumeration symbolic name.
+@param prefix The prefix to prefix to the item in the enumeration symbolic name.
 @param item   The user-visible text name of the item (must also be a valid C symbol name).
 */
 #define LSX_ENUM_ITEM(prefix, item) {#item, prefix##item},
