@@ -548,6 +548,11 @@ static int rate_init(
   if (!p->num_stages)
     return SOX_SUCCESS;
 
+  if ((size_t)inrate == 0) {
+    lsx_fail("input sample rate is %g", inrate);
+    return SOX_EOF;
+  }
+
   calc_optimal_lpc_buffer_sizes((size_t)inrate, (size_t)outrate, &p->lpc_length, &p->lpc_trim, &p->lpc_inratio);
   if (p->lpc_length > 0) {
     p->lpc_buffer = (sox_sample_t *)malloc(p->lpc_length * 2 * sizeof(sox_sample_t));
