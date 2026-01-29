@@ -5,8 +5,8 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
-sox_ng-14.7.0+git20260129
--------------------------
+sox_ng-14.7.0+git
+-----------------
 
 Changes since +git20260127:
 
@@ -43,6 +43,8 @@ Changes since +git20251226b:
   o Completely rewrite libsox_ng.3 making it complete and accurate
   o New manual pages libsoxeffect and libsoxformat on writing handlers
   o Fix some core dumps, assertion failures and memory leaks
+
+Changes since 14.7.0:
 
 New features:
 
