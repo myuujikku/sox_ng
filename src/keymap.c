@@ -67,7 +67,7 @@ sox_is_keymapped(char *key)
       return sox_true;
     }
     /* Do the effect and field names match? */
-    if (dot && !strcmp(effect, keymap->effect)
+    if (dot && !strncmp(effect, keymap->effect, dot - key)
             && !strcmp(field, keymap->field)) {
       return sox_true;
     }

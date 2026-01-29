@@ -8,6 +8,10 @@ sox-11gamma.
 sox_ng-14.7.0+git
 -----------------
 
+Changes since +git20260129:
+
+  o Make --keymap work on vol.gain and overdrive.gain when gain is 1
+
 Changes since +git20260127:
 
   o pulseaudio: Filename can also set server and application name (app:foo)
