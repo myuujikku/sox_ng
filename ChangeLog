@@ -5,9 +5,10 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
-sox_ng-14.7.0+git
------------------
+sox_ng-14.7.1	2026-02-20
+-------------
 
+  o Make --keymap work on vol.gain and overdrive.gain when gain is 1
   o Fail autodetection of some ffmpeg formats if the file is truncated
   o Don't forget to list the first of the AUDIO FILE FORMATS
   o Fix a harmless memory leak in alsa
