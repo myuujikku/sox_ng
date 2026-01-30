@@ -5,8 +5,8 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
-sox_ng-14.7.0.3+git
--------------------
+sox_ng-14.7.0+git
+-----------------
 
   o Fail autodetection of some ffmpeg formats if the file is truncated
   o Don't forget to list the first of the AUDIO FILE FORMATS
@@ -15,28 +15,13 @@ sox_ng-14.7.0.3+git
   o If stderr is redirected to a file, don't let ioctl(2, TIOCWINSIZ
     leave errno non-zero, making tests.sh appear to fail
   o Fix RMS Pk dB -inf when window is same as file length
-
-
-sox_ng-14.7.0.3	2025-12-03
----------------
-
   o Fix rewriting of aif headers in the sox_open_memstream_write() hack
   o Fix writing of caf format in the multi-format plugins hack
-
-
-sox_ng-14.7.0.2	2025-12-03
----------------
-
   o Fix "oops" saying "takes no parameters"
   o sox_open_memstream_write(): Don't truncate files that rewrite the header
   o sox_open_memstream_read(): Make file format auto-detection work
   o pulseaudio: Avoid a pulseaudio bug by not doing zero-length writes
   o Release formats' hold on stdin/stdout so they can be used twice
-
-
-sox_ng-14.7.0.1	2025-11-29
----------------
-
   o Make multi-format plugins register the formats they handle
   o phaser: Put limit on gain-out back up to 1e9
 
