@@ -5,6 +5,15 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
+sox_ng-14.7.0.6	2026-01-30
+---------------
+
+  o Include opus support in the Windows exes
+  o Optimize the Windows exes for speed
+  o Make it build on OpenBSD without needing --without-sunaudio
+  o Include the PDFs in the dist tarball
+
+
 sox_ng-14.7.0.5	2026-01-22
 ---------------
 
