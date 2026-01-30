@@ -5,25 +5,8 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
-sox_ng-14.6.1.2+git
--------------------
-
-  o Fail autodetection of some ffmpeg formats if the file is truncated
-  o Fix a harmless memory leak in alsa
-  o synth: Fix the extra_usage line for -j
-  o Fix RMS Pk dB -inf when window is same as file length
-
-
-sox_ng-14.6.1.2	2025-11-06
----------------
-
-Bug fixes:
-  o Fix --version only saying "SoX_ng v" on MacOS
-  o Fix issues/issues.sh for http:// remotes, FreeBSD and bogus error messages
-
-
-sox_ng-14.6.1.1	2025-11-06
----------------
+sox_ng-14.6.1+git
+-----------------
 
 New features:
   o Add rules to make win32.exe and win64.exe. See README.win32
@@ -33,6 +16,17 @@ Bug fixes:
   o Make --enable-dl-amrnb and -sndfile work, broken since 2009
   o Fix segfault on a mis-spelled effect name after :
   o Fix play -t ao work, broken in 14.6.1
+  o Fix --version only saying "SoX_ng v" on MacOS
+  o Fix issues/issues.sh for http:// remotes, FreeBSD and bogus error messages
+  o Fail autodetection of some ffmpeg formats if the file is truncated
+  o Fix a harmless memory leak in alsa
+  o synth: Fix the extra_usage line for -j
+  o Fix RMS Pk dB -inf when window is same as file length
+  o Don't ignore Ctrl-C while opening input files
+  o Include opus support in the Windows exes
+  o Optimize the Windows exes for speed
+  o Make it build on OpenBSD without needing --without-sunaudio
+  o Include the PDFs in the dist tarball
 
 
 sox_ng-14.6.1	2025-10-13
