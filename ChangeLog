@@ -5,6 +5,18 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
+sox_ng-14.6.1.5	2026-01-30
+---------------
+
+Bug fixes:
+
+  o Don't ignore Ctrl-C while opening input files
+  o Include opus support in the Windows exes
+  o Optimize the Windows exes for speed
+  o Make it build on OpenBSD without needing --without-sunaudio
+  o Include the PDFs in the dist tarball
+
+
 sox_ng-14.6.1.4	2026-01-22
 ---------------
 
