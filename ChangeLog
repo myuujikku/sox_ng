@@ -15,8 +15,8 @@ Changes since +git20260129:
 Changes since +git20260127:
 
   o pulseaudio: Filename can also set server and application name (app:foo)
-  o The Windows exes include opus support
-  o The Windows exes are optimized for speed
+  o Include opus support in the Windows exes
+  o Optimize the Windows exes for speed
 
 Changes since +git20260125:
 
