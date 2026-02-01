@@ -82,6 +82,14 @@ the same as the original `sox`, use `./configure --enable-replace`
 and if `ffmpeg` is installed add `--with-ffmpeg` to decode 48 more
 audio and video formats.
 
+## Runtime dependencies
+
+If `ffmpeg` is installed on your system, `sox_ng` will be able to read
+four dozen more audio formats as well as extract soundtracks from video files.
+
+If `wget`, `wget2` or `curl` are installed, you can fetch URLs as input
+streams.
+
 ## Build dependencies
 
 To compile a release tarball you will need `make`, and `gcc` or `clang`
