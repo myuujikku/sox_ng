@@ -483,6 +483,10 @@ ISM streaming video format.
 \fB.kvag\fR (with ffmpeg)
 Simon & Schuster Interactive VAG format.
 .TP
+\fB.lame\fR
+The \fB\-t\ lame\fR format forces decoding of MP1/2/3 and encoding to MP3
+to use \fBmp3lame\fR.
+.TP
 \fB.lpc\fR, \fB.lpc10\fR
 LPC-10 is a compression scheme for speech developed by the United
 States Department of Defense.
@@ -498,6 +502,9 @@ Another name for
 .TP
 \fB.m4v\fR, \fB.mp4\fR (with ffmpeg)
 MPEG-4 Video format.
+.TP
+\fB.mad\fR
+Forces MP3 decoding to be done using \fBlibmad\fR, which is the default.
 .TP
 \fB.mat\fR, \fB.mat4\fR, \fB.mat5\fR (with sndfile)
 Matlab 4.2/5.0 (respectively GNU Octave 2.0/2.1) format.
@@ -552,10 +559,15 @@ at the start and truncates the end by 0.002 seconds.
 SoX can only read MP1 files, not write them.
 .TP
 \fB.mp3\fR (optional, also with \fB\-t sndfile\fR or \fB\-t ffmpeg\fR)
-SoX uses \fBlibmad\fR to decode MP3 files; to decode using
+By default, SoX uses \fBlibmad\fR to decode MP3 files;
+to decode using LAME's \fBmpglib\fR, use \fB\-t\ lame\fR;
+to decode using
 \fBlibmpg123\fR, which generally gives better quality results and
 is better at decoding damaged or corrupt files, use \fB\-t\ sndfile\fR,
-while \fR\-t\ ffmpeg\fR uses yet another MPEG decoder, `mpglib'.
+while \fR\-t\ ffmpeg\fR uses yet another MPEG decoder, \fBmpglib\ and the
+CPU times taken by \fBsndfile\fP, \fBlame\fP and \fBmad\fR when you have an FPU
+are in proportion 1:2:2.6.
+If your system doesn't have an FPU, \fBmad\fR will be the fastest.
 .SP
 SoX decodes MP2 and MP3 files with a precision of 28 bits but by default
 it declares a precision of 16 bits so that decoding MP3s to WAVs
@@ -885,6 +897,10 @@ Another name for
 .TP
 \fB.tta\fR (with ffmpeg)
 True Audio format.
+.TP
+\fB.twolame\fR
+The \fB\-t\ twolame\fR format forces encoding to MP2
+to use \fBlibtwolame\fR, which is the default.
 .TP
 \fB.vag\fR (with ffmpeg)
 Sony PS2 VAG format.
