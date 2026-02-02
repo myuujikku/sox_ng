@@ -564,13 +564,14 @@ to decode using LAME's \fBmpglib\fR, use \fB\-t\ lame\fR;
 to decode using
 \fBlibmpg123\fR, which generally gives better quality results and
 is better at decoding damaged or corrupt files, use \fB\-t\ sndfile\fR,
-while \fR\-t\ ffmpeg\fR uses yet another MPEG decoder, \fBmpglib\ and the
-CPU times taken by \fBsndfile\fP, \fBlame\fP and \fBmad\fR when you have an FPU
-are in proportion 1:2:2.6.
-If your system doesn't have an FPU, \fBmad\fR will be the fastest.
+while \fR\-t\ ffmpeg\fR uses yet another MPEG decoder, \fBmpglib\.
 .SP
-SoX decodes MP2 and MP3 files with a precision of 28 bits but by default
-it declares a precision of 16 bits so that decoding MP3s to WAVs
+The decoding speeds of \fB\-t mad\fP, \fB\-t lame\fP and \fB\-t sndfile\fP
+are in proportions 1:2:2.5 with an FPU.
+Without one, \fBmad\fP may be the fastest instead of the slowest.
+.SP
+With \fBmad\fR or \fBsndfile\fR, SoX decodes MPEG files with a precision of
+28 bits but it declares a precision of 16 bits so that decoding MP3s to WAVs
 gives the CD quality that most people expect. You can specify
 a higher precision for the output file to keep this extra information.
 .SP
