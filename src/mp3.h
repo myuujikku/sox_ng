@@ -148,6 +148,13 @@ static const char* const lame_library_names[] = {
   LAME_FUNC(f,x, int, lame_encode_flush, (lame_global_flags *, unsigned char *, int)) \
   LAME_FUNC(f,x, int, lame_close, (lame_global_flags *)) \
   LAME_FUNC(f,x, size_t, lame_get_lametag_frame, (const lame_global_flags *, unsigned char*, size_t)) \
+  LAME_FUNC(f,x, hip_t, hip_decode_init, (void)) \
+  LAME_FUNC(f,x, void, hip_set_msgf, (hip_t hip, lame_report_function)) \
+  LAME_FUNC(f,x, void, hip_set_errorf, (hip_t hip, lame_report_function)) \
+  LAME_FUNC(f,x, void, hip_set_debugf, (hip_t hip, lame_report_function)) \
+  LAME_FUNC(f,x, int, hip_decode1_headers, (hip_t, unsigned char * mp3buf, size_t len, short pcm_l[], short pcm_r[], mp3data_struct* mp3data)) \
+  LAME_FUNC(f,x, int, hip_decode1_headersB, (hip_t, unsigned char * mp3buf, size_t len, short pcm_l[], short pcm_r[], mp3data_struct* mp3data, int *enc_delay, int *enc_padding)) \
+  LAME_FUNC(f,x, int, hip_decode_exit, (hip_t)) \
   LAME_FUNC_ID3(f,x, void, id3tag_init, (lame_global_flags *)) \
   LAME_FUNC_ID3(f,x, void, id3tag_set_title, (lame_global_flags *, const char* title)) \
   LAME_FUNC_ID3(f,x, void, id3tag_set_artist, (lame_global_flags *, const char* artist)) \
@@ -216,6 +223,14 @@ typedef struct mp3_priv_t {
   lame_global_flags *gfp;
   uint64_t num_samples;
   int vbr_tag;
+  /* Stuff for its MP3 decoder */
+  hip_t          hip;
+  mp3data_struct hip_mp3data; /* Header information */
+  unsigned char *hip_buffer;  /* Buffer of MPEG data to pass to hip_decode() */
+  short          *hip_pcm_l, *hip_pcm_r;  /* The samples it returns */
+  /* How many samples are left in hip_pcm_?[] that we haven't returned yet? */
+  size_t         hip_pending;
+
   LSX_DLENTRIES_TO_PTRS(LAME_FUNC_ENTRIES, lame_dl);
 #endif
 

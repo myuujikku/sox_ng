@@ -11,6 +11,7 @@ sox_ng-14.7.0+git
 Changes since +git20260129:
 
   o Make --keymap work on vol.gain and overdrive.gain when gain is 1
+  o Implement MPEG decoding with -t lame
 
 Changes since +git20260127:
 
