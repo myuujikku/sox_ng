@@ -88,12 +88,13 @@ static void write_comments(sox_format_t * ft)
 
 /*
  * Adapters for lame and hip message callbacks.
- * What they call "errors" are actually warnings
- * and they carry on all the same.
  */
 
 static void errorf(const char* fmt, va_list va)
 {
+  /* What they call "errors" are actually warnings
+   * and they carry on all the same, hence 2, not 1.
+   */
   sox_globals.subsystem=__FILE__;
   if (sox_globals.output_message_handler)
     (*sox_globals.output_message_handler)(2,sox_globals.subsystem,fmt,va);
