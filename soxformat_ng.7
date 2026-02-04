@@ -535,15 +535,15 @@ Meridian Lossless Packing format.
 \fB.mov\fR (with ffmpeg)
 MPEG-1 Systems / MPEG program stream format.
 .TP
-\fB.mp1\fR, \fB.m1a\fR, \fB.mp2\fR (optional, also with \fB-t sndfile\fR or \fB\-t ffmpeg\fR)
+\fB.mp1\fR, \fB.m1a\fR, \fB.mp2\fR (optional, also with \fB-t sndfile\fR, \fB\-t ffmpeg\fR or \fB\-t\ lame)
 MP1, MP2 and MP3 compressed audio (MPEG 1 Layers 1, 2 and 3) are part of the
 MPEG standards for audio and video compression whose patents have expired.
 They are lossy compression formats that achieve good compression rates
 with little quality loss.
 .SP
 \fBlibmad\fR, which SoX uses to decode MPEG files, does not work on files
-with a bit-rate higher than 192K but you can read those with \fB\-t sndfile\fR
-or \fB\-t ffmpeg\fR.
+with a bit-rate higher than 192K but you can read those with \fB\-t\ sndfile\fR,
+\fB\-t\ lame\fR or \fB\-t\ ffmpeg\fR.
 .SP
 SoX uses \fBtwolame\fR to write MP2 files, and the target bit rate is set
 using the \fB\-C\fR option in kbps:
@@ -556,15 +556,20 @@ VBR at qualities 32 or 48, use something like 32.01 or 48.01.
 Unfortunately, \fBtwolame\fR outputs 0.005 seconds of quiet garbage
 at the start and truncates the end by 0.002 seconds.
 .SP
+It can also encode MP2s with \fB\-t\ sndfile\fR, which also uses
+\fBtwolame\fR and has the same defect.
+.SP
 SoX can only read MP1 files, not write them.
 .TP
-\fB.mp3\fR (optional, also with \fB\-t sndfile\fR or \fB\-t ffmpeg\fR)
+\fB.mp3\fR (optional, also with \fB\-t\ sndfile\fR, \fB\-t\ lame\fR or \fB\-t\ ffmpeg\fR)
 By default, SoX uses \fBlibmad\fR to decode MP3 files;
 to decode using LAME's \fBmpglib\fR, use \fB\-t\ lame\fR;
 to decode using
-\fBlibmpg123\fR, which generally gives better quality results and
-is better at decoding damaged or corrupt files, use \fB\-t\ sndfile\fR,
-while \fR\-t\ ffmpeg\fR uses yet another MPEG decoder, \fBmpglib\.
+\fBlibmpg123\fR, which generally gives better quality results,
+is better at decoding damaged or corrupt files and is twice as fast
+if tiy have an FPU, use \fB\-t\ sndfile\fR,
+while \fR\-t\ ffmpeg\fR uses yet another MPEG decoder,
+the one in \fBlibavcodec\fR.
 .SP
 The decoding speeds of \fB\-t mad\fP, \fB\-t lame\fP and \fB\-t sndfile\fP
 are in proportions 1:2:2.5 with an FPU.
@@ -578,7 +583,7 @@ a higher precision for the output file to keep this extra information.
 SoX uses \fBliblame\fR when writing MP3 files, and can use up to
 25 bits of precision.
 .SP
-At present, SoX's use of \fBliblame\fR adds 0.01 seconds of quiet garbage
+At present, SoX's use of \fBlibmp3lame\fR adds 0.01 seconds of quiet garbage
 at the start and at the end;
 encoding with \fB\-t sndfile\fR gets the length right and no garbage.
 .SP
