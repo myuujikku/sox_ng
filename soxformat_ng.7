@@ -540,10 +540,28 @@ MP1, MP2 and MP3 compressed audio (MPEG 1 Layers 1, 2 and 3) are part of the
 MPEG standards for audio and video compression whose patents have expired.
 They are lossy compression formats that achieve good compression rates
 with little quality loss.
+.SS Decoding
 .SP
 \fBlibmad\fR, which SoX uses to decode MPEG files, does not work on files
 with a bit-rate higher than 192K but you can read those with \fB\-t\ sndfile\fR,
 \fB\-t\ lame\fR or \fB\-t\ ffmpeg\fR.
+Yet more options for decoding MPEG are to use one of:
+.XE
+   sox_ng -t wav '|lame --quiet --decode in.mp3 -' out.au
+   sox_ng -t wav '|madplay -q --no-tty-control -o wav:- in.mp3' out.au
+   sox_ng -t wav '|mpg123 -q --no-control --wav - in.mp3' out.au
+   sox_ng -t wav '|ffmpeg -loglevel quiet -nostdin -i in.mp3 -' out.au
+.XX
+.SP
+As these commands cannot rewind their output pipe to fix the file length
+in the header, you may prefer to add \fB--ignore-length\fR than to have
+SoX warn "premature EOF on input file".
+.SP
+Note that the \fBlame\fR program is able to decode more MPEG files
+than \fB\-t\ lame\fR as \fBlame\fR decodes the file header itself
+before calling its audio decoder whereas SoX makes the decoder
+do all the work.
+.SS Encoding
 .SP
 SoX uses \fBtwolame\fR to write MP2 files, and the target bit rate is set
 using the \fB\-C\fR option in kbps:
