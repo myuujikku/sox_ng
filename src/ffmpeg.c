@@ -32,31 +32,19 @@ extern sox_format_handler_t const * lsx_au_format_fn(void);
  */
 static int startread_ffmpeg(sox_format_t * ft)
 {
-  char *quoted_filename;
-  char *p, *q;
-  char const * const command_fmt = "ffmpeg -loglevel quiet -nostdin -strict -2 -i \"%s\" -f au -";
-  char *command;
+  char *command_argv[] = {
+    "ffmpeg",
+    "-loglevel", "quiet",
+    "-nostdin",
+    "-strict", "-2",
+    "-i", NULL,
+    "-f", "au",
+    "-",
+    NULL
+  };
+#define filename_index 7   /* the NULL after "-i" */
 
-  /* Quote special characters in the filename. */
-  /* This is for the Unix shell. I dunno about Windows. */
-  quoted_filename = lsx_malloc(strlen(ft->filename) * 2 + 1);
-  for (p=ft->filename, q=quoted_filename; *p; p++, q++) {
-    switch (*p) {
-    case '"':
-    case '`':
-    case '\\':
-    case '$':
-    case '\n':
-      *q++ = '\\';
-      break;
-    }
-    *q = *p;
-  }
-  *q = '\0';
-
-  command = malloc(strlen(quoted_filename) + strlen(command_fmt) + 1);
-  sprintf(command, command_fmt, quoted_filename);
-  free(quoted_filename);
+  command_argv[filename_index] = ft->filename;
 
   /* If the input is stdin, sox may already have read 256 bytes from it
    * for autodetection so we have to lauch something that feeds ffmpeg
@@ -124,11 +112,15 @@ LSX_FORMAT_HANDLER(ffmpeg)
   static char const * const names[] = {
     "ffmpeg", /* Special type to force use of ffmpeg */
     /* Names of the format-specific handlers below */
-    "3g2", "3gp", "aac", "ac3", "adts", "adx", "ape", "apm", "aptx", "argo_asf",
-    "asf", "ast", "avi", "dfpwm", "dts", "eac3", "f4v", "flv", "gxf", "ism",
-    "kvag", "m4a", "m4v", "mkv", "mlp", "mov", "mp4", "mpeg", "mpegts",
-    "mxf_opatom", "nut", "oga", "ra", "rm", "rso", "sbc", "smjpeg", "spdif",
-    "spx", "tta", "vag", "wma", "wsaud", "wtv",
+    "3gp", "3g2",
+    "aa", "aac", "ac3", "act", "adts", "adx", "ape", "apm", "aptx", "argo_asf",
+    "asf", "ast", "avi", "dfpwm", "dts",
+    "ea", "eac3", "f4v", "flv", "gxf", "ism", "kvag",
+    "m4a", "m4v", "mkv", "mlp", "mov", "mp4", "mpeg", "mpegts", "mxf_opatom",
+    "nut", "oga", "ra", "rm", "rso",
+    "sbc", "smjpeg", "spdif", "spx", "tta", "vag", "wma", "wsaud", "wtv",
+    /* Other audio filename extensions that ffmpeg can decode */
+    "caf", "flac", "ircam", "mp2", "mp3", "ogg", "sox", "voc", "w64", "wv",
     NULL
   };
   static sox_format_handler_t handler;
@@ -146,11 +138,12 @@ LSX_FORMAT_HANDLER(ffmpeg)
   return &handler;
 }
 
-/* All the formats ffmpeg handles that sox doesn't otherwise,
- * created with yet more macros because there are too many! */
-
-/* For example, the three "3gp" macros expand to: */
-#if 0
+/* All the formats that ffmpeg handles that sox doesn't otherwise,
+ * created with yet more macros because there are too many!
+ * This lets us add a description for --help-format and
+ * lets us autodetect them from their header contents in formats.c
+ *
+ * For example, the "3gp" macro expands to:
 LSX_FORMAT_HANDLER(3gp)
 {
   static char const * const names[] = { "3gp", "3gpp", NULL };
@@ -161,7 +154,7 @@ LSX_FORMAT_HANDLER(3gp)
   handler.names = names;
   return &handler;
 }
-#endif
+ */
 
 #define FFMPEG_FORMAT(name) \
 LSX_FORMAT_HANDLER(name) \
@@ -177,12 +170,16 @@ LSX_FORMAT_HANDLER(name) \
   return &handler; \
 }
 
+FFMPEG_FORMAT(3gp) "3gp", "3gpp"
+FFMPEG_DESCRIPTION "Third Generation Partnership Project"
+FFMPEG_ENDFORMAT
+
 FFMPEG_FORMAT(3g2) "3g2", "3gp2", "3gpp2"
 FFMPEG_DESCRIPTION "Third Generation Partnership Project 2"
 FFMPEG_ENDFORMAT
 
-FFMPEG_FORMAT(3gp) "3gp", "3gpp"
-FFMPEG_DESCRIPTION "Third Generation Partnership Project"
+FFMPEG_FORMAT(aa) "aa", "aax"
+FFMPEG_DESCRIPTION "Audible Audiobook"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(aac) "aac"
@@ -191,6 +188,10 @@ FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(ac3) "ac3"
 FFMPEG_DESCRIPTION "Audio Codec 3 (Dolby Digital)"
+FFMPEG_ENDFORMAT
+
+FFMPEG_FORMAT(act) "act"
+FFMPEG_DESCRIPTION "G729A speech compression"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(adts) "adts"
@@ -218,7 +219,7 @@ FFMPEG_DESCRIPTION "Argonaut Games ASF"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(asf) "asf"
-FFMPEG_DESCRIPTION "Advanced / Active Streaming Format"
+FFMPEG_DESCRIPTION "Advanced Systems Format"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(ast) "ast"
@@ -230,11 +231,15 @@ FFMPEG_DESCRIPTION "Audio Video Interleaved"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(dfpwm) "dfpwm"
-FFMPEG_DESCRIPTION "DFPWM1a"
+FFMPEG_DESCRIPTION "Dynamic Filter Pulse Width Modulation"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(dts) "dts"
 FFMPEG_DESCRIPTION "Digital Theatre Systems"
+FFMPEG_ENDFORMAT
+
+FFMPEG_FORMAT(ea) "ea"
+FFMPEG_DESCRIPTION "Electronic Arts Multimedia"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(eac3) "eac3"
@@ -245,7 +250,7 @@ FFMPEG_FORMAT(f4v) "f4v"
 FFMPEG_DESCRIPTION "F4V MOV file"
 FFMPEG_ENDFORMAT
 
-FFMPEG_FORMAT(flv) "flv"
+FFMPEG_FORMAT(flv) "flv", "kux"
 FFMPEG_DESCRIPTION "Macromedia Flash Video"
 FFMPEG_ENDFORMAT
 
@@ -254,7 +259,7 @@ FFMPEG_DESCRIPTION "General eXchange Format"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(ism) "ism"
-FFMPEG_DESCRIPTION "ISM streaming video format"
+FFMPEG_DESCRIPTION "ISM streaming video"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(kvag) "kvag"
@@ -270,7 +275,7 @@ FFMPEG_DESCRIPTION "MPEG-4 Video"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(mkv) "mkv", "webm"
-FFMPEG_DESCRIPTION "Matroska / WebM format"
+FFMPEG_DESCRIPTION "Matroska / WebM"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(mlp) "mlp"
