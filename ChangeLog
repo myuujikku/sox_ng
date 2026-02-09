@@ -27,6 +27,7 @@ Bug fixes:
   o Optimize the Windows exes for speed
   o Make it build on OpenBSD without needing --without-sunaudio
   o Include the PDFs in the dist tarball
+  o Recognize FFmpeg/LAME/madplay codes for unspecified WAV length
 
 
 sox_ng-14.6.1	2025-10-13
