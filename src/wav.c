@@ -955,9 +955,13 @@ static int startread(sox_format_t * ft)
     /* ds64 size will have been applied in findChunk */
     qwDataLength = len;
     /* XXX - does MS_UNSPEC apply to RF64 files? */
-    if (qwDataLength == MS_UNSPEC) {
+    if (qwDataLength == 0x7FFFFFFF ||  /* LAME */
+        qwDataLength == 0xFFFFFFFF ||  /* FFMPEG and madplay */
+        qwDataLength == MS_UNSPEC) {   /* SoX only, apparently */
       wav->ignoreSize = 1;
-      lsx_debug("WAV Chunk data's length is value often used in pipes or 4G files.  Ignoring length.");
+      /* This is to be expected when reading from a pipe */
+      if (ft->seekable)
+        lsx_warn("data length is unspecified; taking it from the file length");
     }
 
 

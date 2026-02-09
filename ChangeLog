@@ -16,6 +16,7 @@ Bug fixes:
  o Fix a segmentation fault when the effect name after a ":" is misspelt
  o synth: Fix the extra_usage line for -j
  o Fix RMS Pk dB -inf when window is same as the file length
+ o Recognize FFmpeg/LAME/madplay codes for unspecified WAV length
 
 sox_ng-14.5.2	2025-10-13
 -------------
