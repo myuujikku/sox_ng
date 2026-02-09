@@ -17,8 +17,10 @@
  */
 
 #include "sox_i.h"
-#include <unistd.h>
 #include <ctype.h>
+#if HAVE_PIPE && HAVE_FORK
+#include <unistd.h>
+#endif
 
 int lsx_strcasecmp(const char * s1, const char * s2)
 {

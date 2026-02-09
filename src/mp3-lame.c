@@ -396,9 +396,9 @@ int startread_lame(sox_format_t * ft)
    * Calculation of enc_delay and enc_padding from
    * lame/frontend/get_audio.c:setSkipStartAndEnd()
    */
+  skip_start = 0;
   switch (ft->encoding.encoding) {
   case SOX_ENCODING_UNKNOWN:
-    // lsx_warn("encoding unknown; assuming MP3");
     ft->encoding.encoding = SOX_ENCODING_MP3;
     goto mp3;
   case SOX_ENCODING_MP3: mp3:
