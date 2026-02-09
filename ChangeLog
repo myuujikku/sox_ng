@@ -5,8 +5,8 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
-sox_ng-14.7.0.6+git
--------------------
+sox_ng-14.7.0.7 2026-02-09
+---------------
 
   o Make opening programs on a pipe work on Windows, broken in 14.7.0
   o Recognize FFmpeg/LAME/madplay codes for unspecified WAV length
