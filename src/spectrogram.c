@@ -214,16 +214,18 @@ static int parse_num_with_suffix (const char *s, int *a) {
  */
 static int parse_range (const char *s, int *a, int *b) {
   int a_status, b_status;
-  char *colon = strchr(s,':');
+  char *ss = lsx_strdup(s); /* Take a copy to modify */
+  char *colon = strchr(ss,':');
   if (colon) {
     /* Colon found, so have a number range */
-    *colon = 0; /* Temporarily put string terminator where colon is */
-    a_status = parse_num_with_suffix(s, a);
+    *colon = 0; /* Put string terminator where colon is */
+    a_status = parse_num_with_suffix(ss, a);
     b_status = parse_num_with_suffix(colon+1,b);
-    *colon = ':'; /* Restore colon */
+    free(ss);
     return a_status || b_status;
   } else {
     /* no colon: so just one value */
+    free(ss);
     return parse_num_with_suffix(s, a);
   }
 }

@@ -398,7 +398,7 @@ void sox_append_comment(sox_comments_t * comments, char const * comment)
 
 void sox_append_comments(sox_comments_t * comments, char const * comment)
 {
-  char * end;
+  char const * end;
   if (comment) {
     while ((end = strchr(comment, '\n'))) {
       size_t len = end - comment;
@@ -1684,7 +1684,7 @@ sox_get_format_fns(void)
     const char *end = file + strlen(file);
     const char prefix[] = "sox_ng_fmt_";
     char fnname[MAX_NAME_LEN];
-    char *start = strstr(file, prefix);
+    const char *start = strstr(file, prefix);
 
     (void)data;
     if (start && (start += sizeof(prefix) - 1) < end) {
