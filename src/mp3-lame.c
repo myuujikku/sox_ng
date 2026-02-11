@@ -410,18 +410,18 @@ int startread_lame(sox_format_t * ft)
              mode_string[p->hip_mp3data.mode],
              p->hip_mp3data.samplerate);
 
-  /* How do we find out if it's MP1, MP2 or MP3? */
+  /* LAME finds out if it's MP1, MP2 or MP3 by scanning the header itself
+   * before calling hip_*() and this information seems not to be available
+   * when using just the hip interface. */
   if (ft->encoding.encoding == SOX_ENCODING_UNKNOWN)
+    ft->encoding.encoding = SOX_ENCODING_MP3;
   /*
    * Calculation of enc_delay and enc_padding from
    * lame/frontend/get_audio.c:setSkipStartAndEnd()
    */
   skip_start = 0;
   switch (ft->encoding.encoding) {
-  case SOX_ENCODING_UNKNOWN:
-    ft->encoding.encoding = SOX_ENCODING_MP3;
-    goto mp3;
-  case SOX_ENCODING_MP3: mp3:
+  case SOX_ENCODING_MP3:
     if (enc_delay > -1)
       skip_start = enc_delay + 528 + 1;
     if (enc_padding > 528 + 1)
