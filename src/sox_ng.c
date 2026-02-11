@@ -3072,7 +3072,7 @@ static void output_message(unsigned level, const char *filename, const char *fmt
   if (sox_globals.verbosity >= level) {
     char base_name[128];
     sox_basename(base_name, sizeof(base_name), filename);
-    if (show_progress) fprintf(stderr, "\n");
+    if (show_progress == sox_option_yes) fprintf(stderr, "\n");
     fprintf(stderr, "%s %s %s: ", sox_globals.myname, str[min(level - 1, 3)], base_name);
     vfprintf(stderr, fmt, ap);
     fprintf(stderr, "\n");
