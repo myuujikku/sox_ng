@@ -391,6 +391,7 @@ int startread_lame(sox_format_t * ft)
       lsx_fail("file ends before MPEG headers are decoded");
       return SOX_EOF;
     }
+    enc_delay = 0; enc_padding = 0; /* Sometimes it doesn't set them */
     nout = p->hip_decode1_headersB(p->hip, p->hip_buffer, nread,
                                    p->hip_pcm_l, p->hip_pcm_r,
                                    &(p->hip_mp3data),
