@@ -90,30 +90,50 @@ static void write_comments(sox_format_t * ft)
  * Adapters for lame and hip message callbacks.
  */
 
+/* THe fmt string has a trailing newline which we don't want,
+ * but we can't modify the const string we're passed so take a copy
+ * and modify that.
+ */
+static char *unnewline(char const *in)
+{
+  char *out = lsx_strdup(in);
+  char *newline = strrchr(out, '\n');
+
+  if (newline) *newline = '\0';
+
+  return out;
+}
+
 static void errorf(const char* fmt, va_list va)
 {
   /* What they call "errors" are actually warnings
    * and they carry on all the same, hence 2, not 1.
    */
+  char *fmt2 = unnewline(fmt);
   sox_globals.subsystem=__FILE__;
   if (sox_globals.output_message_handler)
-    (*sox_globals.output_message_handler)(2,sox_globals.subsystem,fmt,va);
+    (*sox_globals.output_message_handler)(2,sox_globals.subsystem,fmt2,va);
+  free(fmt2);
   return;
 }
 
 static void msgf(const char* fmt, va_list va)
 {
+  char *fmt2 = unnewline(fmt);
   sox_globals.subsystem=__FILE__;
   if (sox_globals.output_message_handler)
-    (*sox_globals.output_message_handler)(3,sox_globals.subsystem,fmt,va);
+    (*sox_globals.output_message_handler)(3,sox_globals.subsystem,fmt2,va);
+  free(fmt2);
   return;
 }
 
 static void debugf(const char* fmt, va_list va)
 {
+  char *fmt2 = unnewline(fmt);
   sox_globals.subsystem=__FILE__;
   if (sox_globals.output_message_handler)
-    (*sox_globals.output_message_handler)(4,sox_globals.subsystem,fmt,va);
+    (*sox_globals.output_message_handler)(4,sox_globals.subsystem,fmt2,va);
+  free(fmt2);
   return;
 }
 
