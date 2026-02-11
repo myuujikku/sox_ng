@@ -17,6 +17,8 @@
 
 # Check that flac format is included
 ${sox:-sox} 2>&1 | grep -q '^AUDIO FILE FORMATS.*flac' || exit 254
+# and writable
+${sox:-sox} --help-format flac 2>&1 | grep -q '^Writes:$' || exit 254
 
 rm -f core core.* out.*
 

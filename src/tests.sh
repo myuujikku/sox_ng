@@ -263,7 +263,13 @@ timeIO () {
 # Don't try to test un-built formats
 skip_check () {
   while [ $# -ne 0 ]; do
-    LD_LIBRARY_PATH=${libdir} ${bindir}/sox_ng${EXEEXT} --help|grep "^AUDIO FILE.*\<$1\>">/dev/null || skip="$1 $skip"
+    if LD_LIBRARY_PATH=${libdir} ${bindir}/sox_ng${EXEEXT} --help|grep "^AUDIO FILE.*\<$1\>">/dev/null
+    then
+      # It's supported - make sure it's writable
+      LD_LIBRARY_PATH=${libdir} ${bindir}/sox_ng${EXEEXT} --help-format "$1"|grep '^Writes:$'>/dev/null || skip="$1 $skip"
+    else
+      skip="$1 $skip"
+    fi
     shift
   done
 }
