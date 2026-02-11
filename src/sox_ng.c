@@ -259,7 +259,7 @@ static void cleanup(void)
           /* Don't assume we can unlink a file before closing it
 	   * 'cos that's not true on Windows. */
           /* sox_close frees the filename and ft, so take a copy */
-          char *filename = strdup(ofile->ft->filename);
+          char *filename = lsx_strdup(ofile->ft->filename);
           sox_close(ofile->ft);
           lsx_unlink(filename);
           free(filename);
@@ -2730,7 +2730,7 @@ static char parse_gopts_and_fopts(file_t * f)
         }
         key[1] = '\0';
 
-        sox_keymap_add(strdup(key), effect, field, op[0], step);
+        sox_keymap_add(lsx_strdup(key), effect, field, op[0], step);
 
         interactive = sox_true;
       }

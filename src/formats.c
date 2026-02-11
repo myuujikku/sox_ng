@@ -1768,7 +1768,7 @@ int sox_format_init(void) /* Find & load format handlers.  */
         char *colonp;
 
         /* We mustn't modify the process environment */
-        copy = strdup(ld_library_path);
+        copy = lsx_strdup(ld_library_path);
         colonp = copy ? strchr(copy, ':') : NULL;
         if (colonp && colonp - copy >= 6 &&
             !(*colonp = '\0', strcmp(colonp-6, "/.libs")))
