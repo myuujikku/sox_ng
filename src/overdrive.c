@@ -98,10 +98,10 @@ static int flow_overdrive(sox_effect_t * effp, const sox_sample_t * ibuf,
     sox_sample_t * obuf, size_t * isamp, size_t * osamp)
 {
   priv_t * p = (priv_t *)effp->priv;
-  size_t dummy = 0, len = *isamp = *osamp = min(*isamp, *osamp);
+  size_t len = *isamp = *osamp = min(*isamp, *osamp);
   while (len--) {
     SOX_SAMPLE_LOCALS;
-    double d = SOX_SAMPLE_TO_FLOAT_64BIT(*ibuf++, dummy), d0 = d;
+    double d = SOX_SAMPLE_TO_FLOAT_64BIT_NOCLIPS(*ibuf++), d0 = d;
     d *= p->gain;
     d += p->color;
     d = d < -1? -2./3 : d > 1? 2./3 : d - d * d * d * (1./3);
@@ -110,7 +110,8 @@ static int flow_overdrive(sox_effect_t * effp, const sox_sample_t * ibuf,
      * on some CPUs so blat them to zero. */
     if (!isnormal(p->last_out)) p->last_out = 0;
     p->last_in = d;
-    *obuf++ = SOX_FLOAT_64BIT_TO_SAMPLE(d0 * .5 + p->last_out * .75, dummy);
+    /* Apparently there is no need to clip count here */
+    *obuf++ = SOX_FLOAT_64BIT_TO_SAMPLE_NOCLIPS(d0 * .5 + p->last_out * .75);
   }
   return SOX_SUCCESS;
 }

@@ -844,6 +844,7 @@ Converts signed 32-bit integer to sox_sample_t.
 @returns SoX native sample value.
 */
 #define SOX_SIGNED_32BIT_TO_SAMPLE(d,clips) (sox_sample_t)(d)
+#define SOX_SIGNED_32BIT_TO_SAMPLE_NOCLIPS(d) (sox_sample_t)(d)
 
 /**
 Client API:
@@ -862,6 +863,8 @@ Converts 64-bit float to sox_sample_t.
 @returns SoX native sample value.
 */
 #define SOX_FLOAT_64BIT_TO_SAMPLE(d,clips) (sox_sample_t)(LSX_USE_VAR(sox_macro_temp_sample),sox_macro_temp_double=(d)*(SOX_SAMPLE_MAX+1.),sox_macro_temp_double<0?sox_macro_temp_double<=SOX_SAMPLE_MIN-.5?++(clips),SOX_SAMPLE_MIN:sox_macro_temp_double-.5:sox_macro_temp_double>=SOX_SAMPLE_MAX+.5?sox_macro_temp_double>SOX_SAMPLE_MAX+1.?++(clips),SOX_SAMPLE_MAX:SOX_SAMPLE_MAX:sox_macro_temp_double+.5)
+
+#define SOX_FLOAT_64BIT_TO_SAMPLE_NOCLIPS(d) (sox_sample_t)(LSX_USE_VAR(sox_macro_temp_sample),sox_macro_temp_double=(d)*(SOX_SAMPLE_MAX+1.),sox_macro_temp_double<0?sox_macro_temp_double<=SOX_SAMPLE_MIN-.5?SOX_SAMPLE_MIN:sox_macro_temp_double-.5:sox_macro_temp_double>=SOX_SAMPLE_MAX+.5?sox_macro_temp_double>SOX_SAMPLE_MAX+1.?SOX_SAMPLE_MAX:SOX_SAMPLE_MAX:sox_macro_temp_double+.5)
 
 /**
 Client API:
@@ -918,6 +921,7 @@ Converts SoX native sample to an unsigned 32-bit integer.
 @param clips The parameter is not used.
 */
 #define SOX_SAMPLE_TO_UNSIGNED_32BIT(d,clips) (sox_uint32_t)((d)^SOX_SAMPLE_NEG)
+#define SOX_SAMPLE_TO_UNSIGNED_32BIT_NOCLIPS(d) (sox_uint32_t)((d)^SOX_SAMPLE_NEG)
 
 /**
 Client API:
@@ -926,6 +930,7 @@ Converts SoX native sample to a signed 32-bit integer.
 @param clips The parameter is not used.
 */
 #define SOX_SAMPLE_TO_SIGNED_32BIT(d,clips) (sox_int32_t)(d)
+#define SOX_SAMPLE_TO_SIGNED_32BIT_NOCLIPS(d) (sox_int32_t)(d)
 
 /**
 Client API:
@@ -935,6 +940,8 @@ Converts SoX native sample to a 32-bit float.
 */
 #define SOX_SAMPLE_TO_FLOAT_32BIT(d,clips) (LSX_USE_VAR(sox_macro_temp_double),sox_macro_temp_sample=(d),sox_macro_temp_sample>SOX_SAMPLE_MAX-64?++(clips),1:(((sox_macro_temp_sample+64)&~127)*(1./(SOX_SAMPLE_MAX+1.))))
 
+#define SOX_SAMPLE_TO_FLOAT_32BIT_NOCLIPS(d) (LSX_USE_VAR(sox_macro_temp_double),sox_macro_temp_sample=(d),sox_macro_temp_sample>SOX_SAMPLE_MAX-64?1:(((sox_macro_temp_sample+64)&~127)*(1./(SOX_SAMPLE_MAX+1.))))
+
 /**
 Client API:
 Converts SoX native sample to a 64-bit float.
@@ -942,6 +949,7 @@ Converts SoX native sample to a 64-bit float.
 @param clips The parameter is not used.
 */
 #define SOX_SAMPLE_TO_FLOAT_64BIT(d,clips) ((d)*(1./(SOX_SAMPLE_MAX+1.)))
+#define SOX_SAMPLE_TO_FLOAT_64BIT_NOCLIPS(d) ((d)*(1./(SOX_SAMPLE_MAX+1.)))
 
 /**
 Client API:

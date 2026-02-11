@@ -125,7 +125,6 @@ size_t write_twolame(sox_format_t *ft, const sox_sample_t *buf, size_t samp)
   float *buffer;
   int nsamples = samp/ft->signal.channels;
   int written = 0;
-  int clips = 0;
   SOX_SAMPLE_LOCALS;
   size_t s;
 
@@ -139,7 +138,8 @@ size_t write_twolame(sox_format_t *ft, const sox_sample_t *buf, size_t samp)
   buffer = p->pcm_buffer;
 
   for(s = 0; s < samp; s++)
-    buffer[s] = SOX_SAMPLE_TO_FLOAT_32BIT(buf[s], clips);
+    /* Apparently there is no need to clip count here */
+    buffer[s] = SOX_SAMPLE_TO_FLOAT_32BIT_NOCLIPS(buf[s]);
 
   new_buffer_size = LAME_BUFFER_SIZE(nsamples);
   if (p->mp3_buffer_size < new_buffer_size) {
