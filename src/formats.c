@@ -1769,7 +1769,7 @@ int sox_format_init(void) /* Find & load format handlers.  */
 
         /* We mustn't modify the process environment */
         copy = lsx_strdup(ld_library_path);
-        colonp = copy ? strchr(copy, ':') : NULL;
+        colonp = strchr(copy, ':');
         if (colonp && colonp - copy >= 6 &&
             !(*colonp = '\0', strcmp(colonp-6, "/.libs")))
           pkglibdir = copy;
