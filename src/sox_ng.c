@@ -2186,8 +2186,8 @@ static void usage_format1(sox_format_handler_t const * f)
     size_t nitems = 0;
 
     while (f->names[nitems]) nitems++;
-    nitems--; /* We don't want the first canonical name */
     lsx_valloc(names, nitems);
+    nitems--; /* We don't want the first canonical name */
     /* nitems + 1 to copy the terminating NULL */
     memcpy(names, f->names + 1, (nitems + 1) * sizeof(*names));
 
