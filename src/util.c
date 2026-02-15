@@ -502,7 +502,7 @@ LSX_UNUSED
 #else
 
   lsx_fail("this build of SoX can't open programs on a pipe");
-  return NULL
+  return NULL;
 
 #endif
 }

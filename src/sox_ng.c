@@ -125,6 +125,12 @@
 #undef HAVE_TERMIOS_H
 #endif
 
+#ifdef _WIN32
+#define IS_REGULAR_FILE(f)   ((f.st_mode & S_IFMT) == S_IFREG)
+#else
+#define IS_REGULAR_FILE(f)   (S_ISREG(f.st_mode))
+#endif
+
 #define SOX_OPTS "SOX_OPTS"
 static lsx_getopt_t optstate;
 
@@ -255,9 +261,9 @@ static void cleanup(void)
     if (ofile->ft) {
       if (!success && ofile->ft->io_type == lsx_io_file) {   /* If we failed part way through */
         struct stat st;                  /* writing a normal file, remove it. */
-        if (!lsx_stat(ofile->ft->filename, &st) && S_ISREG(st.st_mode)) {
+        if (!lsx_stat(ofile->ft->filename, &st) && IS_REGULAR_FILE(st)) {
           /* Don't assume we can unlink a file before closing it
-	   * 'cos that's not true on Windows. */
+           * 'cos that's not true on Windows. */
           /* sox_close frees the filename and ft, so take a copy */
           char *filename = lsx_strdup(ofile->ft->filename);
           sox_close(ofile->ft);
@@ -2225,9 +2231,9 @@ static void usage_format1(sox_format_handler_t const * f)
        */
       while ((e = enc_arg(sox_encoding_t))) {
         do {
-	  unsigned prec;
+          unsigned prec;
           s = enc_arg(unsigned);
-	  prec = sox_precision(e, s);
+          prec = sox_precision(e, s);
           /* The mp3 format handler sets the precision on startup.
            * Both LAME and Twolame encoders take floating point input
            * (24-bit mantissa + 1-bit sign) but set it to 24.
@@ -2491,8 +2497,8 @@ static char parse_gopts_and_fopts(file_t * f)
       case 5:
         if (f->encoding.reverse_bytes != sox_option_default || f->encoding.opposite_endian) {
           lsx_fail("only one endian option per file is allowed");
-	  exit(1);
-	}
+          exit(1);
+        }
         switch (enum_option(optstate.arg, optstate.lngind, endian_options)) {
           case ENDIAN_little: f->encoding.reverse_bytes = MACHINE_IS_BIGENDIAN; break;
           case ENDIAN_big: f->encoding.reverse_bytes = MACHINE_IS_LITTLEENDIAN; break;
@@ -2685,7 +2691,7 @@ static char parse_gopts_and_fopts(file_t * f)
     case 'L': case 'B': case 'x':
       if (f->encoding.reverse_bytes != sox_option_default || f->encoding.opposite_endian) {
         lsx_fail("only one endian option per file is allowed");
-	exit(1);
+        exit(1);
       }
       switch (c) {
         case 'L': f->encoding.reverse_bytes   = MACHINE_IS_BIGENDIAN;    break;
@@ -3324,7 +3330,21 @@ int main(int argc, char **argv)
 
 #ifdef _WIN32
 
-#include <windows.h>
+/* do not include windows.h because of double definition of
+ * __timeb64; replace this by local definitions */
+
+#define CP_UTF8 65001
+typedef int             BOOL;
+typedef const wchar_t*  LPCWSTR;
+typedef wchar_t*        LPWSTR;
+typedef unsigned int    UINT;
+
+LPWSTR* __stdcall CommandLineToArgvW (LPCWSTR, int*);
+UINT    __stdcall GetConsoleOutputCP (void);
+BOOL    __stdcall SetConsoleOutputCP (UINT);
+char*             win32_utf16_to_utf8 (const wchar_t*);
+
+/*--------------------*/
 
 static UINT g_old_output_cp = ((UINT)-1);
 
