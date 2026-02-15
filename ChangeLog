@@ -106,8 +106,8 @@ Internal:
   o Source file mp3.c has split into mp3-mad.c, mp3-lame.c and mp3-twolame.c
     and mp3-util.h has gone
 
-Thanks to akwizgran, Case@hydrogenaudio, Dave Jones, Doug Lee and jwdevel
-and others for creative input.
+Thanks to akwizgran, Alfred Wingate, Case@hydrogenaudio, Daniel Adamski,
+Dave Jones, Doug Lee, jwdevel and others for creative input.
 
 
 sox_ng-14.7.0	2025-11-18
