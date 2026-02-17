@@ -574,23 +574,29 @@ LSX_FORMAT_HANDLER(sndfile)
     "sds",
     "w64",
     "xi",
-    /* Other extensions that it can code */
+    /* Other extensions that it can code that have always-static built-in
+     * handlers */
     "aif", "au",
 #ifdef HAVE_SF_FORMAT_AVR
     "avr",
 #endif
+    "ircam",
+    "nist",
+    "raw", "sf", "snd", "svx", "voc", "vox", "wav", "wve",
+    /* Other extensions that can be dynamically loaded, omitted here
+     * otherwise "configure --with-dyn-default --with-sndfile=yes"
+     * makes it the default handler instead of using the dynamic module.
+    "gsm",
 #ifdef HAVE_SF_FORMAT_FLAC
     "flac",
 #endif
-    "gsm", "ircam",
 #ifdef HAVE_SF_FORMAT_MPEG
     "mp1", "mp2", "mp3",
 #endif
-    "nist",
 #ifdef HAVE_SF_FORMAT_OGG
     "ogg",
 #endif
-    "raw", "sf", "snd", "svx", "voc", "vox", "wav", "wve",
+     */
     NULL
   };
 
