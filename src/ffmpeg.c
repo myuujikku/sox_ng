@@ -120,7 +120,10 @@ LSX_FORMAT_HANDLER(ffmpeg)
     "nut", "oga", "ra", "rm", "rso",
     "sbc", "smjpeg", "spdif", "spx", "tta", "vag", "wma", "wsaud", "wtv",
     /* Other audio filename extensions that ffmpeg can decode */
-    "caf", "flac", "ircam", "mp2", "mp3", "ogg", "sox", "voc", "w64", "wv",
+    /* Ripped out because when they are dynamic modules, static ffmpeg
+     * usurps them and renders them read-only
+     "caf", "flac", "ircam", "mp2", "mp3", "ogg", "sox", "voc", "w64", "wv",
+     */
     NULL
   };
   static sox_format_handler_t handler;
