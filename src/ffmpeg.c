@@ -112,13 +112,11 @@ LSX_FORMAT_HANDLER(ffmpeg)
   static char const * const names[] = {
     "ffmpeg", /* Special type to force use of ffmpeg */
     /* Names of the format-specific handlers below */
-    "3gp", "3g2",
-    "aa", "aac", "ac3", "act", "adts", "adx", "ape", "apm", "aptx", "argo_asf",
-    "asf", "ast", "avi", "dfpwm", "dts",
-    "ea", "eac3", "f4v", "flv", "gxf", "ism", "kvag",
-    "m4a", "m4v", "mkv", "mlp", "mov", "mp4", "mpeg", "mpegts", "mxf_opatom",
-    "nut", "oga", "ra", "rm", "rso",
-    "sbc", "smjpeg", "spdif", "spx", "tta", "vag", "wma", "wsaud", "wtv",
+    "3g2", "3gp", "aac", "ac3", "adts", "adx", "ape", "apm", "aptx", "argo_asf",
+    "asf", "ast", "avi", "dfpwm", "dts", "eac3", "f4v", "flv", "gxf", "ism",
+    "kvag", "m4a", "m4v", "mkv", "mlp", "mov", "mp4", "mpeg", "mpegts",
+    "mxf_opatom", "nut", "oga", "ra", "rm", "rso", "sbc", "smjpeg", "spdif",
+    "spx", "tta", "vag", "wma", "wsaud", "wtv",
     /* Other audio filename extensions that ffmpeg can decode */
     /* Ripped out because when they are dynamic modules, static ffmpeg
      * usurps them and renders them read-only
@@ -141,12 +139,11 @@ LSX_FORMAT_HANDLER(ffmpeg)
   return &handler;
 }
 
-/* All the formats that ffmpeg handles that sox doesn't otherwise,
- * created with yet more macros because there are too many!
- * This lets us add a description for --help-format and
- * lets us autodetect them from their header contents in formats.c
- *
- * For example, the "3gp" macro expands to:
+/* All the formats ffmpeg handles that sox doesn't otherwise,
+ * created with yet more macros because there are too many! */
+
+/* For example, the three "3gp" macros expand to: */
+#if 0
 LSX_FORMAT_HANDLER(3gp)
 {
   static char const * const names[] = { "3gp", "3gpp", NULL };
@@ -157,7 +154,7 @@ LSX_FORMAT_HANDLER(3gp)
   handler.names = names;
   return &handler;
 }
- */
+#endif
 
 #define FFMPEG_FORMAT(name) \
 LSX_FORMAT_HANDLER(name) \
@@ -173,16 +170,12 @@ LSX_FORMAT_HANDLER(name) \
   return &handler; \
 }
 
-FFMPEG_FORMAT(3gp) "3gp", "3gpp"
-FFMPEG_DESCRIPTION "Third Generation Partnership Project"
-FFMPEG_ENDFORMAT
-
 FFMPEG_FORMAT(3g2) "3g2", "3gp2", "3gpp2"
 FFMPEG_DESCRIPTION "Third Generation Partnership Project 2"
 FFMPEG_ENDFORMAT
 
-FFMPEG_FORMAT(aa) "aa", "aax"
-FFMPEG_DESCRIPTION "Audible Audiobook"
+FFMPEG_FORMAT(3gp) "3gp", "3gpp"
+FFMPEG_DESCRIPTION "Third Generation Partnership Project"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(aac) "aac"
@@ -191,10 +184,6 @@ FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(ac3) "ac3"
 FFMPEG_DESCRIPTION "Audio Codec 3 (Dolby Digital)"
-FFMPEG_ENDFORMAT
-
-FFMPEG_FORMAT(act) "act"
-FFMPEG_DESCRIPTION "G729A speech compression"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(adts) "adts"
@@ -222,7 +211,7 @@ FFMPEG_DESCRIPTION "Argonaut Games ASF"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(asf) "asf"
-FFMPEG_DESCRIPTION "Advanced Systems Format"
+FFMPEG_DESCRIPTION "Advanced / Active Streaming Format"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(ast) "ast"
@@ -234,15 +223,11 @@ FFMPEG_DESCRIPTION "Audio Video Interleaved"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(dfpwm) "dfpwm"
-FFMPEG_DESCRIPTION "Dynamic Filter Pulse Width Modulation"
+FFMPEG_DESCRIPTION "DFPWM1a"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(dts) "dts"
 FFMPEG_DESCRIPTION "Digital Theatre Systems"
-FFMPEG_ENDFORMAT
-
-FFMPEG_FORMAT(ea) "ea"
-FFMPEG_DESCRIPTION "Electronic Arts Multimedia"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(eac3) "eac3"
@@ -253,7 +238,7 @@ FFMPEG_FORMAT(f4v) "f4v"
 FFMPEG_DESCRIPTION "F4V MOV file"
 FFMPEG_ENDFORMAT
 
-FFMPEG_FORMAT(flv) "flv", "kux"
+FFMPEG_FORMAT(flv) "flv"
 FFMPEG_DESCRIPTION "Macromedia Flash Video"
 FFMPEG_ENDFORMAT
 
@@ -262,7 +247,7 @@ FFMPEG_DESCRIPTION "General eXchange Format"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(ism) "ism"
-FFMPEG_DESCRIPTION "ISM streaming video"
+FFMPEG_DESCRIPTION "ISM streaming video format"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(kvag) "kvag"
@@ -278,7 +263,7 @@ FFMPEG_DESCRIPTION "MPEG-4 Video"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(mkv) "mkv", "webm"
-FFMPEG_DESCRIPTION "Matroska / WebM"
+FFMPEG_DESCRIPTION "Matroska / WebM format"
 FFMPEG_ENDFORMAT
 
 FFMPEG_FORMAT(mlp) "mlp"
