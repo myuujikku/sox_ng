@@ -2215,6 +2215,8 @@ static int usage_format(char const * name)
   unsigned i;
 
   if (strcmp("all", name)) {
+    sox_format_init();  /* So it lists dynamic formats; format-specific help
+                         * will load the modules if it doesn't find one */
     if (!(f = sox_find_format(name, sox_false))) {
       printf("Cannot find a format called `%s'.\n", name);
       display_supported_formats();
