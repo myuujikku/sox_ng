@@ -5,6 +5,14 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
+sox_ng-14.7.0.8 2026-02-17
+---------------
+
+  o Stop ffmpeg usurping dynamic handlers of formats it also handles
+  o Make --help-format list dynamic formats
+  o Make "make check" work with certain combinations of --with
+
+
 sox_ng-14.7.0.7 2026-02-09
 ---------------
 
