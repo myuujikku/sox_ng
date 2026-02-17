@@ -32,31 +32,19 @@ extern sox_format_handler_t const * lsx_au_format_fn(void);
  */
 static int startread_ffmpeg(sox_format_t * ft)
 {
-  char *quoted_filename;
-  char *p, *q;
-  char const * const command_fmt = "ffmpeg -loglevel quiet -nostdin -strict -2 -i \"%s\" -f au -";
-  char *command;
+  char *command_argv[] = {
+    "ffmpeg",
+    "-loglevel", "quiet",
+    "-nostdin",
+    "-strict", "-2",
+    "-i", NULL,
+    "-f", "au",
+    "-",
+    NULL
+  };
+#define filename_index 7   /* the NULL after "-i" */
 
-  /* Quote special characters in the filename. */
-  /* This is for the Unix shell. I dunno about Windows. */
-  quoted_filename = lsx_malloc(strlen(ft->filename) * 2 + 1);
-  for (p=ft->filename, q=quoted_filename; *p; p++, q++) {
-    switch (*p) {
-    case '"':
-    case '`':
-    case '\\':
-    case '$':
-    case '\n':
-      *q++ = '\\';
-      break;
-    }
-    *q = *p;
-  }
-  *q = '\0';
-
-  command = malloc(strlen(quoted_filename) + strlen(command_fmt) + 1);
-  sprintf(command, command_fmt, quoted_filename);
-  free(quoted_filename);
+  command_argv[filename_index] = ft->filename;
 
   /* If the input is stdin, sox may already have read 256 bytes from it
    * for autodetection so we have to lauch something that feeds ffmpeg
