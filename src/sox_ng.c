@@ -2214,9 +2214,8 @@ static int usage_format(char const * name)
   sox_format_handler_t const * f;
   unsigned i;
 
-  if (strcmp("all", name)) {
-    sox_format_init();  /* So it lists dynamic formats; format-specific help
-                         * will load the modules if it doesn't find one */
+  if (strcmp("all", name) != 0) {
+    /* Help for just one format */
     if (!(f = sox_find_format(name, sox_false))) {
       printf("Cannot find a format called `%s'.\n", name);
       display_supported_formats();
@@ -2225,8 +2224,11 @@ static int usage_format(char const * name)
       usage_format1(f);
     }
   } else {
+    /* Help for all formats */
     sox_bool first = sox_true;
 
+    sox_format_init();  /* So it lists dynamic formats; format-specific help
+                         * will load the modules if it doesn't find one */
     for (i = 0; sox_format_fns[i].fn; ++i) {
       sox_format_handler_t const * f = sox_format_fns[i].fn();
       if (!(f->flags & SOX_FILE_PHONY)) {
