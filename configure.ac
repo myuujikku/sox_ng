@@ -605,7 +605,7 @@ AC_ARG_WITH(dolbyb,
 if test "x$with_dolbyb" != xno
 then
     AC_CHECK_HEADERS(dolbyb.h,
-        [AC_CHECK_LIB(dolbyb, dolbyb_init, found_libdolbyb=yes; DOLBYB_LIBS="$DOLBYB_LIBS -ldolbyb", found_libdolbyb=no)])
+        [AC_CHECK_LIB(dolbyb, dolbyb_restart, found_libdolbyb=yes; DOLBYB_LIBS="$DOLBYB_LIBS -ldolbyb", found_libdolbyb=no)])
     if test "x$found_libdolbyb" = xyes; then
 	AC_DEFINE(EXTERNAL_DOLBYB, 1, [Define if you are using an external dolbyb library])
     else

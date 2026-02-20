@@ -136,7 +136,8 @@ set_dolbyb(sox_effect_t *effp, char *name, char *value)
     gain = ConvertDb(dB);
     dolbyb->ThGain = gain;
     dolbyb->ThGndB = ConvertGain(gain);
-    dolbyb_reinit(dolbyb);
+    if ((s = dolbyb_restart(dolbyb)) != NULL)
+      return s;
     s = lsx_malloc(16);
     sprintf(s, "%g", dolbyb->ThGndB);
   }
@@ -160,7 +161,6 @@ static int start_dolbyb(sox_effect_t * effp)
   dolbyb->SmpSec = effp->in_signal.rate;
   dolbyb->BDepth = 16;
 
-  fprintf(stderr, "Calling dolbyb_start...\n");
   if (dolbyb_start(dolbyb)) return SOX_EOF;
 
   effp->out_signal.length = effp->in_signal.length;

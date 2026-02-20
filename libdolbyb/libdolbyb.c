@@ -47,12 +47,6 @@ void dolbyb_init(dolbyb_t *Param)
   Param->FETGVt = 75000*(int64_t)100000;
 }
 
-/* Update things that depend on a changed value of ThGain */
-void dolbyb_reinit(dolbyb_t *Param)
-{
-  SidePathReinit(Param);
-}
-
 static char *SecondInit(dolbyb_t *Param)
 {
   char *err;
@@ -88,7 +82,6 @@ char *dolbyb_start(dolbyb_t *Param)
 {
   char *err;
 
-  fprintf(stderr, "dolbyb_start()...\n");
   /* Check validity of parameters */
 
   if (Param->SmpSec <= 0)
@@ -119,7 +112,6 @@ char *dolbyb_start(dolbyb_t *Param)
 
   if ((err = SecondInit(Param))) return err;
 
-  fprintf(stderr, "Calling Calibrate()...\n");
   Calibrate(Param);
 
   return NULL;
