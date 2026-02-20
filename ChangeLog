@@ -5,8 +5,10 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
-sox_ng-14.6.1+git
------------------
+sox_ng-14.6.2.1	2026-02-23
+---------------
+
+14.6.2 was wrongly a duplicate of 14.6.1.5
 
 New features:
   o Add rules to make win32.exe and win64.exe. See README.win32
@@ -28,6 +30,12 @@ Bug fixes:
   o Make it build on OpenBSD without needing --without-sunaudio
   o Include the PDFs in the dist tarball
   o Recognize FFmpeg/LAME/madplay codes for unspecified WAV length
+  o Fix softvol suddenly dropping to zero
+  o Make spectrogram -S with a time after EOF fail instead of looping forever
+  o Fix compilation when mad.h is found but libmad isn't
+  o Put extra_usage after priv_size in effects' options
+  o Fix --version only saying "SoX_ng v" on MacOS
+  o Fix issues/issues.sh for http:// remotes, FreeBSD and bogus error messages
 
 
 sox_ng-14.6.1	2025-10-13
