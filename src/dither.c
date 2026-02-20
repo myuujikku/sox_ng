@@ -1384,7 +1384,7 @@ static const filter_t filters[] = {
   {    0, fir,  0,   0,  NULL, Shape_none},
 };
 
-#define MAX_N 28
+#define MAX_N 54
 
 typedef struct {
   filter_name_t filter_name;
@@ -1451,6 +1451,22 @@ typedef struct {
 #define CONVOLVE _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 #define NAME flow_fir_28
 #define N 28
+#include "dither.h"
+#define CONVOLVE _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+#define NAME flow_fir_31
+#define N 31
+#include "dither.h"
+#define CONVOLVE _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+#define NAME flow_fir_32
+#define N 32
+#include "dither.h"
+#define CONVOLVE _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+#define NAME flow_fir_44
+#define N 44
+#include "dither.h"
+#define CONVOLVE _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+#define NAME flow_fir_54
+#define N 54
 #include "dither.h"
 
 
@@ -1581,6 +1597,10 @@ static int start_dither(sox_effect_t * effp)
         case 23: p->flow = flow_fir_23; break;
         case 24: p->flow = flow_fir_24; break;
         case 28: p->flow = flow_fir_28; break;
+        case 31: p->flow = flow_fir_31; break;
+        case 32: p->flow = flow_fir_32; break;
+        case 44: p->flow = flow_fir_44; break;
+        case 54: p->flow = flow_fir_54; break;
         default: assert(sox_false);
       } else switch(f->len) {
         case  4: p->flow = flow_iir_4 ; break;
