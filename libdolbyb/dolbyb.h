@@ -23,13 +23,6 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include <math.h>  /* Required by other source files that include dolbyb.h */
-
-/* These are not defined/declared when compiling -ansi (C90) */
-#ifndef M_PI
-# define M_PI 3.14159265358979323846
-#endif
-extern double round(double x);
 
 typedef struct {
   /* Compulsory Parameters */
@@ -176,7 +169,7 @@ typedef struct {
 
 extern void dolbyb_init(dolbyb_t *);   /* Call before doing anything */
 extern char *dolbyb_start(dolbyb_t *); /* Call when BDepth, NumChn and SmpSec are set */
-extern char *dolbyb_restart(dolbyb_t *); /* Update for a changed ThGain */
+extern char *dolbyb_restart(dolbyb_t *); /* Call midstream if ThGain changes */
 extern char *dolbyb_encode(dolbyb_t *, void *in, void *out, size_t nframes);
 extern char *dolbyb_decode(dolbyb_t *, void *in, void *out, size_t nframes);
 extern void dolbyb_free(dolbyb_t *);

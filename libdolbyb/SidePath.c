@@ -30,6 +30,15 @@
 #include "HPF2.h"
 #include "DiodeClip.h"
 
+#include <math.h>
+
+/* This is not declared when compiling -ansi (C90) */
+extern double round(double x);
+
+/* Decibels-to-Gain and Gain-to-Decibels conversions */
+#define ConvertDb(dB) pow(10, (dB) / 20)
+#define ConvertGain(Gain) (log10(Gain) * 20)
+
 #define SidePathNumberOfPaths  ParamMaxChnl
 
 char *SidePathInit(dolbyb_t *Param)
@@ -62,21 +71,6 @@ char *SidePathInit(dolbyb_t *Param)
     HPF2SetVals(Param, TabCnt);
   }
   return NULL;
-}
-
-
-/* Update things that depend on the value of ThGain */
-char *SidePathReinit(dolbyb_t *Param)
-{
-  double AmpVal = ParamGanAmp;
-
-  if (Param->ThGain != 1.0) AmpVal *= Param->ThGain;
-  Param->SidePathGcMux = ParamMuxValue(AmpVal, 1048576L);
-  Param->SidePathGcVal = round(AmpVal * Param->SidePathGcMux);
-
-  /* SetGate() and HPF2SetVals() don't use ThGain or SidePathGc* */
-
-  return NULL;	/* Always succeeds */
 }
 
 

@@ -23,8 +23,8 @@
 #include <stdint.h>
 #include <math.h>
 
-/* Extra declarations for C89/C90 */
-extern double round(double);
+/* This is not declared when compiling -ansi (C90) */
+extern double round(double x);
 
 #define HPFAdjTabSize   1000
 

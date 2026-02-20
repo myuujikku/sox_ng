@@ -28,6 +28,11 @@
 #include "Param.h"
 #include "SidePath.h"
 
+#include <math.h>
+
+/* This is not declared when compiling -ansi (C90) */
+extern double round(double x);
+
 #define FindOutSmpMinLoop  3
 #define FindOutSmpNumberOfFilters  ParamMaxChnl
 

@@ -28,10 +28,14 @@
 #include "SidePath.h"
 
 #include <stdlib.h>	/* for malloc() etc */
+#include <inttypes.h>	/* to printf 64-bit quantities */
+#include <math.h>
 
-
-#define LSX_RETURN_VALID  /* The only thing util.h needs from sox_ng.h */
-#include "../src/util.h" /* for PRId64 */
+/* These are not defined/declared when compiling -ansi (C90) */
+#ifndef M_PI
+# define M_PI 3.14159265358979323846
+#endif
+extern double round(double x);
 
 #define CalibrateTestAmp  17.5   /* 17.5 mv * root 2 */
 #define CalibrateTstFrq  5000
@@ -374,9 +378,9 @@ CalibrateCacheSave(dolbyb_t *Param)
   if (filename == NULL) return;
   fp = fopen(filename, "a");
   if (fp == NULL) return;
-  fprintf(fp, "SmpSec=%u FltTyp=%u UpSamp=%u SidAmp=%.19f FETSVt=%" PRId64 "\n",
-          Param->SmpSec, Param->FltTyp, Param->UpSamp, Param->SidAmp,
-	  Param->FETSVt);
+  fprintf(fp,
+          "SmpSec=%u FltTyp=%u UpSamp=%u SidAmp=%.19f FETSVt=%" PRIi64 "\n",
+          Param->SmpSec, Param->FltTyp, Param->UpSamp, Param->SidAmp, Param->FETSVt);
   fclose(fp);
 }
 
@@ -394,8 +398,9 @@ CalibrateCacheFind(dolbyb_t *Param)
   FILE *fp = fopen(CalibrateCacheFileName(), "r");
   if (fp == NULL) return 0;
   while (fgets(line, sizeof(line), fp) != NULL) {
-    if (sscanf(line, "SmpSec=%u FltTyp=%d UpSamp=%d SidAmp=%lf FETSVt=%" PRId64 "\n",
-                     &SmpSec, &FltTyp, &UpSamp, &SidAmp, &FETSVt) == 5) {
+    if (sscanf(line,
+               "SmpSec=%u FltTyp=%d UpSamp=%d SidAmp=%lf FETSVt=%" PRIi64 "\n",
+               &SmpSec, &FltTyp, &UpSamp, &SidAmp, &FETSVt) == 5) {
       if (SmpSec == Param->SmpSec &&
           FltTyp == Param->FltTyp &&
 	  UpSamp == Param->UpSamp) {
