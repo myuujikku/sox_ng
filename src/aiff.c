@@ -109,9 +109,10 @@ int lsx_aiffstartread(sox_format_t * ft)
         if (lsx_reads(ft, buf, (size_t)4))
 	  read_error();
         chunksize -= 4;
-        if (strncmp(buf, "sowt", (size_t)4) == 0) {
-          /* CD audio as read on Mac OS machines */
-          /* Need to endian swap all the data */
+        if (strncmp(buf, "sowt", (size_t)4) == 0 ||
+            strncmp(buf, "42ni", (size_t)4) == 0 ||
+            strncmp(buf, "23ni", (size_t)4) == 0) {
+          /* Little-endian signed integer format */
           is_sowt = 1;
         }
         else if (strncmp(buf, "fl32", (size_t)4) == 0 ||
@@ -153,7 +154,9 @@ int lsx_aiffstartread(sox_format_t * ft)
 	  bits = 8;
         }
         else if (strncmp(buf, "NONE", (size_t)4) != 0 &&
-            strncmp(buf, "twos", (size_t)4) != 0) {
+            strncmp(buf, "twos", (size_t)4) != 0 &&
+            strncmp(buf, "in24", (size_t)4) != 0 &&
+            strncmp(buf, "in32", (size_t)4) != 0) {
           buf[4] = 0;
           lsx_fail_errno(ft, SOX_EHDR, "unsupported AIFC compression type `%s'", buf);
           return(SOX_EOF);
@@ -433,7 +436,7 @@ int lsx_aiffstartread(sox_format_t * ft)
 OK:
   ssndsize /= bits >> 3;
 
-  /* Cope with 'sowt' CD tracks as read on Macs */
+  /* Cope with little-endian AIFC formats (sowt, 42ni, 23ni) */
   if (is_sowt)
     ft->encoding.reverse_bytes = !ft->encoding.reverse_bytes;
 
@@ -981,8 +984,27 @@ static int aifcwriteheader(sox_format_t * ft, uint64_t nframes)
         /* calculate length of COMM chunk (without header) */
         switch (ft->encoding.encoding) {
           case SOX_ENCODING_SIGN2:
-            ctype = "NONE";
-            cname = "not compressed";
+            if (bits == 8) {
+              ctype = "NONE"; cname = "8-bit signed integer";
+            } else if (ft->encoding.reverse_bytes != MACHINE_IS_BIGENDIAN) {
+              switch (bits) {
+                case 16: ctype = "twos"; cname = "16-bit big-endian signed integer"; break;
+                case 24: ctype = "in24"; cname = "24-bit big-endian signed integer"; break;
+                case 32: ctype = "in32"; cname = "32-bit big-endian signed integer"; break;
+                default:
+                  lsx_fail_errno(ft, SOX_EFMT, "unsupported output sample size %u", bits);
+                  return SOX_EOF;
+              }
+            } else {
+              switch (bits) {
+                case 16: ctype = "sowt"; cname = "16-bit little-endian signed integer"; break;
+                case 24: ctype = "42ni"; cname = "24-bit little-endian signed integer"; break;
+                case 32: ctype = "23ni"; cname = "32-bit little-endian signed integer"; break;
+                default:
+                  lsx_fail_errno(ft, SOX_EFMT, "unsupported output sample size %u", bits);
+                  return SOX_EOF;
+              }
+            }
             break;
           case SOX_ENCODING_FLOAT:
             if (bits == 32) {
