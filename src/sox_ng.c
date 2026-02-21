@@ -125,7 +125,7 @@
 #undef HAVE_TERMIOS_H
 #endif
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #define IS_REGULAR_FILE(f)   ((f.st_mode & S_IFMT) == S_IFREG)
 #else
 #define IS_REGULAR_FILE(f)   (S_ISREG(f.st_mode))
@@ -3334,7 +3334,13 @@ int main(int argc, char **argv)
 
 #ifdef _WIN32
 
-/* do not include windows.h because of double definition of
+# ifndef _MSC_VER
+
+#  include <windows.h>
+
+# else
+
+/* Do not include windows.h because of double definition of
  * __timeb64; replace this by local definitions */
 
 #define CP_UTF8 65001
@@ -3348,7 +3354,7 @@ UINT    __stdcall GetConsoleOutputCP (void);
 BOOL    __stdcall SetConsoleOutputCP (UINT);
 char*             win32_utf16_to_utf8 (const wchar_t*);
 
-/*--------------------*/
+# endif
 
 static UINT g_old_output_cp = ((UINT)-1);
 
