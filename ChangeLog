@@ -5,6 +5,10 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
+sox_ng-14.6.2+git
+-----------------
+
+
 sox_ng-14.6.2.1	2026-02-23
 ---------------
 
@@ -20,22 +24,20 @@ Bug fixes:
   o Fix play -t ao work, broken in 14.6.1
   o Fix --version only saying "SoX_ng v" on MacOS
   o Fix issues/issues.sh for http:// remotes, FreeBSD and bogus error messages
-  o Fail autodetection of some ffmpeg formats if the file is truncated
-  o Fix a harmless memory leak in alsa
+  o alsa: Fix a harmless memory leak
+  o ffmpeg: Fail autodetection of some formats if the file is truncated
+  o mp3: Recognize FFmpeg/LAME/madplay codes for unspecified WAV length
+  o opus: Include opus support in the Windows exes
+  o softvol: Fix the volume suddenly dropping to zero
+  o spectrogram: -S with a time after EOF fails instead of looping forever
+  o stats: RMS Pk dB -inf when window is same as file length
   o synth: Fix the extra_usage line for -j
-  o Fix RMS Pk dB -inf when window is same as file length
   o Don't ignore Ctrl-C while opening input files
-  o Include opus support in the Windows exes
   o Optimize the Windows exes for speed
   o Make it build on OpenBSD without needing --without-sunaudio
   o Include the PDFs in the dist tarball
-  o Recognize FFmpeg/LAME/madplay codes for unspecified WAV length
-  o Fix softvol suddenly dropping to zero
-  o Make spectrogram -S with a time after EOF fail instead of looping forever
   o Fix compilation when mad.h is found but libmad isn't
   o Put extra_usage after priv_size in effects' options
-  o Fix --version only saying "SoX_ng v" on MacOS
-  o Fix issues/issues.sh for http:// remotes, FreeBSD and bogus error messages
 
 
 sox_ng-14.6.1	2025-10-13
