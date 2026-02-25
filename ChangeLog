@@ -11,6 +11,7 @@ sox_ng-14.7.0+git
 Changes since +git20260221:
 
   o aifc: Support 24/32-bit big/little-endian compression types
+  o cdda: Add ".cda" as another filename extension
 
 Changes since +git20260129:
 
