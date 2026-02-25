@@ -290,6 +290,12 @@ Apple's Core Audio File format.
 channels formatted as 16-bit big-endian signed integers at a sample
 rate of 44\*d1\ kHz.  The number of stereo samples in each CDDA
 track is always a multiple of 588.
+.SP
+By default, SoX expects and produces CDDA in big-endian format.
+However, the endianess of CDDA files can vary depending on the tools
+and hardware used.
+To produce and to read little-endian CDDA files, predece the filename
+with the \fB\-L\fP option.
 .TP
 \fBcoreaudio\fR (optional)
 The MacOS X CoreAudio device driver supports both playing and recording.
