@@ -4,6 +4,11 @@ Change History
 This file contains a list of all changes starting after the release of
 sox-11gamma, followed by a list of prior authors and features.
 
+sox_ng-14.4.6.1
+---------------
+
+  o Fix lame detection when lame.h exists but lame/lame.h doesn't
+
 
 sox_ng-14.4.6	2026-02-20
 -------------

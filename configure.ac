@@ -423,9 +423,8 @@ if test "x$with_lame" != "xno"; then
       AC_DEFINE(DL_LAME, 1, [Define to dlopen() lame.])
     else
       enable_dl_lame=no
-      AC_CHECK_HEADERS(lame/lame.h,,
-        [AC_CHECK_HEADERS(lame.h, [], using_lame=no)],
-        using_lame=no)
+      AC_CHECK_HEADERS(lame/lame.h, [],
+        [AC_CHECK_HEADERS(lame.h, [], using_lame=no)])
       AC_CHECK_LIB(mp3lame, lame_get_lametag_frame, MP3_LIBS="$MP3_LIBS -lmp3lame", using_lame=no)
       AC_CHECK_LIB(mp3lame, id3tag_set_fieldvalue)
       if test "x$ac_cv_lib_mp3lame_id3tag_set_fieldvalue" = "xyes"; then
