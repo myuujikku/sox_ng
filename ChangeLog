@@ -4,26 +4,34 @@ Change History
 This file contains a list of all changes since the release of sox-11gamma.
 
 
+sox_ng-14.5.3.1
+---------------
+
+  o Fix lame detection when lame.h exists but lame/lame.h doesn't
+
+
 sox_ng-14.5.3	2026-02-20
 -------------
 
- o Fail autodetection of some ffmpeg formats if the file is truncated
- o Make configure --enable-dl-amrnb work
- o Make configure --enable-dl-sndfile work
- o Don't try to compile lame when lame/lame.h is not found
- o Remove a hidden dependency on autoconf-archive
- o Fix a segmentation fault when the effect name after a ":" is misspelt
- o synth: Fix the extra_usage line for -j
- o Fix RMS Pk dB -inf when window is same as the file length
- o Recognize FFmpeg/LAME/madplay codes for unspecified WAV length
+  o Fail autodetection of some ffmpeg formats if the file is truncated
+  o Make configure --enable-dl-amrnb work
+  o Make configure --enable-dl-sndfile work
+  o Don't try to compile lame when lame/lame.h is not found
+  o Remove a hidden dependency on autoconf-archive
+  o Fix a segmentation fault when the effect name after a ":" is misspelt
+  o synth: Fix the extra_usage line for -j
+  o Fix RMS Pk dB -inf when window is same as the file length
+  o Recognize FFmpeg/LAME/madplay codes for unspecified WAV length
 
 sox_ng-14.5.2	2025-10-13
 -------------
 
 New features:
+
   o On Windows you no longer need to set AUDIODRIVER=waveaudio beforehand
 
 Bug fixes:
+
   o Don't use pkgconfig to locate opus libraries
   o Fix SEGV in spectrogram -n due to off-by-one error
   o spectrogram: Don't put a "DC" label on the log frequency axis
