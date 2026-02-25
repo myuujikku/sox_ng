@@ -91,9 +91,9 @@ typedef struct stage {
   /* Common to all stage types: */
   stage_fn_t fn;
   fifo_t     fifo;
-  int        pre;       /* Number of past samples to store */
-  int        pre_post;  /* pre + number of future samples to store */
-  int        preload;   /* Number of zero samples to pre-load the fifo */
+  size_t     pre;       /* Number of past samples to store */
+  size_t     pre_post;  /* pre + number of future samples to store */
+  size_t     preload;   /* Number of zero samples to pre-load the fifo */
   double     out_in_ratio; /* For buffer management. */
 
   /* For a stage with variable (run-time generated) filter coefs: */
@@ -117,7 +117,13 @@ typedef struct stage {
   int        n, phase_bits;
 } stage_t;
 
+#if 0
 #define stage_occupancy(s) max(0, lsx_fifo_occupancy(&(s)->fifo) - (s)->pre_post)
+#else
+#define stage_occupancy(s) \
+    ((lsx_fifo_occupancy(&(s)->fifo) > (s)->pre_post) \
+   ? (lsx_fifo_occupancy(&(s)->fifo) - (s)->pre_post) : 0)
+#endif
 #define stage_read_p(s) ((sample_t *)lsx_fifo_read_ptr(&(s)->fifo) + (s)->pre)
 
 static void cubic_stage_fn(stage_t * p, fifo_t * output_fifo)
@@ -677,7 +683,7 @@ static int rate_init(
   for (i = 0, s = p->stages; i < p->num_stages; ++i, ++s) {
     lsx_fifo_create(&s->fifo, (int)sizeof(sample_t));
     memset(lsx_fifo_reserve(&s->fifo, s->preload), 0, sizeof(sample_t)*s->preload);
-    lsx_debug("%5i|%-5i preload=%i remL=%i",
+    lsx_debug("%5zi|%-5zi preload=%zi remL=%i",
         s->pre, s->pre_post - s->pre, s->preload, s->remL);
   }
   lsx_fifo_create(&s->fifo, (int)sizeof(sample_t));
