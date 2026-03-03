@@ -28,7 +28,6 @@
 #include "SidePath.h"
 
 #include <stdlib.h>	/* for malloc() etc */
-#include <inttypes.h>	/* to printf 64-bit quantities */
 #include <math.h>
 
 /* These are not defined/declared when compiling -ansi (C90) */
@@ -36,6 +35,12 @@
 # define M_PI 3.14159265358979323846
 #endif
 extern double round(double x);
+
+#ifdef _MSC_VER
+# define PRIi64 "ld"
+#else
+# include <inttypes.h>	/* to printf 64-bit quantities */
+#endif
 
 #define CalibrateTestAmp  17.5   /* 17.5 mv * root 2 */
 #define CalibrateTstFrq  5000
