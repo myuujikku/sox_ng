@@ -13,6 +13,7 @@ Changes since +git20260221:
   o aifc: Support 24/32-bit big/little-endian compression types
   o cdda: Add ".cda" as another filename extension
   o Fix "rate -vs" looping forever, broken in +git20260129
+  o Revert c557165 to make --single-threaded the default again
 
 Changes since +git20260129:
 
