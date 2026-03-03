@@ -5,7 +5,13 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
-sox_ng-14.7.1	2026-02-20
+sox_ng-14.7.1.1
+---------------
+
+  o Revert to --single-threaded by default
+
+
+sox_ng-14.7.1	2026-02-21
 -------------
 
   o Make --keymap work on vol.gain and overdrive.gain when gain is 1

@@ -806,17 +806,19 @@ Equivalent to \fB\-\-combine mix\fR and \fB\-\-combine merge\fR respectively.
 If SoX has been built with the optional `libmagic' library, this
 option enables its use in helping to detect audio file types.
 .TP
-\fB\-\-multi\-threaded\fR | \fB\-\-single\-threaded\fR
-By default, SoX is `multi threaded' and
-processes audio channels for most multichannel effects in parallel
-on hyperthreading and multicore processors.
-.SP
-If the \fB\-\-single\-threaded\fR option is given, it processes them
-one at a time, which may be more efficient on systems with less RAM.
+\fB\-\-multi\-threaded\fR\^|\^\fB\-\-single\-threaded\fR
+By default, SoX is `single threaded' but
+if the \fB\-\-multi\-threaded\fR option is given,
+SoX processes audio channels for most multichannel
+effects in parallel on hyperthreading and multicore processors.
 .SP
 A larger buffer size than the default may be needed
 to benefit more from multithreaded processing
-(e.g. 131072; see \fB\-\-buffer\fR above).
+(e.g. 131072; see \fB\-\-buffer\fR above) and setting
+\f(CWOMP_WAIT_POLICY=PASSIVE\fP in the environment before
+launching SoX avoids a defect in OpenMP that can make it
+incredibly slow if several invocations of SoX are running
+simultaneously.
 .TP
 \fB\-\-no\-clobber\fR
 Prompt before overwriting an existing file with the same name as that
