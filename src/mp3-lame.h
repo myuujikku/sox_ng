@@ -18,13 +18,16 @@
 /* Declarations for callers of mp3-lame.c */
 
 #if HAVE_LAME
-extern int startread(sox_format_t * ft);
+extern int startread_lame(sox_format_t * ft);
 extern size_t read_lame(sox_format_t *ft, sox_sample_t *buf, size_t len);
 extern int stopread_lame(sox_format_t * ft);
 extern int startwrite_lame(sox_format_t * ft);
 extern size_t write_lame(sox_format_t *ft, const sox_sample_t *buf, size_t len);
 extern int stopwrite_lame(sox_format_t * ft);
 #else
+# define startread_lame NULL
+# define read_lame NULL
+# define stopread_lame NULL
 # define startwrite_lame NULL
 # define write_lame NULL
 # define stopwrite_lame NULL
