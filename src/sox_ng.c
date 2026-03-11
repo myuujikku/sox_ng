@@ -3150,6 +3150,20 @@ int main(int argc, char **argv)
 
   parse_options_and_filenames(argc, argv);
 
+  /* Circumvent nasty defect in OpenMP whereby multiple invocations of SoX
+   * in parallel become a hundred times slower. Do a lot of careful checking
+   * because if OMP_WAITPOLICY isn't set, we'll go into an infinite loop.
+   */
+  if (sox_globals.use_threads && !getenv("OMP_WAIT_POLICY")) {
+    if (setenv("OMP_WAIT_POLICY", "PASSIVE", 0) == 0 &&
+        getenv("OMP_WAIT_POLICY") != NULL) {
+      argv[argc] = NULL;  /* Make sure it's NULL-terminated */
+      lsx_report("execing myself to set OMP_WAIT_POLICY");
+      execvp(argv[0], argv);
+      lsx_warn("can't exec myself to set OMP_WAIT_POLICY");
+    }
+  }
+
   if (sox_globals.verbosity > 2)
     display_SoX_version(stderr);
 
