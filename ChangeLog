@@ -5,6 +5,19 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
+sox_ng-14.6.2.1+git
+-------------------
+
+Bug fixes:
+  o Revert to --single-threaded by default
+  o Put extra_usage after priv_size so 3rd party effects compile
+  o spectrogram: Omit bottom label if it overlaps top label of pane below
+  o spectrogram: Move top freq label one pixel down to top row of graph
+
+Documentation:
+  o Fix a spelling error revealed by lintian
+
+
 sox_ng-14.6.2.1	2026-02-23
 ---------------
 
