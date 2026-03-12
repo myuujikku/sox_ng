@@ -5,10 +5,12 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
-sox_ng-14.7.1.1
+sox_ng-14.7.1.1	2026-03-12
 ---------------
 
-  o Revert to --single-threaded by default
+  o Revert to using --single-threaded by default
+  o Put extra_usage after priv_size so 3rd party effects compile
+  o Fix two spelling errors found by `lintian`
 
 
 sox_ng-14.7.1	2026-02-21
