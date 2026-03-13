@@ -1047,13 +1047,13 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
         print_up(10, below + (c_rows - font_X * (int)strlen(text)) / 2, Text, text);
         { int chan;
           for (chan = 0; chan < chans; ++chan) {
-            int base = below + chan * (p->rows + (!p->raw && !p->no_axes));
+            int base = below + chan * (p->rows + !p->no_axes);
             unsigned i;
 
             for (i=0; i < nlabels; i++) {
               float f = labels[i];
-              int y = base + p->rows * (f - p->low_freq)
-                                     / (p->high_freq - p->low_freq);
+              int y = base + (p->rows - 1) * (f - p->low_freq)
+                                           / (p->high_freq - p->low_freq);
               int x;
 
               for (x = 0; x < tick_len; ++x) {                 /* Ticks */
@@ -1077,9 +1077,9 @@ static int stop(sox_effect_t * effp) /* only called, by end(), on flow 0 */
                */
               if (chan > 0 && i == 0) {
                 /* These two repeat the "base =" and "y =" lines above */
-                int prev_top_label_y = below + (chan - 1) * (p->rows + !p->no_axes)
+                int prev_top_label_y = below + (chan - 1) * ((p->rows - 1) + !p->no_axes)
                                      + p->rows * (labels[nlabels - 1] - p->low_freq) / (p->high_freq - p->low_freq);
-                int this_bot_label_y = below + chan * (p->rows + !p->no_axes)
+                int this_bot_label_y = below + chan * ((p->rows - 1) + !p->no_axes)
                                      + p->rows * (f - p->low_freq) / (p->high_freq - p->low_freq);
                 if (this_bot_label_y - prev_top_label_y < font_y)
                   continue;
