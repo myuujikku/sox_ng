@@ -15,6 +15,7 @@ Changes since +git20260221:
   o Fix "rate -vs" looping forever, broken in +git20260129
   o Revert c557165 to make --single-threaded the default again
   o spectrogram: Omit bottom labels that overlap the top ones below
+  o spectrogram: Place top label at top row of graph, not the axis
 
 Changes since +git20260129:
 
