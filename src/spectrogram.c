@@ -1316,6 +1316,21 @@ two_and_five:   case two_and_five:
                     DELTA_EQ(labels[i+1]/scale - labels[i]/scale, 0.5))
                   continue;
               }
+              /* Omit the bottom label of all except the first channel to
+               * avoid label overlap with the top label of the channel below
+               * if the distance between the centers of the labels is less
+               * that the height of the font.
+               */
+              if (chan > 0 && i == 0) {
+                /* These two repeat the "base =" and "y =" lines above */
+                int prev_top_label_y = below + (chan - 1) * (p->rows + !p->no_axes)
+                                     + p->rows * (labels[nlabels - 1] - p->low_freq) / (p->high_freq - p->low_freq);
+                int this_bot_label_y = below + chan * (p->rows + !p->no_axes)
+                                     + p->rows * (f - p->low_freq) / (p->high_freq - p->low_freq);
+                if (this_bot_label_y - prev_top_label_y < font_y)
+                  continue;
+              }
+
               sprintf(text, f?"%5g":"   DC", f / scale);         /* Labels */
               print_at(left - 4 - font_X * 5, y + 5, Labels, text);
               sprintf(text, f?"%g":"DC", f / scale);
