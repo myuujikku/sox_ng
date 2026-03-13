@@ -10,7 +10,6 @@ sox_ng-14.7.0+git
 
 Changes since +git20260221:
 
-  o aifc: Support 24/32-bit big/little-endian compression types
   o cdda: Add ".cda" as another filename extension
   o Fix "rate -vs" looping forever, broken in +git20260129
   o Revert c557165 to make --single-threaded the default again
@@ -19,6 +18,7 @@ Changes since +git20260221:
 
 Changes since +git20260129:
 
+  o aifc: Support 24/32-bit big/little-endian compression types
   o Make --keymap work on vol.gain and overdrive.gain when gain is 1
   o Implement MPEG decoding with -t lame
 
