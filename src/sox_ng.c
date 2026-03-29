@@ -2049,13 +2049,18 @@ static void usage(void)
 "GLOBAL OPTIONS (gopts) (can be specified at any point before the first effect):",
 "--buffer BYTES           Set the size of all processing buffers (default 8192)",
 "--clobber                Don't prompt to overwrite output file (default)",
+"--no-clobber             Prompt to overwrite output file",
 "--combine concatenate    Concatenate all input files (default for sox, rec)",
 "--combine sequence       Sequence all input files (default for play)",
+"--combine mix, -m        Mix multiple input files",
+"--combine mix-power      Mix to equal power",
+"--combine merge, -M      Merge multiple input files"
 "-D, --no-dither          Don't dither automatically",
 "--dft-min NUM            Minimum size (log2) for DFT processing (default 10)",
 "--effects-file FILENAME  File containing effects and options",
 "-G, --guard              Use temporary files to guard against clipping",
 "-h, --help               Display version number and usage information",
+"-h NAME                  Show info of effect or format NAME",
 "--help-effect NAME       Show usage of effect NAME, or NAME=all for all",
 "--help-format NAME       Show info on format NAME, or NAME=all for all",
 "--i, --info              Behave as soxi(1)",
@@ -2064,10 +2069,6 @@ static void usage(void)
 "--keymap X:effect.param(+|-|*|/|=)N",
 "                         When key X is pressed, adjust the effect's parameter",
 "                         linearly, logarithmically or set it to a value",
-"--no-clobber             Prompt to overwrite output file",
-"-m, --combine mix        Mix multiple input files (instead of concatenating)",
-"--combine mix-power      Mix to equal power (instead of concatenating)",
-"-M, --combine merge      Merge multiple input files (instead of concatenating)"
   };
   static char const * const linesMagic[] = {
 "--magic                  Use `magic' file-type detection"
