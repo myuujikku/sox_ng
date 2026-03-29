@@ -2043,7 +2043,7 @@ static void usage(void)
 "--replay-gain track|album|off  Default: off (sox, rec), track (play)",
 "-R                       Use default random numbers (same on each run of SoX)",
 "-S, --show-progress      Display progress while processing audio data",
-"--single-threaded        Disable parallel effects channels processing",
+"--multi-threaded         Enable parallel effects channels processing",
 "--temp DIRECTORY         Specify the directory to use for temporary files",
 "-T, --combine multiply   Multiply samples of corresponding channels from all",
 "                         input files (instead of concatenating)",
