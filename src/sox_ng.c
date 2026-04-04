@@ -2054,7 +2054,7 @@ static void usage(void)
 "--combine sequence       Sequence all input files (default for play)",
 "--combine mix, -m        Mix multiple input files",
 "--combine mix-power      Mix to equal power",
-"--combine merge, -M      Merge multiple input files"
+"--combine merge, -M      Merge multiple input files",
 "-D, --no-dither          Don't dither automatically",
 "--dft-min NUM            Minimum size (log2) for DFT processing (default 10)",
 "--effects-file FILENAME  File containing effects and options",
