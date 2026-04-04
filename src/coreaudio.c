@@ -31,6 +31,8 @@
 #else
   /* Use the deprecated constant on older OS versions */
 # define kAudioObjectPropertyElementMain kAudioObjectPropertyElementMaster
+# define kAudioObjectPropertyScopeInput  kAudioDevicePropertyScopeInput
+# define kAudioObjectPropertyScopeOutput kAudioDevicePropertyScopeOutput
 #endif
 
 #define Buffactor 4
