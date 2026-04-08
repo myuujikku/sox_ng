@@ -3367,6 +3367,7 @@ typedef wchar_t*        LPWSTR;
 typedef unsigned int    UINT;
 
 LPWSTR* __stdcall CommandLineToArgvW (LPCWSTR, int*);
+LPWSTR  __stdcall GetCommandLineW();
 UINT    __stdcall GetConsoleOutputCP (void);
 BOOL    __stdcall SetConsoleOutputCP (UINT);
 char*             win32_utf16_to_utf8 (const wchar_t*);

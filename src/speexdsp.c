@@ -21,7 +21,7 @@
 
 #ifdef HAVE_SPEEXDSP
 
-#include <speex/speex_types.h>
+#include <speex/speexdsp_types.h>
 #include <speex/speex_preprocess.h>
 
 #if !defined(HAVE_LIBLTDL)

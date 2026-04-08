@@ -1,0 +1,112 @@
+# -*- coding: utf-8 -*-
+#
+# Local Settings for the C Linker and Library Manager in CMAKE
+
+#################
+### FUNCTIONS ###
+#################
+
+MACRO(LINKER_combineLibraryListIntoLib
+      targetName libraryDirectoryPath libraryNameStemList)
+    # combines static libraries in <libraryNameStemList> into a
+    # combined library for <targetName>; all libraries are located in
+    # <libraryDirectoryPath>
+
+    SET(extension "${LINKER_staticLibExtension}")
+
+    UTIL_List_constructFromOther(combinedLibraryPathList
+                                 libraryNameStemList
+                                 "${libraryDirectoryPath}/lib" ${extension})
+
+    SET(libraryFileName
+        "${libraryDirectoryPath}/${targetName}${extension}")
+    SET(commandMessage "Combining libs into ${targetName}...")
+
+    IF(WINDOWS)
+        ADD_CUSTOM_TARGET(${targetName}
+                          COMMAND lib
+                                  /OUT:${libraryFileName}
+                                  ${combinedLibraryPathList}
+                          COMMAND_EXPAND_LISTS
+                          COMMENT ${commandMessage})
+    ELSE()
+        ADD_CUSTOM_TARGET(${targetName}
+                          COMMAND libtool
+                                  --mode=link
+                                  ${COMPILER_command}
+                                  -static -o ${libraryFileName}
+                                  ${combinedLibraryPathList}
+                          COMMAND_EXPAND_LISTS
+                          COMMENT ${commandMessage})
+    ENDIF()
+ENDMACRO(LINKER_combineLibraryListIntoLib)
+
+#--------------------
+
+MACRO(LINKER_makeLibraryTarget targetName isObjectLibrary)
+    # makes support library target named <targetName> based on
+    # libXXXSourceFileList, libXXXCompileDefinitionList and
+    # libXXXIncludeDirectoryList
+
+    SET(sourceFileListName       "${targetName}SourceFileList")
+    SET(definitionListName       "${targetName}CompileDefinitionList")
+    SET(includeDirectoryListName "${targetName}IncludeDirectoryList")
+
+    IF(${isObjectLibrary})
+        ADD_LIBRARY(${targetName} OBJECT ${${sourceFileListName}})
+    ELSE()
+        ADD_LIBRARY(${targetName} STATIC ${${sourceFileListName}})
+    ENDIF()
+
+    TARGET_COMPILE_DEFINITIONS(${targetName} PUBLIC
+                               ${${definitionListName}})
+    TARGET_INCLUDE_DIRECTORIES(${targetName} PUBLIC
+                               ${${includeDirectoryListName}})
+
+    IF(NOT WINDOWS)
+        # remove lib prefix because it is already contained in target
+        # name
+        SET_TARGET_PROPERTIES(${targetName} PROPERTIES PREFIX "")
+    ENDIF()
+
+    UTIL_Bool_setToInverse(warningsAreEnabled ${isObjectLibrary})
+    COMPILER_addSpecificFlags(${targetName} ${warningsAreEnabled})
+ENDMACRO(LINKER_makeLibraryTarget)
+
+#============================================================
+
+IF(WINDOWS)
+    SET(LINKER_dynamicLibExtension ".dll")
+    SET(LINKER_executableExtension ".exe")
+    SET(LINKER_staticLibExtension  ".lib")
+ELSEIF(MACOS)
+    SET(LINKER_dynamicLibExtension ".dylib")
+    SET(LINKER_executableExtension "")
+    SET(LINKER_staticLibExtension  ".a")
+ELSE()
+    SET(LINKER_dynamicLibExtension ".so")
+    SET(LINKER_executableExtension "")
+    SET(LINKER_staticLibExtension  ".a")
+ENDIF()
+
+IF(WINDOWS)
+    SET(LINKER_cOptions_common )
+ELSE()
+    # warn about undefined symbols when linking
+    IF(MACOS)
+        # LIST(APPEND LINKER_cOptions_common
+        #      -Wl,-undefined,error)
+    ELSE()
+        # LIST(APPEND LINKER_cOptions_common
+        #      -Wl,-no-undefined)
+    ENDIF()           
+ENDIF()
+
+SET(CMAKE_EXE_LINKER_FLAGS ${LINKER_cOptions_common}
+    CACHE STRING "" FORCE)
+SET(CMAKE_MODULE_LINKER_FLAGS ${LINKER_cOptions_common}
+    CACHE STRING "" FORCE)
+SET(CMAKE_SHARED_LINKER_FLAGS ${LINKER_cOptions_common}
+    CACHE STRING "" FORCE)
+SET(CMAKE_STATIC_LINKER_FLAGS ${LINKER_cOptions_common}
+    CACHE STRING "" FORCE)
