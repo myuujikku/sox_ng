@@ -48,13 +48,6 @@ FUNCTION(COMPILER_addSpecificFlags targetName warningsAreEnabled)
     TARGET_COMPILE_DEFINITIONS(${targetName} PRIVATE
                                $<IF:$<CONFIG:Release>,NDEBUG,DEBUG>)
 
-    IF(COMPILER_debugVersionHasLogging STREQUAL "X")
-        # compile with logging enabled globally for a debug
-        # configuration
-        TARGET_COMPILE_DEFINITIONS(${targetName} PRIVATE
-                                   $<$<CONFIG:Debug>:LOGGING_IS_ACTIVE>)
-    ENDIF()
-
     # options
     TARGET_COMPILE_OPTIONS(${targetName} PRIVATE
                            ${COMPILER_cOptions_common})
@@ -137,40 +130,47 @@ FUNCTION(COMPILER_setCommonAndReleaseWarnings)
     IF(COMPILER_isMSVC)
         # --- list of warning numbers to be ignored
         SET(COMPILER_ignoredWarningList_common
+              4005 # macro redefinition
+              4013 # undefined function, assuming extern int
+              4068 # unknown pragma
               4100 # unreferenced formal parameter
               4101 # unreferenced local variable
-              4127 # constant boolean condition
+              4125 # decimal digit terminates octal sequence
               4131 # old style declarator
               4189 # local variable initialized but not referenced
               4210 # function given file scope
+              4232 # adress of dllimport not static
               4244 # loss of data for return conversion
               4245 # loss of data for return conversion
               4267 # loss of data for conversion
+              4273 # inconsistent dll linkage
+              4305 # truncation from double to const float
+              4324 # structure padded due to alignment
               4456 # declaration hides previous declaration
-              4505 # unreferenced local function
-              5827 # redundant type usage
-              6004 # initialization inside if-statement possible
-              6255 # _alloca indicates failure
-              6297 # 32-bit value shifted to 64 bit
-             26495 # uninitialized member variable
-             26812 # enum type unscoped
+              4477 # bad numeric format string
+              4701 # potentially uninitialized local variable
+              4702 # unreachable code
+              4703 # potentially uninitialized local pointer
+              4996 # deprecated POSIX name
+              6001 # using uninitialized memory
+              6031 # return value ignored
+             28251 # inconsistent annotation
+        )
+
+        SET(COMPILER_ignoredWarningList_debug
         )
 
         SET(COMPILER_ignoredWarningList_release
-              4101 # unreferenced local variable
-              4189 # variable declared and initialized but not used
+              4723 # potential divide by 0
         )
     ELSE()
         # --- list of warnings to be ignored
         SET(COMPILER_ignoredWarningList_common
-             address                 # remove warning for impossible null
-                                     # pointer
-             format                  # remove warning for bad print
-                                     # format
-             ignored-qualifiers      # remove warning for const qualifier
-                                     # on functions
-             unused-function         # remove warning for unused function
-             macro-redefined         # remove warning for redefined macro
+             address                 # impossible null pointer
+             format                  # bad print format
+             ignored-qualifiers      # const qualifier on functions
+             unknown-pragmas         # unknown pragma
+             unused-function         # unused function
         )
 
         SET(COMPILER_ignoredWarningList_release
@@ -180,21 +180,18 @@ FUNCTION(COMPILER_setCommonAndReleaseWarnings)
         IF(COMPILER_isGCC)
             LIST(APPEND COMPILER_ignoredWarningList_common
                  parentheses              # remove recommended parentheses
-                 unused-but-set-variable  # remove warning for unused
-                                          # variable
+                 unused-but-set-variable  # unused variable that is set
             )
         ENDIF()
 
         IF(COMPILER_isCLANG)
             LIST(APPEND COMPILER_ignoredWarningList_common
-                 c99-extensions                # remove warnings on C99
-                 logical-op-parentheses        # remove recommended
-                                               # parentheses in logical
-                                               # expressions
-                 nan-infinity-disabled         # remove warning on
-                                               # infinity macro
-                 implicit-function-declaration # remove warning for
-                                               # implicit functions
+                 c99-extensions                # C99 extensions
+                 logical-op-parentheses        # recommended parentheses
+                                               # in logical expressions
+                 macro-redefined               # redefined macro
+                 nan-infinity-disabled         # infinity macro
+                 implicit-function-declaration # implicit functions
             )
         ENDIF()
     ENDIF()
@@ -286,4 +283,5 @@ ENDIF()
 
 LIST(APPEND COMPILER_warningOptions
      ${COMPILER_warningOptions_common}
+     $<$<CONFIG:Debug>:${COMPILER_warningOptions_debug}>
      $<$<CONFIG:Release>:${COMPILER_warningOptions_release}>)

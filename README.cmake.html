@@ -69,11 +69,11 @@
       </B>
     </P>
 
-    <P>The previously provided msvc files for Windows are deprecated
-       and will be removed in the future from SoX_ng, because CMake
-       produces those build files from a single configuration setup
-       and also delivers equivalent files but with a more modern
-       syntax.</P>
+    <P>The previously provided msvc files for Windows as well as the
+       CMakeLists.txt files in several directories were removed from
+       SoX_ng, because CMake produces those build files from a single
+       configuration setup and also delivers equivalent files but with
+       a more modern syntax.</P>
 
     <!-- ------------ -->
     <H2>Requirements</H2>
@@ -101,6 +101,8 @@
       <LI><A HREF="https://www.underbit.com/products/mad">libmad</A></LI>
       <LI><A HREF="https://lame.sourceforge.io/">libmp3lame</A></LI>
       <LI><A HREF="https://github.com/xiph/ogg/">libogg</A></LI>
+      <LI><A HREF="https://github.com/xiph/opus/">libopus</A></LI>
+      <LI><A HREF="https://github.com/xiph/opusfile/">libopusfile</A></LI>
       <LI><A HREF="https://www.libpng.org/pub/png">libpng</A></LI>
       <LI><A HREF="https://github.com/libsndfile/libsndfile"
              >libsndfile</A></LI>
@@ -123,6 +125,7 @@
         <LI CLASS="dirItem">libmad</LI>
         <LI CLASS="dirItem">libmp3lame</LI>
         <LI CLASS="dirItem">libogg</LI>
+        <LI CLASS="dirItem">libopus</LI>
         <LI CLASS="dirItem">libpng</LI>
         <LI CLASS="dirItem">libsndfile</LI>
         <LI CLASS="dirItem">libspeex</LI>
@@ -320,104 +323,109 @@
         <TD><B>with_pkgconfigdir</B></TD>
         <TD>location to install .pc files or "no" to disable</TD>
         <TD><I>${libdir}/pkgconfig</I></TD>
-      </TR>
-      <TR -->
+      </TR -->
+      <TR>
         <TD><B>without_dolbyb</B></TD>
-        <TD>set flag whether to use dolbyb for external dynamic
-            library support</TD>
+        <TD>set flag whether to omit the dolbyb library</TD>
         <TD><I>false</I></TD>
       </TR>
       <TR>
         <TD><B>without_ebur128</B></TD>
-        <TD>set flag whether to use EBU R128 library</TD>
+        <TD>set flag whether to omit the EBU R128 library</TD>
         <TD><I>false</I></TD>
       </TR>
       <TR>
         <TD><B>without_fftw</B></TD>
-        <TD>set flag whether to use fftw library</TD>
+        <TD>set flag whether to omit the fftw library</TD>
         <TD><I>false</I></TD>
       </TR>
       <TR>
         <TD><B>without_flac</B></TD>
-        <TD>set flag whether to use flac library (command line
+        <TD>set flag whether to omit the flac library (command line
             parameter not available in SoX_ng so far)</TD>
         <TD><I>false</I></TD>
       </TR>
       <TR>
         <TD><B>without_gsm</B></TD>
-        <TD>set flag whether to use gsm library (command line
+        <TD>set flag whether to omit the gsm library (command line
             parameter not available in SoX_ng so far)</TD>
         <TD><I>false</I></TD>
       </TR>
       <TR>
         <TD><B>without_id3tag</B></TD>
-        <TD>set flag whether to use id3tag library</TD>
+        <TD>set flag whether to omit the id3tag library</TD>
         <TD><I>false</I></TD>
       </TR>
       <TR>
         <TD><B>without_ladspa</B></TD>
-        <TD>set flag whether to use ladspa library</TD>
+        <TD>set flag whether to omit the ladspa library</TD>
         <TD><I>false</I></TD>
       </TR>
       <TR>
         <TD><B>without_lame</B></TD>
-        <TD>set flag whether to use LAME (LAME Ain't an MP3
-            Encoder)</TD>
+        <TD>set flag whether to omit the LAME library (LAME Ain't an
+            MP3 Encoder)</TD>
         <TD><I>false</I></TD>
       </TR>
       <TR>
         <TD><B>without_libltdl</B></TD>
-        <TD>set flag whether to use liblTDl for external dynamic
-            library support</TD>
+        <TD>set flag whether to omit the libltdl library</TD>
         <TD><I>false</I></TD>
       </TR>
       <TR>
         <TD><B>without_lpc10</B></TD>
-        <TD>set flag whether to use lpc10 library (command line
+        <TD>set flag whether to omit the lpc10 library (command line
             parameter not available in SoX_ng so far)</TD>
         <TD><I>false</I></TD>
       </TR>
       <TR>
         <TD><B>without_mad</B></TD>
-        <TD>set flag whether to use MAD (MP3 Audio Decoder)</TD>
+        <TD>set flag whether to omit the MAD (MP3 Audio Decoder)
+            library</TD>
         <TD><I>false</I></TD>
       </TR>
       <TR>
         <TD><B>without_magic</B></TD>
-        <TD>set flag whether to use magic library</TD>
+        <TD>set flag whether to omit the magic library</TD>
+        <TD><I>false</I></TD>
+      </TR>
+      <TR>
+        <TD><B>without_opus</B></TD>
+        <TD>set flag whether to omit the opus and opusfile
+            libraries</TD>
         <TD><I>false</I></TD>
       </TR>
       <TR>
         <TD><B>without_png</B></TD>
-        <TD>set flag whether to use png library</TD>
+        <TD>set flag whether to omit the png library</TD>
         <TD><I>false</I></TD>
       </TR>
       <TR>
         <TD><B>without_sndfile</B></TD>
-        <TD>set flag whether to use sndfile library (command line
+        <TD>set flag whether to omit the sndfile library (command line
             parameter not available in SoX_ng so far)</TD>
         <TD><I>false</I></TD>
       </TR>
       <TR>
         <TD><B>without_speexdsp</B></TD>
-        <TD>set flag whether to use speexdsp library</TD>
+        <TD>set flag whether to omit the speexdsp library</TD>
         <TD><I>false</I></TD>
       </TR>
       <!-- TR>
         <TD><B>without_twolame</B></TD>
-        <TD>set flag whether to use twolame library</TD>
+        <TD>set flag whether to omit the twolame library</TD>
         <TD><I>false</I></TD>
       </TR -->
       <TR>
         <TD><B>without_wavpack</B></TD>
-        <TD>set flag whether to use wavpack library (command line
+        <TD>set flag whether to omit the wavpack library (command line
             parameter not available in SoX_ng so far)</TD>
         <TD><I>false</I></TD>
       </TR>
       <TR>
         <TD><B>without_z</B></TD>
-        <TD>set flag whether to use z library (command line parameter
-            not available in SoX_ng so far)</TD>
+        <TD>set flag whether to omit the z library (command line
+            parameter not available in SoX_ng so far)</TD>
         <TD><I>false</I></TD>
       </TR>
     </TABLE>
@@ -448,6 +456,8 @@
               <LI><B>libMad:</B> the libmad library</LI>
               <LI><B>libMp3Lame:</B> the libmp3lame library</LI>
               <LI><B>libOgg:</B> the libogg library</LI>
+              <LI><B>libOpus:</B> the libopus library</LI>
+              <LI><B>libOpusfile:</B> the libopusfile library</LI>
               <LI><B>libPng:</B> the libpng library</LI>
               <LI><B>libSndfile:</B> the libsndfile library</LI>
               <LI><B>libSpeex:</B> the libspeex library</LI>
@@ -541,6 +551,10 @@
                           >https://github.com/libsndfile/libsndfile</A></LI>
       <LI>Ogg - <A HREF="https://www.xiph.org/ogg/"
                    >https://www.xiph.org/ogg/</A></LI>
+      <LI>Opus - <A HREF="https://www.xiph.org/opus/"
+                   >https://www.xiph.org/opus/</A></LI>
+      <LI>Opusfile - <A HREF="https://www.xiph.org/opusfile/"
+                   >https://www.xiph.org/opusfile/</A></LI>
       <LI>PNG - <A HREF="http://www.libpng.org/pub/png"
                    >http://www.libpng.org/pub/png</A></LI>
       <LI>speex - <A HREF="https://github.com/xiph/speex"

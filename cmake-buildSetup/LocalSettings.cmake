@@ -20,6 +20,10 @@ CMAKE_PATH(SET LCONF_libMP3LameDirectory NORMALIZE
            ${LCONF_allProjectsRootDirectory}/libmp3lame)
 CMAKE_PATH(SET LCONF_libOggDirectory NORMALIZE
            ${LCONF_allProjectsRootDirectory}/libogg)
+CMAKE_PATH(SET LCONF_libOpusDirectory NORMALIZE
+           ${LCONF_allProjectsRootDirectory}/libopus)
+CMAKE_PATH(SET LCONF_libOpusfileDirectory NORMALIZE
+           ${LCONF_allProjectsRootDirectory}/libopusfile)
 CMAKE_PATH(SET LCONF_libPngDirectory NORMALIZE
            ${LCONF_allProjectsRootDirectory}/libpng)
 CMAKE_PATH(SET LCONF_libSndfileDirectory NORMALIZE
