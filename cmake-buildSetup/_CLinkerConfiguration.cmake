@@ -52,10 +52,10 @@ MACRO(LINKER_makeLibraryTarget targetName isObjectLibrary)
     SET(definitionListName       "${targetName}CompileDefinitionList")
     SET(includeDirectoryListName "${targetName}IncludeDirectoryList")
 
-    IF(${isObjectLibrary})
-        ADD_LIBRARY(${targetName} OBJECT ${${sourceFileListName}})
-    ELSE()
+    IF(NOT ${isObjectLibrary})
         ADD_LIBRARY(${targetName} STATIC ${${sourceFileListName}})
+    ELSE()
+        ADD_LIBRARY(${targetName} OBJECT ${${sourceFileListName}})
     ENDIF()
 
     TARGET_COMPILE_DEFINITIONS(${targetName} PUBLIC
@@ -90,7 +90,8 @@ ELSE()
 ENDIF()
 
 IF(WINDOWS)
-    SET(LINKER_cOptions_common )
+    # omit warning for object library LNK4217
+    SET(LINKER_cOptions_common "/IGNORE:4217")
 ELSE()
     # warn about undefined symbols when linking
     IF(MACOS)

@@ -22,12 +22,14 @@ MACRO(ACONF_checkForLibrary
     # corresponding function from <functionNameList>; if this
     # succeeds, <variable> is set to TRUE
 
-    UNSET(isOkay CACHE)
-    CHECK_INCLUDE_FILE(${headerFileName} isOkay)
     SET(listA "${libraryNameList}")
     SET(listB "${functionNameList}")
+    UNSET(isOkay CACHE)
+    CHECK_INCLUDE_FILE(${headerFileName} isOkay)
 
     FOREACH(libraryName functionName IN ZIP_LISTS listA listB)
+    # FOREACH(libraryName functionName
+    #         IN ZIP_LISTS libraryNameList functionNameList)
         IF(isOkay)
             UNSET(isOkay CACHE)
             CHECK_LIBRARY_EXISTS(${libraryName} ${functionName} "" isOkay)

@@ -117,7 +117,7 @@ CLP_setFromCommandLine(CLP_withoutId3tag without_id3tag FALSE)
 CLP_setFromCommandLine(CLP_withoutLadspa without_ladspa FALSE)
 
 # set flag whether to use LAME (LAME Ain't an MP3 Encoder)
-CLP_setFromCommandLine(CLP_withoutLame without_lame FALSE)
+CLP_setFromCommandLine(CLP_withoutMP3Lame without_lame FALSE)
 
 # set flag whether to use libltdl for external dynamic library support
 CLP_setFromCommandLine(CLP_withoutLibltdl without_libltdl FALSE)
@@ -131,6 +131,14 @@ CLP_setFromCommandLine(CLP_withoutMad without_mad FALSE)
 
 # set flag whether to use magic library
 CLP_setFromCommandLine(CLP_withoutMagic without_magic FALSE)
+
+# set flag whether to use ogg library
+CLP_setFromCommandLine(CLP_withoutOgg without_ogg FALSE)
+SET(CLP_withoutVorbis CLP_withoutOgg)
+
+# set flag whether to use opus library
+CLP_setFromCommandLine(CLP_withoutOpus without_opus FALSE)
+SET(CLP_withoutOpusFile CLP_withoutOpus)
 
 # set flag whether to use png library
 CLP_setFromCommandLine(CLP_withoutPng without_png FALSE)

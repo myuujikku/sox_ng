@@ -95,10 +95,8 @@ MACRO(appendNameConditionally variableName name)
 
     SET(conditionVariableName "hasLocalLib${name}")
 
-    IF(DEFINED ${conditionVariableName})
-        IF(${${conditionVariableName}})
-            LIST(APPEND ${variableName} ${name})
-        ENDIF()
+    IF(${conditionVariableName})
+        LIST(APPEND ${variableName} ${name})
     ENDIF()
 ENDMACRO(appendNameConditionally)
 
@@ -168,22 +166,16 @@ FUNCTION(processSubtargetConditionally
     # parent target and <languageStandard> gives the C language
     # standard
 
-    SET(libraryDirectory ${LCONF_${targetName}Directory})
+    MESSAGE("=== setting up ${targetName} ===")
     STRING(TOLOWER ${targetName} lowercasedTargetName)
+
     SET(includeFileName "SubTarget_${lowercasedTargetName}.cmake")
-    
-    IF("${libraryDirectory}" STRGREATER "")
-        MESSAGE("=== setting up ${targetName} ===")
-        INCLUDE(${includeFileName})
-        STRING(SUBSTRING "${targetName}" 3 -1 libraryName)
-        SET(configurationVariableName "hasLocalLib${libraryName}")
-        SET(${configurationVariableName}
-            ${${configurationVariableName}} PARENT_SCOPE)
-        UTIL_Target_setFolder(${targetName} ${folderName_supportLibs})
-        SET_TARGET_PROPERTIES(${targetName} PROPERTIES
-                              C_STANDARD ${languageStandard}
-                              C_STANDARD_REQUIRED FALSE)
-    ENDIF()
+    INCLUDE(${includeFileName})
+    STRING(SUBSTRING "${targetName}" 3 -1 libraryName)
+    UTIL_Target_setFolder(${targetName} ${folderName_supportLibs})
+    SET_TARGET_PROPERTIES(${targetName} PROPERTIES
+                          C_STANDARD ${languageStandard}
+                          C_STANDARD_REQUIRED FALSE)
 ENDFUNCTION(processSubtargetConditionally)
 
 ###########
@@ -209,8 +201,8 @@ UTIL_Target_setFolder(${supportLibsRootTargetName} ${folderName_supportLibs})
 # --- process all libraries
 
 SET(libraryShortNameList
-    "FFTW" "Flac" "Id3tag" "Mad" "MP3Lame" "Ogg" "Png" "Sndfile"
-    "Speex" "SpeexDSP" "Vorbis" "Wavpack" "Z"
+    "FFTW" "Flac" "Id3tag" "Mad" "MP3Lame" "Ogg" "Opus" "Opusfile"
+    "Png" "Sndfile" "Speex" "SpeexDSP" "Vorbis" "Wavpack" "Z"
 )
 
 # --- do consistency checks ---
@@ -218,13 +210,18 @@ SET(libraryShortNameList
 FOREACH(shortName ${libraryShortNameList})
     SET(configurationVariableName "hasLocalLib${shortName}")
     SET(directoryVariableName "LCONF_lib${shortName}Directory")
+    SET(exclusionVariableName "CLP_without${shortName}")
     SET(targetName "lib${shortName}")
 
-    IF("${${directoryVariableName}}" STRGREATER "")
+    SET(${configurationVariableName} FALSE)
+    SET(messagePrefix "cannot build ${targetName},")
+
+    IF(${exclusionVariableName})
+        MESSAGE(STATUS "${messagePrefix} excluded from build")
+    ELSEIF("${${directoryVariableName}}" STRGREATER "")
         SET(${configurationVariableName} TRUE)
     ELSE()
-        SET(${configurationVariableName} FALSE)
-        MESSAGE(STATUS "cannot build ${targetName}, directory is not defined")
+        MESSAGE(STATUS "${messagePrefix} directory not defined")
     ENDIF()
 ENDFOREACH()
 

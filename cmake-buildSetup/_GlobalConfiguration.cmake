@@ -51,6 +51,12 @@ ELSEIF(GLOB_systemProcessor STREQUAL "SPARC")
     SET(GLOB_systemProcessor "sparc")
 ENDIF()
 
+CMAKE_HOST_SYSTEM_INFORMATION(RESULT GLOB_processorHasSSE
+                              QUERY HAS_SSE)
+
+CMAKE_HOST_SYSTEM_INFORMATION(RESULT GLOB_processorHasSSE2
+                              QUERY HAS_SSE2)
+
 #-------------------
 #--- directories ---
 #-------------------

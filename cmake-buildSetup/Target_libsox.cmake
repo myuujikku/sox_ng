@@ -25,10 +25,10 @@ MACRO(appendConditionallyEmbeddedInclude
     # to <libSoXIncludeDirectoryList> if embedded version shall be
     # used
 
-    SET(configurationVariable_local "hasLocalLib${libraryShortName}")
+    SET(configurationVariableName_local "hasLocalLib${libraryShortName}")
     SET(includeDirectory "${lib${libraryShortName}Directory}")
     appendConditionally(libSoXIncludeDirectoryList
-                        "${configurationVariable_local}"
+                        "${configurationVariableName_local}"
                         "${includeDirectory}")
 ENDMACRO(appendConditionallyEmbeddedInclude)
 
@@ -40,15 +40,15 @@ MACRO(appendConditionallyExplicitInclude
     # <libSoXIncludeDirectoryList> if explicitly installed version for
     # the SoX_ng build shall be used
 
-    SET(configurationVariable_local "hasLocalLib${libraryShortName}")
+    SET(configurationVariableName_local "hasLocalLib${libraryShortName}")
     SET(includeDirectory "${LCONF_lib${libraryShortName}Directory}")
 
-    MESSAGE("configVariable_local = '${configurationVariable_local}'"
-            ", contents = '${${configurationVariable_local}}'"
+    MESSAGE("configVariable_local = '${configurationVariableName_local}'"
+            ", contents = '${${configurationVariableName_local}}'"
             ", includeDir = '${includeDirectory}'")
 
-    IF(DEFINED ${configurationVariable_local})
-        IF(${${configurationVariable_local}})
+    IF(DEFINED ${configurationVariableName_local})
+        IF(${${configurationVariableName_local}})
             IF(NOT "${subdirectory}" STREQUAL "")
                 SET(includeDirectory ${includeDirectory}/${subdirectory})
             ENDIF()
@@ -87,28 +87,22 @@ ENDMACRO(appendConditionallyName)
 #--------------------
 
 MACRO(_checkForLibraryExternal
-      configurationVariable_external configurationVariable_have
-      configurationVariable_local exclusionVariable
-      libraryShortName headerFileName
-      functionName)
+      configurationVariableName_external configurationVariableName_have
+      libraryShortName headerFileName functionName)
     # checks for library named <libraryShortName> by checking whether
-    # <exclusionVariable> is unset, and if not, then checking whether
     # library is external and setting corresponding
-    # <configurationVariable_external>, <configurationVariable_have>
-    # and <configurationVariable_local>; <headerFileName> gives the
-    # name of the header file to be checked, <libraryShortName> the library
-    # name for the library check, <functionName> the name of the
-    # function to be checked
+    # <configurationVariableName_external>,
+    # <configurationVariableName_have>; <headerFileName> gives the
+    # name of the header file to be checked, <libraryShortName> the
+    # library name for the library check, <functionName> the name of
+    # the function to be checked
 
-    IF(DEFINED ${exclusionVariable} AND NOT ${${exclusionVariable}})
-        SET(${configurationVariable_have} TRUE)
-        ACONF_checkForLibrary("${configurationVariable_external}"
-                              "${headerFileName}"
-                              "${libraryShortName}"
-                              "${functionName}")
-        UTIL_Bool_setToInverse(${configurationVariable_local}
-                               ${configurationVariable_external})
-    ENDIF()
+    ACONF_checkForLibrary("${configurationVariableName_external}"
+                          "${headerFileName}"
+                          "${libraryShortName}"
+                          "${functionName}")
+    SET(${configurationVariableName_have}
+        ${configurationVariableName_external})
 ENDMACRO(_checkForLibraryExternal)
 
 #--------------------
@@ -125,22 +119,28 @@ MACRO(checkForLibraryExternalVsEmbedded
     # name of the header file
 
     STRING(TOUPPER ${libraryShortName} uppercasedLibraryName)
-    SET(configurationVariable_have "HAVE_${uppercasedLibraryName}")
-    SET(configurationVariable_local "hasLocalLib${libraryShortName}")
+    SET(configurationVariableName_have "HAVE_${uppercasedLibraryName}")
+    SET(configurationVariableName_local "hasLocalLib${libraryShortName}")
+    SET(exclusionVariableName "CLP_without${libraryShortName}")
 
-    IF(${${configurationVariable_local}})
-        SET(${configurationVariable_have} TRUE)
+    IF(DEFINED ${exclusionVariable} AND ${${exclusionVariable}})
+        # skip: library is excluded
+    ELSEIF(${${configurationVariableName_local}})
+        SET(${configurationVariableName_have} TRUE)
     ELSE()
         STRING(TOLOWER ${libraryShortName} lowercasedLibraryName)
-        SET(exclusionVariable "CLP_without${libraryShortName}")
-        SET(configurationVariable_external "EXTERNAL_${uppercasedLibraryName}")
-        SET(headerFileName "${directoryPrefix}${lowercasedLibraryName}.h")
+        SET(configurationVariableName_external
+            "EXTERNAL_${uppercasedLibraryName}")
+        SET(headerFileName
+            "${directoryPrefix}${lowercasedLibraryName}.h")
         SET(functionName "${lowercasedLibraryName}_${functionSuffix}")
 
         _checkForLibraryExternal(
-            ${configurationVariable_external} ${configurationVariable_have}
-            ${configurationVariable_local} ${exclusionVariable}
-            ${lowercasedLibraryName} ${headerFileName} ${functionName})
+            ${configurationVariableName_external}
+            ${configurationVariableName_have}
+            ${lowercasedLibraryName}
+            ${headerFileName}
+            ${functionName})
     ENDIF()
 ENDMACRO(checkForLibraryExternalVsEmbedded)
 
@@ -160,22 +160,51 @@ MACRO(checkForLibraryExternalVsExplicit
     # of the source file to be added to list of source files
 
     STRING(TOUPPER ${libraryShortName} uppercasedLibraryName)
-    SET(configurationVariable_local "hasLocalLib${libraryShortName}")
-    SET(configurationVariable_have "HAVE_${uppercasedLibraryName}")
+    SET(configurationVariableName_have "HAVE_${uppercasedLibraryName}")
+    SET(configurationVariableName_local "hasLocalLib${libraryShortName}")
+    SET(exclusionVariableName "CLP_without${libraryShortName}")
 
-    IF(${${configurationVariable_local}})
-        SET(${configurationVariable_have} TRUE)
+    IF(DEFINED ${exclusionVariable} AND ${${exclusionVariable}})
+        # skip: library is excluded
+    ELSEIF(${${configurationVariableName_local}})
+        SET(${configurationVariableName_have} TRUE)
     ELSE()
-        SET(exclusionVariable "CLP_without${libraryShortName}")
-        SET(configurationVariable_external "EXTERNAL_${uppercasedLibraryName}")
+        SET(configurationVariableName_external
+            "EXTERNAL_${uppercasedLibraryName}")
 
         _checkForLibraryExternal(
-            ${configurationVariable_external} ${configurationVariable_have}
-            ${configurationVariable_local} ${exclusionVariable}
-            ${libraryShortNameForCheck} ${headerFileName}
+            ${configurationVariableName_external}
+            ${configurationVariableName_have}
+            ${libraryShortNameForCheck}
+            ${headerFileName}
             ${functionName})
     ENDIF()
 ENDMACRO(checkForLibraryExternalVsExplicit)
+
+#--------------------
+
+MACRO(copyAndTransformOpusHeaderFile
+      isTransformed)
+    # copies opusfile.h header file from its include path to the
+    # temporary SoX include directory; if <isTransformed> is set,
+    # includes of opus headers in the file are prefixed with "opus/"
+
+    IF(NOT isTransformed)
+        CMAKE_PATH(SET originalFilePath NORMALIZE
+                   "${LCONF_libOpusfileDirectory}/include/opusfile.h")
+        FILE(COPY ${originalFilePath}
+             DESTINATION "${temporarySoXIncludeDirectory}/opus")
+    ELSE()
+        SET(headerFileName "opus/opusfile.h")
+        CMAKE_PATH(SET destinationFilePath NORMALIZE
+                   "${temporarySoXIncludeDirectory}/${headerFileName}")
+        FIND_FILE(originalFilePath "${headerFileName}")
+        FILE(READ ${originalFilePath} originalData)
+        STRING(REPLACE "opus_multistream.h" "opus/opus_multistream.h"
+                   transformedData "${originalData}")
+        FILE(WRITE ${destinationFilePath} "${transformedData}")
+    ENDIF()
+ENDMACRO(copyAndTransformOpusHeaderFile)
 
 ############################################################
 
@@ -192,6 +221,9 @@ CMAKE_PATH(SET libGSMDirectory NORMALIZE
 
 CMAKE_PATH(SET libLPC10Directory NORMALIZE
            ${GLOB_projectRootDirectory}/lpc10)
+
+CMAKE_PATH(SET temporarySoXIncludeDirectory NORMALIZE
+           ${CMAKE_BINARY_DIR}/${targetName}_include)
 
 #=================================================
 # === generate variables via autoconfiguration ===
@@ -294,6 +326,27 @@ SET(USING_ID3TAG ${HAVE_ID3TAG})
 checkForLibraryExternalVsExplicit(Mad "mad.h" mad mad_stream_buffer)
 SET(HAVE_MAD_H ${HAVE_MAD})
 
+# --- Opus
+checkForLibraryExternalVsExplicit(Opus "opus/opus.h" opus opus_decoder_create)
+
+# --- Opusfile
+IF(NOT CLP_withoutOpus)
+    checkForLibraryExternalVsExplicit(Opusfile "opus/opusfile.h"
+                                      opusfile op_open_callbacks)
+
+    IF(EXTERNAL_OPUS)
+        # HACK: make a local copy of opusfile.h referencing
+        # "opus/opus_multistream.h" instead of bad
+        # "<opus_multistream.h>"
+        copyAndTransformOpusHeaderFile(TRUE)
+    ENDIF()
+
+    IF(hasLocalLibOpusfile)
+        # HACK: make a local copy of opusfile.h into opus/ subdirectory
+        copyAndTransformOpusHeaderFile(FALSE)
+    ENDIF()
+ENDIF()
+
 # --- Sndfile
 checkForLibraryExternalVsExplicit(Sndfile "sndfile.h" sndfile
                                   sf_open_virtual)
@@ -326,7 +379,9 @@ ENDIF()
 #-----
 #-----
 
-IF(NOT CLP_withoutLame)
+# Lame
+
+IF(NOT CLP_withoutMP3Lame)
     IF(hasLocalLibMP3Lame)
         SET(HAVE_LAME TRUE)
         SET(HAVE_LAME_H TRUE)
@@ -345,6 +400,8 @@ ENDIF()
 
 #-----
 
+# Ogg/Vorbis
+
 IF(NOT CLP_withoutOggVorbis)
     IF(hasLocalLibOgg AND hasLocalLibVorbis)
         SET(HAVE_OGG_VORBIS TRUE)
@@ -353,7 +410,7 @@ IF(NOT CLP_withoutOggVorbis)
             "ogg_stream_flush;vorbis_analysis_headerout;ov_clear;vorbis_encode_init_vbr")
         ACONF_checkForLibrary(HAVE_OGG_VORBIS vorbis/codec.h
                               "ogg;vorbis;vorbisfile;vorbisenc"
-                              ${functionList})
+                              "${functionList}")
     ENDIF()
 ENDIF()
 
@@ -379,10 +436,6 @@ IF(NEED_LIBM)
 ELSE()
     CHECK_FUNCTION_EXISTS("lrint" HAVE_LRINT)
 ENDIF()
-
-ACONF_checkForLibrary(HAVE_OPUS opusfile.h
-                      "ogg;opus;opusfile"
-                      "ogg_stream_flush;opus_encoder_create;op_open_callbacks")
 
 IF(NOT CLP_withoutTwoLame)
     ACONF_checkForLibrary(HAVE_TWOLAME_H twolame.h twolame twolame_init)
@@ -480,6 +533,8 @@ appendConditionallyExplicitInclude(Id3tag    "")
 appendConditionallyExplicitInclude(Mad       "")
 appendConditionallyExplicitInclude(MP3Lame   include)
 appendConditionallyExplicitInclude(Ogg       include)
+appendConditionallyExplicitInclude(Opus      include)
+appendConditionallyExplicitInclude(Opusfile  include)
 appendConditionallyExplicitInclude(Png       "")
 appendConditionallyExplicitInclude(Sndfile   include)
 appendConditionallyExplicitInclude(Speex     include)
@@ -518,12 +573,8 @@ UTIL_List_constructFromOther(libSoXPlatformSourceFileList
 # put soxconfig.h into src directory instead of a build local
 # directory (due to references from the embedded libraries)
 
-# SET(temporarySoXIncludeDirectory
-#     ${CMAKE_BINARY_DIR}/${targetName}_include)
-SET(temporarySoXIncludeDirectory ${soxSrcDirectory})
-
 CONFIGURE_FILE("${buildSetupTemplateDirectory}/libsox-config.h_(cmake)"
-               ${temporarySoXIncludeDirectory}/soxconfig.h
+               ${soxSrcDirectory}/soxconfig.h
                @ONLY)
 
 #---------------------
