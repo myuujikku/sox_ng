@@ -36,6 +36,17 @@ MACRO(UTIL_Bool_setToZeroOrOne
 ENDMACRO(UTIL_Bool_setToZeroOrOne)
 
 #--------------------
+# Debugging Support
+#--------------------
+
+MACRO(UTIL_Debug_appendRelevantVariableNames )
+    # appends all variable names given as ARGV to
+    # <relevantVariableNameList>
+
+    LIST(APPEND relevantVariableNameList ${ARGV})
+ENDMACRO(UTIL_Debug_appendRelevantVariableNames)
+
+#--------------------
 # Lists
 #--------------------
 
@@ -80,10 +91,21 @@ ENDMACRO(UTIL_List_constructFromOther)
 
 #--------------------
 
-FUNCTION(UTIL_List_show description listName)
-    LIST(JOIN ${listName} "#" temp)
-    MESSAGE(STATUS
-            ${description} ": " ${listName} " = " ${temp})
+FUNCTION(UTIL_List_showContents
+         variableNameList)
+    # shows contents of variables with names in <variableNameList>
+
+    SET(CMAKE_MESSAGE_INDENT "[variables] ")
+
+    FOREACH(variableName ${variableNameList})
+        IF(NOT DEFINED ${variableName})
+            SET(value "---")
+        ELSE()
+            SET(value ${${variableName}})
+        ENDIF()
+
+        MESSAGE(STATUS "${variableName}: ${value}")
+    ENDFOREACH()
 ENDFUNCTION(UTIL_List_show)
 
 #--------------------

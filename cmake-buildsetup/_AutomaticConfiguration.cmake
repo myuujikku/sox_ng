@@ -37,7 +37,10 @@ MACRO(ACONF_checkForLibrary
     ENDFOREACH()        
 
     UNSET(${resultVariableName} CACHE)
-    SET(${resultVariableName} ${isOkay})
+
+    IF(${isOkay})
+        SET(${resultVariableName} TRUE)
+    ENDIF()
 ENDMACRO(ACONF_checkForLibrary)
 
 #--------------------

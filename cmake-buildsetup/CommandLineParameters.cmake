@@ -20,6 +20,10 @@ ENDMACRO(CLP_setFromCommandLine)
 
 #============================================================
 
+# set flag to write a summary of relevant build variables
+CLP_setFromCommandLine(CLP_Debug_listBuildVariables
+                       list_build_variable_values FALSE)
+
 # set flag whether to make any symlinks to sox_ng
 CLP_setFromCommandLine(CLP_disableSymlinks disable_symlinks FALSE)
 
@@ -134,11 +138,11 @@ CLP_setFromCommandLine(CLP_withoutMagic without_magic FALSE)
 
 # set flag whether to use ogg library
 CLP_setFromCommandLine(CLP_withoutOgg without_ogg FALSE)
-SET(CLP_withoutVorbis CLP_withoutOgg)
+SET(CLP_withoutVorbis ${CLP_withoutOgg})
 
 # set flag whether to use opus library
 CLP_setFromCommandLine(CLP_withoutOpus without_opus FALSE)
-SET(CLP_withoutOpusFile CLP_withoutOpus)
+SET(CLP_withoutOpusFile ${CLP_withoutOpus})
 
 # set flag whether to use png library
 CLP_setFromCommandLine(CLP_withoutPng without_png FALSE)
@@ -160,3 +164,52 @@ CLP_setFromCommandLine(CLP_withoutWavpack without_wavpack FALSE)
 # set flag whether to use z library (command line parameter not
 # available in SoX_ng so far)
 CLP_setFromCommandLine(CLP_withoutZ without_z FALSE)
+
+#------------------------------------------------------------
+
+# append all command line variable names to relevant variable name
+# list
+
+UTIL_Debug_appendRelevantVariableNames(
+    CLP_Debug_listBuildVariables
+    CLP_disableSymlinks
+    CLP_enableDlAmrnb
+    CLP_enableDlAmrwb
+    CLP_enableDlLame
+    CLP_enableDlMad
+    CLP_enableDlSndfile
+    CLP_enableDlSpeexDSP
+    CLP_enableDlTwoLame
+    CLP_enableReplace
+    CLP_installBinPath
+    CLP_installDocPath
+    CLP_installLibPath
+    CLP_installManPath
+    CLP_withCurl
+    CLP_withDynDefault
+    CLP_withFFmpeg
+    CLP_withLadspaPath
+    CLP_withPkgConfigDir
+    CLP_withoutDolbyB
+    CLP_withoutEbuR128
+    CLP_withoutFFTW
+    CLP_withoutFlac
+    CLP_withoutGSM
+    CLP_withoutId3tag
+    CLP_withoutLadspa
+    CLP_withoutMP3Lame
+    CLP_withoutLibltdl
+    CLP_withoutLPC10
+    CLP_withoutMad
+    CLP_withoutMagic
+    CLP_withoutOgg
+    CLP_withoutVorbis
+    CLP_withoutOpus
+    CLP_withoutOpusFile
+    CLP_withoutPng
+    CLP_withoutSndfile
+    CLP_withoutSpeexDSP
+    CLP_withoutTwoLame
+    CLP_withoutWavpack
+    CLP_withoutZ
+)

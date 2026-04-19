@@ -63,18 +63,10 @@ IF(NOT WINDOWS)
     LINK_LIBRARIES(${CMAKE_DL_LIBS})
 ENDIF(NOT WINDOWS)
 
-# --- add include directories and libraries for Unix ---
-IF(LINUX)
-    # FIND_PACKAGE(PkgConfig REQUIRED) 
-    # SET(relevantPackageList freetype2)
-    # PKG_CHECK_MODULES(linuxPackages ${relevantPackageList})
-    # SET(unixIncludeDirectoryList /usr/include/freetype2)
-    # SET(unixLibraryList ${linuxPackages_LINK_LIBRARIES})
-    #
-    # LIST(APPEND additionalIncludeDirectoryList
-    #      ${unixIncludeDirectoryList}
-    # )
-ENDIF(LINUX)
+# --- enable PkgConfig for MacOS and Unix ---
+IF(NOT WINDOWS)
+    FIND_PACKAGE(PkgConfig) 
+ENDIF(NOT WINDOWS)
 
 #############
 # FUNCTIONS #
@@ -214,6 +206,7 @@ FOREACH(shortName ${libraryShortNameList})
     SET(targetName "lib${shortName}")
 
     SET(${configurationVariableName} FALSE)
+    UTIL_Debug_appendRelevantVariableNames(${configurationVariableName})
     SET(messagePrefix "cannot build ${targetName},")
 
     IF(${exclusionVariableName})
@@ -337,4 +330,13 @@ IF(Doxygen_FOUND)
                "${CLP_installDocPath}/sox_doxygen_doc")
     INSTALL(DIRECTORY ${doxygenBuildDirectory}
             DESTINATION ${soxDoxygenDirectory})
+ENDIF()
+
+#------------------------------------------------
+# write relevant variables to STDOUT if specified
+#------------------------------------------------
+
+IF(CLP_Debug_listBuildVariables)
+    LIST(SORT relevantVariableNameList CASE INSENSITIVE)
+    UTIL_List_showContents("${relevantVariableNameList}")
 ENDIF()

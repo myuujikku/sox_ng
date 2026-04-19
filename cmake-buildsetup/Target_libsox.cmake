@@ -66,6 +66,26 @@ ENDMACRO(appendConditionallyExplicitInclude)
 
 #--------------------
 
+MACRO(appendConditionallyExternalLibraries
+      targetName libraryShortNameList)
+    # appends all libraries from <libraryShortNameList> to libraries
+    # of <targetName> if explicit library is selected
+
+    FOREACH(libraryShortName ${libraryShortNameList})
+        STRING(TOUPPER ${libraryShortName} uppercasedLibraryShortName)
+        SET(configurationVariableName_external
+            "EXTERNAL_${uppercasedLibraryShortName}")
+
+        IF(DEFINED ${configurationVariableName_external})
+            LINKER_getLibraryNameListForLibrary(libNameList
+                                                ${libraryShortName})
+            TARGET_LINK_LIBRARIES(${targetName} PUBLIC ${libNameList})
+        ENDIF()
+    ENDFOREACH()
+ENDMACRO(appendConditionallyExternalLibraries)
+
+#--------------------
+
 MACRO(appendConditionallyName
       listVariableName libraryShortName overrideConditionSuffix)
     # appends lowercased <libraryShortName> to variable named
@@ -102,7 +122,7 @@ MACRO(_checkForLibraryExternal
                           "${libraryShortName}"
                           "${functionName}")
     SET(${configurationVariableName_have}
-        ${configurationVariableName_external})
+        ${${configurationVariableName_external}})
 ENDMACRO(_checkForLibraryExternal)
 
 #--------------------
@@ -189,16 +209,21 @@ MACRO(copyAndTransformOpusHeaderFile
     # temporary SoX include directory; if <isTransformed> is set,
     # includes of opus headers in the file are prefixed with "opus/"
 
-    IF(NOT isTransformed)
+    SET(headerFileName "opus/opusfile.h")
+
+    IF(hasLocalLibOpus)
         CMAKE_PATH(SET originalFilePath NORMALIZE
                    "${LCONF_libOpusfileDirectory}/include/opusfile.h")
+    ELSE()
+        FIND_FILE(originalFilePath "${headerFileName}")
+    ENDIF()
+
+    IF(NOT ${isTransformed})
         FILE(COPY ${originalFilePath}
              DESTINATION "${temporarySoXIncludeDirectory}/opus")
     ELSE()
-        SET(headerFileName "opus/opusfile.h")
         CMAKE_PATH(SET destinationFilePath NORMALIZE
                    "${temporarySoXIncludeDirectory}/${headerFileName}")
-        FIND_FILE(originalFilePath "${headerFileName}")
         FILE(READ ${originalFilePath} originalData)
         STRING(REPLACE "opus_multistream.h" "opus/opus_multistream.h"
                    transformedData "${originalData}")
@@ -557,10 +582,52 @@ appendConditionallyName(libSoXPlatformList OPUS        "")
 appendConditionallyName(libSoXPlatformList PULSEAUDIO  "")
 appendConditionallyName(libSoXPlatformList SNDIO       "")
 appendConditionallyName(libSoXPlatformList SUNAUDIO    "")
+appendConditionallyName(libSoXPlatformList WAVEAUDIO   "")
 
 UTIL_List_constructFromOther(libSoXPlatformSourceFileList
                              libSoXPlatformList
                              "${soxSrcDirectory}/" ".c")
+
+# ---------------------------------------------------------
+# collect all HAVE_XXX variables and EXTERNAL_XXX variables
+# for debugging
+# ---------------------------------------------------------
+
+IF(CLP_Debug_listBuildVariables)
+    SET(platformNameList
+        AO ALSA COREAUDIO OPUS PULSEAUDIO SNDIO SUNAUDIO WAVEAUDIO)
+
+    SET(embeddedLibraryNameList
+        DOLBYB EBUR128 GSM LPC10)
+
+    SET(explicitLibraryNameList
+        FFTW FLAC ID3TAG MAD OPUS OPUSFILE PNG SNDFILE
+        SPEEX SPEEXDSP WAVPACK Z
+    )
+
+    SET(libraryNameList
+        ${embeddedLibraryNameList}
+        ${explicitLibraryNameList}
+    )
+
+    SET(haveVariableNameStemList
+        AMRNB AMRWB MP3 LAME
+        ${platformNameList}
+        ${libraryNameList}
+    )
+
+    UTIL_List_constructFromOther(haveVariableNameList
+                                 haveVariableNameStemList
+                                 "HAVE_" "")
+
+    UTIL_List_constructFromOther(externalVariableNameList
+                                 libraryNameList
+                                 "EXTERNAL_" "")
+
+    UTIL_Debug_appendRelevantVariableNames(${haveVariableNameList}
+                                           ${externalVariableNameList}
+                                           HAVE_OGG_VORBIS)
+ENDIF()
 
 #====================
 # === build setup ===
@@ -659,7 +726,7 @@ UTIL_List_constructFromOther(libSoXEffectsSourceFileList
 SET(srcFileStemList
     8svx adpcm adpcms aifc-fmt aiff aiff-fmt al-fmt au avr cdr cvsd
     cvsd-fmt dat dsdiff dsf dvms-fmt f4-fmt f8-fmt ffmpeg g711 g721
-    g723_24 g723_40 g72x gsm gsrt hcom htk id3 ima-fmt ima_rw la-fmt
+    g723_24 g723_40 g72x gsm gsrt hcom htk ima-fmt ima_rw la-fmt
     lpc10 lu-fmt maud mp3 mp3-mad mp3-lame mp3-twolame nulfile nsp prc
     raw raw-fmt s1-fmt s2-fmt s3-fmt s4-fmt sdm sf skelform smp sounder
     soundtool sox-fmt sphere tx16w u1-fmt u2-fmt u3-fmt u4-fmt ul-fmt
@@ -667,6 +734,7 @@ SET(srcFileStemList
 )
 
 # add additional format files
+appendConditionallyName(srcFileStemList id3     "ID3TAG")
 appendConditionallyName(srcFileStemList flac    "")
 appendConditionallyName(srcFileStemList sndfile "")
 appendConditionallyName(srcFileStemList vorbis  "OGG_VORBIS")
@@ -766,6 +834,15 @@ ELSEIF(MACOS)
 ENDIF()
 
 TARGET_LINK_LIBRARIES(${targetName} PUBLIC ${platformLibraryList})
+
+# add external libraries
+SET(externalLibraryNameList
+    FFTW Flac Id3tag Mad MP3Lame Ogg Opus Opusfile Png Sndfile Speex
+    SpeexDSP Vorbis Wavpack Z
+)
+
+appendConditionallyExternalLibraries(${targetName}
+                                     "${externalLibraryNameList}")
 
 # libSoX depends on all support libraries
 ADD_DEPENDENCIES(${targetName} SupportLibraries)

@@ -38,3 +38,26 @@ CMAKE_PATH(SET LCONF_libWavpackDirectory NORMALIZE
            ${LCONF_allProjectsRootDirectory}/libwavpack)
 CMAKE_PATH(SET LCONF_libZDirectory NORMALIZE
            ${LCONF_allProjectsRootDirectory}/libz)
+
+#------------------------------------------------------------
+
+# append all configuration variable names to relevant variable name
+# list
+
+UTIL_Debug_appendRelevantVariableNames(
+    LCONF_libFFTWDirectory
+    LCONF_libFlacDirectory
+    LCONF_libId3tagDirectory
+    LCONF_libMadDirectory
+    LCONF_libMP3LameDirectory
+    LCONF_libOggDirectory
+    LCONF_libOpusDirectory
+    LCONF_libOpusfileDirectory
+    LCONF_libPngDirectory
+    LCONF_libSndfileDirectory
+    LCONF_libSpeexDirectory
+    LCONF_libSpeexDSPDirectory
+    LCONF_libVorbisDirectory
+    LCONF_libWavpackDirectory
+    LCONF_libZDirectory
+)

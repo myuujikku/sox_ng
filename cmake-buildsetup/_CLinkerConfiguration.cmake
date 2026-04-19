@@ -43,7 +43,34 @@ ENDMACRO(LINKER_combineLibraryListIntoLib)
 
 #--------------------
 
-MACRO(LINKER_makeLibraryTarget targetName isObjectLibrary)
+MACRO(LINKER_getLibraryNameListForLibrary
+      resultVariableName libraryShortName)
+    # returns list of libraries for <libraryShortName> either from
+    # PKG_CONFIG or by just lowercasing the short name
+
+    STRING(TOLOWER ${libraryShortName} lowercasedLibraryShortName)
+
+    # the default list of library names is just the lowercased name
+    SET(${resultVariableName} "${lowercasedLibraryShortName}")
+
+    IF(${PkgConfig_FOUND})
+        # result might change based on package information
+        SET(prefix ${libraryShortName})
+        SET(pkgFoundVariableName "${prefix}_FOUND")
+        SET(libFoundVariableName "${prefix}_LIBRARIES")
+        PKG_CHECK_MODULES(${prefix} QUIET
+                          ${lowercasedLibraryShortName})
+
+        IF(${pkgFoundVariableName})
+            SET(${resultVariableName} ${${libFoundVariableName}})
+        ENDIF()
+    ENDIF()
+ENDMACRO(LINKER_getLibraryNameListForLibrary)
+
+#--------------------
+
+MACRO(LINKER_makeLibraryTarget
+      targetName isObjectLibrary)
     # makes support library target named <targetName> based on
     # libXXXSourceFileList, libXXXCompileDefinitionList and
     # libXXXIncludeDirectoryList
