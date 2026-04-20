@@ -71,9 +71,18 @@ some minor renaming of the library directories):
 
 If the directory structure differs from that, you can adapt the file
 `LocalConfiguration.cmake` in the `cmake-buildsetup` directory.  There
-the paths to the subprojects are defined.  If some support library is
-missing, the corresponding path should be set to empty and then that
-functionality is left out of SoX_ng.
+the paths to the subprojects are defined.
+
+If some support library is missing, the corresponding path should be
+set to empty.  Normally then that functionality is left out of SoX_ng.
+But the build configuration process tries to find installed libraries
+on the host system and probes them for specific functionality.  If
+successful, that installed library is used instead of the missing
+library source.
+
+Libraries provides in source form are preferred to installed
+libraries.
+
 
 ## Processing
 

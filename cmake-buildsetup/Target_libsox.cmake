@@ -712,9 +712,12 @@ SET(srcFileStemList
     echos fade fft4g fir firfit flanger gain hilbert input ladspa
     loudness mcompand noiseprof noisered output overdrive pad phaser
     rate remix repeat reverb reverse saturation sdm silence sinc
-    skeleff softvol spectrogram speed speexdsp splice stat stats
+    skeleff softvol speed speexdsp splice stat stats
     stretch swap synth tempo tremolo trim upsample vad vol
 )
+
+# add additional effect files
+appendConditionallyName(srcFileStemList spectrogram "HAVE_PNG")
 
 UTIL_List_constructFromOther(libSoXEffectsSourceFileList
                              srcFileStemList
@@ -752,10 +755,8 @@ SET(srcFileStemList
     util fifo formats libsox_ng xmalloc
 )
 
-IF(WINDOWS)
-    LIST(APPEND srcFileStemList 
-         win32-glob win32-ltdl win32-unicode)
-ENDIF()
+appendConditionally(srcFileStemList WINDOWS
+                    "win32-glob;win32-ltdl;win32-unicode")
 
 UTIL_List_constructFromOther(libSoXGlueSourceFileList
                              srcFileStemList
