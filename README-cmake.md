@@ -118,8 +118,8 @@ follows:
        must specify the build type (Debug or Release), you generate
        the build files by specifying the build type:
 
-       cmake -S path_to_sox_ng/cmake-buildsetup
-	     -B build_directory
+       cmake -S path_to_sox_ng/cmake-buildsetup \
+	     -B build_directory \
 	     -DCMAKE_BUILD_TYPE=build_type
 
 The setup can be changed by overriding default settings in the cmake
