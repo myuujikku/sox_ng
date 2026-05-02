@@ -70,7 +70,7 @@ some minor renaming of the library directories):
       - ...
 
 If the directory structure differs from that, you can adapt the file
-`LocalConfiguration.cmake` in the `cmake-buildsetup` directory.  There
+`LocalSettings.cmake` in the `cmake-buildsetup` directory.  There
 the paths to the subprojects are defined.
 
 If some support library is missing, the corresponding path should be
@@ -99,7 +99,7 @@ follows:
 
      `mkdir ~/ng_build`
 
-  2. Edit the file `cmake-buildsetup/LocalConfiguration.cmake`
+  2. Edit the file `cmake-buildsetup/LocalSettings.cmake`
      to reflect the local environment.
 
   3. For MacOS, ensure that the enviroment variable
