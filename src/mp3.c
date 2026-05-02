@@ -63,6 +63,13 @@ LSX_FORMAT_HANDLER(mp2)
 }
 #endif
 
+#if !HAVE_MAD && HAVE_SNDFILE
+extern int startread_sndfile(sox_format_t * ft);
+extern size_t read_samples_sndfile(sox_format_t * ft, sox_sample_t *buf, size_t len);
+extern int seek_sndfile(sox_format_t * ft, sox_uint64_t offset);
+extern int stop_sndfile(sox_format_t * ft);
+#endif
+
 #if HAVE_MAD || HAVE_LAME
 LSX_FORMAT_HANDLER(mp3)
 {
@@ -71,6 +78,10 @@ LSX_FORMAT_HANDLER(mp3)
    * they must be listed here because init_format() relies on that to guess
    * the symbol names of lsx_mp[12]_format_fn() and "mp3", the one that
    * corresponds to the symbol name of this handler, must come first.
+   *
+   * In case someone is configuring with sndfile but not mad,
+   * make the default MP3 decoder fall back to sndfile; otherwise
+   * they result unreadable.
    */
   static char const * const names[] = {"mp3", "mp2",
 #if HAVE_MAD
@@ -83,9 +94,22 @@ LSX_FORMAT_HANDLER(mp3)
     8000, 11025, 12000, 16000, 22050, 24000, 32000, 44100, 48000, 0};
   static sox_format_handler_t const handler = {SOX_LIB_VERSION_CODE,
     "MPEG-1 Layer 3 lossy audio compression", names, 0,
+#if HAVE_MAD
     startread_mad, read_mad, stopread_mad,
+#elif HAVE_SNDFILE
+    startread_sndfile, read_samples_sndfile, stop_sndfile,
+#else
+    NULL, NULL, NULL,
+#endif
     startwrite_lame, write_lame, stopwrite_lame,
-    seek_mad, write_encodings, write_rates, sizeof(priv_t)
+#if HAVE_MAD
+    seek_mad,
+#elif HAVE_SNDFILE
+    seek_sndfile,
+#else
+    NULL,
+#endif
+    write_encodings, write_rates, sizeof(priv_t)
   };
   return &handler;
 }

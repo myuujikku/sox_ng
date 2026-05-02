@@ -363,7 +363,7 @@ static int start_sndfile(sox_format_t * ft)
 /*
  * Close file for libsndfile (this doesn't close the file handle)
  */
-static int stop_sndfile(sox_format_t * ft)
+int stop_sndfile(sox_format_t * ft)
 {
   priv_t * sf = (priv_t *)ft->priv;
   sf->sf_stop(sf->sf_file);
@@ -405,7 +405,7 @@ static int check_read_params(sox_format_t * ft, unsigned channels,
 /*
  * Open file in sndfile.
  */
-static int startread_sndfile(sox_format_t * ft)
+int startread_sndfile(sox_format_t * ft)
 {
   priv_t * sf = (priv_t *)ft->priv;
   unsigned bits_per_sample;
@@ -465,7 +465,7 @@ static int startread_sndfile(sox_format_t * ft)
  * Read up to len samples of type sox_sample_t from file into buf[].
  * Return number of samples read.
  */
-static size_t read_samples_sndfile(sox_format_t * ft, sox_sample_t *buf, size_t len)
+size_t read_samples_sndfile(sox_format_t * ft, sox_sample_t *buf, size_t len)
 {
   priv_t * sf = (priv_t *)ft->priv;
   /* FIXME: We assume int == sox_sample_t here */
@@ -546,7 +546,7 @@ static size_t write_samples_sndfile(sox_format_t * ft, const sox_sample_t *buf, 
   return (size_t)sf->sf_write_int(sf->sf_file, (int *)buf, (sf_count_t)len);
 }
 
-static int seek_sndfile(sox_format_t * ft, sox_uint64_t offset)
+int seek_sndfile(sox_format_t * ft, sox_uint64_t offset)
 {
   priv_t * sf = (priv_t *)ft->priv;
   sf->sf_seek(sf->sf_file, (sf_count_t)(offset / ft->signal.channels), SEEK_CUR);
