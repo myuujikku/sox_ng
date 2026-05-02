@@ -127,7 +127,7 @@ process are missing; **the current CMake setup only allows for a build
 of libSoX and SoX with static libraries coming from explicit source
 directories alongside SoX_ng.**
 
-The following variables can be set in this manner:
+The following variables can be set with `-Dwhatever=true` or `-Dwhatever=value`:
 
 <SMALL font-size: x-small>
 
