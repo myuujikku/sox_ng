@@ -120,7 +120,7 @@ follows:
 
        cmake -S path_to_sox_ng/cmake-buildsetup
 	     -B build_directory
-	     -DCMAKE_BUILD_TYPE=build_type`
+	     -DCMAKE_BUILD_TYPE=build_type
 
 The setup can be changed by overriding default settings in the cmake
 step.  Note that some configuration variables for the standard build
