@@ -1,6 +1,0 @@
-debian/tmp/usr/bin/play_ng usr/bin/
-debian/tmp/usr/bin/rec_ng usr/bin/
-debian/tmp/usr/bin/sox_ng usr/bin/
-debian/tmp/usr/bin/soxi_ng usr/bin/
-debian/tmp/usr/share/man/man1 usr/share/man/
-debian/tmp/usr/share/man/man7 usr/share/man/

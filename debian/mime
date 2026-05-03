@@ -1,5 +1,0 @@
-audio/basic; /usr/bin/play_ng -t au %s
-audio/x-aiff; /usr/bin/play_ng -t aiff %s
-audio/x-gsm; /usr/bin/play_ng -t gsm %s
-audio/x-wav; /usr/bin/play_ng -t wav %s
-
