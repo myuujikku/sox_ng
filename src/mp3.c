@@ -26,6 +26,7 @@
 #include "mp3.h"
 #include "mp3-mad.h"
 #include "mp3-lame.h"
+#include "mp3-hip.h"
 #include "mp3-twolame.h"
 
 #if HAVE_MAD
@@ -98,6 +99,8 @@ LSX_FORMAT_HANDLER(mp3)
     startread_mad, read_mad, stopread_mad,
 #elif HAVE_SNDFILE
     startread_sndfile, read_samples_sndfile, stop_sndfile,
+#elif HAVE_LAME
+    startread_hip, read_hip, stopread_hip,
 #else
     NULL, NULL, NULL,
 #endif
