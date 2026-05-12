@@ -2213,7 +2213,7 @@ static void usage_format1(sox_format_handler_t const * f)
   }
   if (f->write_rates) {
     sox_rate_t const * p = f->write_rates;
-    printf("Sample-rate restricted to:");
+    printf("Sample rate is restricted to:");
     while (*p)
       printf(" %g", *p++);
     putchar('\n');
