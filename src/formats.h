@@ -110,6 +110,7 @@
 # endif
 # if HAVE_LAME
   FORMAT(lame)
+  FORMAT(hip)
 # endif
 # if HAVE_TWOLAME
   FORMAT(twolame)

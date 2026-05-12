@@ -15,14 +15,14 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-/* Declarations for callers of mp3-lame.c */
+/* Declarations for callers of mp3-hip.c */
 
 #if HAVE_LAME
-extern int startwrite_lame(sox_format_t * ft);
-extern size_t write_lame(sox_format_t *ft, const sox_sample_t *buf, size_t len);
-extern int stopwrite_lame(sox_format_t * ft);
+extern int startread_hip(sox_format_t * ft);
+extern size_t read_hip(sox_format_t *ft, sox_sample_t *buf, size_t len);
+extern int stopread_hip(sox_format_t * ft);
 #else
-# define startwrite_lame NULL
-# define write_lame NULL
-# define stopwrite_lame NULL
+# define startread_hip NULL
+# define read_hip NULL
+# define stopread_hip NULL
 #endif

@@ -470,6 +470,10 @@ General eXchange Format.
 Macintosh HCOM files.
 These are Mac FSSD files with Huffman compression.
 .TP
+\fB.hip\fR
+The \fB\-t\ hip\fR format forces decoding of MP3 to use \fBmp3lame\fR's
+decoder based on mpglib by Michael Hipp.
+.TP
 \fB.htk\fR (also with \fB\-t sndfile\fR)
 Single channel 16-bit PCM format used by HTK,
 a toolkit for building Hidden Markov Model speech processing tools.
@@ -490,8 +494,7 @@ ISM streaming video format.
 Simon & Schuster Interactive VAG format.
 .TP
 \fB.lame\fR
-The \fB\-t\ lame\fR format forces decoding of MP1/2/3 and encoding to MP3
-to use \fBmp3lame\fR.
+The \fB\-t\ lame\fR format forces encoding to MP3 to use \fBmp3lame\fR.
 .TP
 \fB.lpc\fR, \fB.lpc10\fR
 LPC-10 is a compression scheme for speech developed by the United

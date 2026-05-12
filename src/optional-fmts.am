@@ -137,7 +137,8 @@ endif
 if HAVE_MP3
 if STATIC_MP3
   libsox_ng_la_SOURCES += mp3.c mp3.h mp3-mad.c mp3-mad.h bit-rot/mad.h \
-                          mp3-lame.c mp3-lame.h mp3-twolame.c mp3-twolame.h
+                          mp3-lame.c mp3-lame.h mp3-hip.c mp3-hip.h \
+                          mp3-twolame.c mp3-twolame.h
 if STATIC_LIBSOX_ONLY
   sox_ng_LDADD += @MP3_LIBS@
 else
@@ -145,7 +146,8 @@ else
 endif
 else
   libsox_ng_fmt_mp3_la_SOURCES = mp3.c mp3.h mp3-mad.c mp3-mad.h bit-rot/mad.h \
-                          mp3-lame.c mp3-lame.h mp3-twolame.c mp3-twolame.h
+                          mp3-lame.c mp3-lame.h mp3-hip.c mp3-hip.h \
+                          mp3-twolame.c mp3-twolame.h
   libsox_ng_fmt_mp3_la_LIBADD = libsox_ng.la @MP3_LIBS@
   pkglib_LTLIBRARIES += libsox_ng_fmt_mp3.la
 endif
