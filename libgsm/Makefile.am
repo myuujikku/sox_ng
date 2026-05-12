@@ -29,8 +29,8 @@ AM_CFLAGS = $(SASR) $(MULHAC) $(FAST) $(LTP_CUT) $(WAV49)
 if EXTERNAL_GSM
 EXTRA_DIST = add.c code.c decode.c long_term.c lpc.c preprocess.c \
 	     rpe.c gsm_destroy.c gsm_decode.c gsm_encode.c gsm_create.c \
-	     gsm_option.c short_term.c table.c private.h gsm.h CMakeLists.txt \
-	     aliases.h config.h proto.h unproto.h CMakeLists.txt
+	     gsm_option.c short_term.c table.c private.h gsm.h \
+	     aliases.h config.h proto.h unproto.h
 else
 noinst_LTLIBRARIES = libgsm.la
 noinst_HEADERS = gsm.h
@@ -38,5 +38,4 @@ libgsm_la_SOURCES = add.c code.c decode.c long_term.c lpc.c preprocess.c \
 		rpe.c gsm_destroy.c gsm_decode.c gsm_encode.c gsm_create.c \
 		gsm_option.c short_term.c table.c private.h \
 		aliases.h config.h proto.h unproto.h
-EXTRA_DIST = CMakeLists.txt
 endif

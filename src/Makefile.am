@@ -177,7 +177,6 @@ example5_LDADD = ${sox_ng_LDADD}
 example6_LDADD = ${sox_ng_LDADD}
 
 EXTRA_DIST = monkey.wav optional-fmts.am \
-	     CMakeLists.txt soxconfig.h.cmake \
 	     tests.sh testall.sh tests.bat testall.bat test-comments
 
 all: sox_ng$(EXEEXT) play_ng$(EXEEXT) rec_ng$(EXEEXT) soxi_ng$(EXEEXT)

@@ -16,7 +16,6 @@ libdolbyb_la_SOURCES = \
      Calibrate.h DCfilter.h DiodeClip.h FindOutSmp.h HPF1.h HPF2.h \
      HPF2SetVals.h HPFAdj.h LPFAdj.h Mixers.h Param.h SetGate.h SidePath.h \
      dolbyb.h
-EXTRA_DIST = CMakeLists.txt
 if HAVE_LIBLTDL
 AM_LDFLAGS=-avoid-version -module
 endif
