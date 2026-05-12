@@ -34,7 +34,7 @@ EXTRA_DIST = sox_ng.txt soxi_ng.txt soxeffect_ng.txt soxformat_ng.txt \
 	     sox_ng.pc.in COPYING AUTHORS INSTALL \
 	     README.win32 scripts/batch-example.bat \
 	     README.md RULES.md RULES-issues.md RULES-wiki.md \
-	     README.sh FEATURES.in test/* issues wiki/* debian/*
+	     README.sh FEATURES.in test/* issues wiki/*
 
 if HAVE_PKGCONFIG
 pkgconfig_DATA = sox_ng.pc
