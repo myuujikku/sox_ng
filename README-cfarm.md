@@ -1,7 +1,5 @@
 # How to test sox_ng against the GCC Cmpile Farm
 
-## Get stuff
-
     git clone https://codeberg.org/sox_ng/sox_ng
     git clone https://codeberg.org/sox_ng/sox_ng.wiki sox_ng/wiki
     git clone https://codeberg.org/sox_ng/cfarm
