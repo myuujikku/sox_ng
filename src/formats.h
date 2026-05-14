@@ -105,15 +105,8 @@
 # if HAVE_MAD || HAVE_LAME
   FORMAT(mp3)
 # endif
-# if HAVE_MAD
-  FORMAT(mad)
-# endif
 # if HAVE_LAME
-  FORMAT(lame)
   FORMAT(hip)
-# endif
-# if HAVE_TWOLAME
-  FORMAT(twolame)
 # endif
 #endif
 

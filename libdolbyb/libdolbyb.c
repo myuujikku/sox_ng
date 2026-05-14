@@ -156,7 +156,7 @@ char *dolbyb_encode(dolbyb_t *Param, void *in, void *out, size_t nframes)
 
   for (SmpCnt = 0; SmpCnt < nframes; SmpCnt++) {
     for (Chn = 1; Chn <= Param->NumChn; Chn++) {
-      int64_t SmpVal;
+      int64_t SmpVal = 0; /* Shut compiler warning up */
       union {
         unsigned char c[4];
 	signed int i;

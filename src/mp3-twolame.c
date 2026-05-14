@@ -183,6 +183,7 @@ int stopwrite_twolame(sox_format_t * ft)
   return SOX_SUCCESS;
 }
 
+#if 0
 LSX_FORMAT_HANDLER(twolame)
 {
   static char const * const names[] = {"twolame", "mp2", NULL};
@@ -198,5 +199,6 @@ LSX_FORMAT_HANDLER(twolame)
   };
   return &handler;
 }
+#endif
 
 #endif /* HAVE_TWOLAME */

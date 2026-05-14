@@ -545,6 +545,7 @@ int stopwrite_lame(sox_format_t * ft)
   return SOX_SUCCESS;
 }
 
+#if 0
 LSX_FORMAT_HANDLER(lame)
 {
   static char const * const names[] = {"lame", "mp3", NULL};
@@ -560,5 +561,6 @@ LSX_FORMAT_HANDLER(lame)
   };
   return &handler;
 }
+#endif
 
 #endif /* HAVE_LAME */
