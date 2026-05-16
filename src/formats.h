@@ -38,6 +38,7 @@
   FORMAT(la)
   FORMAT(lu)
   FORMAT(maud)
+  FORMAT(mul)
   FORMAT(nsp)
   FORMAT(nul)
   FORMAT(prc)
