@@ -750,8 +750,14 @@ and SoX does not know about alternative servers\*mhit Ctrl-C twice in
 quick succession to quit.
 .TP
 .B .pcm
-Loop format for the Media Streaming Unit version 1 custom add-on 
-for SNES consoles.
+Audio track format for the MSU-1 (Media Streaming Unit, revision 1),
+an enhancement chip specification for the Super Nintendo Entertainment System
+(SNES) / Super Famicom (SFC), designed by the late Byuu (aka Near).
+Audio files are 44.1 kHz, 16-bit stereo uncompressed signed PCM in
+little-endian order ("Red Book" CD audio is big-endian), left channel first.
+They begin with an 8-byte header: the first four bytes are "MSU1" in ASCII
+and the next four are a 32-bit unsigned integer that define the loop point
+in samples.
 .TP
 .B .prc
 Psion Record are used in Psion EPOC PDAs (Series 5, Revo and similar) for
