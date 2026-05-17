@@ -541,33 +541,60 @@ Amiga Module format, typically created with Protracker, decoding only.
 \fB.mov\fR (with ffmpeg)
 MPEG-1 Systems / MPEG program stream format.
 .TP
-\fB.mp1\fR, \fB.m1a\fR, \fB.mp2\fR (optional, also with \fB-t\ sndfile\fR, \fB\-t\ ffmpeg\fR or \fB\-t\ lame)
+\fB.mp1\fR, \fB.m1a\fR, \fB.mp2\fR, \fB.mp3\fR (optional, also with \fB-t\ sndfile\fR, \fB\-t\ ffmpeg\fR or \fB\-t\ hip)
 MP1, MP2 and MP3 compressed audio (MPEG 1 Layers 1, 2 and 3) are part of the
 MPEG standards for audio and video compression whose patents have expired.
 They are lossy compression formats that achieve good compression rates
 with little quality loss.
-.SS Decoding
+.SP
+.B Decoding
 .SP
 \fBlibmad\fR, which SoX uses to decode MPEG files, does not work on files
-with a bit-rate higher than 192K but you can read those with \fB\-t\ sndfile\fR,
-\fB\-t\ lame\fR or \fB\-t\ ffmpeg\fR.
-Yet more options for decoding MPEG are to use one of:
-.XE
-   sox_ng -t wav '|lame --quiet --decode in.mp3 -' out.au
-   sox_ng -t wav '|madplay -q --no-tty-control -o wav:- in.mp3' out.au
-   sox_ng -t wav '|mpg123 -q --no-control --wav - in.mp3' out.au
-   sox_ng -t wav '|ffmpeg -loglevel quiet -nostdin -i in.mp3 -' out.au
-.XX
-.SP
-As these commands cannot rewind their output pipe to fix the file length
-in the header, you may prefer to add \fB--ignore-length\fR than to have
-SoX warn "premature EOF on input file".
-.SP
-Note that the \fBlame\fR program is able to decode more MPEG files
-than \fB\-t\ lame\fR as \fBlame\fR decodes the file header itself
-before calling its audio decoder whereas SoX makes the decoder
+with a bit-rate higher than 192K but you can read those using:
+.RS
+.TP
+\fB\-t\ sndfile\fR
+which uses libmpg123, generally gives better quality results,
+is better at decoding damaged or corrupt files and is twice as fast
+as \fBlibmad\fR if you have an FPU;
+.TP
+\fB\-t\ ffmpeg\fR
+which uses yet another decoder, the one in \fBlibavcodec\fR;
+.TP
+\fB\-t\ hip\fR
+which uses LAME's internal libmpg
+but the LAME program is able to decode more MPEG files
+than \fB\-t\ hip\fR as it decodes the file header itself
+before calling the hip decoder, whereas SoX makes the decoder
 do all the work.
-.SS Encoding
+.RE
+.\" Without .RE/.RS here, the rest of the section is hard-left indented.
+.\" No idea why.
+.RS
+.SP
+Yet more ways to decode MPEG files are input filenames like:
+.XE
+   '|madplay -q --no-tty-control -o wav:- in.mp3'
+   '|mpg123 -q --no-control --wav - in.mp3'
+   '|lame --quiet --decode in.mp3 -'
+   '|ffmpeg -loglevel quiet -nostdin -i in.mp3 -'
+.XX
+As these piped commands cannot rewind their output pipe to fix the file length
+in the header, you may prefer to add \fB--ignore-length\fR before them,
+which makes SoX warn "premature EOF on input file" but keeps reading to the end.
+.SP
+The decoding speeds of the default libmad, \fB\-t\ hip\fP and \fB\-t\ sndfile\fP
+are in proportions 1:2:2.5 with an FPU.
+Without one, libmad will be the fastest instead of the slowest.
+.SP
+With \fBmad\fR or \fBsndfile\fR, SoX decodes MPEG files with a precision of
+28 bits but it declares a precision of 16 bits so that decoding MP3s to WAVs
+gives the CD quality that most people expect. You can specify
+a higher precision before the output filename to keep this extra information.
+.SP
+.B Encoding
+.SP
+SoX can only read MP1 files, not write them.
 .SP
 SoX uses \fBtwolame\fR to write MP2 files, and the target bit rate is set
 using the \fB\-C\fR option in kbps:
@@ -583,31 +610,9 @@ at the start and truncates the end by 0.002 seconds.
 It can also encode MP2s with \fB\-t\ sndfile\fR, which also uses
 \fBtwolame\fR and has the same defect.
 .SP
-SoX can only read MP1 files, not write them.
-.TP
-\fB.mp3\fR (optional, also with \fB\-t\ sndfile\fR, \fB\-t\ lame\fR or \fB\-t\ ffmpeg\fR)
-By default, SoX uses \fBlibmad\fR to decode MP3 files;
-to decode using LAME's \fBmpglib\fR, use \fB\-t\ lame\fR;
-to decode using
-\fBlibmpg123\fR, which generally gives better quality results,
-is better at decoding damaged or corrupt files and is twice as fast
-if tiy have an FPU, use \fB\-t\ sndfile\fR,
-while \fR\-t\ ffmpeg\fR uses yet another MPEG decoder,
-the one in \fBlibavcodec\fR.
-.SP
-The decoding speeds of \fB\-t\ mad\fP, \fB\-t\ lame\fP and \fB\-t\ sndfile\fP
-are in proportions 1:2:2.5 with an FPU.
-Without one, \fBmad\fP may be the fastest instead of the slowest.
-.SP
-With \fBmad\fR or \fBsndfile\fR, SoX decodes MPEG files with a precision of
-28 bits but it declares a precision of 16 bits so that decoding MP3s to WAVs
-gives the CD quality that most people expect. You can specify
-a higher precision for the output file to keep this extra information.
-.SP
-SoX uses \fBliblame\fR when writing MP3 files, and can use up to
-25 bits of precision.
-.SP
-At present, SoX's use of \fBlibmp3lame\fR adds 0.01 seconds of quiet garbage
+SoX uses libmp3lame to write MP3 files and can use up to
+25 bits of precision but, at present, SoX's use of libmp3lame
+adds 0.01 seconds of quiet garbage
 at the start and at the end;
 encoding with \fB\-t\ sndfile\fR gets the length right and no garbage.
 .SP
@@ -650,6 +655,7 @@ See
 and
 .B opus
 for similar formats that achieve higher signal quality with less bandwidth.
+.RE
 .TP
 \fB.mp4\fR (with ffmpeg)
 MPEG-4 video format.
