@@ -1,4 +1,6 @@
-/* Copyright (C) 2002 Fabrizio Gennari <fabrizio.ge@tiscali.it>
+/* mp3-lame.c - libmp3lame encoding support for SoX
+ *
+ * Copyright (C) 2002 Fabrizio Gennari <fabrizio.ge@tiscali.it>
  *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -16,7 +18,6 @@
  */
 
 
-/* libmp3lame support for SoX */
 
 #include "sox_i.h"
 #include "mp3.h"
@@ -76,10 +77,10 @@ static void write_comments(sox_format_t * ft)
 }
 
 /*
- * Adapters for lame and hip message callbacks.
+ * Adapters for message callbacks.
  */
 
-/* THe fmt string has a trailing newline which we don't want,
+/* The fmt string has a trailing newline which we don't want,
  * but we can't modify the const string we're passed so take a copy
  * and modify that.
  */

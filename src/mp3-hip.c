@@ -34,10 +34,10 @@ static char *mode_string[] = { /* The meanings of mp3data.mode */
 };
 
 /*
- * Adapters for lame and hip message callbacks.
+ * Adapters for message callbacks.
  */
 
-/* THe fmt string has a trailing newline which we don't want,
+/* The fmt string has a trailing newline which we don't want,
  * but we can't modify the const string we're passed so take a copy
  * and modify that.
  */

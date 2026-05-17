@@ -1,4 +1,6 @@
-/* Copyright (C) 2025 Martin Guy <martinwguy@gmail.com>
+/* mp3-lame.h - Declarations for callers of mp3-lame.c
+ *
+ * Copyright (C) 2025 Martin Guy <martinwguy@gmail.com>
  *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -14,8 +16,6 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-
-/* Declarations for callers of mp3-lame.c */
 
 #if HAVE_LAME
 extern int startwrite_lame(sox_format_t * ft);
