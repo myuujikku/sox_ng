@@ -12,7 +12,7 @@ New features:
 
 Effects:
 
-  o New effect "centrecut", a sophisticated version of "oops"
+  o New effect "centercut", a sophisticated version of "oops"
   o bend: Raise maximum FFT size from 8192 to 1<<30
   o bend: Optimized to run twice as fast
   o echo/echos: Get the output signal length right
