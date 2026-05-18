@@ -19,13 +19,12 @@ Effects:
   o fade: Add "s" square-law fade type
   o rate: Extrapolate by Linear Predictive Coding to improve end effects
   o hilbert/sinc: Raise maximum number of taps to 1073741823
-  o spectrogram: Add -i option to interpolate frequency bins
+  o spectrogram: Add -i to interpolate between or average frequency bins
   o spectrogram: Fix linear axis with frequency ranges
   o spectrogram: On log axis, add labels at 2 and 5 or 1 to 9
   o spectrogram: Slightly faster by doing out-of-place FFTs
   o spectrogram: Fail if the start time is beyond the end
   o spectrogram: Add -g flag to show times as HH:MM:SS
-  o spectrogram: Add -i to interpolate between or average frequency bins
   o synth: Add -p for Pythagorean tuning
 
 Formats:
