@@ -125,7 +125,7 @@ Internal:
   o Make sox_open_memstream_write() get the buffer length right
 
 Thanks to akwizgran, Alfred Wingate, Case@hydrogenaudio, Daniel Adamski,
-Benedetto "dettox", Dave Jones, Doug Lee, Jan Stary, jwdevel, Mans Rullgard
+Benedetto "dettox", Dave Jones, Doug Lee, Jan Stary, jwdevel, Mans Rullgard,
 prof-spock, qwertymode, Robert Schultz, Sebastian Ramacher, Stefan Sauer
 and others for creative input.
 
