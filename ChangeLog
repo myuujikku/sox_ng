@@ -5,118 +5,130 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
-sox_ng-14.7.0+git20260318
--------------------------
+sox_ng-14.8.0	2026-05-18
+-------------
 
-Changes since +git20260221:
+New features:
 
-  o cdda: Add ".cda" as another filename extension
-  o Fix "rate -vs" looping forever, broken in +git20260129
-  o Revert c557165 to make --single-threaded the default again
-  o spectrogram: Omit bottom labels that overlap the top ones below
-  o spectrogram: Place top label at top row of graph, not the axis
+Effects:
 
-Changes since +git20260129:
-
-  o aifc: Support 24/32-bit big/little-endian compression types
-  o Make --keymap work on vol.gain and overdrive.gain when gain is 1
-  o Implement MPEG decoding with -t lame
-
-Changes since +git20260127:
-
-  o pulseaudio: Filename can also set server and application name (app:foo)
-  o Include opus support in the Windows exes
-  o Optimize the Windows exes for speed
-
-Changes since +git20260125:
-
-  o dff/dsf: Automatically resample to supported sample rates when writing
-  o dff/dsf/wsd: Autodetect the formats when reading from stdin
-  o rate: Bug fixes to the extrapolator
-  o Portability fixes for C89/C90
-
-Changes since +git20251226b:
-
-  o In interactive mode, make [n] skip and [q] and [esc] quit
+  o New effect "centrecut", a sophisticated version of "oops"
   o bend: Raise maximum FFT size from 8192 to 1<<30
   o bend: Optimized to run twice as fast
   o echo/echos: Get the output signal length right
-  o rate: Extrapolate the ends of the signal to improve end effects
-  o softvol: Fix bug whereby rising volume suddenly dropped to zero
+  o fade: Add "s" square-law fade type
+  o rate: Extrapolate by Linear Predictive Coding to improve end effects
+  o hilbert/sinc: Raise maximum number of taps to 1073741823
   o spectrogram: Add -i option to interpolate frequency bins
   o spectrogram: Fix linear axis with frequency ranges
   o spectrogram: On log axis, add labels at 2 and 5 or 1 to 9
   o spectrogram: Slightly faster by doing out-of-place FFTs
   o spectrogram: Fail if the start time is beyond the end
-  o Add format handlers mad, lame and twolame to pick a codec
-  o ogg: Detect disk-full when writing and stop
-  o -t sndfile now handles AVR format
-  o Update to WavPack 5.0 giving 64-bit file lengths
-  o New demo miniprograms demo/soxcopy and demo/synth
-  o Move manual entries for effects from sox_ng.1 to soxeffect_ng.7 
-  o Completely rewrite libsox_ng.3 making it complete and accurate
-  o New manual pages libsoxeffect and libsoxformat on writing handlers
-  o Fix some core dumps, assertion failures and memory leaks
+  o spectrogram: Add -g flag to show times as HH:MM:SS
+  o spectrogram: Add -i to interpolate between or average frequency bins
+  o synth: Add -p for Pythagorean tuning
 
-Changes since 14.7.0:
+Formats:
 
-New features:
+  o New format ".hip" for libmp3lame's built-in MPEG decoder
+  o New format ".mod" for Amiga modules
+  o New format ".mul" for TombRaider Multiplex Streams (write-only)
+  o New format ".pcm" for SNES add-on MSU-1
+  o Add ffmpeg's "aa", "ea" and "act" formats
+  o aifc: Support 24/32-bit big/little-endian compression types
+  o cdda: Add ".cda" as a synonym for ".cdda"
+  o coreaudio: Allow selection of devices by number as well as by name
+  o dff/dsf: Automatically resample to supported sample rates when writing
+  o dff/dsf/wsd: Autodetect the formats when reading from stdin
+  o Add sndfile's names mpc and svx for formats mpc2k and 8svx
+  o pulseaudio: Filename can also set server and application name (app:foo)
+  o sndfile: Also handle AVR format
+  o spectrogram: Warn about non-optimal DFT sizes and suggest the nearest one
+  o wavpack: Update to WavPack 5.0 giving 64-bit file lengths
 
-  o "sox -h foo" gives the help for format or effect "foo"
-  o Add effect "centrecut", a sophisticated version of "oops"
+Other:
+
+  o If libmad is not available, use sndfile for MP3; if no sndfile, use hip
   o Add global option -A to tune A4 to something other than 440Hz
   o Add global option --keymap letting key presses adjust effect parameters
   o --interactive: `<' and `>' seek by 30s and `R' restarts the effects chain
-  o Raise "sinc" and "hilbert" maximum number of taps to 1073741823
-  o Add format names mpc and svx, for mpc2k and 8svx,
-    which is what sndfile-convert calls them
-  o Add ffmpeg's "aa", "ea" and "act" formats
-  o coreaudio: Allow selection of devices by number as well as by name
-  o spectrogram: Improve labelling of logarithmic axes
-  o spectrogram: Add -i to interpolate between or average frequency bins
-  o sox_open_memstream_write(): Work for formats that rewrite the header
-  o wavpack: Fix the check for successfully rewriting the file header
+  o In interactive mode, [n] skips and [q] and [esc] quit
+  o New demo miniprograms demo/soxcopy and demo/synth
 
 Bug fixes:
 
-  o soxi: Don't include the file header in the Bitrate figure
-  o pulseaudio: Ignore zero-length writes, which it supposedly doesn't like
-  o wav: Disallow zero-sized chunks
-  o ladspa: Allow plugins that take no input
+  o avr: Fail when writing an unsupported number of channels
   o bend: Allocate buffers dynamically, allowing FFT sizes up to 2^30
-    instead of dumping core
   o bend: Optimized to be over twice as fast
   o echo/echos: Set the output signal's length
+  o ladspa: Allow plugins that take no input
+  o libsox: Warn and fail if they read an output or write an input file
+  o mad: Catch and report decoder error messages
+  o ogg: Detect disk-full when writing and stop
   o pitch: Error about a bad cents value instead of tempo about a bad factor
-  o spectrogram: Fix labelling of linear axes with range
+  o pulseaudio: Ignore zero-length writes, which it supposedly doesn't like
+  o rate: Bug fixes to the extrapolator
+  o rate: Fix "-vs" looping forever, broken in +git20260129
+  o softvol: Fix bug whereby rising volume suddenly dropped to zero
+  o soxi: Don't include the file header in the Bitrate figure
+  o spectrogram: Fix labelling of linear axes with a frequency range
+  o spectrogram: Omit bottom labels that overlap the top ones below
+  o spectrogram: Place top label on the top row of the graph, not the axis
+  o spectrogram: Improve labelling of logarithmic axes
+  o spectrogram: If start time is after EOF, fail instead of looping forever
+  o spectrogram: Obtain slightly faster FFTs from FFTW by doing then in-place
+  o spectrogram: Truncate the spectrogram less than before, still not right
   o stats: Don't report the crest factor in overall JSON stats
+  o stats: Fix RMS Pk db of -inf when window time is equal to file length
+  o wav: Disallow zero-sized chunks
+  o wav: Ignore truncated final ISFT/ICRD chunks instead of failing
+  o wavpack: Fix the check for successfully rewriting the file header
   o Don't open files in reverse order, so the first unopenable file is reported
-    instead of the last one
+  o Make --keymap work on vol.gain and overdrive.gain when gain is 1
   o For formats that only support mono, stereo or quad, convert to the closest
     instead of writing 8-channel files that say "stereo" in the header
   o Make file rewinding work when compiled with Emscripten
   o Fail autodetection of some ffmpeg formats if the file is truncated
   o Release input and output formats' hold on stdin and stdout so that
     they can be used more than once
+  o sox_open_memstream_write(): Work for formats that rewrite the header
+  o Revert c557165 to make --single-threaded the default again
+  o Include opus support in the Windows exes
+  o Portability fixes for C89/C90
+  o Fix compilation on older MacOS X systems and with MS Visual C
+  o Make configure work on OpenBSD without needing --without-sunaudio
+  o Make --keymap work on vol.gain and overdrive.gain when gain is 1.0
+  o --multi-threaded: Set OMP_WAIT_POLICY so parallel SoXen are not slow
+  o Enable the test for CVE-2018-8357
+  o sox_effect_handler_t: Put new fields after priv_size for backward-compat
+  o Fix some core dumps, assertion failures, double frees and memory leaks
 
 Documentation:
 
-  o libsox_ng.3 is completely rewritten
-  o The effects descriptions have moved from sox_ng.1 to soxeffect.7
-  o There are new manual pages libsoxeffects.3 and libsoxformats_ng.3
-  o spectrogram: Improve description of -y and -Y
-  o spectrogram: Warn about non-optimal DFT sizes and suggest the nearest one
-  o Move description of effects from sox_ng.1 into soxeffect_ng.7
-
-  o Move internals from libsox_ng.3 into libsoxeffect_ng.3 and libsoxformat_ng.3
+  o libsox_ng.3 is completely rewritten to be accurate and complete
+  o The effects descriptions have moved from sox_ng.1 to soxeffect_ng.7
+  o New manual pages libsoxeffect_ng and libsoxformat_ng on writing handlers
+  o Include the PDFs in the distribution tarballs
+  o cdda: Add a note about big-/little-endian files
+  o pulseaudio: Document that it uses its filename as a device name
+  o Make "sox -h foo" give the help for format or effect "foo"
 
 Internal:
 
   o Source file mp3.c has split into mp3-mad.c, mp3-lame.c and mp3-twolame.c
     and mp3-util.h has gone
+  o Fix opusfile detection in the Windows build
+  o Fix compilation with only some of mad, lame and twolame
+  o Completely rewrite the CMake build support
+  o Optimize the Windows exes for speed
+  o Remove debian/ again, as they do their own packaging
+  o Add lsx_popen() that uses execvp() instead of /bin/sh
+  o Make sox_open_memstream_write() get the buffer length right
 
 Thanks to akwizgran, Alfred Wingate, Case@hydrogenaudio, Daniel Adamski,
-Dave Jones, Doug Lee, jwdevel, Sebastian Ramacher and others for creative input.
+Benedetto "dettox", Dave Jones, Doug Lee, Jan Stary, jwdevel, Mans Rullgard
+prof-spock, qwertymode, Robert Schultz, Sebastian Ramacher, Stefan Sauer
+and others for creative input.
 
 
 sox_ng-14.7.0	2025-11-18
@@ -125,6 +137,7 @@ sox_ng-14.7.0	2025-11-18
 New features:
 
 Effects:
+
   o chorus: Make all parameters optional
   o chorus: Allow an initial -[s|t] to change the default wave shape
   o chorus, phaser: Add -l/q options for linear/quadratic interpolation
@@ -143,6 +156,7 @@ Effects:
   o stretch: Add sqrt, quarter-cos and half-cos fading types
 
 Formats:
+
   o mp3: Recognize mp1 and mp2 as separate formats
   o mp2 encoding: Enable VBR encoding with -C -10-10
   o mp2 encoding: Upsample rates lower than 16k instead of failing
@@ -170,15 +184,18 @@ Documentation:
   o rate: Document undocumented options
   o Redraw flanger's flow diagram to be more similar to chorus/phaser
   o Make --version include -rc1 or other extensions
-  o Fix build failure if {mad,lame,twolame}.h is found but not the library
+  o Largely rewrite the manual section for mp1/mp2/mp3.
 
 Internal:
 
   o Allow ./configure --without-dolbyb
   o Fix ./configure --with-dyn-default for amr, lame, mad, twolame and sndfile
   o Add ./configure --enable-dl-speexdsp
+  o Recognize ffmpeg/lame/madplay's codes for unspecified WAV lengths
+  o Update to libdolbyb-1.1
   o Fix issues/issues.sh for http:// remotes and on FreeBSD
   o Add automatic "make win32.exe/win64.exe" rules using MXE
+  o Fix build failure if {mad,lame,twolame}.h is found but not the library
   o Make test/twx-wav-byte-rate not fail on 64-bit machines
   o Make CMake work again, though it omits all the optional formats
   o Remove unmaintained msvc files

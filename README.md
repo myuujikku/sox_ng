@@ -8,7 +8,7 @@ for each of the micro (bug fixes) and minor (new features) releases.
 A major release (non-backwards-compatible changes) is not planned.
 
 The next micro release is scheduled for the 18th August 2026.<BR>
-The next minor release is scheduled for the 18th May 2026.
+The next minor release is scheduled for the 18th November 2026.
 
 ## Terminology
 
