@@ -1344,8 +1344,14 @@ static int startread_wav(sox_format_t * ft)
                             lsx_warn("possible buffer overflow hack attack (ICRD)!");
                             break;
                         }
+                        /* Ignore a final ICRD chunk whose length is longer
+                         * than the rest of the file
+                         */
                         if (lsx_reads(ft,text, (size_t)len))
-			    read_error();
+                        {
+                            lsx_warn("truncated ICRD chunk at end of file");
+                            break;
+			}
                         if (strlen(wav->comment) + strlen(text) < 254)
                         {
                             if (wav->comment[0] != 0)
@@ -1365,8 +1371,14 @@ static int startread_wav(sox_format_t * ft)
                             lsx_warn("possible buffer overflow hack attack (ISFT)!");
                             break;
                         }
+                        /* WAV files exist that end with an ISFT chunk
+                         * whose length is longer than the rest of the file
+                         */
                         if (lsx_reads(ft,text, (size_t)len))
-			    read_error();
+                        {
+                            lsx_warn("truncated ISFT chunk at end of file");
+                            break;
+			}
                         if (strlen(wav->comment) + strlen(text) < 254)
                         {
                             if (wav->comment[0] != 0)
