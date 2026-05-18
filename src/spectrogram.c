@@ -735,7 +735,7 @@ static int drain_spectrogram(sox_effect_t * effp, sox_sample_t * obuf_, size_t *
       isamp += p->step_size - left_over;
     lsx_debug("cols=%i left=%i end=%i", p->cols, p->read, p->end);
     p->end = 0, p->end_min = -p->dft_size;
-    if (flow_spectrogram(effp, ibuf, obuf, &isamp, &isamp) == SOX_SUCCESS && p->block_num) {
+    if (flow_spectrogram(effp, ibuf, obuf, &isamp, osamp) == SOX_SUCCESS && p->block_num) {
       p->block_norm *= (double)p->block_steps / p->block_num;
       do_column(effp);
     }
