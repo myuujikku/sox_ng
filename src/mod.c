@@ -94,7 +94,7 @@ static unsigned short Frequency = 44100; /* This MUSTN'T be a define!!! */
 
 /*
  * FRAGE: Ist die Konstante 2.44 korrekt
- *        (ungefähr stimmt sie, das weiß ich,
+ *        (ungefÃ¤hr stimmt sie, das weiÃŸ ich,
  *        aber wie kommt sie zustande?) ...
  */
 #define KONSTANTE1 2.44
@@ -133,11 +133,11 @@ typedef struct {
 } mod_t;
 
 /*
- * _SpeedZ and _SpeedN are abbreviations for Speed Zähler and Speed Nenner. Ok,
- * Speed you understand, but 'Zähler' and 'Nenner' are German words. I don't
- * know the correct english words for that (maybe counter for Zähler and base
+ * _SpeedZ and _SpeedN are abbreviations for Speed ZÃ¤hler and Speed Nenner. Ok,
+ * Speed you understand, but 'ZÃ¤hler' and 'Nenner' are German words. I don't
+ * know the correct english words for that (maybe counter for ZÃ¤hler and base
  * for Nenner, but I'm not sure) so let me give an example: The value 5/7 is a
- * rational but not natural value. The 5 is the Zähler, and the 7 is the
+ * rational but not natural value. The 5 is the ZÃ¤hler, and the 7 is the
  * Nenner. To get a float value, divide 5 by 7 (something about 0.7).
  *
  * Do you know what I mean? If yes AND YOU HAVE ANYTHING ELSE TO SAY TO ME,
@@ -224,18 +224,18 @@ int mod_loadsamples(sox_format_t *ft) {
                 /* Einige Modules sind in der Hinsicht fehlerhaft, als das
                  * einzelne Bytes einzelner Samples schlichtweg FEHLEN! (Was
                  * wahrscheinlich auf fehlerhafte Module-Editoren
-                 * zurrückzuführen ist ...) Um das Laden dieser Module trotzdem
-                 * zu ermöglichen, wird einfach ignoriert, ob die zu lesenden
-                 * Bytes auch tatsächlich gelesen werden konnten ...
+                 * zurrÃ¼ckzufÃ¼hren ist ...) Um das Laden dieser Module trotzdem
+                 * zu ermÃ¶glichen, wird einfach ignoriert, ob die zu lesenden
+                 * Bytes auch tatsÃ¤chlich gelesen werden konnten ...
                  * INFO: Diesen Fehler gibt es auch in der anderen Richtung:
-                 *       Einige Module definieren ZU VIELE Bytes, so daß am
+                 *       Einige Module definieren ZU VIELE Bytes, so daÃŸ am
                  *       Ende einige ignoriert werden.
                  */
                 fread(_Sample[0][i],1,_ModuleHead.Sample[i].Size,ft->fp);
             }
             if (Error) {
                 /* Fehler beim Belegen des Speicherblocks oder laden des Samples.
-                 * Aber die bereits belegten Speicherblocks müssen wir trotzdem
+                 * Aber die bereits belegten Speicherblocks mÃ¼ssen wir trotzdem
                  * wieder frei geben ... */
                 for (;i--;) if (_Sample[0][i]) free(_Sample[0][i]);
                 return Error;
@@ -403,7 +403,7 @@ static float GetNoteFrequency(int Note) {
         &&  (FrequencyTable[l].StoppNote>=Note))
             return FrequencyTable[l].Frequency;
     
-    return 1; /* Wenn nicht gefunden: Irgendetwas müssen wir zurrückliefern... */
+    return 1; /* Wenn nicht gefunden: Irgendetwas mÃ¼ssen wir zurrÃ¼ckliefern... */
 }
 
 #define i     (((mod_t *)(ft->priv))->i)
@@ -490,7 +490,7 @@ size_t modread(sox_format_t *ft, sox_sample_t *buf, size_t len) {
                 LastVolumeSlide=_Channel[k].VolumeSliding;
                 _Channel[k].VolumeSliding=0;
                 
-/* Für Volume-Slide: */
+/* FÃ¼r Volume-Slide: */
 #define STARTSLIDEDELAY ((256L*Frequency)/11025L)
                 
                 switch (c2&15) {
@@ -625,7 +625,7 @@ CaseA:
                     }
                 }
             }
-            /* Je nach 'Speed' muß hier mehr oder
+            /* Je nach 'Speed' muÃŸ hier mehr oder
              * weniger oft durchlaufen werden. */
             if (FadingOut) if (UserVolume) UserVolume--;
             
