@@ -437,6 +437,14 @@ static double calc_note_freq(double note, int key, tuning_t tuning)
   return A4 * pow(2., note / 12);
 }
 
+/* Given a note like "C8" return the number of semitones offset
+ * from A4 (usually 440Hz) and set *end_ptr to point to the character
+ * that's not part of a note name. Sharp and flats like "Bb" or "C#"
+ * also work. If no octave number is given, we assume they mean the
+ * one in the C4-B4 range
+ * The octave number increases by 1 upon an ascension from B to C, so
+ * the note name series goes ... F4 G4 G#4 A4 Bb4 B4 C5 C#5 D5 ... G5 G#5.
+ */
 int lsx_parse_note(char const * text, char * * end_ptr)
 {
   int result = INT_MAX;
