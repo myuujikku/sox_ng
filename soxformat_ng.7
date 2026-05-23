@@ -312,6 +312,10 @@ You can also select a device by its number; to see the device numbers:
 .XE
     sox_ng \-V \-n \-t coreaudio nonexistent
 .XX
+It is reported that SoX's \fBcoreaudio\fR code gets the number
+of channels wrong if the audio device has more that eight inputs
+but attempts to fix this are waiting for someone able to test
+alternative code variants.
 .TP
 \fB.cvsd\fR, \fB.cvs\fR
 Continuously Variable Slope Delta modulation is a headerless format 
