@@ -43,6 +43,7 @@ typedef struct {
   pthread_mutex_t mutex;
   pthread_cond_t cond;
   int device_started;
+  size_t play_channels;
   size_t bufsize;
   size_t bufrd;
   size_t bufwr;
@@ -59,106 +60,84 @@ static OSStatus PlaybackIOProc(AudioDeviceID inDevice UNUSED,
                                void *inClientData)
 {
     priv_t *ac = (priv_t*)((sox_format_t*)inClientData)->priv;
-    AudioBuffer *buf;
-    size_t copylen, avail;
+    size_t total_channels = 0;
+    size_t frames = (size_t)-1;
+    size_t bi;
+    size_t play_channels;
 
     pthread_mutex_lock(&ac->mutex);
 
     /* CoreAudio output may be split across multiple buffers (often
      * non-interleaved). De-interleave frame-by-frame from SoX's interleaved
      * ring buffer to preserve channel order. */
-    if (outOutputData->mNumberBuffers > 1) {
-        size_t total_channels = 0;
-        size_t frames = (size_t)-1;
-        size_t bi;
+    for (bi = 0; bi < outOutputData->mNumberBuffers; ++bi) {
+        AudioBuffer *b = &outOutputData->mBuffers[bi];
+        size_t bchannels;
+        size_t bframes;
+
+        if (b->mNumberChannels == 0)
+            continue;
+
+        bchannels = b->mNumberChannels;
+        bframes = b->mDataByteSize / (sizeof(float) * bchannels);
+        if (bframes < frames)
+            frames = bframes;
+        total_channels += bchannels;
+    }
+
+    if (total_channels > 0 && frames != (size_t)-1) {
+        size_t frames_available;
+
+        play_channels = ac->play_channels ? ac->play_channels : total_channels;
+        if (play_channels > total_channels)
+            play_channels = total_channels;
+
+        frames_available = play_channels ? ac->bufrdavail / play_channels : 0;
+        if (frames > frames_available)
+            frames = frames_available;
 
         for (bi = 0; bi < outOutputData->mNumberBuffers; ++bi) {
             AudioBuffer *b = &outOutputData->mBuffers[bi];
-            size_t bchannels;
-            size_t bframes;
 
             if (b->mNumberChannels == 0)
                 continue;
 
-            bchannels = b->mNumberChannels;
-            bframes = b->mDataByteSize / (sizeof(float) * bchannels);
-            if (bframes < frames)
-                frames = bframes;
-            total_channels += bchannels;
+            b->mDataByteSize = frames * b->mNumberChannels * sizeof(float);
         }
 
-        if (total_channels > 0 && frames != (size_t)-1) {
-            size_t frames_available = ac->bufrdavail / total_channels;
-
-            if (frames > frames_available)
-                frames = frames_available;
+        for (size_t frame = 0; frame < frames; ++frame) {
+            size_t out_channel = 0;
 
             for (bi = 0; bi < outOutputData->mNumberBuffers; ++bi) {
                 AudioBuffer *b = &outOutputData->mBuffers[bi];
+                size_t ch;
                 size_t bchannels;
+                float *dst;
 
                 if (b->mNumberChannels == 0)
                     continue;
 
                 bchannels = b->mNumberChannels;
-                b->mDataByteSize = frames * bchannels * sizeof(float);
-            }
+                dst = b->mData ? ((float*)b->mData + frame * bchannels) : NULL;
 
-            for (size_t frame = 0; frame < frames; ++frame) {
-                for (bi = 0; bi < outOutputData->mNumberBuffers; ++bi) {
-                    AudioBuffer *b = &outOutputData->mBuffers[bi];
-                    size_t ch;
-                    size_t bchannels;
-                    float *dst;
+                for (ch = 0; ch < bchannels; ++ch, ++out_channel) {
+                    float sample = 0;
 
-                    if (b->mNumberChannels == 0)
-                        continue;
-
-                    bchannels = b->mNumberChannels;
-                    dst = b->mData ? ((float*)b->mData + frame * bchannels) : NULL;
-
-                    for (ch = 0; ch < bchannels; ++ch) {
-                        float sample = ac->buf[ac->bufrd];
-                        if (dst)
-                            dst[ch] = sample;
-
+                    if (out_channel < play_channels && ac->bufrdavail > 0) {
+                        sample = ac->buf[ac->bufrd];
                         ac->bufrd++;
                         if (ac->bufrd == ac->bufsize)
                             ac->bufrd = 0;
                         ac->bufrdavail--;
                     }
+                    if (dst)
+                        dst[ch] = sample;
                 }
             }
-        } else {
-            for (bi = 0; bi < outOutputData->mNumberBuffers; ++bi)
-                outOutputData->mBuffers[bi].mDataByteSize = 0;
         }
-    }
-    else
-
-    for(buf = outOutputData->mBuffers;
-        buf != outOutputData->mBuffers + outOutputData->mNumberBuffers;
-        buf++){
-
-        copylen = buf->mDataByteSize / sizeof(float);
-        if(copylen > ac->bufrdavail)
-            copylen = ac->bufrdavail;
-
-        avail = ac->bufsize - ac->bufrd;
-        if(buf->mData == NULL){
-            /*do nothing-hardware can't play audio*/
-        }else if(copylen > avail){
-            memcpy(buf->mData, ac->buf + ac->bufrd, avail * sizeof(float));
-            memcpy((float*)buf->mData + avail, ac->buf, (copylen - avail) * sizeof(float));
-        }else{
-            memcpy(buf->mData, ac->buf + ac->bufrd, copylen * sizeof(float));
-        }
-
-        buf->mDataByteSize = copylen * sizeof(float);
-        ac->bufrd += copylen;
-        if(ac->bufrd >= ac->bufsize)
-            ac->bufrd -= ac->bufsize;
-        ac->bufrdavail -= copylen;
+    } else {
+        for (bi = 0; bi < outOutputData->mNumberBuffers; ++bi)
+            outOutputData->mBuffers[bi].mDataByteSize = 0;
     }
 
     pthread_cond_signal(&ac->cond);
@@ -298,6 +277,7 @@ static int setup(sox_format_t *ft, int is_input)
 
     /* Setup is called twice (why?) so reset adid to Not Found both times */
     ac->adid = kAudioDeviceUnknown;
+    ac->play_channels = 0;
 
     if (strncmp(ft->filename, "default", (size_t)7) == 0)
     {
@@ -424,17 +404,26 @@ nodevices:  lsx_fail_errno(ft, SOX_EPERM,
       return SOX_EOF;
     }
 
-    /* For input devices, prefer the total channels exposed by stream
-     * configuration because mChannelsPerFrame can describe one substream. */
-    if (is_input) {
-        detected_channels = DeviceChannelCountInScope(ac->adid, sox_true);
-        if (detected_channels == 0)
-            detected_channels = stream_desc.mChannelsPerFrame;
-    }
-    else
+    /* Prefer the total channels exposed by stream configuration because
+     * mChannelsPerFrame can describe one substream. */
+    detected_channels = DeviceChannelCountInScope(ac->adid,
+                                                  is_input ? sox_true : sox_false);
+    if (detected_channels == 0)
         detected_channels = stream_desc.mChannelsPerFrame;
 
-    ft->signal.channels = detected_channels ? detected_channels : 2;
+    if (is_input)
+        ft->signal.channels = detected_channels ? detected_channels : 2;
+    else {
+        size_t requested_channels = ft->signal.channels;
+
+        if (requested_channels == 0)
+            requested_channels = detected_channels ? detected_channels : 2;
+        if (detected_channels > 0 && requested_channels > detected_channels)
+            requested_channels = detected_channels;
+
+        ac->play_channels = requested_channels;
+        ft->signal.channels = requested_channels;
+    }
     ft->signal.rate = 44100;
     ft->encoding.bits_per_sample = 32;
 
