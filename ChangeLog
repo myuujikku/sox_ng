@@ -5,6 +5,15 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
+sox_ng-14.8.0.1	2026-05-26
+---------------
+
+Changes since 14.8.0:
+
+  o Fix builds without FFTW giving all-black spectrograms, broken in 14.8.0
+  o Trivial fixes to the docs
+
+
 sox_ng-14.8.0	2026-05-18
 -------------
 
