@@ -8,23 +8,28 @@ sox-11gamma.
 sox_ng-14.8.0	2026-05-18
 -------------
 
+The fourth new-feature release
+
+Changes since 14.7.0:
+
 New features:
 
 Effects:
 
   o New effect "centercut", a sophisticated version of "oops"
-  o bend: Raise maximum FFT size from 8192 to 1<<30
+  o bend: Raise maximum FFT size from 8192 to 2^30
   o bend: Optimized to run twice as fast
   o echo/echos: Get the output signal length right
   o fade: Add "s" square-law fade type
   o rate: Extrapolate by Linear Predictive Coding to improve end effects
   o hilbert/sinc: Raise maximum number of taps to 1073741823
-  o spectrogram: Add -i to interpolate between or average frequency bins
+  o spectrogram: Add -i option to interpolate between frequency bins
   o spectrogram: Fix linear axis with frequency ranges
   o spectrogram: On log axis, add labels at 2 and 5 or 1 to 9
   o spectrogram: Slightly faster by doing out-of-place FFTs
   o spectrogram: Fail if the start time is beyond the end
   o spectrogram: Add -g flag to show times as HH:MM:SS
+  o spectrogram: Warn about non-optimal DFT sizes and suggest the nearest one
   o synth: Add -p for Pythagorean tuning
 
 Formats:
@@ -42,23 +47,21 @@ Formats:
   o Add sndfile's names mpc and svx for formats mpc2k and 8svx
   o pulseaudio: Filename can also set server and application name (app:foo)
   o sndfile: Also handle AVR format
-  o spectrogram: Warn about non-optimal DFT sizes and suggest the nearest one
   o wavpack: Update to WavPack 5.0 giving 64-bit file lengths
 
-Other:
+Improvements:
 
+  o bend: Optimized to be over twice as fast
   o If libmad is not available, use sndfile for MP3; if no sndfile, use hip
   o Add global option -A to tune A4 to something other than 440Hz
   o Add global option --keymap letting key presses adjust effect parameters
-  o --interactive: `<' and `>' seek by 30s and `R' restarts the effects chain
+  o --interactive: [<] and [>] seek by 30s and [R] restarts the effects chain
   o In interactive mode, [n] skips and [q] and [esc] quit
   o New demo miniprograms demo/soxcopy and demo/synth
 
 Bug fixes:
 
   o avr: Fail when writing an unsupported number of channels
-  o bend: Allocate buffers dynamically, allowing FFT sizes up to 2^30
-  o bend: Optimized to be over twice as fast
   o echo/echos: Set the output signal's length
   o ladspa: Allow plugins that take no input
   o libsox: Warn and fail if they read an output or write an input file
@@ -75,7 +78,7 @@ Bug fixes:
   o spectrogram: Place top label on the top row of the graph, not the axis
   o spectrogram: Improve labelling of logarithmic axes
   o spectrogram: If start time is after EOF, fail instead of looping forever
-  o spectrogram: Obtain slightly faster FFTs from FFTW by doing then in-place
+  o spectrogram: Obtain slightly faster FFTs from FFTW by doing them in-place
   o spectrogram: Truncate the spectrogram less than before, still not right
   o stats: Don't report the crest factor in overall JSON stats
   o stats: Fix RMS Pk db of -inf when window time is equal to file length
