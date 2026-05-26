@@ -86,7 +86,9 @@ typedef struct {
   sox_bool   truncated;
   double     * buf;             /* [dft_size] */
   double     * dft_buf;         /* [dft_size] */
+#if HAVE_FFTW
   double     * dft_buf2;        /* [dft_size] */
+#endif
   double     * window;          /* [dft_size + 1] */
   double     block_norm, max;
   double     * magnitudes;      /* [dft_size / 2 + 1] */
@@ -583,7 +585,9 @@ static int start_spectrogram(sox_effect_t * effp)
   /* Now that dft_size is set, allocate variable-sized elements of priv_t */
   lsx_vcalloc(p->buf, p->dft_size);
   lsx_vcalloc(p->dft_buf, p->dft_size);
+#if HAVE_FFTW
   lsx_vcalloc(p->dft_buf2, p->dft_size);
+#endif
   lsx_vcalloc(p->window, p->dft_size + 1);
   lsx_vcalloc(p->magnitudes, p->dft_size / 2 + 1);
 
@@ -689,8 +693,8 @@ static int flow_spectrogram(sox_effect_t * effp,
 
     if ((p->end = max(p->end, p->end_min)) != p->last_end)
       make_window(p, p->last_end = p->end);
-    for (i = 0; i < p->dft_size; ++i) p->dft_buf2[i] = p->buf[i] * p->window[i];
 #if HAVE_FFTW
+    for (i = 0; i < p->dft_size; ++i) p->dft_buf2[i] = p->buf[i] * p->window[i];
     fftw_execute(p->fftw_plan);
     /* Convert from FFTW's "half complex" format to an array of magnitudes.
      * In HC format, the values are stored:
@@ -703,6 +707,7 @@ static int flow_spectrogram(sox_effect_t * effp,
     }
     p->magnitudes[p->dft_size / 2] += sqr(p->dft_buf[p->dft_size / 2]);
 #else /* ! HAVE_FFTW */
+    for (i = 0; i < p->dft_size; ++i) p->dft_buf[i] = p->buf[i] * p->window[i];
     if (is_p2(p->dft_size)) {
       lsx_safe_rdft(p->dft_size, 1, p->dft_buf);
       p->magnitudes[0] += sqr(p->dft_buf[0]);
@@ -1442,7 +1447,9 @@ free_flow_data:
   free_tiles(p);
   free(p->buf);
   free(p->dft_buf);
+#if HAVE_FFTW
   free(p->dft_buf2);
+#endif
   free(p->window);
   free(p->magnitudes);
 #if HAVE_FFTW
