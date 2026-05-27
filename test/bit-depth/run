@@ -5,6 +5,12 @@
 
 status=0
 
+# Ensure the helper program has been built
+test -x ../samples || (
+    cd ..
+    make samples
+)
+
 # Test routine takes two parameters:
 # - the expected result if it is considered as a mono 16-bit signal
 # - a list of 16-bit samples in decimal
