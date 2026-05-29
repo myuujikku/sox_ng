@@ -185,7 +185,7 @@ its name).
 
 You may also be able to
 
-    winget --install sox_ng.sox_ng -e
+    winget install --id sox_ng.sox_ng -e
 
 ## Accessibility
 
