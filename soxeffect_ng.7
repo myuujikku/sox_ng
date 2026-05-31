@@ -2333,6 +2333,10 @@ quantization reasons; if so, SoX reports the actual number used
 (viewable when the SoX global option
 .B \-V
 is in effect).
+.SP
+Note that the number of sample frames per pixel column is an integer,
+so graphs whose number of samples is not a multiple of the number of columns
+may render shorter than the file or with funny time legends.
 .IP \fB\-y\ \fInum\fR
 Sets the size of the Y axis per channel in pixels; this is the number of
 frequency `bins' used in the Fourier analysis that produces the spectrogram.
