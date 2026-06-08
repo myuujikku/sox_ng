@@ -533,7 +533,7 @@ static int sox_ladspa_kill(sox_effect_t * effp)
 
 static sox_effect_handler_t sox_ladspa_effect = {
   "ladspa",
-  "MODULE [PLUGIN] [ARGUMENT...]", NULL, 
+  "MODULE [PLUGIN] [ARGUMENT...]",
   SOX_EFF_MCHAN | SOX_EFF_CHAN | SOX_EFF_GAIN,
   sox_ladspa_getopts,
   sox_ladspa_start,
@@ -541,7 +541,8 @@ static sox_effect_handler_t sox_ladspa_effect = {
   sox_ladspa_drain,
   sox_ladspa_stop,
   sox_ladspa_kill,
-  sizeof(priv_t)
+  sizeof(priv_t),
+  NULL,
 };
 
 const sox_effect_handler_t *lsx_ladspa_effect_fn(void)

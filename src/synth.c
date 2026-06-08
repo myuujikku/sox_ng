@@ -699,8 +699,10 @@ const sox_effect_handler_t *lsx_synth_effect_fn(void)
   };
 
   static sox_effect_handler_t handler = {
-    "synth", usage, extra_usage, SOX_EFF_MCHAN | SOX_EFF_LENGTH | SOX_EFF_GAIN,
-    getopts, start, flow, 0, stop, lsx_kill, sizeof(priv_t)
+    "synth", usage, SOX_EFF_MCHAN | SOX_EFF_LENGTH | SOX_EFF_GAIN,
+    getopts, start, flow, 0, stop, lsx_kill,
+    sizeof(priv_t),
+    extra_usage,
   };
   return &handler;
 }

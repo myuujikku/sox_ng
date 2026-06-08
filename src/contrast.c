@@ -44,7 +44,10 @@ static int flow(sox_effect_t * effp, const sox_sample_t * ibuf,
 sox_effect_handler_t const * lsx_contrast_effect_fn(void)
 {
   static sox_effect_handler_t handler = {
-    "contrast", "[enhancement (75)]", NULL,
-    0, create, NULL, flow, NULL, NULL, NULL, sizeof(priv_t)};
+    "contrast", "[enhancement (75)]",
+    0, create, NULL, flow, NULL, NULL, NULL,
+    sizeof(priv_t),
+    NULL,
+  };
   return &handler;
 }

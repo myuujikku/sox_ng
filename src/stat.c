@@ -343,14 +343,16 @@ static int sox_stat_stop(sox_effect_t * effp)
 
 static sox_effect_handler_t sox_stat_effect = {
   "stat",
-  "[-s N] [-rms] [-freq] [-v] [-d] [-a]", NULL,
+  "[-s N] [-rms] [-freq] [-v] [-d] [-a]",
   SOX_EFF_MCHAN | SOX_EFF_MODIFY,
   sox_stat_getopts,
   sox_stat_start,
   sox_stat_flow,
   sox_stat_drain,
   sox_stat_stop,
-  NULL, sizeof(priv_t)
+  NULL,
+  sizeof(priv_t),
+  NULL,
 };
 
 const sox_effect_handler_t *lsx_stat_effect_fn(void)

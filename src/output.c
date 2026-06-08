@@ -58,8 +58,10 @@ static int flow(sox_effect_t *effp, sox_sample_t const * ibuf,
 sox_effect_handler_t const * lsx_output_effect_fn(void)
 {
   static sox_effect_handler_t handler = {
-    "output", NULL, NULL, SOX_EFF_MCHAN | SOX_EFF_INTERNAL,
-    getopts, NULL, flow, NULL, NULL, NULL, sizeof(priv_t)
+    "output", NULL, SOX_EFF_MCHAN | SOX_EFF_INTERNAL,
+    getopts, NULL, flow, NULL, NULL, NULL,
+    sizeof(priv_t),
+    NULL,
   };
   return &handler;
 }

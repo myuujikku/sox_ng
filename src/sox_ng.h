@@ -1536,7 +1536,6 @@ Effect handler information.
 struct sox_effect_handler_t {
   char const * name;  /**< Effect name */
   char const * usage; /**< Short explanation of parameters accepted by effect */
-  char const * const * extra_usage;           /**< Additional lines of usage */
   unsigned int flags; /**< Combination of SOX_EFF_* flags */
   sox_effect_handler_getopts getopts; /**< Called to parse command-line arguments (called once per effect). */
   sox_effect_handler_start start;     /**< Called to initialize effect (called once per flow). */
@@ -1545,6 +1544,13 @@ struct sox_effect_handler_t {
   sox_effect_handler_stop stop;       /**< Called to shut down effect (called once per flow). */
   sox_effect_handler_kill kill;       /**< Called to shut down effect (called once per effect). */
   size_t       priv_size;             /**< Size of private data SoX should pre-allocate for effect */
+  /* Add new fields here at the end so that existing effects get NULL
+   * when they say "static sox_effect_handler_t foo = {..., sizeof(priv_t)};"
+   * As the aeons pass, priv_size will slowly migrate upwards through
+   * the layers of pointer functions and end up cocooned in them but hey.
+   * You should have put it first, folks.
+   */
+  char const * const * extra_usage;           /**< Additional lines of usage */
 };
 
 /**

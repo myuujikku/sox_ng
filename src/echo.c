@@ -239,13 +239,14 @@ const sox_effect_handler_t *lsx_echo_effect_fn(void)
   };
 
   static sox_effect_handler_t handler = {
-    "echo", usage, extra_usage, SOX_EFF_LENGTH | SOX_EFF_GAIN,
+    "echo", usage, SOX_EFF_LENGTH | SOX_EFF_GAIN,
     sox_echo_getopts,
     sox_echo_start,
     sox_echo_flow,
     sox_echo_drain,
     sox_echo_stop,
-    sox_echo_kill, sizeof(priv_t)
+    sox_echo_kill, sizeof(priv_t),
+    extra_usage,
   };
 
   return &handler;

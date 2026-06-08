@@ -434,8 +434,10 @@ sox_effect_handler_t const * lsx_dither_effect_fn(void)
     NULL
   };
   static sox_effect_handler_t handler = {
-    "dither", usage, extra_usage, SOX_EFF_PREC,
-    getopts, start, flow, NULL, NULL, 0, sizeof(priv_t)
+    "dither", usage, SOX_EFF_PREC,
+    getopts, start, flow, NULL, NULL, 0,
+    sizeof(priv_t),
+    extra_usage,
   };
   return &handler;
 }
