@@ -70,7 +70,7 @@ some minor renaming of the library directories):
       - ...
 
 If the directory structure differs from that, you can adapt the file
-`LocalSettings.cmake` in the `cmake-buildsetup` directory.  There
+`LocalConfiguration.cmake` in the `cmake-buildsetup` directory.  There
 the paths to the subprojects are defined.
 
 If some support library is missing, the corresponding path should be
@@ -97,38 +97,37 @@ follows:
 
   1. Create the build directory e.g. by:
 
-     mkdir ~/ng_build
+     `mkdir ~/ng_build`
 
-  2. Edit the file `cmake-buildsetup/LocalSettings.cmake`
+  2. Edit the file `cmake-buildsetup/LocalConfiguration.cmake`
      to reflect the local environment.
 
   3. For MacOS, ensure that the enviroment variable
-     `SDKROOT` is set accordingly, e.g. to
-
-     /Library/Developer/CommandLineTools/SDKs/MacOSX-version.sdk
+     `SDKROOT` is set accordingly (e.g. to
+     "/Library/Developer/CommandLineTools/SDKs/MacOSX«version».sdk").
 
   4. Generate the build files:
 
      - If you have a multi-config build system (like e.g. msbuild or
        ninja), you can just generate the build files:
 
-       cmake -S path_to_sox_ng/cmake-buildsetup -B build_directory
+       `cmake -S «path_to_sox_ng»/cmake-buildsetup -B «build_directory»`
 
      - If you have a single-config build system (like e.g. make), you
        must specify the build type (Debug or Release), you generate
        the build files by specifying the build type:
 
-       cmake -S path_to_sox_ng/cmake-buildsetup \
-	     -B build_directory \
-	     -DCMAKE_BUILD_TYPE=build_type
+       `cmake -S «path_to_sox_ng»/cmake-buildsetup
+	      -B «build_directory»
+	      -DCMAKE_BUILD_TYPE=«build_type»`
 
 The setup can be changed by overriding default settings in the cmake
-step.  Note that some configuration variables for the standard build
+step.  Note that some configuration variables for the standard buid
 process are missing; **the current CMake setup only allows for a build
 of libSoX and SoX with static libraries coming from explicit source
 directories alongside SoX_ng.**
 
-The following variables can be set with `-Dwhatever=true` or `-Dwhatever=value`:
+The following variables can be set in this manner:
 
 <SMALL font-size: x-small>
 
@@ -180,11 +179,11 @@ The following variables can be set with `-Dwhatever=true` or `-Dwhatever=value`:
 
 The build process is initiated by the command
 
-    cmake --build build_directory
+`cmake --build «build_directory»`
 
 If you intend to build a specific target, the command is
 
-    cmake --build build_directory --target target
+`cmake --build «build_directory» --target «target»`
 
 where target is one of the following:
 
