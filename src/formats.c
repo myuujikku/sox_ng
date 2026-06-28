@@ -353,10 +353,11 @@ unsigned sox_precision(sox_encoding_t encoding, unsigned bits_per_sample)
 
     case SOX_ENCODING_GSM:
     case SOX_ENCODING_VORBIS:
-    case SOX_ENCODING_OPUS:
     case SOX_ENCODING_AMR_WB:
     case SOX_ENCODING_AMR_NB:
     case SOX_ENCODING_LPC10:      return !bits_per_sample? 16: 0;
+
+    case SOX_ENCODING_OPUS:       return 16;
 
     case SOX_ENCODING_WAVPACKF:
     case SOX_ENCODING_FLOAT:      return bits_per_sample == 32 ? 25: bits_per_sample == 64 ? 54: 0;

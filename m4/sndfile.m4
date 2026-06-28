@@ -59,6 +59,7 @@ then
     AC_CHECK_DECL([SF_FORMAT_FLAC], AC_DEFINE([HAVE_SF_FORMAT_FLAC], 1, [Define if you have libsndfile >= 1.0.12]),, [#include <sndfile.h>])
     AC_CHECK_DECL([SF_FORMAT_WVE], AC_DEFINE([HAVE_SF_FORMAT_WVE], 1, [Define if you have libsndfile >= 1.0.18]),, [#include <sndfile.h>])
     AC_CHECK_DECL([SF_FORMAT_OGG], AC_DEFINE([HAVE_SF_FORMAT_OGG], 1, [Define if you have libsndfile >= 1.0.18]),, [#include <sndfile.h>])
+    AC_CHECK_DECL([SF_FORMAT_OPUS], AC_DEFINE([HAVE_SF_FORMAT_OPUS], 1, [Define if your libsndfile has Opus support]),, [#include <sndfile.h>])
     AC_CHECK_DECL([SF_FORMAT_MPC2K], AC_DEFINE([HAVE_SF_FORMAT_MPC2K], 1, [Define if you have libsndfile >= 1.0.25]),, [#include <sndfile.h>])
     AC_CHECK_DECL([SF_FORMAT_MPEG], AC_DEFINE([HAVE_SF_FORMAT_MPEG], 1, [Define if you have libsndfile >= 1.1.0]),, [#include <sndfile.h>])
     AC_CHECK_DECL([SFC_SET_SCALE_INT_FLOAT_WRITE], AC_DEFINE([HAVE_SFC_SET_SCALE_INT_FLOAT_WRITE], 1, [Define if you have libsndfile with SFC_SFC_SET_SCALE_INT_FLOAT_WRITE]),, [#include <sndfile.h>])

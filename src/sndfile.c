@@ -127,6 +127,9 @@ static int ft_enc(unsigned size, sox_encoding_t e)
 #ifdef HAVE_SF_FORMAT_OGG
   if (e == SOX_ENCODING_VORBIS)   return SF_FORMAT_VORBIS;
 #endif
+#ifdef HAVE_SF_FORMAT_OPUS
+  if (e == SOX_ENCODING_OPUS)     return SF_FORMAT_OPUS;
+#endif
 #ifdef HAVE_SF_FORMAT_MPEG
   if (e == SOX_ENCODING_MP2)      return SF_FORMAT_MPEG_LAYER_II;
   if (e == SOX_ENCODING_MP3)      return SF_FORMAT_MPEG_LAYER_III;
@@ -170,6 +173,10 @@ static sox_encoding_t sox_enc(int ft_encoding, unsigned * size)
     case SF_FORMAT_GSM610   : *size =  0; return SOX_ENCODING_GSM;
 #if HAVE_SF_FORMAT_OGG
     case SF_FORMAT_VORBIS   : *size =  0; return SOX_ENCODING_VORBIS;
+#endif
+#if HAVE_SF_FORMAT_OPUS
+    /* libopusfile returns 16-bit ints */
+    case SF_FORMAT_OPUS     : *size =  16; return SOX_ENCODING_OPUS;
 #endif
 #if HAVE_SF_FORMAT_MPEG
     /* By default, SoX declares MP3 precision as 16-bit so that
