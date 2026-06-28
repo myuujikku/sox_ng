@@ -1383,6 +1383,8 @@ To set them on Unix with most shells, use, for example:
    export AUDIODRIVER
    play_ng ...
 .XX
+to select the lowest-level driver on Linux, which may work better than the
+default of pulseaudio, or
 with Unix csh:
 .XE
    setenv AUDIODRIVER alsa
@@ -1398,13 +1400,24 @@ Mac OS X GUI: Refer to Apple's Technical Q&A QA1067 document.
 .TP
 \fBAUDIODRIVER\fR
 On some systems, SoX may have more than one type of audio driver,
-e.g. ALSA and OSS or SUNAU and AO and
+e.g.
+.B alsa
+and
+.B oss
+or
+.B SUNAU
+and
+.B ao
+and
 they can have more than one audio device (a.k.a. `sound card').
 If more than one audio driver has been
 built into SoX and the default selected by SoX when recording or playing
 is not the one that is wanted, the
 .B AUDIODRIVER
-environment variable can be used to override the default.
+environment variable can be used to override it;
+available drivers are listed near the end of the help text
+given by \fBsox\fR with no arguments.
+.SP
 If it is unset, SoX tries to use, in order,
 \fBcoreaudio\fR, \fBpulseaudio\fR, \fBalsa\fR, \fBwaveaudio\fR,
 \fBsndio\fR, \fBoss\fR, \fBsunau\fR and \fBao\fR.
