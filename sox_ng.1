@@ -1376,16 +1376,16 @@ command line, forming an `effects chain'.
 For a list of the supports effects, see
 .BR soxeffect_ng (7)
 .SH ENVIRONMENT
-SoX reacts to the following environment variables.
+SoX reacts to certain environment variables.
 To set them on Unix with most shells, use, for example:
 .XE
-   AUDIODRIVER=oss
+   AUDIODRIVER=alsa
    export AUDIODRIVER
    play_ng ...
 .XX
 with Unix csh:
 .XE
-   setenv AUDIODRIVER oss
+   setenv AUDIODRIVER alsa
 .XX
 or, on Microsoft Windows:
 .XE
@@ -1405,12 +1405,6 @@ built into SoX and the default selected by SoX when recording or playing
 is not the one that is wanted, the
 .B AUDIODRIVER
 environment variable can be used to override the default.
-For example, on Unix systems:
-.XE
-   AUDIODRIVER=oss
-   export AUDIODRIVER
-   play_ng ...
-.XX
 If it is unset, SoX tries to use, in order,
 \fBcoreaudio\fR, \fBpulseaudio\fR, \fBalsa\fR, \fBwaveaudio\fR,
 \fBsndio\fR, \fBoss\fR, \fBsunau\fR and \fBao\fR.
