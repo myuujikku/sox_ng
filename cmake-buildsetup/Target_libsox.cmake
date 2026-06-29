@@ -717,7 +717,7 @@ SET(srcFileStemList
 )
 
 # add additional effect files
-appendConditionally(srcFileStemList "HAVE_PNG" spectrogram)
+appendConditionallyName(srcFileStemList spectrogram "HAVE_PNG")
 
 UTIL_List_constructFromOther(libSoXEffectsSourceFileList
                              srcFileStemList
@@ -730,11 +730,10 @@ SET(srcFileStemList
     8svx adpcm adpcms aifc-fmt aiff aiff-fmt al-fmt au avr cdr cvsd
     cvsd-fmt dat dsdiff dsf dvms-fmt f4-fmt f8-fmt ffmpeg g711 g721
     g723_24 g723_40 g72x gsm gsrt hcom htk ima-fmt ima_rw la-fmt
-    lpc10 lu-fmt maud mod mod-tabs mp3 mp3-hip mp3-mad mp3-lame
-    mp3-twolame msupcm mul nulfile nsp prc raw raw-fmt s1-fmt s2-fmt
-    s3-fmt s4-fmt sdm sf skelform smp sounder soundtool sox-fmt sphere
-    tx16w u1-fmt u2-fmt u3-fmt u4-fmt ul-fmt voc vox vox-fmt wav wve
-    xa
+    lpc10 lu-fmt maud mp3 mp3-mad mp3-lame mp3-twolame nulfile nsp prc
+    raw raw-fmt s1-fmt s2-fmt s3-fmt s4-fmt sdm sf skelform smp sounder
+    soundtool sox-fmt sphere tx16w u1-fmt u2-fmt u3-fmt u4-fmt ul-fmt
+    voc vox vox-fmt wav wve xa
 )
 
 # add additional format files
@@ -752,8 +751,8 @@ UTIL_List_constructFromOther(libSoXFormatsSourceFileList
 
 # the SoX glue code
 SET(srcFileStemList
-    effects effects_i effects_i_dsp eff_parameters fifo formats
-    formats_i getopt keymap libsox_i libsox_ng util xmalloc
+    effects formats_i libsox_i effects_i effects_i_dsp getopt keymap
+    util fifo formats libsox_ng xmalloc
 )
 
 appendConditionally(srcFileStemList WINDOWS

@@ -106,7 +106,7 @@ FUNCTION(UTIL_List_showContents
 
         MESSAGE(STATUS "${variableName}: ${value}")
     ENDFOREACH()
-ENDFUNCTION(UTIL_List_showContents)
+ENDFUNCTION(UTIL_List_show)
 
 #--------------------
 # Targets
