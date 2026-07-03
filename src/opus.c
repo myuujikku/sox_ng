@@ -241,9 +241,23 @@ static int stopread(sox_format_t * ft)
 static int startwrite(sox_format_t * ft)
 {
   priv_t * vb = (priv_t *) ft->priv;
+  char **cp;
   int error;
 
+  /* Make an empty comment structure */
   vb->oe_comments = ope_comments_create();
+
+  /* Copy comments */
+  for (cp = (char **) ft->oob.comments; *cp; cp++) {
+    /* Opus only handles NAME=VALUE pairs, which excludes the default
+     * "Processed by SoX" comment */
+    if (strchr(*cp, '=')) {
+      int retval = ope_comments_add_string(vb->oe_comments, *cp);
+      if (retval < 0)
+        lsx_warn("can't copy comment `%s': %s", *cp, ope_strerror(retval));
+    }
+  }
+
   /* SoX sample rate is a double but opus_encoder_create() takes an int */
   vb->ope = ope_encoder_create_pull(vb->oe_comments,
                                (opus_int32)ft->signal.rate,
@@ -269,7 +283,9 @@ static size_t write_samples(sox_format_t * ft, const sox_sample_t *buf, size_t l
   priv_t * vb = (priv_t *) ft->priv;
 
   /* There is also ope_encode() for 16-bit samples and from
-   * opusenc-1.6 there may be ope_encode24() for 32-bit samples.
+   * opusenc-1.6 ope_encode24() for 32-bit samples;
+   * ope_get_abi_version() may help with this, or check for
+   * ope_encode24() in configure.ac.
    */
 
   /* Make sure the float buffer is big enough */
