@@ -1623,9 +1623,8 @@ struct sox_effect_handler {
   size_t       priv_size;             /**< Size of private data SoX should pre-allocate for effect */
   /* Add new fields here at the end so that existing effects get NULL
    * when they say "static sox_effect_handler_t foo = {..., sizeof(priv_t)};"
-   * As the aeons pass, priv_size will slowly migrate upwards through
-   * the layers of pointer functions and end up cocooned in them but hey.
-   * You should have put it first, folks.
+   * Additions should be accompanied by increasing SHLIB_VERSION by one in
+   * configure.ac
    */
   char const * const * extra_usage;           /**< Additional lines of usage */
   sox_effect_handler_get get;         /**< Called to read the value of a parameter */
