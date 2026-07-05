@@ -271,6 +271,53 @@ static int startwrite(sox_format_t * ft)
       return SOX_EOF;
   }
 
+  if (ft->encoding.compression != HUGE_VAL) {
+    /* Like MP3, positive values are CBR in kbps and negative ones
+     * VBR similarly. These correspond to opusenc's --vbr and --hard-cbr;
+     * for --cvbr (constrained VBR), --music and --speech, use opusenc.
+     * A fractional part, like MP3, gives the --comp option for computational
+     * complexity 0-10 where 0 is fast and poor and 10 (the default) is slow
+     * and good. Whole numbers default to 10, like opusenc, so quality 0 can
+     * be given with 64.01 (anything less that .05)
+     */
+    double bitrate_kbps = fabs(trunc(ft->encoding.compression));
+    double dquality = fabs(ft->encoding.compression) - bitrate_kbps;
+    opus_int32 quality;
+    int retval;
+
+    if (bitrate_kbps < 6 || bitrate_kbps > 256) {
+      lsx_fail("invalid bitrate per channel of %gkbps; use 6 to 256",
+               bitrate_kbps);
+      return SOX_EOF;
+    }
+    if (dquality == 0) quality = 10;
+    else quality =  round(dquality * 10);
+    lsx_report("encoding at %gkbps %cBR with quality %d",
+               bitrate_kbps, ft->encoding.compression >= 0 ? 'C' : 'V',
+               quality);
+    retval = ope_encoder_ctl(vb->ope,
+                          OPUS_SET_BITRATE((opus_int32)(bitrate_kbps * 1000)));
+    if (retval != OPUS_OK) {
+      lsx_fail("failed to set bitrate of %gkbps: %s", bitrate_kbps,
+               ope_strerror(retval));
+      return SOX_EOF;
+    }
+    retval = ope_encoder_ctl(vb->ope, OPUS_SET_COMPLEXITY(quality));
+    if (retval != OPUS_OK) {
+      lsx_fail("failed to set quality of %d: %s", quality,
+               ope_strerror(retval));
+      return SOX_EOF;
+    }
+    if (ft->encoding.compression >= 0) {
+      retval = ope_encoder_ctl(vb->ope, OPUS_SET_VBR(0));
+      if (retval != OPUS_OK) {
+        lsx_fail("failed to set CBR mode: %s",
+                 ope_strerror(retval));
+        return SOX_EOF;
+      }
+    }
+  }
+
   /* Force allocation at first use */
   vb->oe_input = NULL;
   vb->oe_input_len = 0;
