@@ -425,11 +425,6 @@ so the audio is compressed without any loss in quality.
 SoX can read native FLAC files (.flac) but can only read
 Ogg FLAC files (\fB.oga\fR) if \fBffmpeg\fR is installed.
 .SP
-See
-.B .ogg
-below for information relating to support for Ogg
-Vorbis files.
-.SP
 SoX can write native FLAC files according to a given or default
 compression level.  8 is the default compression level and gives the
 best (but slowest) compression; 0 gives the least (but fastest)
@@ -653,10 +648,6 @@ which is a valid VBR encoding parameter but not a valid bitrate.
 Compression value of 0 is always treated as a high quality VBR, as a
 result both -0.2 and 0.2 are treated as highest quality VBR (size) and
 high quality (speed).
-.SP
-See
-.B Ogg Vorbis
-for a similar format that achieves higher signal quality with less bandwidth.
 .RE
 .TP
 \fB.mp4\fR (with ffmpeg)
@@ -697,9 +688,8 @@ Various Xiph.org audio formats in an Ogg container.
 .TP
 \fB.ogg\fR, \fB.vorbis\fR (optional, also with \fB\-t sndfile\fR or \fB\-t ffmpeg\fR))
 Xiph.org's Ogg Vorbis compressed audio; an open, patent-free codec designed
-for music and streaming audio.  It is a lossy compression format (similar to
-MP3 and AAC) that achieves good compression rates with a minimal amount
-of quality loss.
+for music and streaming audio.  It is a lossy compression format that achieves
+good compression rates with a minimal amount of quality loss.
 .SP
 SoX can decode all types of Ogg Vorbis files and can encode at different
 compression levels/qualities given as a number from \-1 (highest
@@ -710,10 +700,6 @@ of approx. 112kbps) but this can be changed using the
 option with a number from \-1 to 10; fractional numbers (e.g.
 3\*d6) are also allowed.
 Decoding is somewhat CPU intensive and encoding is very CPU intensive.
-.SP
-See
-.B .mp3
-for a similar format.
 .TP
 \fB.opus\fR (optional, also with \fB\-t sndfile)
 Xiph.org's Opus compressed audio is an open, lossy, low-latency codec
@@ -852,13 +838,13 @@ Loop points are currently ignored.
 Several file formats use the \fB.snd\fR extension.
 .SP
 The main one was by NeXT, essentially the same as Sun Microsystems'
-\fB.au\fR format. See \fB.au\fR
+\fB.au\fR format - see \fB.au\fR
 .SP
 Apple made another \fB.snd\fR format in which the first two bytes
 are a 16-bit integer representing the numbers 1 or 2 but which
 can often be read as a raw format.
 .SP
-Akai had an audio file format for its MPC range of samplers
+Akai had a \fB.snd\fR file format for its MPC range of samplers
 of which the first byte contains the number 1
 and the second the number 4. See \fB.mpc2k\fR
 .SP
