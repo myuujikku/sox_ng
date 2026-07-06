@@ -430,9 +430,7 @@ compression level.  8 is the default compression level and gives the
 best (but slowest) compression; 0 gives the least (but fastest)
 compression.  The compression level is selected using the
 .B \-C
-option (see
-.BR sox_ng (1))
-with a whole number from 0 to 8.
+option with a whole number from 0 to 8.
 .TP
 \fB.flv\fR (with ffmpeg)
 Macromedia Flash Video format.
@@ -703,9 +701,19 @@ Decoding is somewhat CPU intensive and encoding is very CPU intensive.
 .TP
 \fB.opus\fR (optional, also with \fB\-t sndfile\fR)
 Xiph.org's Opus compressed audio is an open, lossy, low-latency codec
-offering a wide range of compression rates and uses the Ogg container.
+that uses the Ogg container.
 .SP
-SoX can only read Opus files, not write them.
+Like \fBmp3\fR encoding, the bitrate cn be set with \fB\-C\fR and
+a floating-point number where
+the integer part gives the bitrate in kbps, negative values give a
+variable bit rate (VBR) and positive ones a constant bit rate (CBR),
+and the fractional part gives the computational complexity from
+0 (fastest, worst quality) to 10 (slowest, best quality).
+If no fractional part is given, you get quality 10.
+The quality is an integer rounded from the value given,
+so to use a quality of 0, give a decimal part less than 0.05.
+.SP
+SoX can read and write Opus files; \fB\-t sndfile\fR can only read them.
 .TP
 \fBoss\fR (optional)
 The Open Sound System /dev/dsp device driver supports both playing and
