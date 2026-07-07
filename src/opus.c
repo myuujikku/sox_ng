@@ -415,8 +415,7 @@ LSX_FORMAT_HANDLER(opus)
 {
   static const char *const names[] = {"opus", NULL};
   static const unsigned encodings[] = {
-    SOX_ENCODING_SIGN2, 16, 0,
-    SOX_ENCODING_UNSIGNED, 8, 0,
+    SOX_ENCODING_OPUS, 0, 0,
     0};
   static sox_rate_t  const rates[] = {8000, 12000, 16000, 24000, 48000, 0};
   static sox_format_handler_t handler = {SOX_LIB_VERSION_CODE,
