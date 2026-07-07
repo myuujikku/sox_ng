@@ -10,8 +10,8 @@ $(PKG)_SUBDIR   := $(PKG)-$($(PKG)_VERSION)
 $(PKG)_FILE     := $(PKG)-$($(PKG)_VERSION).tar.gz
 $(PKG)_URL      := https://codeberg.org/sox_ng/$(PKG)/releases/download/$($(PKG)_SUBDIR)/$($(PKG)_FILE)
 $(PKG)_DEPS     := cc fftw file flac lame libid3tag libltdl libmad libpng \
-                   libsndfile opencore-amr opusfile speex speexdsp twolame \
-		   vorbis wavpack
+                   libsndfile opencore-amr opusfile libopusenc speex speexdsp \
+                   twolame vorbis wavpack
 
 define $(PKG)_UPDATE
      echo 'TODO: write update script for $(PKG).' >&2
