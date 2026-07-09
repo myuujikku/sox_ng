@@ -7,6 +7,8 @@
 
 rm -f out.wav
 
+status=0
+
 ${sox:-sox} demoWave.wav out.wav chorus 1.0 0.4  7.99999 1.0 83.3333 4 -t || exit 254
 cmp -s out.wav none-OK.wav || {
   echo 'chorus with no interpolation failed' 1>&2
@@ -15,16 +17,18 @@ cmp -s out.wav none-OK.wav || {
 
 # These didn't get glitches but check them anyway
 
-${sox:-sox} demoWave.wav out.wav chorus -l 1.0 0.4  7.99999 1.0 83.3333 4 -t &&
+${sox:-sox} demoWave.wav out.wav chorus -l 1.0 0.4  7.99999 1.0 83.3333 4 -t && {
 cmp -s out.wav line-OK.wav || {
   echo 'chorus with linear interpolation failed' 1>&2
   status=2
 }
+}
 
-${sox:-sox} demoWave.wav out.wav chorus -q 1.0 0.4  7.99999 1.0 83.3333 4 -t &&
+${sox:-sox} demoWave.wav out.wav chorus -q 1.0 0.4  7.99999 1.0 83.3333 4 -t && {
 cmp -s out.wav quad-OK.wav || {
   echo 'chorus with quadratic interpolation failed' 1>&2
   status=2
+}
 }
 
 rm -f out.wav
