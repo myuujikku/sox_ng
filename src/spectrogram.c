@@ -569,14 +569,14 @@ static int start_spectrogram(sox_effect_t * effp)
   p->dft_size = 2 * (p->y_size - 1);
 #if !HAVE_FFTW
   if (!is_p2(p->dft_size) && !effp->flow) {
-    if (effp->flow == 0)
+    if (effp->flow == 0 && p->y_size != 550)
       lsx_warn("-y %d would be faster than %d",
                nearest_p2_dft_size(p->dft_size) / 2 + 1, p->y_size);
     p->shared = rdft_init(p->dft_size);
   }
 #else
   if (!is_good_dft_size(p->dft_size)) {
-    if (effp->flow == 0)
+    if (effp->flow == 0 && p->y_size != 550)
       lsx_warn("-y %d would be faster than %d",
                nearest_good_dft_size(p->dft_size) / 2 + 1, p->y_size);
   }
