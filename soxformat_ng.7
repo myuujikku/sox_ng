@@ -699,17 +699,51 @@ Decoding is somewhat CPU intensive and encoding is very CPU intensive.
 Xiph.org's Opus compressed audio is an open, lossy, low-latency codec
 that uses the Ogg container.
 .SP
-Like \fBmp3\fR encoding, the bitrate cn be set with \fB\-C\fR and
+It is said to supercede the other free codecs in terms of quality versus bit rate, but can only encode from a signal at
+8, 12, 16, 24 or 48\ kHz sample rate, resampling other rates before encoding,
+always decodes at 48kHz. It can handle up to 255 channels, and
+The channel mappings for up to 8 channels are the same as the Vorbis mappings:
+.RS
+.TP
+1
+monophonic
+.TP
+2
+stereo: left, right
+.TP
+3
+a 1d-surround encoding: left, center, right
+.TP
+4
+quadraphonic surround: front left, front right, rear left, rear right
+.TP
+5
+five-channel surround: front left, center, front right, rear left, rear right
+.TP
+6
+5.1 surround: front left, center, front right, rear left, rear right, LFE
+.TP
+7
+6.1 surround: front left, center, front right, side left, side right, rear center, LFE
+.TP
+8
+7.1 surround: front left, center, front right, side left, side right, rear left, rear right, LFE
+.RE
+.RS
+.SP
+As with \fBmp3\fR encoding, the bitrate can be set with \fB\-C\fR as
 a floating-point number where
-the integer part gives the bitrate in kbps, negative values give a
-variable bit rate (VBR) and positive ones a constant bit rate (CBR),
-and the fractional part gives the computational complexity from
+the integer part gives the bitrate in kbps from 6 to 256 kbps per channel,
+negative values give a variable bit rate (VBR) and positive ones a
+constant bit rate (CBR).
+The fractional part gives the computational complexity from
 0 (fastest, worst quality) to 10 (slowest, best quality).
 If no fractional part is given, you get quality 10.
 The quality is an integer rounded from the value given,
 so to use a quality of 0, give a decimal part less than 0.05.
 .SP
-SoX can read and write Opus files; \fB\-t sndfile\fR can only read them.
+SoX can read and write Opus files; with \fB\-t sndfile\fR it can only read them.
+.RE
 .TP
 \fBoss\fR (optional)
 The Open Sound System /dev/dsp device driver supports both playing and
