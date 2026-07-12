@@ -816,7 +816,7 @@ static float *axis(float from, float to, unsigned total, unsigned min_spacing,
 #define DELTA_GT(a,b) ((a) > (b) + DELTA)
 #define DELTA_GE(a,b) ((a) >= (b) - DELTA)
 #define DELTA_EQ(a,b) (DELTA_GE(a,b) && DELTA_LE(a,b))
-#define DELTA_NE(a,b) (!DELTA_NE(a,b))
+#define DELTA_NE(a,b) (!DELTA_EQ(a,b))
 
 static float *linear_axis(float from, float to, float step, unsigned *nlabels)
 {
