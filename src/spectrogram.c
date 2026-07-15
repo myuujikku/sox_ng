@@ -74,7 +74,7 @@ typedef struct {
   sox_bool   using_stdout; /* output image to stdout */
   sox_bool   log10_axis;   /* plot frequency on log10 axis */
   sox_bool   interpolate;  /* Should we interpolate between frequency bins? */
-  int        low_freq, high_freq;
+  double     low_freq, high_freq;
 
   /* Shared work area */
   double     * shared, * * shared_ptr;
@@ -168,45 +168,6 @@ static unsigned char const alt_palette[] =
 #define alt_palette_len ((array_length(alt_palette) - 1) / 3)
 
 /**
- * Parse an integer and allow for multiplier suffix
- * such as 'k' (x 1000) and 'M' (x 1000000).
- * Return 0 of successful, -1 on failure.
- */
-static int parse_num_with_suffix (const char *s, int *a) {
-
-  size_t n;
-  char k,dummy;
-
-  /* Empty string interpreted as 0 */
-  if (*s==0) {
-	return 0;
-  }
-
-  n = sscanf(s, "%d %c %c",a, &k, &dummy);
-  if (n < 1 || n > 2) {
-    return -1;
-  }
-
-  /* Allow for 'k' and 'M' suffix, but make case insensitive */
-  if (n==2) {
-    switch (k) {
-      case 'k':
-      case 'K':
-        *a *= 1000;
-        break;
-      case 'M':
-      case 'm':
-        *a *= 1000000;
-        break;
-      default: return -1;
-    }
-  }
-
-  /* Success */
-  return 0;
-}
-
-/**
  * Given a string in format <a>:<b> where <a> and <b> are integers
  * but may have multiplier suffix eg 'k' (eg 10:1000 or 10:8k)
  * return the upper and lower values as integers.
@@ -214,21 +175,21 @@ static int parse_num_with_suffix (const char *s, int *a) {
  * b is left unchanged. If :<b> then 'a' will be set to 0.
  * Return 0 of successful, -1 on failure.
  */
-static int parse_range (const char *s, int *a, int *b) {
-  int a_status, b_status;
-  char *ss = lsx_strdup(s); /* Take a copy to modify */
-  char *colon = strchr(ss,':');
-  if (colon) {
-    /* Colon found, so have a number range */
-    *colon = 0; /* Put string terminator where colon is */
-    a_status = parse_num_with_suffix(ss, a);
-    b_status = parse_num_with_suffix(colon+1,b);
-    free(ss);
-    return a_status || b_status;
-  } else {
+static int parse_range (const char *s, double *a, double *b) {
+  char *end_ptr;
+
+  *a = lsx_parse_frequency(s, &end_ptr);
+  if (*a < 0) return -1;
+  switch (*end_ptr) {
+  case '\0':
     /* no colon: so just one value */
-    free(ss);
-    return parse_num_with_suffix(s, a);
+    return 0;
+  case ':':
+    *b = lsx_parse_frequency(end_ptr+1, &end_ptr);
+    if (*end_ptr) return -1;
+    return 0;
+  default:
+    return -1;
   }
 }
 
@@ -994,8 +955,8 @@ static int stop_spectrogram(sox_effect_t * effp) /* only called, by end(), on fl
   int         tick_len = 3 - p->no_axes;
   float       autogain = 0.0;	/* Is changed if the -n flag was supplied */
 
-  float log10_low_freq, log10_high_freq;
-  float nyquist_freq = (float)effp->in_signal.rate / 2;
+  double log10_low_freq, log10_high_freq;
+  double nyquist_freq = effp->in_signal.rate / 2;
 
   if (effp->flow != 0) goto free_flow_data;
 
@@ -1004,8 +965,8 @@ static int stop_spectrogram(sox_effect_t * effp) /* only called, by end(), on fl
 
 /* Map a pixel row to the frequency its center represents */
 #define row_to_freq(row) (p->log10_axis \
-             ? powf(10.0f, (float)(row) * log_scale_factor + log10_low_freq) \
-             : (float)(row) * lin_scale_factor + p->low_freq)
+             ? pow(10.0, (double)row * log_scale_factor + log10_low_freq) \
+             : (double)row * lin_scale_factor + p->low_freq)
 
 /* Map a pixel row to its index in dBfs */
 #define row_to_index(row) freq_to_index(row_to_freq(row))
@@ -1018,8 +979,8 @@ static int stop_spectrogram(sox_effect_t * effp) /* only called, by end(), on fl
     p->low_freq = p->log10_axis ? 1 : 0;
   }
 
-  log10_low_freq = log10f((float)p->low_freq);
-  log10_high_freq = log10f((float)p->high_freq);
+  log10_low_freq = log10(p->low_freq);
+  log10_high_freq = log10(p->high_freq);
 
   free(p->shared);
   lsx_debug("signal-max=%g", p->max);
@@ -1041,10 +1002,10 @@ static int stop_spectrogram(sox_effect_t * effp) /* only called, by end(), on fl
     int chan;
 
     for (chan = 0; chan < chans; ++chan) {
-      float log_scale_factor = (log10_high_freq - log10_low_freq) /
-                               (float)(p->rows - 1);
-      float lin_scale_factor = (p->high_freq - p->low_freq) /
-                               (float)(p->rows - 1);
+      double log_scale_factor = (log10_high_freq - log10_low_freq) /
+                               (double)(p->rows - 1);
+      double lin_scale_factor = (p->high_freq - p->low_freq) /
+                               (double)(p->rows - 1);
       priv_t * q = (priv_t *)(effp - effp->flow + chan)->priv;
       int row, base;
 
