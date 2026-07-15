@@ -2446,13 +2446,10 @@ If `-' is given, the spectrogram is sent to the `standard output'
 Plot the frequency on a logarithmic axis.
 .IP \fB\-R\ \fIL\fR:\fIH\fR
 Specify the frequency range (from \fIL\fR to \fIH\fR).
-The frequencies can have an optional suffix
-'k' (\(mu1000) or 'M' (\(mu1000000), e.g. with
-.XE
-   sox_ng mymusic.mp3 \-n spectrogram \-L \-R 100:8k
-.XX
+.SP
 By default, the lowest frequency is 0Hz for a linear graph or
-1Hz for a logarithmic graph and the highest is the Nyquist frequency.
+1Hz for a logarithmic graph and the highest is the Nyquist frequency;
+if a single frequency is given with no colon, it sets the low frequency.
 .IP \fB\-i\fR
 Interpolate vertically: where there are more output pixels than
 frequency bins, use a weighted average of the bins above and below
