@@ -1172,8 +1172,11 @@ static int stop_spectrogram(sox_effect_t * effp) /* only called, by end(), on fl
 
 	for (i = 0; i < nlabels; i++) {
           float f = labels[i];
-	  int x = left + (p->cols * f / secs(p->cols));
-	  int y;
+	  int x, y;
+
+          /* Avoid division by zero giving x = -2147483647 and segfault */
+	  if (p->cols) x = left + (p->cols * f / secs(p->cols));
+          else         x = left;
 
 	  for (y = 0; y < tick_len; ++y) {                   /* Ticks */
 	    pixel(x-1, below-1-y) = Grid;
