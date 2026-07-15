@@ -329,7 +329,7 @@ nodevices:  lsx_fail_errno(ft, SOX_EPERM,
         device_count = (int)(datasize / sizeof(AudioDeviceID));
 	i = atoi(ft->filename);
         if (i > 0 && i <= device_count) {
-	    if (!DeviceHasBuffersInScope(devices[i], is_input)) {
+	    if (!DeviceHasBuffersInScope(devices[i-1], is_input)) {
 		lsx_warn("audio device %d has no buffers in scope", i);
 	    }
             ac->adid = devices[i-1];
