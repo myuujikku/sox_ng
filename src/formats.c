@@ -1610,6 +1610,13 @@ int sox_parse_playlist(sox_playlist_callback_t callback, void * p, char const * 
       if (begin != end) {
         char const * id = text + begin;
 
+        if (*id == '|') {
+          lsx_fail("piped commands are not permitted in playlist entries");
+          result = SOX_EOF;
+          c = EOF;
+          continue;
+        }
+
         if (!dirname[0] || is_url(id) || IS_ABSOLUTE(id))
           filename = lsx_strdup(id);
         else {
