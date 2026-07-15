@@ -2477,7 +2477,16 @@ static char parse_gopts_and_fopts(file_t * f)
 
       case 1:
 #define SOX_BUFMIN 16
-        if (sscanf(optstate.arg, "%i %c", &i, &dummy) != 1 || i <= SOX_BUFMIN) {
+#define SOX_BUFMAX (1 << 30)  /* 1 GB */
+        if (optstate.arg[0] == '-' || sscanf(optstate.arg, "%i %c", &i, &dummy) != 1) {
+          lsx_fail("invalid buffer size `%s'", optstate.arg);
+          exit(1);
+        }
+        if (i > SOX_BUFMAX || i < 0) {
+          lsx_fail("buffer size `%s' must be <= %d", optstate.arg, SOX_BUFMAX);
+          exit(1);
+        }
+        if (i <= SOX_BUFMIN) {
           lsx_fail("buffer size `%s' must be > %d", optstate.arg, SOX_BUFMIN);
           exit(1);
         }
@@ -2512,7 +2521,15 @@ static char parse_gopts_and_fopts(file_t * f)
         break;
 
       case 6:
-        if (sscanf(optstate.arg, "%i %c", &i, &dummy) != 1 || i <= SOX_BUFMIN) {
+        if (optstate.arg[0] == '-' || sscanf(optstate.arg, "%i %c", &i, &dummy) != 1) {
+          lsx_fail("invalid buffer size `%s'", optstate.arg);
+          exit(1);
+        }
+        if (i > SOX_BUFMAX || i < 0) {
+          lsx_fail("buffer size `%s' must be <= %d", optstate.arg, SOX_BUFMAX);
+          exit(1);
+        }
+        if (i <= SOX_BUFMIN) {
           lsx_fail("buffer size `%s' must be > %d", optstate.arg, SOX_BUFMIN);
           exit(1);
         }
