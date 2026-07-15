@@ -270,7 +270,7 @@ typedef struct {
   int        num_stages;
   stage_t    * stages;
   sox_sample_t *lpc_buffer;
-  int        lpc_length, lpc_trim, lpc_count, lpc_inratio;
+  size_t     lpc_length, lpc_trim, lpc_count, lpc_inratio;
 } rate_t;
 
 #define pre_stage       p->stages[shift]
@@ -299,14 +299,14 @@ static size_t local_gcd(size_t a, size_t b)
   return res;
 }
 
-static void calc_optimal_lpc_buffer_sizes(size_t inrate, size_t outrate, int *in_len, int *out_len, int *in_ratio)
+static void calc_optimal_lpc_buffer_sizes(size_t inrate, size_t outrate, size_t *in_len, size_t *out_len, size_t *in_ratio)
 {
   const size_t gcd = local_gcd(inrate, outrate);
   const size_t in = inrate / gcd;
   const size_t out = outrate / gcd;
   const size_t c = max((inrate / 20) / in, 1); /* try to get ~50 ms extrapolation buffer */
-  *in_len = (int)(c * in);
-  *out_len = (int)(c * out);
+  *in_len = c * in;
+  *out_len = c * out;
   *in_ratio = (int)in;
 }
 
@@ -906,8 +906,8 @@ static int flow_rate(sox_effect_t * effp, const sox_sample_t * ibuf,
   sample_t const *s;
 
   if (rp->lpc_count < rp->lpc_length) {
-    int i;
-    const int fill_buffer = (rp->lpc_count + (int)iavail < rp->lpc_length) ? (int)iavail : rp->lpc_length - rp->lpc_count;
+    size_t i;
+    const size_t fill_buffer = (rp->lpc_count + iavail < rp->lpc_length) ? iavail : rp->lpc_length - rp->lpc_count;
     sox_sample_t *lpcbuf = rp->lpc_buffer + rp->lpc_length + rp->lpc_count; /* initially fill the end to leave room for backwards extrapolation */
     for (i=0; i<fill_buffer; i++) {
       *lpcbuf++ = *ibuf++;
