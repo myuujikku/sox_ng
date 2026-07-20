@@ -659,7 +659,8 @@ CaseA:
                 ints=_Channel[k].SampleIndex;
                 faktors=_Channel[k].SampleIndex-(float)ints;
                 ks=_Sample[0][_Channel[k].SampleToPlay][ints  ];
-                gs=_Sample[0][_Channel[k].SampleToPlay][ints+1];
+                gs=ints + 1 < _ModuleHead.Sample[_Channel[k].SampleToPlay].Size
+                    ? _Sample[0][_Channel[k].SampleToPlay][ints+1] : ks;
                 if (!_Channel[k].UserMuted) {
                     HalfBufferSample+=(
                         ks+((gs-ks)*faktors)
