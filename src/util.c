@@ -399,6 +399,7 @@ LSX_UNUSED
   char *p, *q;
   char *command;
   char *filename = argv[filename_index];
+  size_t filename_len;
   int nchars;
   int i;
 #endif
@@ -467,12 +468,19 @@ LSX_UNUSED
 #elif HAVE_POPEN
 
   /* Quote special characters in the filename. */
-  /* At worst, we need to prefix every character with an escape character
-   * and add the final \0 */
-  quoted_filename = lsx_malloc(strlen(filename) * 2 + 1);
+  /* On Unix, single quote the complete filename.  An embedded single quote
+   * needs four extra characters: close quote, escaped quote, open quote.
+   * Windows uses the existing escape syntax and can require one escape per
+   * input character. */
+  filename_len = strlen(filename);
+  if (filename_len > ((size_t)-1 - 3) / 4) {
+    errno = EOVERFLOW;
+    return NULL;
+  }
+  quoted_filename = lsx_malloc(filename_len * 4 + 3);
+#ifdef _WIN32
   for (p=filename, q=quoted_filename; *p; p++, q++) {
     switch (*p) {
-#ifdef _WIN32
   /* To protect space, tab, comma, semicolon, equals within filenames
    * the whole thing needs to be double-quoted.
    * There is also the escape character ^ which removes special meaning
@@ -496,21 +504,31 @@ LSX_UNUSED
     case ';':
     case '=':
     case '"':
+    case '(':
+    case ')':
+    case '%':
+    case '!':
       *q++ = '^';
-#else
-    /* This is for the Unix shell. */
-    case '"':
-    case '`':
-    case '\\':
-    case '$':
-    case '\n':
-      *q++ = '\\';
-#endif
       break;
     }
     *q = *p;
   }
   *q = '\0';
+#else
+  q = quoted_filename;
+  *q++ = '\'';
+  for (p=filename; *p; ++p) {
+    if (*p == '\'') {
+      *q++ = '\'';
+      *q++ = '\\';
+      *q++ = '\'';
+      *q++ = '\'';
+    } else
+      *q++ = *p;
+  }
+  *q++ = '\'';
+  *q = '\0';
+#endif
 
   argv[filename_index] = quoted_filename;
 
