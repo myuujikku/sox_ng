@@ -643,8 +643,7 @@ CaseA:
                 float    faktors;
                 int      ks,gs;
                 
-                if (_ModuleHead.Sample[_Channel[k].SampleToPlay].LoopStart!=0
-                ||  _ModuleHead.Sample[_Channel[k].SampleToPlay].LoopLength>2) {
+                if (_ModuleHead.Sample[_Channel[k].SampleToPlay].LoopLength>2) {
                     while ((unsigned long)_Channel[k].SampleIndex>=
                         ((unsigned long)_ModuleHead.Sample[_Channel[k].SampleToPlay].LoopStart)
                         +((unsigned long)_ModuleHead.Sample[_Channel[k].SampleToPlay].LoopLength)
