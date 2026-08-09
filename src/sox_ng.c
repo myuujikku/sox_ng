@@ -2819,8 +2819,8 @@ static char const * set_default_device(file_t * f)
   f->filetype = "waveaudio";
 #else
   if (!f->filetype) f->filetype = try_device("coreaudio");
-  if (!f->filetype) f->filetype = try_device("pulseaudio");
   if (!f->filetype) f->filetype = try_device("alsa");
+  if (!f->filetype) f->filetype = try_device("pulseaudio");
   if (!f->filetype) f->filetype = try_device("waveaudio");
   if (!f->filetype) f->filetype = try_device("sndio");
   if (!f->filetype) f->filetype = try_device("oss");
