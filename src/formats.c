@@ -621,9 +621,9 @@ static FILE * open_url(char const * identifier)
         if (f && pclose(f) == 0) {
 	   /* This is actually slightly longer because
 	    * we must add a nul but lose several %sses */
-           command = lsx_malloc(strlen(command_args[i][0]) +
-	                        strlen(command_args[i][1]) +
-				strlen(identifier));
+           command = lsx_malloc(strlen(command_args[i][0]) + 1 +
+	                        strlen(command_args[i][1]) + 3 +
+				strlen(identifier) + 1);
            sprintf(command, "%s %s \"%s\"", command_args[i][0],
 					    command_args[i][1],
 	                                    identifier);
