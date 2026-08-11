@@ -572,6 +572,9 @@ Case3:
                         _Channel[k].Porting=1;
                         goto CaseA;
                     case 0x9: /* Sample Offset */
+                        if (_Channel[k].SampleToPlay < 0 ||
+                            _Channel[k].SampleToPlay >= 31)
+                            break;
                         _Channel[k].SampleIndex=(c3/256.0)*_ModuleHead.Sample[_Channel[k].SampleToPlay].Size;
                         _Channel[k].Mute=0;
                         DontResetSampleIndex=-1;
