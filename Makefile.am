@@ -31,6 +31,7 @@ EXTRA_DIST = sox_ng.txt soxi_ng.txt soxeffect_ng.txt soxformat_ng.txt \
              libsox_ng.txt libsoxeffect_ng.txt libsoxformat_ng.txt \
              sox_ng.pdf soxi_ng.pdf soxeffect_ng.pdf soxformat_ng.pdf \
              libsox_ng.pdf libsoxeffect_ng.pdf libsoxformat_ng.pdf \
+             ltmain.sh compile missing install-sh config.guess config.sub \
 	     sox_ng.pc.in COPYING AUTHORS INSTALL \
 	     README.win32 scripts/batch-example.bat \
 	     README.md RULES.md RULES-issues.md RULES-wiki.md \
