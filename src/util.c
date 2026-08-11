@@ -467,7 +467,45 @@ LSX_UNUSED
 #elif HAVE_POPEN
 
   /* Quote special characters in the filename. */
-  /* This is for the Unix shell. I dunno about Windows. */
+
+#ifdef _WIN32
+  quoted_filename = lsx_malloc(strlen(filename) * 2 + 1);
+  for (p=filename, q=quoted_filename; *p; p++, q++) {
+    switch (*p) {
+  /* To protect space, tab, comma, semicolon, equals within filenames
+   * the whole thing needs to be double-quoted.
+   * There is also the escape character ^ which removes special meaning
+   * from the following character, including itslf but it seems
+   * not to be active within a pair of double quotes.
+   *
+   * We could just add ^ before
+   *    & \ < > ^ | space, tab, comma, semicolon, equals and double quote
+   *
+   * Windows filenames cannot contain < > : " / \ | ? * or control characters.
+   */
+    case '&':
+    case '\\':
+    case '<':
+    case '>':
+    case '^':
+    case '|':
+    case ' ':
+    case '\t':
+    case ',':
+    case ';':
+    case '=':
+    case '"':
+    case '(':
+    case ')':
+    case '%':
+    case '!':
+      *q++ = '^';
+      break;
+    }
+    *q = *p;
+  }
+#else
+  /* This is for the Unix shell. */
   quoted_filename = lsx_malloc(strlen(filename) * 2 + 1);
   for (p=filename, q=quoted_filename; *p; p++, q++) {
     switch (*p) {
@@ -481,6 +519,7 @@ LSX_UNUSED
     }
     *q = *p;
   }
+#endif
   *q = '\0';
 
   argv[filename_index] = quoted_filename;
