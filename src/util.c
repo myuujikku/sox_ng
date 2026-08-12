@@ -494,8 +494,8 @@ LSX_UNUSED
    */
     case '&':
     case '\\':
-    case '<`':
-    case '>`':
+    case '<':
+    case '>':
     case '^':
     case '|':
     case ' ':
