@@ -2790,6 +2790,7 @@ static char const * device_name(char const * const type)
   return name? from_env? from_env : name : NULL;
 }
 
+#ifndef _WIN32
 static char const * try_device(char const * name)
 {
   sox_format_handler_t const * handler = sox_find_format(name, sox_false);
@@ -2808,6 +2809,7 @@ static char const * try_device(char const * name)
   }
   return NULL;
 }
+#endif
 
 static char const * set_default_device(file_t * f)
 {

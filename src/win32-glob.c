@@ -19,6 +19,7 @@
 #include <errno.h>
 #define WIN32_LEAN_AND_MEAN 1
 #include <windows.h>
+#include <stdlib.h>	/* For qsort() and free() */
 
 extern void *lsx_malloc(size_t size);
 extern void *lsx_realloc_array(void *p, size_t n, size_t size);
