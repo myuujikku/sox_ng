@@ -88,6 +88,10 @@ static int stop(sox_format_t* ft)
   priv_t *priv = (priv_t*)ft->priv;
   if (priv == NULL) return SOX_EOF;
 
+  /* If we shut down immediately, sound output is interrupted a fraction
+   * of a second before the end of the piece. This avoids that. */
+  sleep(1);
+
   if (priv->hin)
   {
     waveInReset(priv->hin);
