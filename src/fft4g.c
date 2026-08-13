@@ -1,3 +1,15 @@
+/* FFT4G for SoX
+ *
+ * Fast power-of-two-sized Fourier Transforms by Takuya OOURA
+ * of a speed comparable to FFTW.
+ *
+ * SoX only uses the lsx_cdft() and lsx_rdft() functions from here.
+ *
+ * If you make fft4gf.c that #includes this file with FFT4G_FLOAT #defined,
+ * you also get lsx_cdft_f() and lsx_rdft_f() that work in 32-bit FP
+ * instead of doubles. Extra code size: 9K.
+ */
+
 /* Copyright Takuya OOURA, 1996-2001.
 
 You may use, copy, modify and distribute this code for any
