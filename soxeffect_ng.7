@@ -473,7 +473,7 @@ is equivalent to
       vol gain-out\(di(gain-in\(pldecay)
 .XX
 For a flow diagram of how \fBchorus\fR works,
-say \fBsox_ng \-\-help\-effect chorus\fR.
+say \fBsox_ng \-h chorus\fR.
 .TP
 \fBcompand \fIattack1\fB,\fIdecay1\fR{\fB,\fIattack\fB,\fIdecay\fR}
 [\fIsoft-knee-dB\fB:\fR]\fIin-dB1\fR[\fB,\fIout-dB1\fR]{\fB,\fIin-dB\fB,\fIout-dB\fR}
@@ -578,7 +578,7 @@ similar to a squelch effect):
 This effect supports the \fB\-\-plot\fR global option (for the transfer function).
 .SP
 For a flow diagram of how \fBcompand\fR works,
-say \fBsox_ng \-\-help\-effect compand\fR.
+say \fBsox_ng \-h compand\fR.
 .SP
 See
 .B mcompand
@@ -891,7 +891,7 @@ This effect takes a 44.1kHz stereo signal and adds audio cues that,
 when listened to on headphones, move the sound stage from inside your head
 to outside and in front of you, as if listening to loudspeakers.
 .SP
-To see how \fBearwax\fR works, say \fBsox_ng \-\-help\-effect earwax\fR.
+To see how \fBearwax\fR works, say \fBsox_ng \-h earwax\fR.
 .TP
 \fBecho \fIgain-in gain-out\fR <\fIdelay decay\fR>
 Add echoes to the audio.
@@ -933,7 +933,7 @@ One mountain more, and:
    play_ng lead.aiff echo 0.8 0.9 1000 0.3 1800 0.25
 .XX
 For a flow diagram of how \fBecho\fR works,
-say \fBsox_ng \-\-help\-effect echo\fR.
+say \fBsox_ng \-h echo\fR.
 .TP
 \fBechos \fIgain-in gain-out\fR <\fIdelay decay\fR>
 .SP
@@ -969,7 +969,7 @@ The sample sounds as if it were played in a garage:
    play_ng lead.aiff echos 0.8 0.7 40 0.25 63 0.3
 .XX
 For a flow diagram of how \fBechos\fR works,
-say \fBsox_ng \-\-help\-effect echos\fR.
+say \fBsox_ng \-h echos\fR.
 .TP
 \fBequalizer \fIfrequency width\fR[\fBq\fR\^|\^\fBo\fR\^|\^\fBh\fR\^|\^\fBk\fR] \fIgain\fR
 Apply a two-pole peaking equalization filter.
@@ -1121,7 +1121,7 @@ are alternative ways to set the waveshape and the interpolation type
 without having to specify the rest of the parameters.
 .SP
 For a flow diagram of how \fBflanger\fR works,
-say \fBsox_ng \-\-help\-effect flanger\fR.
+say \fBsox_ng \-h flanger\fR.
 .TP
 \fBgain \fR[\fB\-e\fR\^|\^\fBB\fR\^|\^\fBb\fR\^|\^\fBr\fR] [\fB\-n\fR] [\fB\-l\fR\^|\^\fBh\fR] [\fIgain-dB\fR(0)]
 Apply amplification or attenuation to the audio signal or, in some
@@ -1544,7 +1544,7 @@ More severe:
    play_ng snare.flac phaser 0.6 0.66 3 0.6 2 \-t
 .XX
 For a flow diagram of how \fBphaser\fR works,
-say \fBsox_ng \-\-help\-effect phaser\fR.
+say \fBsox_ng \-h phaser\fR.
 .TP
 \fBpitch \fR[\fB\-q\fR] \fIshift\fR [\fIsegment\fR [\fIsearch\fR [\fIoverlap\fR]]]
 Change the audio pitch but not the tempo.

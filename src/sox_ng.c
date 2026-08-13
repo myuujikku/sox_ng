@@ -2060,7 +2060,7 @@ static void usage(void)
 "--effects-file FILENAME  File containing effects and options",
 "-G, --guard              Use temporary files to guard against clipping",
 "-h, --help               Display version number and usage information",
-"-h NAME                  Show info of effect or format NAME",
+"-h NAME                  Show info for effect or format NAME",
 "--help-effect NAME       Show usage of effect NAME, or NAME=all for all",
 "--help-format NAME       Show info on format NAME, or NAME=all for all",
 "--i, --info              Behave as soxi(1)",
@@ -2145,7 +2145,7 @@ static void usage(void)
     puts(lines3[i]);
   display_supported_formats();
   display_supported_effects();
-  printf("EFFECT OPTIONS: effect dependent; see --help-effect\n");
+  printf("EFFECT OPTIONS: effect dependent; see -h whatever\n");
 }
 
 static int usage_effect(char const * name)
