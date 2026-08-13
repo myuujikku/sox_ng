@@ -14,8 +14,16 @@ esac
 
 sox=${sox:-../../win32.exe}
 
+# If we're being run from check.sh, replace Unix exe with win exe.
+test "$sox" = "../../src/sox_ng" && sox=../../win32.exe
+
 test -f "$sox" || {
-  echo "You need to make $sox first"
+  echo "You need to make $sox first" 1>&2
+  exit 254
+}
+
+file "$sox" | grep -q 'Windows' || {
+  echo "$sox is not a Windows eecutable" 1>&2
   exit 254
 }
 
