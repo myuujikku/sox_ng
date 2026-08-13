@@ -2608,17 +2608,23 @@ static char parse_gopts_and_fopts(file_t * f)
         /* --help-effect and --help-format */
         char *arg = optstate.argv[optstate.ind];
         sox_effect_handler_t const *handler;
+        /* To separate multiple entries with a blank line */
+        static sox_bool have_printed = sox_false;
 
         if (!strcmp(arg, "all")) {
           lsx_fail("Use --help-format all or --help-effect all");
           exit(1);
         }
         if ((handler = sox_find_effect(arg)) != NULL) {
+          if (have_printed) putchar('\n');
           (void) usage_effect(arg);
+          have_printed = sox_true;
           continue;
         }
         if (sox_find_format(arg, sox_false) != NULL) {
+          if (have_printed) putchar('\n');
           (void) usage_format(arg);
+          have_printed = sox_true;
           continue;
         }
         lsx_fail("Cannot find a format or effect called `%s'", arg);
