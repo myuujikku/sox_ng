@@ -110,11 +110,12 @@ do
 	*)   result=$status ;;
 	esac
 	echo $result
-	rm $errs
 	if [ $status -ne 0 ] && [ $status -ne 254 ]
 	then
+	    cat $errs
 	    endexit=$status
 	fi
+	rm $errs
     fi
 done
 
