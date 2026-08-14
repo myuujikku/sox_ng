@@ -530,6 +530,57 @@ static void incr_pipe_size(FILE *f)
 #endif /* do nothing for platforms without F_{GET,SET}PIPE_SZ */
 }
 
+/* Quote special characters in the filename. */
+static char * shell_quote(const char *filename)
+{
+  size_t filename_len;
+  char *quoted_filename;
+  const char *p; char *q;
+
+  /* On Unix, single quote the complete filename.  An embedded single quote
+   * needs four extra characters: close quote, escaped quote, open quote.
+   * Windows uses the existing escape syntax and can require one escape per
+   * input character. */
+  filename_len = strlen(filename);
+  if (filename_len > ((size_t)-1 - 3) / 4) {
+    errno = EOVERFLOW;
+    return NULL;
+  }
+  quoted_filename = lsx_malloc(filename_len * 4 + 3);
+#ifdef _WIN32
+  for (p=filename, q=quoted_filename; *p; p++, q++) {
+    switch (*p) {
+  /*
+   * Rather the understand Windows' " we just add ^ before
+   *    & \ < > ^ | space, tab, comma, semicolon, equals and double quote
+   *
+   * Windows filenames cannot contain < > : " / \ | ? * or control characters.
+   */
+    case '&': case '\\': case '<': case '>': case '^': case '|':
+    case ' ': case '\t': case ',': case ';': case '=': case '"':
+    case '(': case ')': case '%': case '!':
+      *q++ = '^';
+      break;
+    }
+    *q = *p;
+  }
+  *q = '\0';
+#else
+  q = quoted_filename;
+  *q++ = '\'';
+  for (p=filename; *p; ++p) {
+    if (*p == '\'') {
+      *q++ = '\''; *q++ = '\\'; *q++ = '\''; *q++ = '\'';
+    } else
+      *q++ = *p;
+  }
+  *q++ = '\'';
+  *q = '\0';
+#endif
+
+  return quoted_filename;
+}
+
 static FILE * xfopen(char const * identifier, char const * mode, lsx_io_type * io_type)
 {
   *io_type = lsx_io_file;
@@ -558,12 +609,14 @@ static FILE * xfopen(char const * identifier, char const * mode, lsx_io_type * i
     FILE * f = NULL;
 #ifdef HAVE_POPEN
 # ifdef USING_CURL
-    char const * const command_format = "curl --no-cert-status -s -o - \"%s\"";
+    char const * const command_format = "curl --no-cert-status -s -o - %s";
 # else
-    char const * const command_format = "wget --no-check-certificate -q -O- \"%s\"";
+    char const * const command_format = "wget --no-check-certificate -q -O- %s";
 # endif
-    char * command = lsx_malloc(strlen(command_format) + strlen(identifier));
-    sprintf(command, command_format, identifier);
+    char * quoted = shell_quote(identifier);
+    char * command = lsx_malloc(strlen(command_format) + strlen(quoted));
+    sprintf(command, command_format, quoted);
+    free(quoted);
     f = popen(command, POPEN_MODE);
     if (f == NULL)
         lsx_fail("cannot popen %s", command);
