@@ -282,12 +282,29 @@ static int startwrite(sox_format_t * ft)
      */
     double bitrate_kbps = fabs(trunc(ft->encoding.compression));
     double dquality = fabs(ft->encoding.compression) - bitrate_kbps;
+    /* opusenc's own ceiling, and it scales with the channel count */
+    double max_kbps = 1024.0 * ft->signal.channels;
     opus_int32 quality;
     int retval;
 
-    if (bitrate_kbps < 6 || bitrate_kbps > 256) {
-      lsx_fail("invalid bitrate per channel of %gkbps; use 6 to 256",
-               bitrate_kbps);
+    /* The old 6 to 256 was a house rule of SoX's own. libopus takes any rate
+     * from 500bps up, dropping to SILK and then to narrowband as it falls,
+     * and opusenc's only hard limits are that same 500bps and 1024kbps per
+     * channel -- its "6 to 750 kbit/s per channel" is advice in an error
+     * message, not a check it makes. So the range here is opusenc's.
+     *
+     * The trunc() above means 1kbps is the lowest rate that can be named,
+     * which clears libopus' floor with room to spare. At the top, libopus
+     * clamps to 300kbps per channel of its own accord, so the rates between
+     * that and the ceiling are accepted rather than honoured. The check has
+     * to stay, though: without it a large enough -C overflows the opus_int32
+     * that the multiplication below casts to.
+     *
+     * Note that the rate is for the whole stream. It is not multiplied by
+     * the channel count anywhere -- only this ceiling is. */
+    if (bitrate_kbps < 1 || bitrate_kbps > max_kbps) {
+      lsx_fail("invalid bitrate of %gkbps; use 1 to %g for %u channels",
+               bitrate_kbps, max_kbps, ft->signal.channels);
       return SOX_EOF;
     }
     if (dquality == 0) quality = 10;
