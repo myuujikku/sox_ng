@@ -576,6 +576,57 @@ static void incr_pipe_size(FILE *f)
 # endif
 #endif
 
+/* Quote special characters in the filename. */
+static char * shell_quote(const char *filename)
+{
+  size_t filename_len;
+  char *quoted_filename;
+  const char *p; char *q;
+
+  /* On Unix, single quote the complete filename.  An embedded single quote
+   * needs four extra characters: close quote, escaped quote, open quote.
+   * Windows uses the existing escape syntax and can require one escape per
+   * input character. */
+  filename_len = strlen(filename);
+  if (filename_len > ((size_t)-1 - 3) / 4) {
+    errno = EOVERFLOW;
+    return NULL;
+  }
+  quoted_filename = lsx_malloc(filename_len * 4 + 3);
+#ifdef _WIN32
+  for (p=filename, q=quoted_filename; *p; p++, q++) {
+    switch (*p) {
+  /*
+   * Rather the understand Windows' " we just add ^ before
+   *    & \ < > ^ | space, tab, comma, semicolon, equals and double quote
+   *
+   * Windows filenames cannot contain < > : " / \ | ? * or control characters.
+   */
+    case '&': case '\\': case '<': case '>': case '^': case '|':
+    case ' ': case '\t': case ',': case ';': case '=': case '"':
+    case '(': case ')': case '%': case '!':
+      *q++ = '^';
+      break;
+    }
+    *q = *p;
+  }
+  *q = '\0';
+#else
+  q = quoted_filename;
+  *q++ = '\'';
+  for (p=filename; *p; ++p) {
+    if (*p == '\'') {
+      *q++ = '\''; *q++ = '\\'; *q++ = '\''; *q++ = '\'';
+    } else
+      *q++ = *p;
+  }
+  *q++ = '\'';
+  *q = '\0';
+#endif
+
+  return quoted_filename;
+}
+
 static FILE * open_url(char const * identifier)
 {
 #if !HAVE_POPEN
@@ -617,16 +668,19 @@ static FILE * open_url(char const * identifier)
     for (i = 0; i < sizeof(command_args) / sizeof(*command_args); i++) {
         char tryit[36]; /* >= 5 + 1 + 9 + 1 + 16 + 1 == 33 */
         sprintf(tryit, "%s --version %s", command_args[i][0], shutup);
+        /* Use popen() not lsx_popen() for output redirection by the shell */
         f = popen(tryit, POPEN_MODE);
         if (f && pclose(f) == 0) {
 	   /* This is actually slightly longer because
 	    * we must add a nul but lose several %sses */
+           char *sq;
            command = lsx_malloc(strlen(command_args[i][0]) + 1 +
 	                        strlen(command_args[i][1]) + 3 +
 				strlen(identifier) + 1);
-           sprintf(command, "%s %s \"%s\"", command_args[i][0],
-					    command_args[i][1],
-	                                    identifier);
+           sprintf(command, "%s %s %s", command_args[i][0],
+					command_args[i][1],
+	                                (sq=shell_quote(identifier)));
+           free(sq);
 	   break;
         }
     }
