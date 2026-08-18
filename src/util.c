@@ -479,40 +479,32 @@ LSX_UNUSED
   }
   quoted_filename = lsx_malloc(filename_len * 4 + 3);
 #ifdef _WIN32
-  for (p=filename, q=quoted_filename; *p; p++, q++) {
-    switch (*p) {
-  /* To protect space, tab, comma, semicolon, equals within filenames
-   * the whole thing needs to be double-quoted.
-   * There is also the escape character ^ which removes special meaning
-   * from the following character, including itslf but it seems
-   * not to be active within a pair of double quotes.
+  /* popen() hands the command to cmd.exe, but cmd is not the only thing that
+   * splits it up: after cmd is done, the child's own C runtime parses what is
+   * left into argv, and it splits on unquoted whitespace all over again.
    *
-   * We could just add ^ before
-   *    & \ < > ^ | space, tab, comma, semicolon, equals and double quote
+   * Escaping a space with ^ only satisfies the first of those. The caret is
+   * consumed by cmd, and the child then sees a bare space and splits there,
+   * so ffmpeg reading `my file.m4a' is handed `my' and `file.m4a' as two
+   * arguments, opens neither, and writes nothing -- which reaches SoX as
+   * "premature EOF" rather than as an error.
    *
-   * Windows filenames cannot contain < > : " / \ | ? * or control characters.
+   * Double quotes are understood by both, so quote the whole name instead.
+   * Windows filenames cannot contain " < > | ? * so there is nothing inside
+   * that needs escaping, with one exception: a run of backslashes just before
+   * the closing quote would escape it, so those are doubled.
+   *
+   * Not fixed here: cmd expands %VAR% inside double quotes too, and there is
+   * no way to escape a percent sign on a command line, only in a batch file.
+   * A filename containing one will still fail.
    */
-    case '&':
-    case '\\':
-    case '<':
-    case '>':
-    case '^':
-    case '|':
-    case ' ':
-    case '\t':
-    case ',':
-    case ';':
-    case '=':
-    case '"':
-    case '(':
-    case ')':
-    case '%':
-    case '!':
-      *q++ = '^';
-      break;
-    }
-    *q = *p;
-  }
+  q = quoted_filename;
+  *q++ = '"';
+  for (p = filename; *p; p++)
+    *q++ = *p;
+  for (p = filename + filename_len; p > filename && p[-1] == '\\'; p--)
+    *q++ = '\\';
+  *q++ = '"';
   *q = '\0';
 #else
   q = quoted_filename;
