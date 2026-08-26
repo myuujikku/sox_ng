@@ -34,33 +34,19 @@ static int startread(sox_format_t * ft)
 {
   char *quoted_filename;
   char *p, *q;
-#ifndef _WIN32
-  char const * const command_fmt = "exec ffmpeg -loglevel quiet -nostdin -strict -2 -i \"%s\" -f au -";
-#else
-  char const * const command_fmt = "ffmpeg -loglevel quiet -nostdin -strict -2 -i \"%s\" -f au -";
-#endif
-  char *command;
+  char *command_argv[] = {
+    "ffmpeg",
+    "-loglevel", "quiet",
+    "-nostdin",
+    "-strict", "-2",
+    "-i", NULL,
+    "-f", "au",
+    "-",
+    NULL
+  };
+#define filename_index 7   /* the NULL after "-i" */
 
-  /* Quote special characters in the filename. */
-  /* This is for the Unix shell. I dunno about Windows. */
-  quoted_filename = lsx_malloc(strlen(ft->filename) * 2 + 1);
-  for (p=ft->filename, q=quoted_filename; *p; p++, q++) {
-    switch (*p) {
-    case '"':
-    case '`':
-    case '\\':
-    case '$':
-    case '\n':
-      *q++ = '\\';
-      break;
-    }
-    *q = *p;
-  }
-  *q = '\0';
-
-  command = malloc(strlen(quoted_filename) + strlen(command_fmt) + 1);
-  sprintf(command, command_fmt, quoted_filename);
-  free(quoted_filename);
+  command_argv[filename_index] = ft->filename;
 
   /* If the input is stdin, sox may already have read 256 bytes from it
    * for autodetection so we have to lauch something that feeds ffmpeg
@@ -114,12 +100,7 @@ static int startread(sox_format_t * ft)
 #endif
   }
 
-#ifdef _WIN32
-  ft->fp = popen(command, "rb");
-#else
-  ft->fp = popen(command, "r");
-#endif
-  free(command);
+  ft->fp = lsx_popen(command_argv, 'r', filename_index);
   if (ft->fp == NULL) {
     lsx_fail("could not create a pipe for ffmpeg");
     return SOX_EOF;

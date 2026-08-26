@@ -235,3 +235,5 @@ extern int lsx_strncasecmp(char const *s1, char const *s2, size_t n);
 
 extern int lsx_sscanf(const char *str, const char *format, ...);
 #define sscanf lsx_sscanf
+
+extern FILE *lsx_popen(char **argv, char type, int filename_index);
