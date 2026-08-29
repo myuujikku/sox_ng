@@ -5,6 +5,22 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
+sox_ng-14.7.2	2026-08-29
+-------------
+
+  o chorus: Fix glitches with extreme modulation
+  o noisered: Fail when input has more channels than profile; don't segfault
+  o Fix usage message now that the default is back to --single-threaded
+  o wav: Ignore final ISFT/ICDR chunk with length past end of file
+  o Fix URL command buffer overflow by 5 bytes
+  o Quote filenames passed to popen() on Windows
+  o Put extra_usage after priv_size so that third-party effects work
+  o Bump SHLIB_VERSION
+
+Thanks to breakingbad of PJSK CTF, Acts1631 and prof-spock for
+security analyses and fixes.
+
+
 sox_ng-14.7.1	2026-02-20
 -------------
 
