@@ -5,12 +5,18 @@ This file contains a list of all changes starting after the release of
 sox-11gamma.
 
 
-sox_ng-14.6.2+git
------------------
+sox_ng-14.6.3	2026-08-29
+-------------
 
+  o noisered: Fail when input has more channels than profile; don't segfault
+  o nsp: Reject oversized NOTE chunks
+  o waveaudio: Pause before shutting down so audio is not truncated
+  o Fix Unicode support when globbing on Windows
+  o Prevent command injection by shell-quoting URLs to popen()
+  o Prevent command injection by disallowing piped commands in playlists
   o Revert to --single-threaded by default
   o Put extra_usage after priv_size so 3rd party effects compile
-
+  o Bump SHLIB_VERSION
 
 sox_ng-14.6.2.1	2026-02-23
 ---------------
