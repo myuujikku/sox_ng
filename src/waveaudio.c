@@ -88,10 +88,6 @@ static int stop(sox_format_t* ft)
   priv_t *priv = (priv_t*)ft->priv;
   if (priv == NULL) return SOX_EOF;
 
-  /* If we shut down immediately, sound output is interrupted a fraction
-   * of a second before the end of the piece. This avoids that. */
-  sleep(1);
-
   if (priv->hin)
   {
     waveInReset(priv->hin);
@@ -100,6 +96,21 @@ static int stop(sox_format_t* ft)
   
   if (priv->hout)
   {
+    /* If we shut down immediately, sound output is interrupted a fraction
+     * of a second before the end of the piece. This avoids that. */
+    sleep(1);
+
+    /*
+     * "The waveOutReset function stops playback on the given waveform-audio
+     * output device and resets the current position to zero.
+     * All pending playback buffers are marked as done (WHDR_DONE) and
+     * returned to the application."
+     *
+     * learn.microsoft.com/en-us/windows/win32/api/mmeapi/nf-mmeapi-waveoutreset
+     *
+     * "All pending playback buffers are marked as done" so that's presumably
+     * why the audio got truncated.
+     */
     waveOutReset(priv->hout);
     waveOutClose(priv->hout);
   }
