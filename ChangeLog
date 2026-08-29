@@ -4,6 +4,19 @@ Change History
 This file contains a list of all changes since the release of sox-11gamma.
 
 
+sox_ng-14.5.4	2026-08-18
+-------------
+
+  o waveaudio: Pause before shutting down so audio is not truncated
+  o noisered: Fail when input has more channels than profile; don't segfault
+  o Put extra_usage after priv_size so that third-party effects work
+  o Fix Unicode support when globbing on Windows
+  o Prevent command injection by shell-quoting URLs to popen()
+  o Add rules to make win32.exe and win64.exe
+  o Fix detection of LAME when lame.h exists but lame/lame.h doesn't
+  o Bump SHLIB_VERSION
+
+
 sox_ng-14.5.3.1
 ---------------
 
