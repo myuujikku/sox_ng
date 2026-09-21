@@ -19,6 +19,7 @@
 
 #include <windows.h>
 #include <mmsystem.h>
+#include <unistd.h>
 #include <mmreg.h>
 
 /* Larger means more latency (difference between the status line and the audio you hear),
