@@ -4,14 +4,14 @@ PKG             := sox_ng
 $(PKG)_WEBSITE  := https://codeberg.org/sox_ng/sox_ng
 $(PKG)_DESCR    := SoX
 $(PKG)_IGNORE   :=
-$(PKG)_VERSION  := 14.6.1
-$(PKG)_CHECKSUM := bb03126de6b3ce0049801466f067097eb73f8a2fc11e9239ed00744f42691145
+$(PKG)_VERSION  := 14.8.1
+$(PKG)_CHECKSUM := 1dedd9ad574abc576bbda06743867fb778accf98a1eacde1a42913acbf072448
 $(PKG)_SUBDIR   := $(PKG)-$($(PKG)_VERSION)
 $(PKG)_FILE     := $(PKG)-$($(PKG)_VERSION).tar.gz
 $(PKG)_URL      := https://codeberg.org/sox_ng/$(PKG)/releases/download/$($(PKG)_SUBDIR)/$($(PKG)_FILE)
 $(PKG)_DEPS     := cc fftw file flac lame libid3tag libltdl libmad libpng \
-                   libsndfile opencore-amr opusfile libopusenc speex speexdsp \
-                   twolame vorbis wavpack
+                   libsndfile opencore-amr opusfile speex speexdsp twolame \
+                   vorbis wavpack
 
 define $(PKG)_UPDATE
      echo 'TODO: write update script for $(PKG).' >&2
