@@ -470,6 +470,7 @@ static size_t wavewrite(sox_format_t * ft, const sox_sample_t* buf, size_t len)
   size_t copied = 0;
   priv_t *priv = (priv_t*)ft->priv;
   unsigned error = 0;
+  unsigned clips = 0;
 
   if (priv == NULL)
       return (size_t)SOX_EOF;
