@@ -1488,7 +1488,7 @@ int sox_close(sox_format_t * ft)
   }
 
   if (ft->fp && ft->fp != stdin && ft->fp != stdout)
-    xfclose(ft->fp, ft->io_type);
+    result |= xfclose(ft->fp, ft->io_type);
   free(ft->priv);
   free(ft->filename);
   free(ft->filetype);
