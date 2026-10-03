@@ -1,0 +1,179 @@
+name: Build libsox-ng (UCRT64)
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - '**verified'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - name: Check out current ref
+        uses: actions/checkout@v4
+
+      - name: Set package version
+        shell: pwsh
+        env:
+          REF_NAME: ${{ github.ref_name }}
+          REF_TYPE: ${{ github.ref_type }}
+        run: |
+          if ($env:REF_TYPE -eq 'tag') {
+            $version = $env:REF_NAME -creplace 'verified$', ''
+            $version = $version -replace '[-_.]+$', ''
+            $version = $version -replace '[^A-Za-z0-9._+-]+', '-'
+            $version = $version -replace '^[-_.]+|[-_.]+$', ''
+          } else {
+            $match = [regex]::Match((Get-Content configure.ac -Raw), 'AC_INIT\(\[sox_ng\],\s*\[([^\]]+)\]')
+            if (-not $match.Success) { throw 'Could not read project version from configure.ac AC_INIT.' }
+            $version = $match.Groups[1].Value
+          }
+          if ([string]::IsNullOrWhiteSpace($version) -or $version -notmatch '^[A-Za-z0-9][A-Za-z0-9._+-]*$') {
+            throw "Version is empty or unsafe for a filename: '$version'"
+          }
+          "PACKAGE_VERSION=$version" >> $env:GITHUB_ENV
+          "PACKAGE_NAME=libsox_ng-$version-ucrt64-win64-shared.zip" >> $env:GITHUB_ENV
+
+      - name: Build with MSYS2 UCRT64
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: >-
+            mingw-w64-ucrt-x86_64-toolchain
+            autoconf
+            automake
+            libtool
+            make
+            pkgconf
+            mingw-w64-ucrt-x86_64-flac
+            mingw-w64-ucrt-x86_64-lame
+            mingw-w64-ucrt-x86_64-libmad
+            mingw-w64-ucrt-x86_64-libid3tag
+            mingw-w64-ucrt-x86_64-libsndfile
+            mingw-w64-ucrt-x86_64-libvorbis
+            mingw-w64-ucrt-x86_64-opusfile
+            mingw-w64-ucrt-x86_64-libpng
+            mingw-w64-ucrt-x86_64-wavpack
+            mingw-w64-ucrt-x86_64-speexdsp
+            mingw-w64-ucrt-x86_64-fftw
+            mingw-w64-ucrt-x86_64-opencore-amr
+
+      - name: Configure and compile
+        shell: msys2 {0}
+        run: |
+          set -euo pipefail
+          export PKG_CONFIG=/ucrt64/bin/pkg-config
+          echo "UCRT64_BIN=$(cygpath -m /ucrt64/bin)" >> "$GITHUB_ENV"
+          autoreconf -fi
+          ./configure --enable-shared --disable-static
+          make -j$(nproc)
+
+      - name: Set up MSVC x64 tools
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Prepare import library, verify consumers, and package ZIP
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $libDir = Join-Path $PWD 'src/.libs'
+          $dlls = @(Get-ChildItem -LiteralPath $libDir -Filter 'libsox_ng*.dll' -File)
+          if ($dlls.Count -ne 1) { throw "Expected exactly one libsox_ng*.dll in src/.libs; found $($dlls.Count)." }
+          $dll = $dlls[0]
+          if ($dll.Length -eq 0) { throw "Generated DLL is empty: $($dll.FullName)" }
+          $dllA = Join-Path $libDir 'libsox_ng.dll.a'
+          if (-not (Test-Path -LiteralPath $dllA -PathType Leaf) -or (Get-Item -LiteralPath $dllA).Length -eq 0) {
+            throw "Missing or empty intended import library: $dllA"
+          }
+
+          $defCandidates = @(@('src/.libs/sox_ng.def', 'src/.libs/libsox_ng.def') | Where-Object { Test-Path -LiteralPath $_ -PathType Leaf })
+          if ($defCandidates.Count -ne 1) {
+            throw "Expected one generated DEF among src/.libs/sox_ng.def and src/.libs/libsox_ng.def; found $($defCandidates -join ', '). Check libtool DEF generation."
+          }
+          $defPath = Join-Path $PWD $defCandidates[0]
+          if ((Get-Item -LiteralPath $defPath).Length -eq 0) { throw "Generated DEF is empty: $defPath" }
+          $stableDef = Join-Path $libDir 'sox_ng.def'
+          if ([System.IO.Path]::GetFullPath($defPath) -ne [System.IO.Path]::GetFullPath($stableDef)) {
+            Copy-Item -LiteralPath $defPath -Destination $stableDef -Force
+          }
+          $msvcLib = Join-Path $libDir 'libsox_ng.lib'
+          & lib.exe "/DEF:$stableDef" /MACHINE:X64 "/NAME:$($dll.Name)" "/OUT:$msvcLib"
+          if ($LASTEXITCODE -ne 0) { throw "lib.exe failed with exit code $LASTEXITCODE" }
+          if (-not (Test-Path -LiteralPath $msvcLib -PathType Leaf) -or (Get-Item -LiteralPath $msvcLib).Length -eq 0) {
+            throw "MSVC import library is missing or empty: $msvcLib"
+          }
+
+          $temp = Join-Path $env:RUNNER_TEMP 'sox-ng-consumer'
+          New-Item -ItemType Directory -Force -Path $temp | Out-Null
+          $consumer = Join-Path $temp 'consumer.c'
+          @'
+          #include "sox_ng.h"
+          int main(void) {
+            const char *version = sox_version();
+            if (!version || !*version || sox_init() != SOX_SUCCESS) return 1;
+            return sox_quit() == SOX_SUCCESS ? 0 : 2;
+          }
+          '@ | Set-Content -LiteralPath $consumer -Encoding ascii
+          $env:PATH = "$libDir;$env:UCRT64_BIN;$env:PATH"
+          $gccExe = Join-Path $env:UCRT64_BIN 'gcc.exe'
+          & $gccExe '-Isrc' $consumer $dllA '-o' (Join-Path $temp 'consumer-gcc.exe')
+          if ($LASTEXITCODE -ne 0) { throw "UCRT64 gcc consumer compile/link failed with exit code $LASTEXITCODE" }
+          & (Join-Path $temp 'consumer-gcc.exe')
+          if ($LASTEXITCODE -ne 0) { throw "UCRT64 gcc consumer runtime failed with exit code $LASTEXITCODE" }
+          & cl.exe /nologo "/Isrc" $consumer $msvcLib "/Fe:$(Join-Path $temp 'consumer-msvc.exe')"
+          if ($LASTEXITCODE -ne 0) { throw "MSVC consumer compile/link failed with exit code $LASTEXITCODE" }
+          & (Join-Path $temp 'consumer-msvc.exe')
+          if ($LASTEXITCODE -ne 0) { throw "MSVC consumer runtime failed with exit code $LASTEXITCODE" }
+
+          $stage = Join-Path $env:RUNNER_TEMP 'libsox-ng-package'
+          $root = Join-Path $stage "libsox_ng-$env:PACKAGE_VERSION-ucrt64-win64-shared"
+          New-Item -ItemType Directory -Force -Path (Join-Path $root 'include'), (Join-Path $root 'bin'), (Join-Path $root 'lib'), (Join-Path $root 'licenses/libebur128'), (Join-Path $root 'licenses/libdolbyb') | Out-Null
+          Copy-Item 'src/sox_ng.h' (Join-Path $root 'include/sox_ng.h')
+          Copy-Item -LiteralPath $dll.FullName -Destination (Join-Path $root "bin/$($dll.Name)")
+          Copy-Item -LiteralPath $msvcLib -Destination (Join-Path $root 'lib/libsox_ng.lib')
+          Copy-Item -LiteralPath $dllA -Destination (Join-Path $root 'lib/libsox_ng.dll.a')
+          Copy-Item -LiteralPath $stableDef -Destination (Join-Path $root 'lib/sox_ng.def')
+          Copy-Item 'COPYING' (Join-Path $root 'LICENSE')
+          Copy-Item 'libebur128/COPYING' (Join-Path $root 'licenses/libebur128/COPYING')
+          Copy-Item 'libdolbyb/COPYING' (Join-Path $root 'licenses/libdolbyb/COPYING')
+          @"
+          libsox-ng UCRT64 Windows x64 shared-library package
+
+          DLL: $($dll.Name)
+          This package does not include external runtime DLLs. Install the required UCRT64 runtime/dependency DLLs and make them available on PATH.
+
+          MSVC: link lib\libsox_ng.lib and load bin\$($dll.Name).
+          MinGW: link lib\libsox_ng.dll.a and load bin\$($dll.Name).
+          The import libraries target the DLL basename shown above; do not rename it.
+          External dependency packages used for this build include FLAC, LAME, libmad, libid3tag, libsndfile, libvorbis, opusfile, libpng, wavpack, speexdsp, FFTW, and opencore-amr.
+          "@ | Set-Content -LiteralPath (Join-Path $root 'README.txt') -Encoding ascii
+
+          $zip = Join-Path $PWD $env:PACKAGE_NAME
+          Compress-Archive -LiteralPath $root -DestinationPath $zip -Force
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          $archive = [System.IO.Compression.ZipFile]::OpenRead($zip)
+          try {
+            $prefix = (Split-Path $root -Leaf) + '/'
+            $entries = @($archive.Entries | ForEach-Object { $_.FullName -replace '\\', '/' })
+            $required = @(
+              "${prefix}include/sox_ng.h", "${prefix}bin/$($dll.Name)",
+              "${prefix}lib/libsox_ng.lib", "${prefix}lib/libsox_ng.dll.a", "${prefix}lib/sox_ng.def",
+              "${prefix}LICENSE", "${prefix}licenses/libebur128/COPYING",
+              "${prefix}licenses/libdolbyb/COPYING", "${prefix}README.txt"
+            )
+            foreach ($entry in $required) { if ($entry -notin $entries) { throw "ZIP missing required entry: $entry" } }
+          } finally { $archive.Dispose() }
+
+      - name: Upload ZIP artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: libsox-ng-ucrt64-win64-shared
+          path: libsox_ng-*-ucrt64-win64-shared.zip
+          if-no-files-found: error
+          compression-level: 0
