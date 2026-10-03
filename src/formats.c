@@ -631,6 +631,16 @@ static FILE * open_url(char const * identifier)
     return NULL;
 #else
     FILE *f;	/* The file descriptor to read from the pipe */
+# ifdef _WIN32
+    /* The popen fallback quotes the URL for cmd.exe.  A raw double quote,
+     * which is not valid in a URL, would end that quoting and allow the
+     * remainder of a playlist entry to be interpreted as command syntax.
+     */
+    if (strchr(identifier, '"')) {
+        lsx_fail("URL contains an invalid double quote");
+        return NULL;
+    }
+# endif
     static const char * const command_args[][7] = {
     /* Try wget before wget2 as it's more likely to be installed
      * unless configured --with-curl
