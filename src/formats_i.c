@@ -153,7 +153,7 @@ void lsx_unreadbuf(sox_format_t * ft, void *buf, size_t len)
      * add the new stuff before the existing ones.
      */
     /* Is there already room for them? */
-    if ((size_t)(ft->pending_bytes - ft->pending_buffer) <= len) {
+    if ((size_t)(ft->pending_bytes - ft->pending_buffer) >= len) {
       memcpy(ft->pending_bytes -= len, buf, len);
       ft->pending_count += len;
     } else {
@@ -165,7 +165,8 @@ void lsx_unreadbuf(sox_format_t * ft, void *buf, size_t len)
       memcpy(new_buffer + len, ft->pending_bytes, ft->pending_count);
       free(ft->pending_buffer);
       ft->pending_buffer = new_buffer;
-      ft->pending_bytes += len;
+      ft->pending_bytes = new_buffer;
+      ft->pending_count += len;
     }
   }
   ft->tell_off -= len;
