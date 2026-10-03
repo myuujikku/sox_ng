@@ -7,7 +7,7 @@ on:
       - '**verified'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -15,26 +15,44 @@ jobs:
     steps:
       - name: Check out current ref
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Set package version
+      - name: Select release tag and package version
         shell: pwsh
         env:
           REF_NAME: ${{ github.ref_name }}
           REF_TYPE: ${{ github.ref_type }}
         run: |
+          $releaseTag = ''
           if ($env:REF_TYPE -eq 'tag') {
-            $version = $env:REF_NAME -creplace 'verified$', ''
-            $version = $version -replace '[-_.]+$', ''
-            $version = $version -replace '[^A-Za-z0-9._+-]+', '-'
-            $version = $version -replace '^[-_.]+|[-_.]+$', ''
+            $releaseTag = $env:REF_NAME
           } else {
-            $match = [regex]::Match((Get-Content configure.ac -Raw), 'AC_INIT\(\[sox_ng\],\s*\[([^\]]+)\]')
-            if (-not $match.Success) { throw 'Could not read project version from configure.ac AC_INIT.' }
-            $version = $match.Groups[1].Value
+            $tagsAtHead = @(& git tag --points-at HEAD --sort=-creatordate)
+            if ($LASTEXITCODE -ne 0) { throw "Could not list tags at HEAD (git exit code $LASTEXITCODE)." }
+            $releaseTag = ($tagsAtHead | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -First 1)
+            if (-not $releaseTag) {
+              $newestTags = @(& git for-each-ref --sort=-creatordate --count=1 '--format=%(refname:strip=2)' refs/tags)
+              if ($LASTEXITCODE -ne 0) { throw "Could not select newest repository tag (git exit code $LASTEXITCODE)." }
+              $releaseTag = ($newestTags | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -First 1)
+            }
           }
+
+          if ([string]::IsNullOrWhiteSpace($releaseTag)) { throw 'No repository tag is available to publish; refusing to manufacture a release tag.' }
+          if ($env:REF_TYPE -ne 'tag') {
+            & git checkout --detach "refs/tags/$releaseTag"
+            if ($LASTEXITCODE -ne 0) { throw "Could not check out selected release tag '$releaseTag' (git exit code $LASTEXITCODE)." }
+          }
+
+          $version = $releaseTag -creplace 'verified$', ''
+          $version = $version -replace '[-_.]+$', ''
+          $version = $version -replace '[^A-Za-z0-9._+-]+', '-'
+          $version = $version -replace '^sox_ng[-_]?', ''
+          $version = $version -replace '^[-_.]+|[-_.]+$', ''
           if ([string]::IsNullOrWhiteSpace($version) -or $version -notmatch '^[A-Za-z0-9][A-Za-z0-9._+-]*$') {
             throw "Version is empty or unsafe for a filename: '$version'"
           }
+          "RELEASE_TAG=$releaseTag" >> $env:GITHUB_ENV
           "PACKAGE_VERSION=$version" >> $env:GITHUB_ENV
           "PACKAGE_NAME=libsox_ng-$version-ucrt64-win64-shared.zip" >> $env:GITHUB_ENV
 
@@ -168,10 +186,29 @@ jobs:
             foreach ($entry in $required) { if ($entry -notin $entries) { throw "ZIP missing required entry: $entry" } }
           } finally { $archive.Dispose() }
 
+          $hash = (Get-FileHash -LiteralPath $zip -Algorithm SHA256).Hash.ToLowerInvariant()
+          $checksumPath = "${zip}.sha256"
+          [System.IO.File]::WriteAllText($checksumPath, "$hash  $([System.IO.Path]::GetFileName($zip))`n", [System.Text.Encoding]::ASCII)
+
       - name: Upload ZIP artifact
         uses: actions/upload-artifact@v4
         with:
           name: libsox-ng-ucrt64-win64-shared
-          path: libsox_ng-*-ucrt64-win64-shared.zip
+          path: libsox_ng-*-ucrt64-win64-shared.zip*
           if-no-files-found: error
           compression-level: 0
+
+      - name: Create or update GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          & gh release view "$env:RELEASE_TAG" --repo $env:GH_REPO
+          if ($LASTEXITCODE -ne 0) {
+            & gh release create "$env:RELEASE_TAG" --verify-tag --title "libsox_ng-$env:PACKAGE_VERSION" --repo $env:GH_REPO
+            if ($LASTEXITCODE -ne 0) { throw "Could not create release '$env:RELEASE_TAG' (gh exit code $LASTEXITCODE)." }
+          }
+          & gh release upload "$env:RELEASE_TAG" $env:PACKAGE_NAME "$($env:PACKAGE_NAME).sha256" --clobber --repo $env:GH_REPO
+          if ($LASTEXITCODE -ne 0) { throw "Could not upload release assets for '$env:RELEASE_TAG' (gh exit code $LASTEXITCODE)." }
