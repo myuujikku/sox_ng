@@ -647,11 +647,11 @@ static FILE * open_url(char const * identifier)
      */
 # if USING_CURL
         { "curl",  "-f", "--no-cert-status", "-s", "-o", "-", NULL },
-        { "wget",  "--no-check-certificate", "-q", "-O", "-", NULL },
-        { "wget2", "--no-check-certificate", "-q", "-O", "-", NULL },
+        { "wget",  "-q", "-O", "-", NULL },
+        { "wget2", "-q", "-O", "-", NULL },
 # else
-        { "wget",  "--no-check-certificate", "-q", "-O", "-", NULL },
-        { "wget2", "--no-check-certificate", "-q", "-O", "-", NULL },
+        { "wget",  "-q", "-O", "-", NULL },
+        { "wget2", "-q", "-O", "-", NULL },
         { "curl",  "-f", "--no-cert-status", "-s", "-o", "-", NULL },
 # endif
     };
