@@ -73,7 +73,8 @@ jobs:
           ./configure --enable-shared --disable-static
           # Build in-tree library prerequisites, then the shared library only; the CLI has unrelated unresolved symbols on this target.
           for dir in libdolbyb libebur128 lpc10 libgsm; do make -C "$dir" -j"$(nproc)"; done
-          make -C src -j"$(nproc)" libsox_ng.la
+          # Explicitly generate the DEF from the DLL link, rather than relying on a libtool intermediate DEF.
+          make -C src -j"$(nproc)" LDFLAGS='-Wl,--output-def,.libs/libsox_ng.def' libsox_ng.la
 
       - name: Set up MSVC x64 tools
         uses: ilammy/msvc-dev-cmd@v1
@@ -94,18 +95,13 @@ jobs:
             throw "Missing or empty intended import library: $dllA"
           }
 
-          $defCandidates = @(@('src/.libs/sox_ng.def', 'src/.libs/libsox_ng.def') | Where-Object { Test-Path -LiteralPath $_ -PathType Leaf })
-          if ($defCandidates.Count -ne 1) {
-            throw "Expected one generated DEF among src/.libs/sox_ng.def and src/.libs/libsox_ng.def; found $($defCandidates -join ', '). Check libtool DEF generation."
+          $defPath = Join-Path $libDir 'libsox_ng.def'
+          if (-not (Test-Path -LiteralPath $defPath -PathType Leaf)) {
+            throw "GNU PE linker did not generate the required DEF file: $defPath"
           }
-          $defPath = Join-Path $PWD $defCandidates[0]
           if ((Get-Item -LiteralPath $defPath).Length -eq 0) { throw "Generated DEF is empty: $defPath" }
-          $stableDef = Join-Path $libDir 'sox_ng.def'
-          if ([System.IO.Path]::GetFullPath($defPath) -ne [System.IO.Path]::GetFullPath($stableDef)) {
-            Copy-Item -LiteralPath $defPath -Destination $stableDef -Force
-          }
           $msvcLib = Join-Path $libDir 'libsox_ng.lib'
-          & lib.exe "/DEF:$stableDef" /MACHINE:X64 "/NAME:$($dll.Name)" "/OUT:$msvcLib"
+          & lib.exe "/DEF:$defPath" /MACHINE:X64 "/NAME:$($dll.Name)" "/OUT:$msvcLib"
           if ($LASTEXITCODE -ne 0) { throw "lib.exe failed with exit code $LASTEXITCODE" }
           if (-not (Test-Path -LiteralPath $msvcLib -PathType Leaf) -or (Get-Item -LiteralPath $msvcLib).Length -eq 0) {
             throw "MSVC import library is missing or empty: $msvcLib"
@@ -140,7 +136,7 @@ jobs:
           Copy-Item -LiteralPath $dll.FullName -Destination (Join-Path $root "bin/$($dll.Name)")
           Copy-Item -LiteralPath $msvcLib -Destination (Join-Path $root 'lib/libsox_ng.lib')
           Copy-Item -LiteralPath $dllA -Destination (Join-Path $root 'lib/libsox_ng.dll.a')
-          Copy-Item -LiteralPath $stableDef -Destination (Join-Path $root 'lib/sox_ng.def')
+          Copy-Item -LiteralPath $defPath -Destination (Join-Path $root 'lib/libsox_ng.def')
           Copy-Item 'COPYING' (Join-Path $root 'LICENSE')
           Copy-Item 'libebur128/COPYING' (Join-Path $root 'licenses/libebur128/COPYING')
           Copy-Item 'libdolbyb/COPYING' (Join-Path $root 'licenses/libdolbyb/COPYING')
@@ -165,7 +161,7 @@ jobs:
             $entries = @($archive.Entries | ForEach-Object { $_.FullName -replace '\\', '/' })
             $required = @(
               "${prefix}include/sox_ng.h", "${prefix}bin/$($dll.Name)",
-              "${prefix}lib/libsox_ng.lib", "${prefix}lib/libsox_ng.dll.a", "${prefix}lib/sox_ng.def",
+              "${prefix}lib/libsox_ng.lib", "${prefix}lib/libsox_ng.dll.a", "${prefix}lib/libsox_ng.def",
               "${prefix}LICENSE", "${prefix}licenses/libebur128/COPYING",
               "${prefix}licenses/libdolbyb/COPYING", "${prefix}README.txt"
             )
