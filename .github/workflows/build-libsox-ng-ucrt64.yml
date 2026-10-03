@@ -71,7 +71,9 @@ jobs:
           echo "UCRT64_BIN=$(cygpath -m /ucrt64/bin)" >> "$GITHUB_ENV"
           autoreconf -fi
           ./configure --enable-shared --disable-static
-          make -j$(nproc)
+          # Build in-tree library prerequisites, then the shared library only; the CLI has unrelated unresolved symbols on this target.
+          for dir in libdolbyb libebur128 lpc10 libgsm; do make -C "$dir" -j"$(nproc)"; done
+          make -C src -j"$(nproc)" libsox_ng.la
 
       - name: Set up MSVC x64 tools
         uses: ilammy/msvc-dev-cmd@v1
