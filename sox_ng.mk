@@ -34,6 +34,30 @@ define $(PKG)_BUILD
         --enable-static \
         --disable-debug \
         --with-libltdl \
+        --with-magic \
+        --with-png \
+        --with-ladspa \
+        --with-amrwb \
+        --with-amrnb \
+        --with-ffmpeg \
+        --with-fftw \
+        --with-flac \
+        --with-oggvorbis \
+        --with-opus \
+        --with-sndfile \
+        --with-wavpack \
+        --with-mad \
+        --without-id3tag \
+        --with-lame \
+        --with-twolame \
+        --with-waveaudio \
+        --without-alsa \
+        --without-ao \
+        --without-coreaudio \
+        --without-oss \
+        --without-pulseaudio \
+        --without-sndio \
+        --without-sunaudio \
 	CFLAGS='-fno-pie -O2' \
 	LDFLAGS='-fno-pie' \
         LIBS='-lshlwapi -lgnurx'
