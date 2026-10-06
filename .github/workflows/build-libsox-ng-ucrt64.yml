@@ -31,24 +31,19 @@ jobs:
             $tagsAtHead = @(& git tag --points-at HEAD --sort=-creatordate)
             if ($LASTEXITCODE -ne 0) { throw "Could not list tags at HEAD (git exit code $LASTEXITCODE)." }
             $releaseTag = ($tagsAtHead | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -First 1)
-            if (-not $releaseTag) {
-              $newestTags = @(& git for-each-ref --sort=-creatordate --count=1 '--format=%(refname:strip=2)' refs/tags)
-              if ($LASTEXITCODE -ne 0) { throw "Could not select newest repository tag (git exit code $LASTEXITCODE)." }
-              $releaseTag = ($newestTags | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -First 1)
-            }
           }
 
-          if ([string]::IsNullOrWhiteSpace($releaseTag)) { throw 'No repository tag is available to publish; refusing to manufacture a release tag.' }
-          if ($env:REF_TYPE -ne 'tag') {
-            & git checkout --detach "refs/tags/$releaseTag"
-            if ($LASTEXITCODE -ne 0) { throw "Could not check out selected release tag '$releaseTag' (git exit code $LASTEXITCODE)." }
+          if (-not [string]::IsNullOrWhiteSpace($releaseTag)) {
+            $version = $releaseTag -creplace 'verified$', ''
+            $version = $version -replace '[-_.]+$', ''
+            $version = $version -replace '[^A-Za-z0-9._+-]+', '-'
+            $version = $version -replace '^sox_ng[-_]?', ''
+            $version = $version -replace '^[-_.]+|[-_.]+$', ''
+          } else {
+            $configureAc = Get-Content -LiteralPath 'configure.ac' -Raw
+            if ($configureAc -notmatch '(?m)^AC_INIT\(\[sox_ng\],\s*\[([^\]]+)\]') { throw 'Could not parse package version from AC_INIT in configure.ac.' }
+            $version = $Matches[1]
           }
-
-          $version = $releaseTag -creplace 'verified$', ''
-          $version = $version -replace '[-_.]+$', ''
-          $version = $version -replace '[^A-Za-z0-9._+-]+', '-'
-          $version = $version -replace '^sox_ng[-_]?', ''
-          $version = $version -replace '^[-_.]+|[-_.]+$', ''
           if ([string]::IsNullOrWhiteSpace($version) -or $version -notmatch '^[A-Za-z0-9][A-Za-z0-9._+-]*$') {
             throw "Version is empty or unsafe for a filename: '$version'"
           }
@@ -68,6 +63,7 @@ jobs:
             libtool
             make
             pkgconf
+            curl
             mingw-w64-ucrt-x86_64-flac
             mingw-w64-ucrt-x86_64-lame
             mingw-w64-ucrt-x86_64-libmad
@@ -88,11 +84,108 @@ jobs:
           export PKG_CONFIG=/ucrt64/bin/pkg-config
           echo "UCRT64_BIN=$(cygpath -m /ucrt64/bin)" >> "$GITHUB_ENV"
           autoreconf -fi
-          ./configure --enable-shared --disable-static
+          ./configure --enable-shared --disable-static --with-oggvorbis=dyn --with-flac=dyn --with-amrwb=dyn --with-amrnb=dyn --with-wavpack=dyn --with-sndfile=dyn --with-mp3=dyn --without-id3tag
           # Build in-tree library prerequisites, then the shared library only; the CLI has unrelated unresolved symbols on this target.
           for dir in libdolbyb libebur128 lpc10 libgsm; do make -C "$dir" -j"$(nproc)"; done
           # Explicitly generate the DEF from the DLL link, rather than relying on a libtool intermediate DEF.
           make -C src -j"$(nproc)" LDFLAGS='-Wl,--output-def,.libs/libsox_ng.def' libsox_ng.la
+
+      - name: Stage runtime DLLs and licenses
+        shell: msys2 {0}
+        run: |
+          set -euo pipefail
+          stage_root="$(cygpath -u "$RUNNER_TEMP")/libsox-ng-runtime"
+          mkdir -p "$stage_root/bin" "$stage_root/licenses"
+          manifest="$stage_root/licenses/runtime-packages.txt"
+          : > "$manifest"
+          dlls=(libfftw3-3.dll libgomp-1.dll libwinpthread-1.dll libpng16-16.dll libspeexdsp-1.dll zlib1.dll)
+
+          for dll in "${dlls[@]}"; do
+            dll_path="/ucrt64/bin/$dll"
+            [[ -s "$dll_path" ]] || { echo "Missing or empty runtime DLL: $dll_path" >&2; exit 1; }
+            cp "$dll_path" "$stage_root/bin/$dll"
+
+            owner_output="$(pacman -Qqo "$dll_path")" || { echo "Could not identify package owner for $dll_path" >&2; exit 1; }
+            mapfile -t owners <<< "$owner_output"
+            [[ ${#owners[@]} -eq 1 && -n "${owners[0]}" ]] || { echo "Expected exactly one owner for $dll_path; got: $owner_output" >&2; exit 1; }
+            owner="${owners[0]}"
+            package_output="$(pacman -Q "$owner")" || { echo "Could not query installed package $owner" >&2; exit 1; }
+            package_version="${package_output#* }"
+            [[ -n "$package_version" && "$package_version" != "$package_output" ]] || { echo "Could not parse installed version for $owner" >&2; exit 1; }
+            printf '%s -> %s %s\n' "$dll" "$owner" "$package_version" >> "$manifest"
+
+            file_output="$(pacman -Qlq "$owner")" || { echo "Could not list files for package $owner" >&2; exit 1; }
+            mapfile -t package_files <<< "$file_output"
+            license_files=()
+            for file in "${package_files[@]}"; do
+              if [[ "$file" == /ucrt64/share/licenses/* && -f "$file" ]]; then
+                license_files+=("$file")
+              fi
+            done
+
+            if [[ "$dll" == libgomp-1.dll ]]; then
+              gcc_notice_files=()
+              for notice in /ucrt64/share/licenses/gcc/COPYING3 /ucrt64/share/licenses/gcc/COPYING.RUNTIME; do
+                [[ ! -f "$notice" ]] || gcc_notice_files+=("$notice")
+              done
+              if [[ ${#gcc_notice_files[@]} -gt 0 ]]; then
+                license_files+=("${gcc_notice_files[@]}")
+              fi
+              found_copying3=false
+              found_runtime=false
+              for file in "${license_files[@]}"; do
+                [[ "${file##*/}" != COPYING3 ]] || found_copying3=true
+                [[ "${file##*/}" != COPYING.RUNTIME ]] || found_runtime=true
+              done
+              [[ "$found_copying3" == true && "$found_runtime" == true ]] || { echo "Missing required GCC runtime notices COPYING3/COPYING.RUNTIME for $dll" >&2; exit 1; }
+            fi
+
+            if [[ "$dll" == libfftw3-3.dll && ${#license_files[@]} -eq 0 ]]; then
+              fftw_version="$(/ucrt64/bin/pkg-config --modversion fftw3)" || { echo 'Could not read installed FFTW version' >&2; exit 1; }
+              [[ "$fftw_version" =~ ^[0-9]+(\.[0-9]+)+$ ]] || { echo "Invalid FFTW version: $fftw_version" >&2; exit 1; }
+              installed_version="${package_version#*:}"
+              installed_version="${installed_version%-*}"
+              [[ "$fftw_version" == "$installed_version" ]] || { echo "FFTW pkg-config version $fftw_version does not match installed package version $package_version" >&2; exit 1; }
+              fftw_url="https://www.fftw.org/fftw-${fftw_version}.tar.gz"
+              fftw_archive="$stage_root/fftw-${fftw_version}.tar.gz"
+              fftw_extract="$stage_root/fftw-source"
+              curl --fail --location --retry 3 "$fftw_url" --output "$fftw_archive"
+              if [[ "$fftw_version" == 3.3.11 ]]; then
+                printf '%s  %s\n' 5630c24cdeb33b131612f7eb4b1a9934234754f9f388ff8617458d0be6f239a1 "$fftw_archive" | sha256sum --check --status || { echo 'FFTW 3.3.11 source checksum mismatch' >&2; exit 1; }
+              fi
+              mkdir -p "$fftw_extract"
+              tar -xzf "$fftw_archive" -C "$fftw_extract" "fftw-${fftw_version}/COPYING"
+              [[ -s "$fftw_extract/fftw-${fftw_version}/COPYING" ]] || { echo 'FFTW source archive has no nonempty COPYING file' >&2; exit 1; }
+              mkdir -p "$stage_root/licenses/fftw"
+              cp "$fftw_extract/fftw-${fftw_version}/COPYING" "$stage_root/licenses/fftw/COPYING"
+              archive_files="$(tar -tzf "$fftw_archive")" || { echo 'Could not list FFTW source archive' >&2; exit 1; }
+              mapfile -t archive_paths <<< "$archive_files"
+              for archive_path in "${archive_paths[@]}"; do
+                if [[ "$archive_path" == "fftw-${fftw_version}/COPYRIGHT" ]]; then
+                  tar -xzf "$fftw_archive" -C "$fftw_extract" "$archive_path"
+                  [[ -s "$fftw_extract/$archive_path" ]] || { echo 'FFTW COPYRIGHT is empty' >&2; exit 1; }
+                  cp "$fftw_extract/$archive_path" "$stage_root/licenses/fftw/COPYRIGHT"
+                  break
+                fi
+              done
+              printf '  source: %s\n  copied: licenses/fftw/COPYING\n' "$fftw_url" >> "$manifest"
+              [[ ! -f "$stage_root/licenses/fftw/COPYRIGHT" ]] || printf '  copied: licenses/fftw/COPYRIGHT\n' >> "$manifest"
+            else
+              [[ ${#license_files[@]} -gt 0 ]] || { echo "No installed license files found for $dll ($owner)" >&2; exit 1; }
+              for license_file in "${license_files[@]}"; do
+                [[ -s "$license_file" ]] || { echo "Missing or empty license file: $license_file" >&2; exit 1; }
+                relative_license="${license_file#/ucrt64/share/licenses/}"
+                [[ "$relative_license" != "$license_file" && -n "$relative_license" ]] || { echo "Invalid license path: $license_file" >&2; exit 1; }
+                destination="$stage_root/licenses/$relative_license"
+                mkdir -p "$(dirname "$destination")"
+                cp "$license_file" "$destination"
+                printf '  copied: licenses/%s\n' "$relative_license" >> "$manifest"
+              done
+            fi
+          done
+
+          [[ -s "$manifest" ]] || { echo 'Runtime package manifest is empty' >&2; exit 1; }
+          echo "STAGED_RUNTIME_PATH=$(cygpath -m "$stage_root")" >> "$GITHUB_ENV"
 
       - name: Set up MSVC x64 tools
         uses: ilammy/msvc-dev-cmd@v1
@@ -158,16 +251,35 @@ jobs:
           Copy-Item 'COPYING' (Join-Path $root 'LICENSE')
           Copy-Item 'libebur128/COPYING' (Join-Path $root 'licenses/libebur128/COPYING')
           Copy-Item 'libdolbyb/COPYING' (Join-Path $root 'licenses/libdolbyb/COPYING')
+          $runtimeStage = $env:STAGED_RUNTIME_PATH
+          if ([string]::IsNullOrWhiteSpace($runtimeStage) -or -not (Test-Path -LiteralPath $runtimeStage -PathType Container)) { throw "Runtime staging directory is missing: $runtimeStage" }
+          $runtimeDllNames = @('libfftw3-3.dll', 'libgomp-1.dll', 'libwinpthread-1.dll', 'libpng16-16.dll', 'libspeexdsp-1.dll', 'zlib1.dll')
+          foreach ($runtimeDll in $runtimeDllNames) {
+            $source = Join-Path (Join-Path $runtimeStage 'bin') $runtimeDll
+            if (-not (Test-Path -LiteralPath $source -PathType Leaf) -or (Get-Item -LiteralPath $source).Length -eq 0) { throw "Staged runtime DLL is missing or empty: $source" }
+            Copy-Item -LiteralPath $source -Destination (Join-Path $root "bin/$runtimeDll")
+          }
+          $stagedLicenseRoot = Join-Path $runtimeStage 'licenses'
+          $stagedLicenseFiles = @(Get-ChildItem -LiteralPath $stagedLicenseRoot -File -Recurse)
+          if ($stagedLicenseFiles.Count -eq 0) { throw 'No staged runtime license/manifest files were found.' }
+          foreach ($licenseFile in $stagedLicenseFiles) {
+            if ($licenseFile.Length -eq 0) { throw "Staged runtime license/manifest is empty: $($licenseFile.FullName)" }
+            $relativeLicense = [System.IO.Path]::GetRelativePath($stagedLicenseRoot, $licenseFile.FullName)
+            $destination = Join-Path (Join-Path $root 'licenses') $relativeLicense
+            New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destination) | Out-Null
+            Copy-Item -LiteralPath $licenseFile.FullName -Destination $destination
+          }
           @"
           libsox-ng UCRT64 Windows x64 shared-library package
 
           DLL: $($dll.Name)
-          This package does not include external runtime DLLs. Install the required UCRT64 runtime/dependency DLLs and make them available on PATH.
+          Bundled runtime DLLs: libfftw3-3.dll, libgomp-1.dll, libwinpthread-1.dll, libpng16-16.dll, libspeexdsp-1.dll, and zlib1.dll.
+          Ogg Vorbis, FLAC, AMR-WB, AMR-NB, WavPack, libsndfile, and MP3 are configured as separate format plugins. These plugins are not built or bundled in this library-only package. Other optional runtime dependencies may still be required.
 
           MSVC: link lib\libsox_ng.lib and load bin\$($dll.Name).
           MinGW: link lib\libsox_ng.dll.a and load bin\$($dll.Name).
           The import libraries target the DLL basename shown above; do not rename it.
-          External dependency packages used for this build include FLAC, LAME, libmad, libid3tag, libsndfile, libvorbis, opusfile, libpng, wavpack, speexdsp, FFTW, and opencore-amr.
+          Runtime package versions and license paths are recorded in licenses/runtime-packages.txt. libid3tag support is disabled.
           "@ | Set-Content -LiteralPath (Join-Path $root 'README.txt') -Encoding ascii
 
           $zip = Join-Path $PWD $env:PACKAGE_NAME
@@ -183,6 +295,11 @@ jobs:
               "${prefix}LICENSE", "${prefix}licenses/libebur128/COPYING",
               "${prefix}licenses/libdolbyb/COPYING", "${prefix}README.txt"
             )
+            foreach ($runtimeDll in $runtimeDllNames) { $required += "${prefix}bin/$runtimeDll" }
+            foreach ($licenseFile in $stagedLicenseFiles) {
+              $relativeLicense = [System.IO.Path]::GetRelativePath($stagedLicenseRoot, $licenseFile.FullName).Replace('\', '/')
+              $required += "${prefix}licenses/$relativeLicense"
+            }
             foreach ($entry in $required) { if ($entry -notin $entries) { throw "ZIP missing required entry: $entry" } }
           } finally { $archive.Dispose() }
 
@@ -199,6 +316,7 @@ jobs:
           compression-level: 0
 
       - name: Create or update GitHub Release
+        if: env.RELEASE_TAG != ''
         shell: pwsh
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
